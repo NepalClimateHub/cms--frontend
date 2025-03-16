@@ -20,6 +20,8 @@ import { Route as authSignInImport } from './routes/(auth)/sign-in'
 import { Route as authOtpImport } from './routes/(auth)/otp'
 import { Route as auth500Import } from './routes/(auth)/500'
 import { Route as PublicLoginIndexImport } from './routes/_public/login/index'
+import { Route as AuthenticatedOrganizationsListIndexImport } from './routes/_authenticated/organizations/list/index'
+import { Route as AuthenticatedOrganizationsAddIndexImport } from './routes/_authenticated/organizations/add/index'
 
 // Create Virtual Routes
 
@@ -323,6 +325,20 @@ const AuthenticatedRolesRoleIdIndexLazyRoute =
     ),
   )
 
+const AuthenticatedOrganizationsListIndexRoute =
+  AuthenticatedOrganizationsListIndexImport.update({
+    id: '/organizations/list/',
+    path: '/organizations/list/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedOrganizationsAddIndexRoute =
+  AuthenticatedOrganizationsAddIndexImport.update({
+    id: '/organizations/add/',
+    path: '/organizations/add/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -516,6 +532,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUsersIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/organizations/add/': {
+      id: '/_authenticated/organizations/add/'
+      path: '/organizations/add'
+      fullPath: '/organizations/add'
+      preLoaderRoute: typeof AuthenticatedOrganizationsAddIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/organizations/list/': {
+      id: '/_authenticated/organizations/list/'
+      path: '/organizations/list'
+      fullPath: '/organizations/list'
+      preLoaderRoute: typeof AuthenticatedOrganizationsListIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/roles/$roleId/': {
       id: '/_authenticated/roles/$roleId/'
       path: '/roles/$roleId'
@@ -570,6 +600,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRolesIndexLazyRoute: typeof AuthenticatedRolesIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
+  AuthenticatedOrganizationsAddIndexRoute: typeof AuthenticatedOrganizationsAddIndexRoute
+  AuthenticatedOrganizationsListIndexRoute: typeof AuthenticatedOrganizationsListIndexRoute
   AuthenticatedRolesRoleIdIndexLazyRoute: typeof AuthenticatedRolesRoleIdIndexLazyRoute
   AuthenticatedRolesAddIndexLazyRoute: typeof AuthenticatedRolesAddIndexLazyRoute
 }
@@ -584,6 +616,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRolesIndexLazyRoute: AuthenticatedRolesIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
+  AuthenticatedOrganizationsAddIndexRoute:
+    AuthenticatedOrganizationsAddIndexRoute,
+  AuthenticatedOrganizationsListIndexRoute:
+    AuthenticatedOrganizationsListIndexRoute,
   AuthenticatedRolesRoleIdIndexLazyRoute:
     AuthenticatedRolesRoleIdIndexLazyRoute,
   AuthenticatedRolesAddIndexLazyRoute: AuthenticatedRolesAddIndexLazyRoute,
@@ -630,6 +666,8 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
+  '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
+  '/organizations/list': typeof AuthenticatedOrganizationsListIndexRoute
   '/roles/$roleId': typeof AuthenticatedRolesRoleIdIndexLazyRoute
   '/roles/add': typeof AuthenticatedRolesAddIndexLazyRoute
 }
@@ -659,6 +697,8 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
+  '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
+  '/organizations/list': typeof AuthenticatedOrganizationsListIndexRoute
   '/roles/$roleId': typeof AuthenticatedRolesRoleIdIndexLazyRoute
   '/roles/add': typeof AuthenticatedRolesAddIndexLazyRoute
 }
@@ -692,6 +732,8 @@ export interface FileRoutesById {
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
+  '/_authenticated/organizations/add/': typeof AuthenticatedOrganizationsAddIndexRoute
+  '/_authenticated/organizations/list/': typeof AuthenticatedOrganizationsListIndexRoute
   '/_authenticated/roles/$roleId/': typeof AuthenticatedRolesRoleIdIndexLazyRoute
   '/_authenticated/roles/add/': typeof AuthenticatedRolesAddIndexLazyRoute
 }
@@ -724,6 +766,8 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/tasks'
     | '/users'
+    | '/organizations/add'
+    | '/organizations/list'
     | '/roles/$roleId'
     | '/roles/add'
   fileRoutesByTo: FileRoutesByTo
@@ -752,6 +796,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/users'
+    | '/organizations/add'
+    | '/organizations/list'
     | '/roles/$roleId'
     | '/roles/add'
   id:
@@ -783,6 +829,8 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
+    | '/_authenticated/organizations/add/'
+    | '/_authenticated/organizations/list/'
     | '/_authenticated/roles/$roleId/'
     | '/_authenticated/roles/add/'
   fileRoutesById: FileRoutesById
@@ -856,6 +904,8 @@ export const routeTree = rootRoute
         "/_authenticated/roles/",
         "/_authenticated/tasks/",
         "/_authenticated/users/",
+        "/_authenticated/organizations/add/",
+        "/_authenticated/organizations/list/",
         "/_authenticated/roles/$roleId/",
         "/_authenticated/roles/add/"
       ]
@@ -960,6 +1010,14 @@ export const routeTree = rootRoute
     },
     "/_authenticated/users/": {
       "filePath": "_authenticated/users/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/organizations/add/": {
+      "filePath": "_authenticated/organizations/add/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/organizations/list/": {
+      "filePath": "_authenticated/organizations/list/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/roles/$roleId/": {

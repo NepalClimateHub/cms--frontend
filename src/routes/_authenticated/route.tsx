@@ -8,6 +8,7 @@ import { getAccessToken, useAuthStore } from '@/stores/authStore'
 import { useGetProfile } from '@/query/auth/use-auth'
 import { useEffect } from 'react'
 import { BoxLoader } from '@/components/loader'
+import TopHeader from '@/components/top-header'
 
 export const Route = createFileRoute('/_authenticated')({
   component: RouteComponent,
@@ -55,6 +56,7 @@ function RouteComponent() {
             'group-data-[scroll-locked=1]/body:has-[main.fixed-main]:h-svh'
           )}
         >
+          <TopHeader />
           <Outlet />
         </div>
       </SidebarProvider>
