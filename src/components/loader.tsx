@@ -25,3 +25,24 @@ export const TableLoader = () => {
     </div>
   );
 };
+
+export const MiniLoader = (
+  {
+    isLoading,
+    children,
+  }: {
+    isLoading: boolean;
+    children: React.ReactNode;
+  }
+) => {
+  if (isLoading) {
+    return (
+      <div className={"h-28 flex items-center justify-center"}>
+        <Spinner show={true} />
+      </div>
+    );
+  }
+  return (
+    <>{children}</>
+  )
+};

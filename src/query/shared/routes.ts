@@ -12,10 +12,17 @@ export const auth = {
 export const tags = {
   getall: {
     path: '/tags',
-    key: "alltags"
+    key: 'alltags',
   },
   add: {
     path: '/tags',
     key: 'tags',
+  },
+}
+
+export const imagekit = {
+  getauthparams: {
+    path: '/imagekit',
+    key: 'authparams',
   },
 }
