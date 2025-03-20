@@ -1,13 +1,16 @@
 import { Main } from '@/components/layout/main'
 import OrganizationForm from './org-form'
+import PageHeader from '@/components/page-header'
 
 const AddOrganizations = () => {
     return (
         <Main>
-            <div className='mb-2 flex items-center justify-between space-y-2'>
-                <h1 className='text-2xl font-bold tracking-tight'>Add Organization</h1>
-            </div>
-            <div>
+            <PageHeader
+                title='Add Organization'
+                description='Fill in the details to add a new organization!'
+                showBackButton={true}
+            />
+            <div className='px-4'>
                 <OrganizationForm />
             </div>
         </Main>

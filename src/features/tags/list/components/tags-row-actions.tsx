@@ -1,22 +1,23 @@
-import { Roles } from "@/schemas/roles/roles"
+import Tags from "@/schemas/tags/tags"
 import { IconEdit, IconTrash } from "@tabler/icons-react"
 import { useNavigate } from "@tanstack/react-router"
 import { Row } from "@tanstack/react-table"
 import { FC } from "react"
 
-type RolesRowActionProps = {
-    row: Row<Roles>
+type TagsRowActionProps = {
+    row: Row<Tags>
 }
 
-const RolesRowAction: FC<RolesRowActionProps> = ({ row }) => {
+const TagsRowAction: FC<TagsRowActionProps> = ({ row }) => {
     const navigate = useNavigate()
     const handleEdit = () => {
-        navigate({
-            to: '/roles/$roleId',
-            params: {
-                roleId: row.original.id
-            }
-        })
+        console.log("ok")
+        // navigate({
+        //     to: '/Tags/$roleId',
+        //     params: {
+        //         roleId: row.original.id
+        //     }
+        // })
     }
 
     return (
@@ -27,4 +28,4 @@ const RolesRowAction: FC<RolesRowActionProps> = ({ row }) => {
     )
 }
 
-export default RolesRowAction
+export default TagsRowAction

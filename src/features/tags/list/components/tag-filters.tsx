@@ -1,31 +1,26 @@
-import OrganizationFilter from "@/components/filters/organization-filter"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useFilters } from "@/hooks/use-filters"
 import { useIsFirstRender } from "@/hooks/use-first-render"
-import { useAuthStore } from "@/stores/authStore"
 import { cleanObj } from "@/utils/obj-utils"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import { FC, useEffect, useState } from "react"
 
-type RoleFiltersProps = {
+type TagsFiltersProps = {
     setPage: (page: number | string) => void
     filterOptions: ReturnType<typeof useFilters>
 }
 
-const RoleFilters: FC<RoleFiltersProps> = ({
+const TagsFilters: FC<TagsFiltersProps> = ({
     setPage,
     filterOptions
 }) => {
-    const { user } = useAuthStore();
     const isFirstRender = useIsFirstRender()
     const [search, setSearch] = useState<string>('')
 
-    const isSuperAdmin = user?.isSuperAdmin!;
 
     const {
         filters,
-        setFilterValue,
         setFilterDebounce,
         removeFilter,
         resetFilters
@@ -41,15 +36,15 @@ const RoleFilters: FC<RoleFiltersProps> = ({
 
 
     useEffect(() => {
-        setSearch((filters?.name as string) ?? '');
+        setSearch((filters?.tag as string) ?? '');
     }, [filters]);
 
     const handleSearch = (value: string) => {
         setSearch(value);
         if (value) {
-            setFilterDebounce('name', value);
+            setFilterDebounce('tag', value);
         } else {
-            removeFilter('name');
+            removeFilter('tag');
         }
     };
 
@@ -57,23 +52,13 @@ const RoleFilters: FC<RoleFiltersProps> = ({
         <div className='flex items-center justify-between'>
             <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
                 <Input
-                    placeholder='Search roles...'
+                    placeholder='Search Tags...'
                     value={search}
                     onChange={(event) =>
                         handleSearch(event.target.value)
                     }
                     className='h-8 w-[150px] lg:w-[250px]'
                 />
-                {
-                    isSuperAdmin && (
-                        <OrganizationFilter
-                            filters={filters}
-                            filterKey={'organizationId'}
-                            setFilterValue={setFilterValue}
-                            removeFilter={removeFilter}
-                        />
-                    )
-                }
                 {
                     isFilterApplied && (
                         <Button
@@ -91,4 +76,4 @@ const RoleFilters: FC<RoleFiltersProps> = ({
     )
 }
 
-export default RoleFilters
+export default TagsFilters

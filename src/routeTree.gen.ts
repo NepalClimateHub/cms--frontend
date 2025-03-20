@@ -44,11 +44,11 @@ const AuthenticatedUsersIndexLazyImport = createFileRoute(
 const AuthenticatedTasksIndexLazyImport = createFileRoute(
   '/_authenticated/tasks/',
 )()
+const AuthenticatedTagsIndexLazyImport = createFileRoute(
+  '/_authenticated/tags/',
+)()
 const AuthenticatedSettingsIndexLazyImport = createFileRoute(
   '/_authenticated/settings/',
-)()
-const AuthenticatedRolesIndexLazyImport = createFileRoute(
-  '/_authenticated/roles/',
 )()
 const AuthenticatedHelpCenterIndexLazyImport = createFileRoute(
   '/_authenticated/help-center/',
@@ -71,11 +71,11 @@ const AuthenticatedSettingsAppearanceLazyImport = createFileRoute(
 const AuthenticatedSettingsAccountLazyImport = createFileRoute(
   '/_authenticated/settings/account',
 )()
-const AuthenticatedRolesAddIndexLazyImport = createFileRoute(
-  '/_authenticated/roles/add/',
+const AuthenticatedTagsAddIndexLazyImport = createFileRoute(
+  '/_authenticated/tags/add/',
 )()
-const AuthenticatedRolesRoleIdIndexLazyImport = createFileRoute(
-  '/_authenticated/roles/$roleId/',
+const AuthenticatedTagsTagIdIndexLazyImport = createFileRoute(
+  '/_authenticated/tags/$tagId/',
 )()
 
 // Create/Update Routes
@@ -207,6 +207,16 @@ const AuthenticatedTasksIndexLazyRoute =
     import('./routes/_authenticated/tasks/index.lazy').then((d) => d.Route),
   )
 
+const AuthenticatedTagsIndexLazyRoute = AuthenticatedTagsIndexLazyImport.update(
+  {
+    id: '/tags/',
+    path: '/tags/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any,
+).lazy(() =>
+  import('./routes/_authenticated/tags/index.lazy').then((d) => d.Route),
+)
+
 const AuthenticatedSettingsIndexLazyRoute =
   AuthenticatedSettingsIndexLazyImport.update({
     id: '/',
@@ -214,15 +224,6 @@ const AuthenticatedSettingsIndexLazyRoute =
     getParentRoute: () => AuthenticatedSettingsRouteLazyRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/settings/index.lazy').then((d) => d.Route),
-  )
-
-const AuthenticatedRolesIndexLazyRoute =
-  AuthenticatedRolesIndexLazyImport.update({
-    id: '/roles/',
-    path: '/roles/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/roles/index.lazy').then((d) => d.Route),
   )
 
 const AuthenticatedHelpCenterIndexLazyRoute =
@@ -305,22 +306,22 @@ const AuthenticatedSettingsAccountLazyRoute =
     ),
   )
 
-const AuthenticatedRolesAddIndexLazyRoute =
-  AuthenticatedRolesAddIndexLazyImport.update({
-    id: '/roles/add/',
-    path: '/roles/add/',
+const AuthenticatedTagsAddIndexLazyRoute =
+  AuthenticatedTagsAddIndexLazyImport.update({
+    id: '/tags/add/',
+    path: '/tags/add/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any).lazy(() =>
-    import('./routes/_authenticated/roles/add/index.lazy').then((d) => d.Route),
+    import('./routes/_authenticated/tags/add/index.lazy').then((d) => d.Route),
   )
 
-const AuthenticatedRolesRoleIdIndexLazyRoute =
-  AuthenticatedRolesRoleIdIndexLazyImport.update({
-    id: '/roles/$roleId/',
-    path: '/roles/$roleId/',
+const AuthenticatedTagsTagIdIndexLazyRoute =
+  AuthenticatedTagsTagIdIndexLazyImport.update({
+    id: '/tags/$tagId/',
+    path: '/tags/$tagId/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any).lazy(() =>
-    import('./routes/_authenticated/roles/$roleId/index.lazy').then(
+    import('./routes/_authenticated/tags/$tagId/index.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -504,19 +505,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHelpCenterIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
-    '/_authenticated/roles/': {
-      id: '/_authenticated/roles/'
-      path: '/roles'
-      fullPath: '/roles'
-      preLoaderRoute: typeof AuthenticatedRolesIndexLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/'
       fullPath: '/settings/'
       preLoaderRoute: typeof AuthenticatedSettingsIndexLazyImport
       parentRoute: typeof AuthenticatedSettingsRouteLazyImport
+    }
+    '/_authenticated/tags/': {
+      id: '/_authenticated/tags/'
+      path: '/tags'
+      fullPath: '/tags'
+      preLoaderRoute: typeof AuthenticatedTagsIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/tasks/': {
       id: '/_authenticated/tasks/'
@@ -546,18 +547,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrganizationsListIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
-    '/_authenticated/roles/$roleId/': {
-      id: '/_authenticated/roles/$roleId/'
-      path: '/roles/$roleId'
-      fullPath: '/roles/$roleId'
-      preLoaderRoute: typeof AuthenticatedRolesRoleIdIndexLazyImport
+    '/_authenticated/tags/$tagId/': {
+      id: '/_authenticated/tags/$tagId/'
+      path: '/tags/$tagId'
+      fullPath: '/tags/$tagId'
+      preLoaderRoute: typeof AuthenticatedTagsTagIdIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
-    '/_authenticated/roles/add/': {
-      id: '/_authenticated/roles/add/'
-      path: '/roles/add'
-      fullPath: '/roles/add'
-      preLoaderRoute: typeof AuthenticatedRolesAddIndexLazyImport
+    '/_authenticated/tags/add/': {
+      id: '/_authenticated/tags/add/'
+      path: '/tags/add'
+      fullPath: '/tags/add'
+      preLoaderRoute: typeof AuthenticatedTagsAddIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
   }
@@ -597,13 +598,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppsIndexLazyRoute: typeof AuthenticatedAppsIndexLazyRoute
   AuthenticatedChatsIndexLazyRoute: typeof AuthenticatedChatsIndexLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
-  AuthenticatedRolesIndexLazyRoute: typeof AuthenticatedRolesIndexLazyRoute
+  AuthenticatedTagsIndexLazyRoute: typeof AuthenticatedTagsIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
   AuthenticatedOrganizationsAddIndexRoute: typeof AuthenticatedOrganizationsAddIndexRoute
   AuthenticatedOrganizationsListIndexRoute: typeof AuthenticatedOrganizationsListIndexRoute
-  AuthenticatedRolesRoleIdIndexLazyRoute: typeof AuthenticatedRolesRoleIdIndexLazyRoute
-  AuthenticatedRolesAddIndexLazyRoute: typeof AuthenticatedRolesAddIndexLazyRoute
+  AuthenticatedTagsTagIdIndexLazyRoute: typeof AuthenticatedTagsTagIdIndexLazyRoute
+  AuthenticatedTagsAddIndexLazyRoute: typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -613,16 +614,15 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppsIndexLazyRoute: AuthenticatedAppsIndexLazyRoute,
   AuthenticatedChatsIndexLazyRoute: AuthenticatedChatsIndexLazyRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
-  AuthenticatedRolesIndexLazyRoute: AuthenticatedRolesIndexLazyRoute,
+  AuthenticatedTagsIndexLazyRoute: AuthenticatedTagsIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
   AuthenticatedOrganizationsAddIndexRoute:
     AuthenticatedOrganizationsAddIndexRoute,
   AuthenticatedOrganizationsListIndexRoute:
     AuthenticatedOrganizationsListIndexRoute,
-  AuthenticatedRolesRoleIdIndexLazyRoute:
-    AuthenticatedRolesRoleIdIndexLazyRoute,
-  AuthenticatedRolesAddIndexLazyRoute: AuthenticatedRolesAddIndexLazyRoute,
+  AuthenticatedTagsTagIdIndexLazyRoute: AuthenticatedTagsTagIdIndexLazyRoute,
+  AuthenticatedTagsAddIndexLazyRoute: AuthenticatedTagsAddIndexLazyRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -662,14 +662,14 @@ export interface FileRoutesByFullPath {
   '/apps': typeof AuthenticatedAppsIndexLazyRoute
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
-  '/roles': typeof AuthenticatedRolesIndexLazyRoute
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
+  '/tags': typeof AuthenticatedTagsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
   '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
   '/organizations/list': typeof AuthenticatedOrganizationsListIndexRoute
-  '/roles/$roleId': typeof AuthenticatedRolesRoleIdIndexLazyRoute
-  '/roles/add': typeof AuthenticatedRolesAddIndexLazyRoute
+  '/tags/$tagId': typeof AuthenticatedTagsTagIdIndexLazyRoute
+  '/tags/add': typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -693,14 +693,14 @@ export interface FileRoutesByTo {
   '/apps': typeof AuthenticatedAppsIndexLazyRoute
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
-  '/roles': typeof AuthenticatedRolesIndexLazyRoute
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
+  '/tags': typeof AuthenticatedTagsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
   '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
   '/organizations/list': typeof AuthenticatedOrganizationsListIndexRoute
-  '/roles/$roleId': typeof AuthenticatedRolesRoleIdIndexLazyRoute
-  '/roles/add': typeof AuthenticatedRolesAddIndexLazyRoute
+  '/tags/$tagId': typeof AuthenticatedTagsTagIdIndexLazyRoute
+  '/tags/add': typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -728,14 +728,14 @@ export interface FileRoutesById {
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexLazyRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexLazyRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
-  '/_authenticated/roles/': typeof AuthenticatedRolesIndexLazyRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
+  '/_authenticated/tags/': typeof AuthenticatedTagsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
   '/_authenticated/organizations/add/': typeof AuthenticatedOrganizationsAddIndexRoute
   '/_authenticated/organizations/list/': typeof AuthenticatedOrganizationsListIndexRoute
-  '/_authenticated/roles/$roleId/': typeof AuthenticatedRolesRoleIdIndexLazyRoute
-  '/_authenticated/roles/add/': typeof AuthenticatedRolesAddIndexLazyRoute
+  '/_authenticated/tags/$tagId/': typeof AuthenticatedTagsTagIdIndexLazyRoute
+  '/_authenticated/tags/add/': typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -762,14 +762,14 @@ export interface FileRouteTypes {
     | '/apps'
     | '/chats'
     | '/help-center'
-    | '/roles'
     | '/settings/'
+    | '/tags'
     | '/tasks'
     | '/users'
     | '/organizations/add'
     | '/organizations/list'
-    | '/roles/$roleId'
-    | '/roles/add'
+    | '/tags/$tagId'
+    | '/tags/add'
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
@@ -792,14 +792,14 @@ export interface FileRouteTypes {
     | '/apps'
     | '/chats'
     | '/help-center'
-    | '/roles'
     | '/settings'
+    | '/tags'
     | '/tasks'
     | '/users'
     | '/organizations/add'
     | '/organizations/list'
-    | '/roles/$roleId'
-    | '/roles/add'
+    | '/tags/$tagId'
+    | '/tags/add'
   id:
     | '__root__'
     | '/_authenticated'
@@ -825,14 +825,14 @@ export interface FileRouteTypes {
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
     | '/_authenticated/help-center/'
-    | '/_authenticated/roles/'
     | '/_authenticated/settings/'
+    | '/_authenticated/tags/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
     | '/_authenticated/organizations/add/'
     | '/_authenticated/organizations/list/'
-    | '/_authenticated/roles/$roleId/'
-    | '/_authenticated/roles/add/'
+    | '/_authenticated/tags/$tagId/'
+    | '/_authenticated/tags/add/'
   fileRoutesById: FileRoutesById
 }
 
@@ -901,13 +901,13 @@ export const routeTree = rootRoute
         "/_authenticated/apps/",
         "/_authenticated/chats/",
         "/_authenticated/help-center/",
-        "/_authenticated/roles/",
+        "/_authenticated/tags/",
         "/_authenticated/tasks/",
         "/_authenticated/users/",
         "/_authenticated/organizations/add/",
         "/_authenticated/organizations/list/",
-        "/_authenticated/roles/$roleId/",
-        "/_authenticated/roles/add/"
+        "/_authenticated/tags/$tagId/",
+        "/_authenticated/tags/add/"
       ]
     },
     "/_public": {
@@ -996,13 +996,13 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/help-center/index.lazy.tsx",
       "parent": "/_authenticated"
     },
-    "/_authenticated/roles/": {
-      "filePath": "_authenticated/roles/index.lazy.tsx",
-      "parent": "/_authenticated"
-    },
     "/_authenticated/settings/": {
       "filePath": "_authenticated/settings/index.lazy.tsx",
       "parent": "/_authenticated/settings"
+    },
+    "/_authenticated/tags/": {
+      "filePath": "_authenticated/tags/index.lazy.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/tasks/": {
       "filePath": "_authenticated/tasks/index.lazy.tsx",
@@ -1020,12 +1020,12 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/organizations/list/index.tsx",
       "parent": "/_authenticated"
     },
-    "/_authenticated/roles/$roleId/": {
-      "filePath": "_authenticated/roles/$roleId/index.lazy.tsx",
+    "/_authenticated/tags/$tagId/": {
+      "filePath": "_authenticated/tags/$tagId/index.lazy.tsx",
       "parent": "/_authenticated"
     },
-    "/_authenticated/roles/add/": {
-      "filePath": "_authenticated/roles/add/index.lazy.tsx",
+    "/_authenticated/tags/add/": {
+      "filePath": "_authenticated/tags/add/index.lazy.tsx",
       "parent": "/_authenticated"
     }
   }

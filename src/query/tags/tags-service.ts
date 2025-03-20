@@ -1,27 +1,27 @@
-import { RoleFormValues, Roles } from '@/schemas/roles/roles'
 import { Meta } from '@/schemas/shared'
+import Tags, { TagsInitializer } from '@/schemas/tags/tags'
 import { buildQueryParams } from '@/utils/query-params'
 import apiClient from '../apiClient'
-import { roles } from '../shared/routes'
+import { tags } from '../shared/routes'
 
-export const addRole = async (
-  payload: RoleFormValues
+export const addTag = async (
+  payload: TagsInitializer
 ): Promise<{
   data: {}
   meta: Meta
 }> => {
-  const response = await apiClient.post(roles.add.path, payload)
+  const response = await apiClient.post(tags.add.path, payload)
   return response?.data
 }
 
-export const getRoles = async (
+export const getTags = async (
   query: { [k: string]: string | number | string[] | number[] } = {}
 ): Promise<{
-  data: Roles[]
+  data: Tags[]
   meta: Meta
 }> => {
   const queryParams = buildQueryParams(query)
-  const response = await apiClient.get(roles.getall.path, {
+  const response = await apiClient.get(tags.getall.path, {
     params: queryParams,
   })
   return response?.data

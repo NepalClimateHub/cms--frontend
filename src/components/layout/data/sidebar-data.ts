@@ -15,6 +15,11 @@ export const superAdminSidebarData: NavGroup[] = [
         url: '/organizations/list',
         icon: IconComponents,
       },
+      {
+        title: 'Tags',
+        url: '/tags',
+        icon: IconComponents,
+      },
     ],
   },
 ]

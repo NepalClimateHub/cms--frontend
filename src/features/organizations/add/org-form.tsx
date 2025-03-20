@@ -7,8 +7,6 @@ import { Content } from '@tiptap/react'
 const OrganizationForm = () => {
     const [value, setValue] = useState<Content>('')
 
-    console.log("value", value)
-
     return (
         <TooltipProvider>
             <MinimalTiptapEditor

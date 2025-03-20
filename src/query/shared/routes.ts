@@ -9,27 +9,13 @@ export const auth = {
   },
 }
 
-export const permissions = {
+export const tags = {
   getall: {
-    path: '/roles/permissions/all',
-    key: 'permissions',
-  },
-}
-
-export const roles = {
-  getall: {
-    path: '/roles',
-    key: 'roles'
+    path: '/tags',
+    key: "alltags"
   },
   add: {
-    path: '/roles',
-    key: 'add-role'
-  }
-}
-
-export const organizations = {
-  getall: {
-    path: '/organizations',
-    key: 'organizations'
-  }
+    path: '/tags',
+    key: 'tags',
+  },
 }
