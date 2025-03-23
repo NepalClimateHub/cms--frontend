@@ -18,10 +18,12 @@ const ALLOWED_IMAGE_TYPES = [
 const bytesToMB = (bytes: number) => Math.floor(bytes / 1000000)
 
 type ImageUploadProps = {
+  label: string;
   handleImage: (imageId: string | null, imageURL: string | null) => void
 }
 
 const ImageUpload: FC<ImageUploadProps> = ({
+  label,
   handleImage
 }) => {
   const queryClient = useQueryClient()
@@ -88,7 +90,7 @@ const ImageUpload: FC<ImageUploadProps> = ({
               <IKUpload
                 disabled={!!imageId || !!imageURL}
                 isUploading={isUploading}
-                label="Upload Logo"
+                label={label}
                 description="Image size should not exceed 5MB!"
                 folder={folder}
                 isPrivateFile={false}
