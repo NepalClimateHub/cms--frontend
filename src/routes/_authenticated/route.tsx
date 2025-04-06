@@ -1,12 +1,12 @@
+import { useEffect } from 'react'
 import Cookies from 'js-cookie'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { useGetProfile } from '@/query/auth/use-auth'
+import { getAccessToken, useAuthStore } from '@/stores/authStore'
 import { cn } from '@/lib/utils'
 import { SearchProvider } from '@/context/search-context'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
-import { getAccessToken, useAuthStore } from '@/stores/authStore'
-import { useGetProfile } from '@/query/auth/use-auth'
-import { useEffect } from 'react'
 import { BoxLoader } from '@/components/loader'
 import TopHeader from '@/components/top-header'
 
@@ -26,7 +26,8 @@ export const Route = createFileRoute('/_authenticated')({
 function RouteComponent() {
   const defaultOpen = Cookies.get('sidebar:state') !== 'false'
   const { accessToken, setUser } = useAuthStore()
-  const { data: userData, isLoading: isLoadingProfile } = useGetProfile(!!accessToken)
+  const { data: userData, isLoading: isLoadingProfile } =
+    useGetProfile(!!accessToken)
 
   useEffect(() => {
     if (userData) {
@@ -35,9 +36,7 @@ function RouteComponent() {
   }, [userData])
 
   if (isLoadingProfile) {
-    return (
-      <BoxLoader />
-    )
+    return <BoxLoader />
   }
 
   return (

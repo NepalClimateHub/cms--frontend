@@ -22,6 +22,8 @@ import { Route as auth500Import } from './routes/(auth)/500'
 import { Route as PublicLoginIndexImport } from './routes/_public/login/index'
 import { Route as AuthenticatedOrganizationsListIndexImport } from './routes/_authenticated/organizations/list/index'
 import { Route as AuthenticatedOrganizationsAddIndexImport } from './routes/_authenticated/organizations/add/index'
+import { Route as AuthenticatedOpportunitiesListIndexImport } from './routes/_authenticated/opportunities/list/index'
+import { Route as AuthenticatedOpportunitiesAddIndexImport } from './routes/_authenticated/opportunities/add/index'
 
 // Create Virtual Routes
 
@@ -340,6 +342,20 @@ const AuthenticatedOrganizationsAddIndexRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
+const AuthenticatedOpportunitiesListIndexRoute =
+  AuthenticatedOpportunitiesListIndexImport.update({
+    id: '/opportunities/list/',
+    path: '/opportunities/list/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedOpportunitiesAddIndexRoute =
+  AuthenticatedOpportunitiesAddIndexImport.update({
+    id: '/opportunities/add/',
+    path: '/opportunities/add/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -533,6 +549,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUsersIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/opportunities/add/': {
+      id: '/_authenticated/opportunities/add/'
+      path: '/opportunities/add'
+      fullPath: '/opportunities/add'
+      preLoaderRoute: typeof AuthenticatedOpportunitiesAddIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/opportunities/list/': {
+      id: '/_authenticated/opportunities/list/'
+      path: '/opportunities/list'
+      fullPath: '/opportunities/list'
+      preLoaderRoute: typeof AuthenticatedOpportunitiesListIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/organizations/add/': {
       id: '/_authenticated/organizations/add/'
       path: '/organizations/add'
@@ -601,6 +631,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTagsIndexLazyRoute: typeof AuthenticatedTagsIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
+  AuthenticatedOpportunitiesAddIndexRoute: typeof AuthenticatedOpportunitiesAddIndexRoute
+  AuthenticatedOpportunitiesListIndexRoute: typeof AuthenticatedOpportunitiesListIndexRoute
   AuthenticatedOrganizationsAddIndexRoute: typeof AuthenticatedOrganizationsAddIndexRoute
   AuthenticatedOrganizationsListIndexRoute: typeof AuthenticatedOrganizationsListIndexRoute
   AuthenticatedTagsTagIdIndexLazyRoute: typeof AuthenticatedTagsTagIdIndexLazyRoute
@@ -617,6 +649,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTagsIndexLazyRoute: AuthenticatedTagsIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
+  AuthenticatedOpportunitiesAddIndexRoute:
+    AuthenticatedOpportunitiesAddIndexRoute,
+  AuthenticatedOpportunitiesListIndexRoute:
+    AuthenticatedOpportunitiesListIndexRoute,
   AuthenticatedOrganizationsAddIndexRoute:
     AuthenticatedOrganizationsAddIndexRoute,
   AuthenticatedOrganizationsListIndexRoute:
@@ -666,6 +702,8 @@ export interface FileRoutesByFullPath {
   '/tags': typeof AuthenticatedTagsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
+  '/opportunities/add': typeof AuthenticatedOpportunitiesAddIndexRoute
+  '/opportunities/list': typeof AuthenticatedOpportunitiesListIndexRoute
   '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
   '/organizations/list': typeof AuthenticatedOrganizationsListIndexRoute
   '/tags/$tagId': typeof AuthenticatedTagsTagIdIndexLazyRoute
@@ -697,6 +735,8 @@ export interface FileRoutesByTo {
   '/tags': typeof AuthenticatedTagsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
+  '/opportunities/add': typeof AuthenticatedOpportunitiesAddIndexRoute
+  '/opportunities/list': typeof AuthenticatedOpportunitiesListIndexRoute
   '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
   '/organizations/list': typeof AuthenticatedOrganizationsListIndexRoute
   '/tags/$tagId': typeof AuthenticatedTagsTagIdIndexLazyRoute
@@ -732,6 +772,8 @@ export interface FileRoutesById {
   '/_authenticated/tags/': typeof AuthenticatedTagsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
+  '/_authenticated/opportunities/add/': typeof AuthenticatedOpportunitiesAddIndexRoute
+  '/_authenticated/opportunities/list/': typeof AuthenticatedOpportunitiesListIndexRoute
   '/_authenticated/organizations/add/': typeof AuthenticatedOrganizationsAddIndexRoute
   '/_authenticated/organizations/list/': typeof AuthenticatedOrganizationsListIndexRoute
   '/_authenticated/tags/$tagId/': typeof AuthenticatedTagsTagIdIndexLazyRoute
@@ -766,6 +808,8 @@ export interface FileRouteTypes {
     | '/tags'
     | '/tasks'
     | '/users'
+    | '/opportunities/add'
+    | '/opportunities/list'
     | '/organizations/add'
     | '/organizations/list'
     | '/tags/$tagId'
@@ -796,6 +840,8 @@ export interface FileRouteTypes {
     | '/tags'
     | '/tasks'
     | '/users'
+    | '/opportunities/add'
+    | '/opportunities/list'
     | '/organizations/add'
     | '/organizations/list'
     | '/tags/$tagId'
@@ -829,6 +875,8 @@ export interface FileRouteTypes {
     | '/_authenticated/tags/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
+    | '/_authenticated/opportunities/add/'
+    | '/_authenticated/opportunities/list/'
     | '/_authenticated/organizations/add/'
     | '/_authenticated/organizations/list/'
     | '/_authenticated/tags/$tagId/'
@@ -904,6 +952,8 @@ export const routeTree = rootRoute
         "/_authenticated/tags/",
         "/_authenticated/tasks/",
         "/_authenticated/users/",
+        "/_authenticated/opportunities/add/",
+        "/_authenticated/opportunities/list/",
         "/_authenticated/organizations/add/",
         "/_authenticated/organizations/list/",
         "/_authenticated/tags/$tagId/",
@@ -1010,6 +1060,14 @@ export const routeTree = rootRoute
     },
     "/_authenticated/users/": {
       "filePath": "_authenticated/users/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/opportunities/add/": {
+      "filePath": "_authenticated/opportunities/add/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/opportunities/list/": {
+      "filePath": "_authenticated/opportunities/list/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/organizations/add/": {
