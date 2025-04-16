@@ -1,24 +1,30 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel } from '@tanstack/react-table'
 import { useReactTable } from '@tanstack/react-table'
 import { useGetTags } from '@/query/tags/use-tags'
+import { PlusIcon } from 'lucide-react'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
+import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/data-table/data-table'
 import { DataTablePagination } from '@/components/data-table/data-table-pagination'
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar'
 import { Main } from '@/components/layout/main'
 import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
-import OrganizationFilters from './components/organization-filters'
-import { useOrganizationColumns } from './hooks/use-organization-columns'
+import OpportunitiesFilters from './components/opportunities-filters'
+import { useOpportunitiesColumns } from './hooks/use-opportunity-columns'
+import { opportunitiesFilterOptions } from './opportunities-filter-options'
 
-const ListOrganizations = () => {
+const ListOpportunity = () => {
+  const navigate = useNavigate()
+
   const [addDialogOpen, setAddDialogOpen] = useState(false)
 
-  const roleColumns = useOrganizationColumns()
+  const roleColumns = useOpportunitiesColumns()
   const paginationOptions = usePagination()
-  const filterOptions = useFilters(OrganizationFilters)
+  const filterOptions = useFilters(opportunitiesFilterOptions)
 
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
@@ -41,18 +47,30 @@ const ListOrganizations = () => {
   if (isLoading) {
     return <BoxLoader />
   }
-
   return (
     <Main>
       <PageHeader
-        title='Organizations'
-        description='Manage organizations for your resources!'
+        title='Opportunities'
+        description='Manage opportunities for your resources!'
+        actions={
+          <Button
+            onClick={() => {
+              navigate({
+                to: '/opportunities/add',
+              })
+            }}
+          >
+            {' '}
+            <PlusIcon /> Add Opportunity
+          </Button>
+        }
       />
+
       <div className='mb-2 mt-4'>
         <DataTableToolbar
           table={table}
           filterComponent={
-            <OrganizationFilters
+            <OpportunitiesFilters
               filterOptions={filterOptions}
               setPage={setPage}
             />
@@ -72,4 +90,4 @@ const ListOrganizations = () => {
   )
 }
 
-export default ListOrganizations
+export default ListOpportunity
