@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import ListOpportunity from '@/features/oppourtunities/ListOpportunity'
+import ListOpportunity from '@/features/oppourtunities/list/ListOpportunity'
 
 export const Route = createFileRoute('/_authenticated/opportunities/list/')({
   component: ListOpportunity,

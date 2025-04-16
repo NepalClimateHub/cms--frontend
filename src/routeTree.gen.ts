@@ -24,6 +24,10 @@ import { Route as AuthenticatedOrganizationsListIndexImport } from './routes/_au
 import { Route as AuthenticatedOrganizationsAddIndexImport } from './routes/_authenticated/organizations/add/index'
 import { Route as AuthenticatedOpportunitiesListIndexImport } from './routes/_authenticated/opportunities/list/index'
 import { Route as AuthenticatedOpportunitiesAddIndexImport } from './routes/_authenticated/opportunities/add/index'
+import { Route as AuthenticatedNewsListIndexImport } from './routes/_authenticated/news/list/index'
+import { Route as AuthenticatedNewsAddIndexImport } from './routes/_authenticated/news/add/index'
+import { Route as AuthenticatedEventsListIndexImport } from './routes/_authenticated/events/list/index'
+import { Route as AuthenticatedEventsAddIndexImport } from './routes/_authenticated/events/add/index'
 
 // Create Virtual Routes
 
@@ -356,6 +360,34 @@ const AuthenticatedOpportunitiesAddIndexRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
+const AuthenticatedNewsListIndexRoute = AuthenticatedNewsListIndexImport.update(
+  {
+    id: '/news/list/',
+    path: '/news/list/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any,
+)
+
+const AuthenticatedNewsAddIndexRoute = AuthenticatedNewsAddIndexImport.update({
+  id: '/news/add/',
+  path: '/news/add/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedEventsListIndexRoute =
+  AuthenticatedEventsListIndexImport.update({
+    id: '/events/list/',
+    path: '/events/list/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedEventsAddIndexRoute =
+  AuthenticatedEventsAddIndexImport.update({
+    id: '/events/add/',
+    path: '/events/add/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -549,6 +581,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUsersIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/events/add/': {
+      id: '/_authenticated/events/add/'
+      path: '/events/add'
+      fullPath: '/events/add'
+      preLoaderRoute: typeof AuthenticatedEventsAddIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/events/list/': {
+      id: '/_authenticated/events/list/'
+      path: '/events/list'
+      fullPath: '/events/list'
+      preLoaderRoute: typeof AuthenticatedEventsListIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/news/add/': {
+      id: '/_authenticated/news/add/'
+      path: '/news/add'
+      fullPath: '/news/add'
+      preLoaderRoute: typeof AuthenticatedNewsAddIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/news/list/': {
+      id: '/_authenticated/news/list/'
+      path: '/news/list'
+      fullPath: '/news/list'
+      preLoaderRoute: typeof AuthenticatedNewsListIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/opportunities/add/': {
       id: '/_authenticated/opportunities/add/'
       path: '/opportunities/add'
@@ -631,6 +691,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTagsIndexLazyRoute: typeof AuthenticatedTagsIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
+  AuthenticatedEventsAddIndexRoute: typeof AuthenticatedEventsAddIndexRoute
+  AuthenticatedEventsListIndexRoute: typeof AuthenticatedEventsListIndexRoute
+  AuthenticatedNewsAddIndexRoute: typeof AuthenticatedNewsAddIndexRoute
+  AuthenticatedNewsListIndexRoute: typeof AuthenticatedNewsListIndexRoute
   AuthenticatedOpportunitiesAddIndexRoute: typeof AuthenticatedOpportunitiesAddIndexRoute
   AuthenticatedOpportunitiesListIndexRoute: typeof AuthenticatedOpportunitiesListIndexRoute
   AuthenticatedOrganizationsAddIndexRoute: typeof AuthenticatedOrganizationsAddIndexRoute
@@ -649,6 +713,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTagsIndexLazyRoute: AuthenticatedTagsIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
+  AuthenticatedEventsAddIndexRoute: AuthenticatedEventsAddIndexRoute,
+  AuthenticatedEventsListIndexRoute: AuthenticatedEventsListIndexRoute,
+  AuthenticatedNewsAddIndexRoute: AuthenticatedNewsAddIndexRoute,
+  AuthenticatedNewsListIndexRoute: AuthenticatedNewsListIndexRoute,
   AuthenticatedOpportunitiesAddIndexRoute:
     AuthenticatedOpportunitiesAddIndexRoute,
   AuthenticatedOpportunitiesListIndexRoute:
@@ -702,6 +770,10 @@ export interface FileRoutesByFullPath {
   '/tags': typeof AuthenticatedTagsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
+  '/events/add': typeof AuthenticatedEventsAddIndexRoute
+  '/events/list': typeof AuthenticatedEventsListIndexRoute
+  '/news/add': typeof AuthenticatedNewsAddIndexRoute
+  '/news/list': typeof AuthenticatedNewsListIndexRoute
   '/opportunities/add': typeof AuthenticatedOpportunitiesAddIndexRoute
   '/opportunities/list': typeof AuthenticatedOpportunitiesListIndexRoute
   '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
@@ -735,6 +807,10 @@ export interface FileRoutesByTo {
   '/tags': typeof AuthenticatedTagsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
+  '/events/add': typeof AuthenticatedEventsAddIndexRoute
+  '/events/list': typeof AuthenticatedEventsListIndexRoute
+  '/news/add': typeof AuthenticatedNewsAddIndexRoute
+  '/news/list': typeof AuthenticatedNewsListIndexRoute
   '/opportunities/add': typeof AuthenticatedOpportunitiesAddIndexRoute
   '/opportunities/list': typeof AuthenticatedOpportunitiesListIndexRoute
   '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
@@ -772,6 +848,10 @@ export interface FileRoutesById {
   '/_authenticated/tags/': typeof AuthenticatedTagsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
+  '/_authenticated/events/add/': typeof AuthenticatedEventsAddIndexRoute
+  '/_authenticated/events/list/': typeof AuthenticatedEventsListIndexRoute
+  '/_authenticated/news/add/': typeof AuthenticatedNewsAddIndexRoute
+  '/_authenticated/news/list/': typeof AuthenticatedNewsListIndexRoute
   '/_authenticated/opportunities/add/': typeof AuthenticatedOpportunitiesAddIndexRoute
   '/_authenticated/opportunities/list/': typeof AuthenticatedOpportunitiesListIndexRoute
   '/_authenticated/organizations/add/': typeof AuthenticatedOrganizationsAddIndexRoute
@@ -808,6 +888,10 @@ export interface FileRouteTypes {
     | '/tags'
     | '/tasks'
     | '/users'
+    | '/events/add'
+    | '/events/list'
+    | '/news/add'
+    | '/news/list'
     | '/opportunities/add'
     | '/opportunities/list'
     | '/organizations/add'
@@ -840,6 +924,10 @@ export interface FileRouteTypes {
     | '/tags'
     | '/tasks'
     | '/users'
+    | '/events/add'
+    | '/events/list'
+    | '/news/add'
+    | '/news/list'
     | '/opportunities/add'
     | '/opportunities/list'
     | '/organizations/add'
@@ -875,6 +963,10 @@ export interface FileRouteTypes {
     | '/_authenticated/tags/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
+    | '/_authenticated/events/add/'
+    | '/_authenticated/events/list/'
+    | '/_authenticated/news/add/'
+    | '/_authenticated/news/list/'
     | '/_authenticated/opportunities/add/'
     | '/_authenticated/opportunities/list/'
     | '/_authenticated/organizations/add/'
@@ -952,6 +1044,10 @@ export const routeTree = rootRoute
         "/_authenticated/tags/",
         "/_authenticated/tasks/",
         "/_authenticated/users/",
+        "/_authenticated/events/add/",
+        "/_authenticated/events/list/",
+        "/_authenticated/news/add/",
+        "/_authenticated/news/list/",
         "/_authenticated/opportunities/add/",
         "/_authenticated/opportunities/list/",
         "/_authenticated/organizations/add/",
@@ -1060,6 +1156,22 @@ export const routeTree = rootRoute
     },
     "/_authenticated/users/": {
       "filePath": "_authenticated/users/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/events/add/": {
+      "filePath": "_authenticated/events/add/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/events/list/": {
+      "filePath": "_authenticated/events/list/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/news/add/": {
+      "filePath": "_authenticated/news/add/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/news/list/": {
+      "filePath": "_authenticated/news/list/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/opportunities/add/": {
