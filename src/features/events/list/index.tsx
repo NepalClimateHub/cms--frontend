@@ -1,5 +1,7 @@
+import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { useGetEvents } from '@/query/events/use-events'
 import { PlusIcon } from 'lucide-react'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
@@ -8,12 +10,12 @@ import { DataTable } from '@/components/data-table/data-table'
 import { Main } from '@/components/layout/main'
 import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
+import { eventsControllerGetEventsOptions } from '../../../api/@tanstack/react-query.gen'
 import { DataTablePagination } from '../../../components/data-table/data-table-pagination'
 import { DataTableToolbar } from '../../../components/data-table/data-table-toolbar'
 import EventsFilters from './components/event-filters'
 import { eventsFilterOptions } from './events-filter-options'
 import { useEventsColumns } from './hooks/use-events-columns'
-import { useGetEvents } from '@/query/events/use-events'
 
 export default function ListEvents() {
   const navigate = useNavigate()
@@ -24,11 +26,14 @@ export default function ListEvents() {
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
 
-  const { data, isLoading } = useGetEvents({
-    ...pagination,
-    ...filters,
+  const { data, isLoading } = useQuery({
+    ...eventsControllerGetEventsOptions({
+      query: {
+        ...pagination,
+        ...filters,
+      },
+    }),
   })
-
   const eventsData = data?.data!
   const eventsMeta = data?.meta!
 

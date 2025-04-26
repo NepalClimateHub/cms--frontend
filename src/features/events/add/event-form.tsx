@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useAddEvents } from '@/query/events/use-events'
-import { useGetTagsByType } from '@/query/tags/use-tags'
 import {
   EVENT_COST,
   EVENT_FORMAT_TYPE,
@@ -12,6 +12,7 @@ import {
   EventFormValues,
 } from '@/schemas/event'
 import { LOCATION_TYPE } from '@/schemas/shared'
+import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -64,7 +65,15 @@ const EventForm = () => {
     })
   }
 
-  const { data, isLoading } = useGetTagsByType('EVENT')
+  // const { data, isLoading } = useGetTagsByType('EVENT')
+
+  const { data, isLoading } = useQuery({
+    ...tagControllerGetTagsOptions({
+      query: {
+        isEventTag: true,
+      },
+    }),
+  })
   const tagsOptions = data?.data?.map((tag) => ({
     value: tag.id,
     label: tag.tag,

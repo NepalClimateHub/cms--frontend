@@ -1,18 +1,21 @@
-import { LoginPayload, LoginResponse } from '@/schemas/auth/login';
-import apiClient from '../apiClient';
-import { auth } from '../shared/routes';
-import { Meta } from '@/schemas/shared';
-import { User } from '@/schemas/auth/profile';
+import { LoginPayload, LoginResponse } from '@/schemas/auth/login'
+import { Meta } from '@/schemas/shared'
+import { userControllerGetMyProfile } from '@/api/sdk.gen'
+import { UserOutput } from '@/api/types.gen'
+import apiClient from '../apiClient'
+import { auth } from '../shared/routes'
 
-export const getProfile = async (): Promise<User> => {
-  const response = await apiClient.get(auth.profile.path);
-  return response?.data?.data;
+export const getProfile = async (): Promise<UserOutput> => {
+  const response = await userControllerGetMyProfile()
+  return response?.data?.data as UserOutput
 }
 
-export const login = async (payload: LoginPayload): Promise<{
-    data: LoginResponse,
-    meta: Meta
+export const login = async (
+  payload: LoginPayload
+): Promise<{
+  data: LoginResponse
+  meta: Meta
 }> => {
-  const res = await apiClient.post(auth.login.path, payload);
-  return res.data;
-};
+  const res = await apiClient.post(auth.login.path, payload)
+  return res.data
+}

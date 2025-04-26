@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { useGetTags } from '@/query/tags/use-tags'
+import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import { DataTable } from '@/components/data-table/data-table'
@@ -25,9 +26,13 @@ export default function Tags() {
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
 
-  const { data, isLoading } = useGetTags({
-    ...pagination,
-    ...filters,
+  const { data, isLoading } = useQuery({
+    ...tagControllerGetTagsOptions({
+      query: {
+        ...pagination,
+        ...filters,
+      },
+    }),
   })
 
   const roleData = data?.data!

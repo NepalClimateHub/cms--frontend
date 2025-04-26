@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel } from '@tanstack/react-table'
 import { useReactTable } from '@tanstack/react-table'
-import { useGetTags } from '@/query/tags/use-tags'
 import { PlusIcon } from 'lucide-react'
+import {
+  opportunityControllerGetOpportunitiesOptions,
+  tagControllerGetTagsOptions,
+} from '@/api/@tanstack/react-query.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import { Button } from '@/components/ui/button'
@@ -22,29 +26,47 @@ const ListOpportunity = () => {
 
   const [addDialogOpen, setAddDialogOpen] = useState(false)
 
-  const roleColumns = useOpportunitiesColumns()
+  const opportunitiesColumns = useOpportunitiesColumns()
   const paginationOptions = usePagination()
   const filterOptions = useFilters(opportunitiesFilterOptions)
 
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
 
-  const { data, isLoading } = useGetTags({
-    ...pagination,
-    ...filters,
+  const { data, isLoading } = useQuery({
+    ...tagControllerGetTagsOptions({
+      query: {
+        isOpportunityTag: true,
+      },
+    }),
   })
 
-  const roleData = data?.data!
-  const roleMeta = data?.meta!
+  const tagsOptions = data?.data?.map((tag) => ({
+    value: tag.id,
+    label: tag.tag,
+  }))
+
+  const { data: opportunitiesList, isLoading: isLoadingOpportunities } =
+    useQuery({
+      ...opportunityControllerGetOpportunitiesOptions({
+        query: {
+          ...pagination,
+          ...filters,
+        },
+      }),
+    })
+
+  const opportunitiesData = opportunitiesList?.data!
+  const opportunitiesMeta = opportunitiesList?.meta!
 
   const table = useReactTable({
-    data: roleData,
-    columns: roleColumns,
+    data: opportunitiesData,
+    columns: opportunitiesColumns,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })
 
-  if (isLoading) {
+  if (isLoading || isLoadingOpportunities) {
     return <BoxLoader />
   }
   return (
@@ -78,11 +100,14 @@ const ListOpportunity = () => {
         />
       </div>
       <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-        <DataTable loading={isLoading} table={table} />
+        <DataTable
+          loading={isLoading || isLoadingOpportunities}
+          table={table}
+        />
       </div>
       <div className='mt-4'>
         <DataTablePagination
-          totalCount={roleMeta.count}
+          totalCount={opportunitiesMeta.count}
           paginationOptions={paginationOptions}
         />
       </div>

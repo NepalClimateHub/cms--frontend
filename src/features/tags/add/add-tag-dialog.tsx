@@ -2,6 +2,12 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import {
+  tagFormSchema,
+  TagFormValues,
+  TagsInitializer,
+} from '@/schemas/tags/tags'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -11,9 +17,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { tagFormSchema, TagFormValues, TagsInitializer } from '@/schemas/tags/tags'
+import { tagControllerAddTagMutation } from '../../../api/@tanstack/react-query.gen'
 import { TagForm } from '../shared/TagAddEditForm'
-import { useAddTag } from '@/query/tags/use-tags'
 
 interface Props {
   open: boolean
@@ -21,27 +26,26 @@ interface Props {
 }
 
 export function AddTagDialog({ open, onClose }: Props) {
-  const addTagMutation = useAddTag()
+  const addTagMutation = useMutation({
+    ...tagControllerAddTagMutation(),
+  })
 
   const form = useForm<TagFormValues>({
     resolver: zodResolver(tagFormSchema),
     defaultValues: {
       tag: '',
-      tagType: 'isUserTag'
-    }
+      tagType: 'isUserTag',
+    },
   })
 
   const onSubmit = async (values: TagsInitializer) => {
-    await addTagMutation.mutateAsync(values);
+    await addTagMutation.mutateAsync(values)
     form.reset()
     onClose()
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={onClose}
-    >
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className='sm:max-w-lg'>
         <DialogHeader className='text-left'>
           <DialogTitle>{'Add New Tag'}</DialogTitle>
@@ -51,13 +55,14 @@ export function AddTagDialog({ open, onClose }: Props) {
           </DialogDescription>
         </DialogHeader>
         <div>
-          <TagForm
-            form={form}
-            onSubmit={onSubmit}
-          />
+          <TagForm form={form} onSubmit={onSubmit} />
         </div>
         <DialogFooter>
-          <Button loading={addTagMutation.isPending} type='submit' form='tag-form'>
+          <Button
+            loading={addTagMutation.isPending}
+            type='submit'
+            form='tag-form'
+          >
             Save changes
           </Button>
         </DialogFooter>

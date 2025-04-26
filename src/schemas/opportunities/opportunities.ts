@@ -26,8 +26,8 @@ export const opportunitySchema = z.object({
     linkedin: z.string(),
     instagram: z.string(),
   }),
-  bannerImageUrl: z.string().nullable(),
-  bannerImageId: z.string().nullable(),
+  bannerImageUrl: z.string().optional(),
+  bannerImageId: z.string().optional(),
   tagIds: z.array(z.string()),
 })
 
