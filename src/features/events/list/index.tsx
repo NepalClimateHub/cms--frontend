@@ -1,7 +1,5 @@
-import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { useGetTags } from '@/query/tags/use-tags'
 import { PlusIcon } from 'lucide-react'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
@@ -13,13 +11,11 @@ import PageHeader from '@/components/page-header'
 import { DataTablePagination } from '../../../components/data-table/data-table-pagination'
 import { DataTableToolbar } from '../../../components/data-table/data-table-toolbar'
 import EventsFilters from './components/event-filters'
-import { EventsListActionButtons } from './components/event-list-action-buttons'
 import { eventsFilterOptions } from './events-filter-options'
 import { useEventsColumns } from './hooks/use-events-columns'
+import { useGetEvents } from '@/query/events/use-events'
 
 export default function ListEvents() {
-  const [addDialogOpen, setAddDialogOpen] = useState(false)
-
   const navigate = useNavigate()
   const roleColumns = useEventsColumns()
   const paginationOptions = usePagination()
@@ -28,16 +24,16 @@ export default function ListEvents() {
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
 
-  const { data, isLoading } = useGetTags({
+  const { data, isLoading } = useGetEvents({
     ...pagination,
     ...filters,
   })
 
-  const roleData = data?.data!
-  const roleMeta = data?.meta!
+  const eventsData = data?.data!
+  const eventsMeta = data?.meta!
 
   const table = useReactTable({
-    data: roleData,
+    data: eventsData,
     columns: roleColumns,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
@@ -81,7 +77,7 @@ export default function ListEvents() {
         </div>
         <div className='mt-4'>
           <DataTablePagination
-            totalCount={roleMeta.count}
+            totalCount={eventsMeta.count}
             paginationOptions={paginationOptions}
           />
         </div>

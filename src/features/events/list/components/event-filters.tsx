@@ -27,15 +27,15 @@ const EventsFilters: FC<EventsFiltersProps> = ({ setPage, filterOptions }) => {
   }, [filters])
 
   useEffect(() => {
-    setSearch((filters?.tag as string) ?? '')
+    setSearch((filters?.title as string) ?? '')
   }, [filters])
 
   const handleSearch = (value: string) => {
     setSearch(value)
     if (value) {
-      setFilterDebounce('tag', value)
+      setFilterDebounce('title', value)
     } else {
-      removeFilter('tag')
+      removeFilter('title')
     }
   }
 
@@ -43,7 +43,7 @@ const EventsFilters: FC<EventsFiltersProps> = ({ setPage, filterOptions }) => {
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
         <Input
-          placeholder='Search Tags...'
+          placeholder='Search Events...'
           value={search}
           onChange={(event) => handleSearch(event.target.value)}
           className='h-8 w-[150px] lg:w-[250px]'

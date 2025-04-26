@@ -1,10 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { EventFormValues } from '@/schemas/event'
-import Tags from '@/schemas/tags/tags'
-import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
-
-// import TagsRowAction from '../components/tags-row-actions'
 
 export const useEventsColumns = () => {
   const columns: ColumnDef<EventFormValues>[] = [
@@ -38,16 +34,6 @@ export const useEventsColumns = () => {
         <DataTableColumnHeader column={column} title='Type' />
       ),
       cell: ({ row }) => <div>{row.getValue('type')}</div>,
-      enableSorting: false,
-      enableHiding: true,
-    },
-
-    {
-      accessorKey: 'description',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Description' />
-      ),
-      cell: ({ row }) => <div>{row.getValue('description')}</div>,
       enableSorting: false,
       enableHiding: true,
     },
