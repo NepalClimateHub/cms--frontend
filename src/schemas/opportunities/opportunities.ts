@@ -1,27 +1,34 @@
 import { z } from 'zod'
 
 export const opportunitySchema = z.object({
-  name: z.string(),
+  title: z.string(),
   description: z.string(),
-  address: z.string(),
-  contact: z.object({
-    email: z.string(),
-    phone: z.string(),
+  location: z.string(),
+  locationType: z.string(),
+  type: z.string(),
+  format: z.string(),
+  applicationDeadline: z.string().nullable(),
+  duration: z.string().nullable(),
+  contactEmail: z.string().nullable(),
+  status: z.string().nullable(),
+  cost: z.string().nullable(),
+  contributedBy: z.string(),
+  organizer: z.string(),
+  address: z.object({
+    state: z.string().optional(),
+    country: z.string().optional(),
+    city: z.string().optional(),
+    street: z.string().optional(),
+    postcode: z.string().optional(),
   }),
   socials: z.object({
     facebook: z.string(),
     linkedin: z.string(),
     instagram: z.string(),
   }),
-  website: z.string(),
-  tags: z.array(z.string()),
-  logoUrl: z.string().nullable(),
-  pictures: z.array(z.string()),
-  slug: z.string(),
-  applicationLink: z.string(),
-  applicationDeadline: z.string(),
-  organizer: z.string(),
-  cost: z.string(),
+  bannerImageUrl: z.string().nullable(),
+  bannerImageId: z.string().nullable(),
+  tagIds: z.array(z.string()),
 })
 
 export type OpportunityFormValues = z.infer<typeof opportunitySchema>
