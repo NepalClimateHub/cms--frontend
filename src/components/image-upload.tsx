@@ -19,12 +19,14 @@ const bytesToMB = (bytes: number) => Math.floor(bytes / 1000000)
 
 type ImageUploadProps = {
   label: string;
-  handleImage: (imageId: string | null, imageURL: string | null) => void
+  handleImage: (imageId: string | null, imageURL: string | null) => void,
+  className?: string
 }
 
 const ImageUpload: FC<ImageUploadProps> = ({
   label,
-  handleImage
+  handleImage,
+  className
 }) => {
   const queryClient = useQueryClient()
   const [isUploading, setIsUploading] = useState(false)
@@ -77,7 +79,7 @@ const ImageUpload: FC<ImageUploadProps> = ({
 
   return (
     // <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 my-4 bg-white shadow-sm">
-    <div className="inline-flex border-2 border-dashed border-gray-300 rounded-lg p-6 my-4 bg-white shadow-sm transition-all duration-300">
+    <div className={`inline-flex border-2 border-dashed border-gray-300 rounded-lg p-6 my-4 bg-white shadow-sm transition-all duration-300 ${className}`}>
       <MiniLoader isLoading={isLoading}>
         <IKContext
           publicKey={publicKey}

@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { TagsInitializer, TagsType } from '@/schemas/tags/tags'
 import { handleServerError } from '@/utils/handle-server-error'
 import { cleanObj } from '@/utils/obj-utils'
 import { toast } from '@/hooks/use-toast'
-import { addTag, getTags } from './tags-service'
-import { TagsInitializer } from '@/schemas/tags/tags'
 import { tags } from '../shared/routes'
+import { addTag, getTags, getTagsByType } from './tags-service'
 
 export const useAddTag = () => {
   const queryClient = useQueryClient()
@@ -35,6 +35,14 @@ export const useGetTags = (
   return useQuery({
     queryKey: [tags.getall.key, query],
     queryFn: () => getTags(cleanQuery),
+    enabled,
+  })
+}
+
+export const useGetTagsByType = (type: TagsType, enabled = true) => {
+  return useQuery({
+    queryKey: [tags.getall.key, type],
+    queryFn: () => getTagsByType(type),
     enabled,
   })
 }

@@ -1,5 +1,5 @@
 import { Meta } from '@/schemas/shared'
-import Tags, { TagsInitializer } from '@/schemas/tags/tags'
+import Tags, { TagsInitializer, TagsType } from '@/schemas/tags/tags'
 import { buildQueryParams } from '@/utils/query-params'
 import apiClient from '../apiClient'
 import { tags } from '../shared/routes'
@@ -24,5 +24,15 @@ export const getTags = async (
   const response = await apiClient.get(tags.getall.path, {
     params: queryParams,
   })
+  return response?.data
+}
+
+export const getTagsByType = async (
+  type: TagsType
+): Promise<{
+  data: Tags[]
+  meta: Meta
+}> => {
+  const response = await apiClient.get(`${tags.getall.path}/${type}`)
   return response?.data
 }

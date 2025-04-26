@@ -26,3 +26,14 @@ export const imagekit = {
     key: 'authparams',
   },
 }
+
+export const events = {
+  getall: {
+    path: '/events',
+    key: 'alltags',
+  },
+  add: {
+    path: '/events',
+    key: 'events',
+  },
+}

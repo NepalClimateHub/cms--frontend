@@ -10,12 +10,14 @@ export const eventFormSchema = z.object({
   format: z.string(),
   startDate: z.date().optional(),
   registrationDeadline: z.date().optional(),
+  registrationLink: z.string().optional(),
   contactEmail: z.string().optional(),
   status: z.string().optional(),
   cost: z.string().optional(),
   bannerImageId: z.string().nullable(),
   bannerImageUrl: z.string().nullable(),
   contributedBy: z.string(),
+  tagIds: z.array(z.string()),
 })
 
 export type EventFormValues = z.infer<typeof eventFormSchema>

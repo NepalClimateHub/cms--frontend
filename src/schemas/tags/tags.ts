@@ -30,7 +30,7 @@ export const tagFormSchema = z
 export type TagFormValues = z.infer<typeof tagFormSchema>
 
 export default interface Tags {
-  id: number;
+  id: string;
   tag: string;
   isUserTag: boolean;
   isOrganizationTag: boolean;
@@ -47,3 +47,10 @@ export interface TagsInitializer {
   isNewsTag?: boolean;
   isOpportunityTag?: boolean;
 }
+
+export type TagsType =
+  | "USER"
+  | "ORGANIZATION"
+  | "EVENT"
+  | "NEWS"
+  | "OPPORTUNITY";
