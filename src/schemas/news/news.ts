@@ -1,11 +1,16 @@
 import { z } from 'zod'
 
-export const NewsSchema = z.object({
-  id: z.string(),
+export const AddNewsSchema = z.object({
   title: z.string(),
-  content: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  source: z.string(),
+  mode: z.string(),
+  publishedDate: z.date(),
+  newsLink: z.string().url(),
+  publishedYear: z.date(),
+  bannerImageUrl: z.string().url(),
+  bannerImageId: z.string(),
+  tagIds: z.array(z.string()),
+  contributedBy: z.string(),
 })
 
-export type News = z.infer<typeof NewsSchema>
+export type News = z.infer<typeof AddNewsSchema>

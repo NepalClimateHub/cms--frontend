@@ -1,8 +1,14 @@
 import { HTMLAttributes } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
+import { useLogin } from '@/query/auth/use-auth'
+import { LoginPayload, loginSchema } from '@/schemas/auth/login'
+import { useAuthStore } from '@/stores/authStore'
 import { cn } from '@/lib/utils'
+import { handleServerError } from '@/utils/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -14,8 +20,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
-import { LoginPayload, loginSchema } from '@/schemas/auth/login'
-import { useLogin } from '@/query/auth/use-auth'
 
 type UserAuthFormProps = HTMLAttributes<HTMLDivElement>
 
@@ -31,7 +35,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   })
 
   function onSubmit(payload: LoginPayload) {
-    mutateLogin(payload)
+    mutateLogin({
+      body: {
+        ...payload,
+      },
+    })
   }
 
   return (
@@ -46,7 +54,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 <FormItem className='space-y-1'>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type='email' placeholder='name@example.com' {...field} />
+                    <Input
+                      type='email'
+                      placeholder='name@example.com'
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
