@@ -26,3 +26,16 @@ export const getEvents = async (
   })
   return response?.data
 }
+
+export const updateEventStatus = async (
+  eventId: string,
+  isDraft: boolean
+): Promise<{
+  data: {}
+  meta: Meta
+}> => {
+  const response = await apiClient.patch(`${events.update.path}/${eventId}`, {
+    isDraft
+  })
+  return response?.data
+}

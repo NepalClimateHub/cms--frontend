@@ -4,7 +4,7 @@ import { handleServerError } from '@/utils/handle-server-error'
 import { cleanObj } from '@/utils/obj-utils'
 import { toast } from '@/hooks/use-toast'
 import { events } from '../shared/routes'
-import { addEvent, getEvents } from './events-service'
+import { addEvent, getEvents, updateEventStatus } from './events-service'
 
 export const useAddEvents = () => {
   const queryClient = useQueryClient()
@@ -53,5 +53,27 @@ export const useGetEvents = (
     queryKey: [events.getall.key, query],
     queryFn: () => getEvents(cleanQuery),
     enabled,
+  })
+}
+
+export const useUpdateEventStatus = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: { eventId: string; isDraft: boolean }) =>
+      updateEventStatus(payload.eventId, payload.isDraft),
+    mutationKey: [events.update.key],
+    onError: (err: Error) => {
+      handleServerError(err)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [events.getall.key],
+        exact: false,
+      })
+      toast({
+        variant: 'default',
+        title: 'Event updated successfully.',
+      })
+    },
   })
 }

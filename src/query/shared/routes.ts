@@ -36,4 +36,8 @@ export const events = {
     path: '/api/v1/events',
     key: 'events',
   },
+  update: {
+    path: '/api/v1/events',
+    key: 'update-events',
+  },
 }

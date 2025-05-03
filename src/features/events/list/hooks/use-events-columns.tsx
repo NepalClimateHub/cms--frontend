@@ -2,9 +2,25 @@ import { ColumnDef } from '@tanstack/react-table'
 import { EventFormValues } from '@/schemas/event'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Pencil, Trash } from 'lucide-react'
+import { useUpdateEventStatus } from '@/query/events/use-events'
+
+type  EventCols = EventFormValues & { 
+  id: string 
+  isDraft: boolean 
+}
 
 export const useEventsColumns = () => {
-  const columns: ColumnDef<EventFormValues>[] = [
+  const updateStatusMutation = useUpdateEventStatus()
+  const handleStatusToggle = (eventId: string, isDraft: boolean) => {
+    updateStatusMutation.mutateAsync({
+      eventId,
+      isDraft
+    })
+  }
+
+  const columns: ColumnDef<EventCols>[] = [
     {
       accessorKey: 'id',
       header: ({ column }) => (
@@ -62,7 +78,6 @@ export const useEventsColumns = () => {
         <DataTableColumnHeader column={column} title='Status' />
       ),
       cell: ({ row }) => {
-        console.log("row", row.original)
         return <div>{row.getValue('isDraft') ? <Badge className='bg-yellow-500'>Draft</Badge> : <Badge className='bg-green-500'>Published</Badge>}</div>
       },
       enableSorting: false,
@@ -70,10 +85,21 @@ export const useEventsColumns = () => {
     },
     {
       id: 'actions',
-      //   cell: ({ row }) => <TagsRowAction row={row} />,
-      cell: () => {
+      cell: ({ row }) => {
         return (
-          <div>Actions</div>
+          <div className='flex items-center justify-end gap-2'>
+            {/* status trigger */}
+            <Button onClick={() => handleStatusToggle(row.original.id, !row.original.isDraft)} size={'sm'} className='bg-blue-500 h-6 px-2'>
+              {row.getValue('isDraft') ? 'Publish' : 'Conceal'}
+            </Button>
+            <Button size={'sm'} variant={'default'} className='bg-blue-500 h-6 px-2'>
+              <Pencil />
+            </Button>
+            {/* delete trigger */}
+            <Button size={'sm'} variant={'destructive'} className='h-6 px-2'>
+              <Trash />
+            </Button>
+          </div>
         )
       }
     },
