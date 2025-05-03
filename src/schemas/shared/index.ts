@@ -30,3 +30,23 @@ export const ProvinceSchema = z.enum([
   'SUDURPASCHIM',
 ])
 export type Province = z.infer<typeof ProvinceSchema>
+
+
+export const addressSchema = z.object({
+  street: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  postcode: z.string().optional(),
+  country: z.string().optional(),
+})
+
+export type AddressType = z.infer<typeof addressSchema>
+
+export const socialSchema = z.array(
+  z.object({
+    name: z.string().min(1, 'Platform name is required'),
+    link: z.string().min(1, 'URL is required'),
+  })
+)
+
+export type SocialType = z.infer<typeof socialSchema>

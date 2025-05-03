@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { EventFormValues } from '@/schemas/event'
 import { handleServerError } from '@/utils/handle-server-error'
+import { cleanObj } from '@/utils/obj-utils'
 import { toast } from '@/hooks/use-toast'
 import { events } from '../shared/routes'
 import { addEvent, getEvents } from './events-service'
-import { cleanObj } from '@/utils/obj-utils'
 
 export const useAddEvents = () => {
   const queryClient = useQueryClient()
@@ -26,6 +26,23 @@ export const useAddEvents = () => {
     },
   })
 }
+
+// export const useAddEventsV2 = () => {
+//   const queryClient = useQueryClient()
+//   return useMutation({
+//     ...eventsControllerAddEventMutation(),
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({
+//         queryKey: [events.getall.key],
+//         exact: false,
+//       })
+//       toast({
+//         variant: 'default',
+//         title: 'Event added successfully.',
+//       })
+//     },
+//   })
+// }
 
 export const useGetEvents = (
   query: { [k: string]: string | number | string[] | number[] } = {},

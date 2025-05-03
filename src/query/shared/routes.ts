@@ -29,11 +29,11 @@ export const imagekit = {
 
 export const events = {
   getall: {
-    path: '/events',
+    path: '/api/v1/events',
     key: 'alltags',
   },
   add: {
-    path: '/events',
+    path: '/api/v1/events',
     key: 'events',
   },
 }

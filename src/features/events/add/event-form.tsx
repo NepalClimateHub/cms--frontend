@@ -37,6 +37,8 @@ import { DatePicker } from '@/components/datepicker'
 import ImageUpload from '@/components/image-upload'
 import { MinimalTiptapEditor } from '@/components/minimal-tiptap'
 import { MultiSelect } from '@/components/multi-select'
+import AddressForm from '@/components/address/address'
+import SocialsForm from '@/components/socials/socials'
 
 const EventForm = () => {
   const navigate = useNavigate()
@@ -49,6 +51,8 @@ const EventForm = () => {
       bannerImageUrl: null,
     },
   })
+
+  console.log("error", form.formState.errors)
 
   const handleImageUpload = (
     assetId: string | null,
@@ -64,8 +68,6 @@ const EventForm = () => {
       to: '/events/list',
     })
   }
-
-  // const { data, isLoading } = useGetTagsByType('EVENT')
 
   const { data, isLoading } = useQuery({
     ...tagControllerGetTagsOptions({
@@ -458,6 +460,18 @@ const EventForm = () => {
             />
           </CardContent>
         </Card>
+
+        {/* address */}
+        <AddressForm
+          form={form}
+          fieldPrefix='address'
+        />
+
+        {/* socials */}
+        <SocialsForm
+          form={form}
+          fieldName='socials'
+        />
 
         <Card>
           <CardHeader>
