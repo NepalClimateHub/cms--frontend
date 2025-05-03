@@ -4,7 +4,7 @@ import { DataTableColumnHeader } from '../../../../components/data-table/data-ta
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash } from 'lucide-react'
-import { useUpdateEventStatus } from '@/query/events/use-events'
+import { useDeleteEvent, useUpdateEventStatus } from '@/query/events/use-events'
 
 type  EventCols = EventFormValues & { 
   id: string 
@@ -13,10 +13,18 @@ type  EventCols = EventFormValues & {
 
 export const useEventsColumns = () => {
   const updateStatusMutation = useUpdateEventStatus()
+  const deleteEventMutation = useDeleteEvent()
+
   const handleStatusToggle = (eventId: string, isDraft: boolean) => {
     updateStatusMutation.mutateAsync({
       eventId,
       isDraft
+    })
+  }
+
+  const handleDeleteEvent = (eventId: string) => {
+    deleteEventMutation.mutateAsync({
+      eventId,
     })
   }
 
@@ -96,7 +104,7 @@ export const useEventsColumns = () => {
               <Pencil />
             </Button>
             {/* delete trigger */}
-            <Button size={'sm'} variant={'destructive'} className='h-6 px-2'>
+            <Button onClick={() => handleDeleteEvent(row.original.id)} size={'sm'} variant={'destructive'} className='h-6 px-2'>
               <Trash />
             </Button>
           </div>

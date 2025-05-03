@@ -40,4 +40,8 @@ export const events = {
     path: '/api/v1/events',
     key: 'update-events',
   },
+  delete: {
+    path: '/api/v1/events',
+    key: 'delete-events',
+  },
 }

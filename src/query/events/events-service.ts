@@ -39,3 +39,13 @@ export const updateEventStatus = async (
   })
   return response?.data
 }
+
+export const deleteEvent = async (
+  eventId: string,
+): Promise<{
+  data: {}
+  meta: Meta
+}> => {
+  const response = await apiClient.delete(`${events.delete.path}/${eventId}`)
+  return response?.data
+}

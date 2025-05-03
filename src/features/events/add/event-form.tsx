@@ -52,8 +52,6 @@ const EventForm = () => {
     },
   })
 
-  console.log("error", form.formState.errors)
-
   const handleImageUpload = (
     assetId: string | null,
     assetURL: string | null
