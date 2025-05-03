@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash } from 'lucide-react'
 import { useDeleteEvent, useUpdateEventStatus } from '@/query/events/use-events'
+import { useNavigate } from '@tanstack/react-router'
 
 type  EventCols = EventFormValues & { 
   id: string 
@@ -12,6 +13,7 @@ type  EventCols = EventFormValues & {
 }
 
 export const useEventsColumns = () => {
+  const navigate = useNavigate()
   const updateStatusMutation = useUpdateEventStatus()
   const deleteEventMutation = useDeleteEvent()
 
@@ -28,6 +30,12 @@ export const useEventsColumns = () => {
     })
   }
 
+  const handleEditEvent = (eventId: string) => {
+    navigate({
+      to: `/events/${eventId}`
+    })
+  }
+
   const columns: ColumnDef<EventCols>[] = [
     {
       accessorKey: 'id',
@@ -36,9 +44,6 @@ export const useEventsColumns = () => {
       ),
       cell: ({ row }) => {
         const { title } = row.original
-
-        console.log(row.original)
-
         return <div className='flex space-x-2'>{title}</div>
       },
       enableSorting: false,
@@ -100,7 +105,7 @@ export const useEventsColumns = () => {
             <Button onClick={() => handleStatusToggle(row.original.id, !row.original.isDraft)} size={'sm'} className='bg-blue-500 h-6 px-2'>
               {row.getValue('isDraft') ? 'Publish' : 'Conceal'}
             </Button>
-            <Button size={'sm'} variant={'default'} className='bg-blue-500 h-6 px-2'>
+            <Button onClick={() => handleEditEvent(row.original.id)} size={'sm'} variant={'default'} className='bg-blue-500 h-6 px-2'>
               <Pencil />
             </Button>
             {/* delete trigger */}

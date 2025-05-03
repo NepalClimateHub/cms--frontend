@@ -1,8 +1,8 @@
+import { EventFormValues } from '@/schemas/event'
 import { Meta } from '@/schemas/shared'
+import { buildQueryParams } from '@/utils/query-params'
 import apiClient from '../apiClient'
 import { events } from '../shared/routes'
-import { EventFormValues } from '@/schemas/event'
-import { buildQueryParams } from '@/utils/query-params'
 
 export const addEvent = async (
   payload: EventFormValues
@@ -27,6 +27,16 @@ export const getEvents = async (
   return response?.data
 }
 
+export const getEventById = async (
+  eventId: string
+): Promise<{
+  data: EventFormValues[]
+  meta: Meta
+}> => {
+  const response = await apiClient.get(`${events.getbyid.path}/${eventId}`)
+  return response?.data
+}
+
 export const updateEventStatus = async (
   eventId: string,
   isDraft: boolean
@@ -35,13 +45,26 @@ export const updateEventStatus = async (
   meta: Meta
 }> => {
   const response = await apiClient.patch(`${events.update.path}/${eventId}`, {
-    isDraft
+    isDraft,
+  })
+  return response?.data
+}
+
+export const updateEvent = async (
+  eventId: string,
+  payload: EventFormValues
+): Promise<{
+  data: {}
+  meta: Meta
+}> => {
+  const response = await apiClient.patch(`${events.update.path}/${eventId}`, {
+    ...payload
   })
   return response?.data
 }
 
 export const deleteEvent = async (
-  eventId: string,
+  eventId: string
 ): Promise<{
   data: {}
   meta: Meta

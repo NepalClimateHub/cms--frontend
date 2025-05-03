@@ -11,11 +11,11 @@ export const auth = {
 
 export const tags = {
   getall: {
-    path: '/tags',
+    path: '/api/v1/tags',
     key: 'alltags',
   },
   add: {
-    path: '/tags',
+    path: '/api/v1/tags',
     key: 'tags',
   },
 }
@@ -31,6 +31,10 @@ export const events = {
   getall: {
     path: '/api/v1/events',
     key: 'alltags',
+  },
+  getbyid: {
+    path: '/api/v1/events',
+    key: 'get-event-by-id',
   },
   add: {
     path: '/api/v1/events',

@@ -1,18 +1,13 @@
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
+import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
-import { useAddEvents } from '@/query/events/use-events'
 import {
   EVENT_COST,
   EVENT_FORMAT_TYPE,
   EVENT_STATUS,
   EVENT_TYPE,
-  eventFormSchema,
   EventFormValues,
 } from '@/schemas/event'
 import { LOCATION_TYPE } from '@/schemas/shared'
-import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -39,45 +34,29 @@ import { MinimalTiptapEditor } from '@/components/minimal-tiptap'
 import { MultiSelect } from '@/components/multi-select'
 import AddressForm from '@/components/address/address'
 import SocialsForm from '@/components/socials/socials'
+import { FC } from 'react'
 
-const EventForm = () => {
+type Props = {
+  form: UseFormReturn<EventFormValues>,
+  handleImageUpload: (assetId: string | null, assetURL: string | null) => void,
+  handleFormSubmit: (values: EventFormValues) => Promise<void>
+  isEdit: boolean
+  isLoading: boolean
+  tagsOptions: {
+    value: string;
+    label: string;
+}[]
+}
+
+const EventForm: FC<Props> = ({
+  form,
+  handleImageUpload,
+  handleFormSubmit,
+  isEdit,
+  isLoading,
+  tagsOptions
+}) => {
   const navigate = useNavigate()
-  const eventMutation = useAddEvents()
-  const form = useForm<EventFormValues>({
-    resolver: zodResolver(eventFormSchema),
-    defaultValues: {
-      description: '',
-      bannerImageId: null,
-      bannerImageUrl: null,
-    },
-  })
-
-  const handleImageUpload = (
-    assetId: string | null,
-    assetURL: string | null
-  ) => {
-    form.setValue('bannerImageId', assetId)
-    form.setValue('bannerImageUrl', assetURL)
-  }
-
-  const handleFormSubmit = async (values: EventFormValues) => {
-    await eventMutation.mutateAsync(values)
-    navigate({
-      to: '/events/list',
-    })
-  }
-
-  const { data, isLoading } = useQuery({
-    ...tagControllerGetTagsOptions({
-      query: {
-        isEventTag: true,
-      },
-    }),
-  })
-  const tagsOptions = data?.data?.map((tag) => ({
-    value: tag.id,
-    label: tag.tag,
-  }))
 
   return (
     <Form {...form}>
@@ -440,7 +419,7 @@ const EventForm = () => {
                 <FormItem>
                   <FormLabel>Tags</FormLabel>
                   <FormDescription>
-                    Add relevant tags to help categorize your event
+                    Add relevant tags to help categorize your events.
                   </FormDescription>
                   <FormControl>
                     <MultiSelect
@@ -522,10 +501,10 @@ const EventForm = () => {
           </Button>
           <Button
             type='submit'
-            loading={eventMutation.isPending}
+            loading={isLoading}
             className='min-w-[100px]'
           >
-            Create Event
+            {isEdit ? 'Update Event' : 'Create Event'}
           </Button>
         </div>
       </form>
