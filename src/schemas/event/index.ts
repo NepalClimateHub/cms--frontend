@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { addressSchema, socialSchema } from '../shared'
 
 export const eventFormSchema = z.object({
   title: z.string(),
@@ -18,6 +19,8 @@ export const eventFormSchema = z.object({
   bannerImageUrl: z.string().nullable(),
   contributedBy: z.string(),
   tagIds: z.array(z.string()),
+  address: addressSchema,
+  socials: socialSchema
 })
 
 export type EventFormValues = z.infer<typeof eventFormSchema>

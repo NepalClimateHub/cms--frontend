@@ -1354,6 +1354,11 @@ export type TagControllerGetTagsData = {
          */
         offset?: number;
         tag?: string;
+        isUserTag?: boolean;
+        isOrganizationTag?: boolean;
+        isEventTag?: boolean;
+        isNewsTag?: boolean;
+        isOpportunityTag?: boolean;
     };
     url: '/api/v1/tags';
 };
@@ -1388,6 +1393,27 @@ export type TagControllerAddTagResponses = {
 };
 
 export type TagControllerAddTagResponse = TagControllerAddTagResponses[keyof TagControllerAddTagResponses];
+
+export type TagControllerGetTagsTypeData = {
+    body?: never;
+    path: {
+        type: string;
+    };
+    query?: never;
+    url: '/api/v1/tags/{type}';
+};
+
+export type TagControllerGetTagsTypeErrors = {
+    401: BaseApiErrorResponse;
+};
+
+export type TagControllerGetTagsTypeError = TagControllerGetTagsTypeErrors[keyof TagControllerGetTagsTypeErrors];
+
+export type TagControllerGetTagsTypeResponses = {
+    200: TagArrayApiResponse;
+};
+
+export type TagControllerGetTagsTypeResponse = TagControllerGetTagsTypeResponses[keyof TagControllerGetTagsTypeResponses];
 
 export type ImagekitControllerGetAuthParamasData = {
     body?: never;

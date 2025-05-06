@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { useGetEvents } from '@/query/events/use-events'
@@ -10,7 +9,6 @@ import { DataTable } from '@/components/data-table/data-table'
 import { Main } from '@/components/layout/main'
 import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
-import { eventsControllerGetEventsOptions } from '../../../api/@tanstack/react-query.gen'
 import { DataTablePagination } from '../../../components/data-table/data-table-pagination'
 import { DataTableToolbar } from '../../../components/data-table/data-table-toolbar'
 import EventsFilters from './components/event-filters'
@@ -19,27 +17,24 @@ import { useEventsColumns } from './hooks/use-events-columns'
 
 export default function ListEvents() {
   const navigate = useNavigate()
-  const roleColumns = useEventsColumns()
+  const eventsCols = useEventsColumns()
   const paginationOptions = usePagination()
   const filterOptions = useFilters(eventsFilterOptions)
 
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
 
-  const { data, isLoading } = useQuery({
-    ...eventsControllerGetEventsOptions({
-      query: {
-        ...pagination,
-        ...filters,
-      },
-    }),
+  const { data, isLoading } = useGetEvents({
+    ...pagination,
+    ...filters,
   })
+
   const eventsData = data?.data!
   const eventsMeta = data?.meta!
 
   const table = useReactTable({
     data: eventsData,
-    columns: roleColumns,
+    columns: eventsCols,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -82,7 +77,7 @@ export default function ListEvents() {
         </div>
         <div className='mt-4'>
           <DataTablePagination
-            totalCount={eventsMeta.count}
+            totalCount={eventsMeta.count as unknown as number}
             paginationOptions={paginationOptions}
           />
         </div>

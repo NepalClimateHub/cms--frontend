@@ -28,6 +28,7 @@ import { Route as AuthenticatedNewsListIndexImport } from './routes/_authenticat
 import { Route as AuthenticatedNewsAddIndexImport } from './routes/_authenticated/news/add/index'
 import { Route as AuthenticatedEventsListIndexImport } from './routes/_authenticated/events/list/index'
 import { Route as AuthenticatedEventsAddIndexImport } from './routes/_authenticated/events/add/index'
+import { Route as AuthenticatedEventsEventIdIndexImport } from './routes/_authenticated/events/$eventId/index'
 
 // Create Virtual Routes
 
@@ -388,6 +389,13 @@ const AuthenticatedEventsAddIndexRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
+const AuthenticatedEventsEventIdIndexRoute =
+  AuthenticatedEventsEventIdIndexImport.update({
+    id: '/events/$eventId/',
+    path: '/events/$eventId/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -581,6 +589,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUsersIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/events/$eventId/': {
+      id: '/_authenticated/events/$eventId/'
+      path: '/events/$eventId'
+      fullPath: '/events/$eventId'
+      preLoaderRoute: typeof AuthenticatedEventsEventIdIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/events/add/': {
       id: '/_authenticated/events/add/'
       path: '/events/add'
@@ -691,6 +706,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTagsIndexLazyRoute: typeof AuthenticatedTagsIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
+  AuthenticatedEventsEventIdIndexRoute: typeof AuthenticatedEventsEventIdIndexRoute
   AuthenticatedEventsAddIndexRoute: typeof AuthenticatedEventsAddIndexRoute
   AuthenticatedEventsListIndexRoute: typeof AuthenticatedEventsListIndexRoute
   AuthenticatedNewsAddIndexRoute: typeof AuthenticatedNewsAddIndexRoute
@@ -713,6 +729,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTagsIndexLazyRoute: AuthenticatedTagsIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
+  AuthenticatedEventsEventIdIndexRoute: AuthenticatedEventsEventIdIndexRoute,
   AuthenticatedEventsAddIndexRoute: AuthenticatedEventsAddIndexRoute,
   AuthenticatedEventsListIndexRoute: AuthenticatedEventsListIndexRoute,
   AuthenticatedNewsAddIndexRoute: AuthenticatedNewsAddIndexRoute,
@@ -770,6 +787,7 @@ export interface FileRoutesByFullPath {
   '/tags': typeof AuthenticatedTagsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
+  '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
   '/events/add': typeof AuthenticatedEventsAddIndexRoute
   '/events/list': typeof AuthenticatedEventsListIndexRoute
   '/news/add': typeof AuthenticatedNewsAddIndexRoute
@@ -807,6 +825,7 @@ export interface FileRoutesByTo {
   '/tags': typeof AuthenticatedTagsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
+  '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
   '/events/add': typeof AuthenticatedEventsAddIndexRoute
   '/events/list': typeof AuthenticatedEventsListIndexRoute
   '/news/add': typeof AuthenticatedNewsAddIndexRoute
@@ -848,6 +867,7 @@ export interface FileRoutesById {
   '/_authenticated/tags/': typeof AuthenticatedTagsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
+  '/_authenticated/events/$eventId/': typeof AuthenticatedEventsEventIdIndexRoute
   '/_authenticated/events/add/': typeof AuthenticatedEventsAddIndexRoute
   '/_authenticated/events/list/': typeof AuthenticatedEventsListIndexRoute
   '/_authenticated/news/add/': typeof AuthenticatedNewsAddIndexRoute
@@ -888,6 +908,7 @@ export interface FileRouteTypes {
     | '/tags'
     | '/tasks'
     | '/users'
+    | '/events/$eventId'
     | '/events/add'
     | '/events/list'
     | '/news/add'
@@ -924,6 +945,7 @@ export interface FileRouteTypes {
     | '/tags'
     | '/tasks'
     | '/users'
+    | '/events/$eventId'
     | '/events/add'
     | '/events/list'
     | '/news/add'
@@ -963,6 +985,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tags/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
+    | '/_authenticated/events/$eventId/'
     | '/_authenticated/events/add/'
     | '/_authenticated/events/list/'
     | '/_authenticated/news/add/'
@@ -1044,6 +1067,7 @@ export const routeTree = rootRoute
         "/_authenticated/tags/",
         "/_authenticated/tasks/",
         "/_authenticated/users/",
+        "/_authenticated/events/$eventId/",
         "/_authenticated/events/add/",
         "/_authenticated/events/list/",
         "/_authenticated/news/add/",
@@ -1156,6 +1180,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/users/": {
       "filePath": "_authenticated/users/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/events/$eventId/": {
+      "filePath": "_authenticated/events/$eventId/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/events/add/": {
