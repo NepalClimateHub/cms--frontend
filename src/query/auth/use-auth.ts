@@ -3,8 +3,9 @@ import { useNavigate } from '@tanstack/react-router'
 import { LoginPayload } from '@/schemas/auth/login'
 import { useAuthStore } from '@/stores/authStore'
 import { handleServerError } from '@/utils/handle-server-error'
-import { getProfile, login } from './auth-service'
+import { authControllerLoginMutation } from '../../api/@tanstack/react-query.gen'
 import { auth } from '../shared/routes'
+import { getProfile } from './auth-service'
 
 export const useGetProfile = (enabled = true) => {
   return useQuery({
@@ -21,8 +22,9 @@ export const useLogin = () => {
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: (payload: LoginPayload) => login(payload),
-    onError: (err: Error) => {
+    ...authControllerLoginMutation(),
+    // mutationFn: (payload: LoginPayload) => login(payload),
+    onError: (err: any) => {
       handleServerError(err)
     },
     onSuccess: (res) => {

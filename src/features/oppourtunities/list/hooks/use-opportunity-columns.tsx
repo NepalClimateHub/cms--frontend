@@ -1,16 +1,17 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { OpportunityFormValues } from '@/schemas/opportunities/opportunities'
+import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 import OpportunitiesRowAction from '../components/opportunity-row-actions'
 
 export const useOpportunitiesColumns = () => {
   const columns: ColumnDef<OpportunityFormValues>[] = [
     {
-      accessorKey: 'name',
+      accessorKey: 'title',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Name' />
+        <DataTableColumnHeader column={column} title='Title' />
       ),
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => <div>{row.original.title}</div>,
       enableSorting: false,
       enableHiding: false,
     },
@@ -22,19 +23,24 @@ export const useOpportunitiesColumns = () => {
       cell: ({ row }) => {
         const { description } = row.original
 
-        console.log(row.original)
-
-        return <div className='flex space-x-2'>{description}</div>
+        return (
+          <div
+            className='flex space-x-2'
+            dangerouslySetInnerHTML={{
+              __html: description.toString().slice(0, 50) + '...',
+            }}
+          />
+        )
       },
       enableSorting: false,
       enableHiding: true,
     },
     {
-      accessorKey: 'address',
+      accessorKey: 'organizer',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Address' />
+        <DataTableColumnHeader column={column} title='Organizer' />
       ),
-      cell: ({ row }) => <div>{row.getValue('address')}</div>,
+      cell: ({ row }) => <div>{row.original.organizer}</div>,
       enableSorting: false,
       enableHiding: false,
     },
@@ -43,7 +49,15 @@ export const useOpportunitiesColumns = () => {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Tags' />
       ),
-      cell: ({ row }) => <div>{row.getValue('tags')}</div>,
+      cell: ({ row }) => (
+        <div className='flex flex-wrap gap-2'>
+          {row.original.tags.map((tag) => (
+            <Badge key={tag.id} variant='outline'>
+              {tag.tag}
+            </Badge>
+          ))}
+        </div>
+      ),
       enableSorting: false,
       enableHiding: false,
     },

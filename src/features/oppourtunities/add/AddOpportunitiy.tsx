@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import {
   OpportunityFormValues,
   opportunitySchema,
@@ -18,6 +19,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { getCustomToast } from '@/components/custom-toast'
 import ImageUpload from '@/components/image-upload'
 import { Main } from '@/components/layout/main'
 import { MinimalTiptapEditor } from '@/components/minimal-tiptap'
@@ -33,6 +35,11 @@ const AddOpportunity = () => {
     resolver: zodResolver(opportunitySchema),
     defaultValues: {
       description: '',
+      socials: {
+        facebook: '',
+        linkedin: '',
+        instagram: '',
+      },
       address: {
         state: '',
         country: '',
@@ -43,18 +50,31 @@ const AddOpportunity = () => {
     },
   })
 
-  const { mutate: addOpportunity } = useMutation({
-    ...opportunityControllerAddOpportutnityMutation,
+  const navigate = useNavigate()
+  const { mutate: addOpportunity, isPending } = useMutation({
+    ...opportunityControllerAddOpportutnityMutation(),
     onSuccess: () => {
-      toast.success('Opportunity added successfully')
+      getCustomToast({
+        title: 'Opportunity added successfully',
+      })
+      navigate({
+        to: '/opportunities/list',
+      })
     },
     onError: (error) => {
-      toast.error(error.message)
+      getCustomToast({
+        title: error.message,
+        type: 'error',
+      })
     },
   })
 
   const { data, isLoading: isLoadingTags } = useQuery({
-    ...tagControllerGetTagsOptions(),
+    ...tagControllerGetTagsOptions({
+      query: {
+        isOpportunityTag: true,
+      },
+    }),
   })
 
   const handleImageUpload = (
@@ -66,9 +86,17 @@ const AddOpportunity = () => {
   }
 
   const handleAddOpportunity = (data: OpportunityFormValues) => {
-    console.log('data', data)
+    console.log('btn clicked', data)
+
+    addOpportunity({
+      body: {
+        ...data,
+        applicationDeadline: new Date(data.applicationDeadline),
+      },
+    })
   }
 
+  console.log('formstate errors', form.formState.errors)
   return (
     <Main>
       <PageHeader
@@ -78,7 +106,10 @@ const AddOpportunity = () => {
       />
       <div className='px-4'>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleAddOpportunity)}>
+          <form
+            onSubmit={form.handleSubmit(handleAddOpportunity)}
+            id='opportunity-form'
+          >
             <div className='flex flex-col gap-4'>
               <FormField
                 control={form.control}
@@ -445,13 +476,18 @@ const AddOpportunity = () => {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name='socials'
+              {/* socials */}
+              {/* <Label className='text-lg font-semibold text-gray-700'>
+                Socials
+              </Label>
+              <div className='flex flex-wrap gap-2'>
+                <FormField
+                  control={form.control}
+                  name='socials.facebook'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Socials
+                      Facebook
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -464,6 +500,50 @@ const AddOpportunity = () => {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name='socials.linkedin'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-lg font-semibold text-gray-700'>
+                      LinkedIn
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter linkedin'
+                        className='w-full'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='socials.instagram'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-lg font-semibold text-gray-700'>
+                      Instagram
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter instagram'
+                        className='w-full'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+                />
+                
+
+              </div> */}
+
               <ImageUpload label={'Image'} handleImage={handleImageUpload} />
 
               <div className='w-1/3'>
@@ -480,7 +560,12 @@ const AddOpportunity = () => {
                       ) : (
                         <FormControl>
                           <MultiSelect
-                            options={data?.data || []}
+                            options={
+                              data?.data?.map((tag: any) => ({
+                                value: tag.id,
+                                label: tag.tag,
+                              })) || []
+                            }
                             onValueChange={field.onChange}
                             placeholder={'Tags'}
                             className='w-full'
@@ -496,9 +581,10 @@ const AddOpportunity = () => {
               </div>
 
               <br />
-
-              <Button type='submit'>Add Opportunity</Button>
             </div>
+            <Button type='submit' form='opportunity-form'>
+              Add Opportunity
+            </Button>
           </form>
         </Form>
       </div>

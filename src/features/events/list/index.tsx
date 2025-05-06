@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { useGetEvents } from '@/query/events/use-events'
 import { PlusIcon } from 'lucide-react'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
@@ -13,11 +14,10 @@ import { DataTableToolbar } from '../../../components/data-table/data-table-tool
 import EventsFilters from './components/event-filters'
 import { eventsFilterOptions } from './events-filter-options'
 import { useEventsColumns } from './hooks/use-events-columns'
-import { useGetEvents } from '@/query/events/use-events'
 
 export default function ListEvents() {
   const navigate = useNavigate()
-  const roleColumns = useEventsColumns()
+  const eventsCols = useEventsColumns()
   const paginationOptions = usePagination()
   const filterOptions = useFilters(eventsFilterOptions)
 
@@ -34,7 +34,7 @@ export default function ListEvents() {
 
   const table = useReactTable({
     data: eventsData,
-    columns: roleColumns,
+    columns: eventsCols,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -77,7 +77,7 @@ export default function ListEvents() {
         </div>
         <div className='mt-4'>
           <DataTablePagination
-            totalCount={eventsMeta.count}
+            totalCount={eventsMeta.count as unknown as number}
             paginationOptions={paginationOptions}
           />
         </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { useGetNews } from '@/query/news/use-news'
 import { useGetTags } from '@/query/tags/use-tags'
 import { PlusIcon } from 'lucide-react'
 import { useFilters } from '@/hooks/use-filters'
@@ -27,9 +28,18 @@ export default function NewsList() {
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
 
-  const { data, isLoading } = useGetTags({
-    ...pagination,
-    ...filters,
+  // const { data, isLoading } = useGetTags({
+  //   query: {
+  //     ...pagination,
+  //     ...filters,
+  //   },
+  // })
+
+  const { data, isLoading } = useGetNews({
+    query: {
+      ...pagination,
+      ...filters,
+    },
   })
 
   const roleData = data?.data!

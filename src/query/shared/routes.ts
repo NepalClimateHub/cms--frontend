@@ -11,11 +11,11 @@ export const auth = {
 
 export const tags = {
   getall: {
-    path: '/tags',
+    path: '/api/v1/tags',
     key: 'alltags',
   },
   add: {
-    path: '/tags',
+    path: '/api/v1/tags',
     key: 'tags',
   },
 }
@@ -29,11 +29,23 @@ export const imagekit = {
 
 export const events = {
   getall: {
-    path: '/events',
+    path: '/api/v1/events',
     key: 'alltags',
   },
+  getbyid: {
+    path: '/api/v1/events',
+    key: 'get-event-by-id',
+  },
   add: {
-    path: '/events',
+    path: '/api/v1/events',
     key: 'events',
+  },
+  update: {
+    path: '/api/v1/events',
+    key: 'update-events',
+  },
+  delete: {
+    path: '/api/v1/events',
+    key: 'delete-events',
   },
 }

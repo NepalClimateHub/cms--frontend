@@ -7,25 +7,30 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { NuqsAdapter } from 'nuqs/adapters/react'
 import { resetAuth } from '@/stores/authStore'
 import { toast } from '@/hooks/use-toast'
+import { client } from './api/client.gen'
+import { apiConfig } from './config/api.config'
 import { FontProvider } from './context/font-context'
 import { ThemeProvider } from './context/theme-context'
 import './index.css'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 import { handleServerError } from './utils/handle-server-error'
-import { NuqsAdapter } from 'nuqs/adapters/react'
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
         // eslint-disable-next-line no-console
-        if (import.meta.env.MODE === 'development') console.log({ failureCount, error })
+        if (import.meta.env.MODE === 'development')
+          console.log({ failureCount, error })
 
-        if (failureCount >= 0 && import.meta.env.MODE === 'development') return false
-        if (failureCount > 3 && import.meta.env.MODE === 'production') return false
+        if (failureCount >= 0 && import.meta.env.MODE === 'development')
+          return false
+        if (failureCount > 3 && import.meta.env.MODE === 'production')
+          return false
 
         return !(
           error instanceof AxiosError &&
@@ -96,6 +101,8 @@ declare module '@tanstack/react-router' {
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
+
+  apiConfig()
   root.render(
     <StrictMode>
       <NuqsAdapter>
