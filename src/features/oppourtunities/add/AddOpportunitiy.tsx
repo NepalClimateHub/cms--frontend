@@ -6,7 +6,6 @@ import {
   OpportunityFormValues,
   opportunitySchema,
 } from '@/schemas/opportunities/opportunities'
-import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -51,7 +50,7 @@ const AddOpportunity = () => {
   })
 
   const navigate = useNavigate()
-  const { mutate: addOpportunity, isPending } = useMutation({
+  const { mutate: addOpportunity } = useMutation({
     ...opportunityControllerAddOpportutnityMutation(),
     onSuccess: () => {
       getCustomToast({

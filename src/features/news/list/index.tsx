@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { useGetNews } from '@/query/news/use-news'
 import { useGetTags } from '@/query/tags/use-tags'
 import { PlusIcon } from 'lucide-react'
@@ -18,8 +18,6 @@ import { useNewsColumns } from './hooks/use-news-columns'
 import { NewsListFilterOptions } from './news-filter-options'
 
 export default function NewsList() {
-  const [addDialogOpen, setAddDialogOpen] = useState(false)
-
   const navigate = useNavigate()
   const roleColumns = useNewsColumns()
   const paginationOptions = usePagination()
@@ -36,7 +34,7 @@ export default function NewsList() {
   // })
 
   const { data, isLoading } = useGetNews({
-    query: {
+    query: { // TODO: need to fix this immediately
       ...pagination,
       ...filters,
     },
@@ -47,7 +45,7 @@ export default function NewsList() {
 
   const table = useReactTable({
     data: roleData,
-    columns: roleColumns,
+    columns: roleColumns as ColumnDef<any>[],
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -88,7 +86,7 @@ export default function NewsList() {
       </div>
       <div className='mt-4'>
         <DataTablePagination
-          totalCount={roleMeta.count}
+          totalCount={roleMeta.count as number}
           paginationOptions={paginationOptions}
         />
       </div>

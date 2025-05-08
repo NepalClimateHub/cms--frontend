@@ -12,6 +12,7 @@ import {
   updateEvent,
   updateEventStatus,
 } from './events-service'
+import { Meta } from '@/schemas/shared'
 
 export const useAddEvents = () => {
   const queryClient = useQueryClient()
@@ -64,7 +65,10 @@ export const useGetEvents = (
 }
 
 export const useGetEventById = (eventId: string) => {
-  return useQuery({
+  return useQuery<{
+    data: EventFormValues[]
+    meta: Meta
+  }>({
     queryKey: [events.getall.key],
     queryFn: () => getEventById(eventId),
     enabled: true,

@@ -31,7 +31,17 @@ function RouteComponent() {
 
   useEffect(() => {
     if (userData) {
-      setUser(userData)
+      setUser({
+        createdAt: userData.createdAt,
+        email: userData.email,
+        id: userData.id,
+        updatedAt: userData.updatedAt,
+        fullName: userData.fullName,
+        isSuperAdmin: userData.isSuperAdmin,
+        isActive: true, // TODO: need to be updated
+        organization: {},
+        permissions: [],
+      })
     }
   }, [userData])
 

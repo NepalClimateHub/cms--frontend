@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getCoreRowModel } from '@tanstack/react-table'
+import { ColumnDef, getCoreRowModel } from '@tanstack/react-table'
 import { useReactTable } from '@tanstack/react-table'
 import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
 import { useFilters } from '@/hooks/use-filters'
@@ -15,11 +14,9 @@ import OrganizationFilters from './components/organization-filters'
 import { useOrganizationColumns } from './hooks/use-organization-columns'
 
 const ListOrganizations = () => {
-  const [addDialogOpen, setAddDialogOpen] = useState(false)
-
   const roleColumns = useOrganizationColumns()
   const paginationOptions = usePagination()
-  const filterOptions = useFilters(OrganizationFilters)
+  const filterOptions = useFilters(OrganizationFilters) // TODO: need to fix immediately
 
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
@@ -38,7 +35,7 @@ const ListOrganizations = () => {
 
   const table = useReactTable({
     data: roleData,
-    columns: roleColumns,
+    columns: roleColumns as ColumnDef<any>[],
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -69,7 +66,7 @@ const ListOrganizations = () => {
       </div>
       <div className='mt-4'>
         <DataTablePagination
-          totalCount={roleMeta.count}
+          totalCount={roleMeta.count as unknown as number} // TODO: need to fix this
           paginationOptions={paginationOptions}
         />
       </div>

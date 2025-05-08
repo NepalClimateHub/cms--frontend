@@ -2,7 +2,6 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
 import { useAddTags } from '@/query/tags/use-tags'
 import {
   tagFormSchema,
@@ -18,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { tagControllerAddTagMutation } from '../../../api/@tanstack/react-query.gen'
 import { TagForm } from '../shared/TagAddEditForm'
 
 interface Props {

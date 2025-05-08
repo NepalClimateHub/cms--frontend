@@ -7,7 +7,7 @@ import { Pencil, Trash } from 'lucide-react'
 import { useDeleteEvent, useUpdateEventStatus } from '@/query/events/use-events'
 import { useNavigate } from '@tanstack/react-router'
 
-type  EventCols = EventFormValues & { 
+export type  EventCols = EventFormValues & { 
   id: string 
   isDraft: boolean 
 }

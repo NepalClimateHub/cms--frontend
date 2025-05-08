@@ -51,7 +51,7 @@ export const useOpportunitiesColumns = () => {
       ),
       cell: ({ row }) => (
         <div className='flex flex-wrap gap-2'>
-          {row.original.tags.map((tag) => (
+          {row.original.tags.map((tag) => ( // TODO: need to fix this immediately
             <Badge key={tag.id} variant='outline'>
               {tag.tag}
             </Badge>

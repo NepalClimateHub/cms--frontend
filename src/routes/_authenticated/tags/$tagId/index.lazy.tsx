@@ -5,7 +5,7 @@ export const Route = createLazyFileRoute('/_authenticated/tags/$tagId/')({
 })
 
 function RouteComponent() {
-  const { roleId } = Route.useParams()
-  console.log(roleId)
+  const { tagId } = Route.useParams()
+  console.log(tagId)
   return <div>edit</div>
 }

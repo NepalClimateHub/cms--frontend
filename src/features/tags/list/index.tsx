@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
@@ -40,7 +40,7 @@ export default function Tags() {
 
   const table = useReactTable({
     data: roleData,
-    columns: roleColumns,
+    columns: roleColumns as ColumnDef<any>[],
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -72,7 +72,7 @@ export default function Tags() {
         </div>
         <div className='mt-4'>
           <DataTablePagination
-            totalCount={roleMeta.count}
+            totalCount={roleMeta.count as unknown as number} // TODO: need to fix this
             paginationOptions={paginationOptions}
           />
         </div>

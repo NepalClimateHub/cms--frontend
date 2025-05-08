@@ -15,11 +15,10 @@ import {
 } from '@/components/ui/dialog'
 
 type OpportunitiesRowActionProps = {
-  row: Row<Opportunities>
+  row: Row<Opportunities> // TODO: need to fix this immediately
 }
 
 const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {
-  const navigate = useNavigate()
   const handleEdit = () => {
     console.log('ok')
     // navigate({
@@ -34,7 +33,6 @@ const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {
 
   return (
     <div className='flex items-center justify-center gap-4'>
-      {console.log('row', row)}
       <IconEdit onClick={handleEdit} className='cursor-pointer' size={16} />
       <Dialog>
         <DialogTrigger>

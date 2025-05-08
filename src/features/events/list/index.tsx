@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { useGetEvents } from '@/query/events/use-events'
 import { PlusIcon } from 'lucide-react'
 import { useFilters } from '@/hooks/use-filters'
@@ -34,7 +34,7 @@ export default function ListEvents() {
 
   const table = useReactTable({
     data: eventsData,
-    columns: eventsCols,
+    columns: eventsCols as ColumnDef<any>[],
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })

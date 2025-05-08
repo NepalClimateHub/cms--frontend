@@ -1,9 +1,7 @@
 import { FC } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
 import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { useDeleteNews } from '@/query/news/use-news'
-import Tags from '@/schemas/tags/tags'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,7 +17,6 @@ type NewsRowActionProps = {
 }
 
 const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
-  const navigate = useNavigate()
 
   const { mutate: deleteNewsMutation } = useDeleteNews()
 

@@ -49,3 +49,22 @@ export const events = {
     key: 'delete-events',
   },
 }
+
+export const organizations = {
+  getall: {
+    path: '/api/v1/organizations',
+    key: 'all-organizations',
+  },
+  add: {
+    path: '/api/v1/organizations',
+    key: 'organizations',
+  },
+  update: {
+    path: '/api/v1/organizations',
+    key: 'update-organizations',
+  },
+  delete: {
+    path: '/api/v1/organizations',
+    key: 'delete-organizations',
+  },
+}

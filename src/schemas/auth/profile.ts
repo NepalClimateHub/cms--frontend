@@ -1,5 +1,3 @@
-import { Organization } from "../organization/organization";
-
 export type User = {
   id: string
   email: string
@@ -7,7 +5,9 @@ export type User = {
   permissions: string[];
   isActive: boolean;
   isSuperAdmin: boolean;
-  organization: Organization | null;
+  organization: {
+    businessName?: string;
+  };
   createdAt: string;
   updatedAt: string;
 }

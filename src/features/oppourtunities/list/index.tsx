@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { getCoreRowModel } from '@tanstack/react-table'
+import { ColumnDef, getCoreRowModel } from '@tanstack/react-table'
 import { useReactTable } from '@tanstack/react-table'
 import { PlusIcon } from 'lucide-react'
 import {
@@ -24,8 +23,6 @@ import { opportunitiesFilterOptions } from './opportunities-filter-options'
 const ListOpportunity = () => {
   const navigate = useNavigate()
 
-  const [addDialogOpen, setAddDialogOpen] = useState(false)
-
   const opportunitiesColumns = useOpportunitiesColumns()
   const paginationOptions = usePagination()
   const filterOptions = useFilters(opportunitiesFilterOptions)
@@ -33,7 +30,7 @@ const ListOpportunity = () => {
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
 
-  const { data, isLoading } = useQuery({
+  const { isLoading } = useQuery({
     ...tagControllerGetTagsOptions({
       query: {
         isOpportunityTag: true,
@@ -41,17 +38,16 @@ const ListOpportunity = () => {
     }),
   })
 
-  const tagsOptions = data?.data?.map((tag) => ({
-    value: tag.id,
-    label: tag.tag,
-  }))
-
   const { data: opportunitiesList, isLoading: isLoadingOpportunities } =
     useQuery({
       ...opportunityControllerGetOpportunitiesOptions({
         query: {
+          tagIds: [], // TODO: need to fix this immediately
+          title: "",
           ...pagination,
           ...filters,
+          limit: pagination.limit,
+          offset: pagination.offset,
         },
       }),
     })
@@ -61,7 +57,7 @@ const ListOpportunity = () => {
 
   const table = useReactTable({
     data: opportunitiesData,
-    columns: opportunitiesColumns,
+    columns: opportunitiesColumns as ColumnDef<any>[],
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -107,7 +103,7 @@ const ListOpportunity = () => {
       </div>
       <div className='mt-4'>
         <DataTablePagination
-          totalCount={opportunitiesMeta.count}
+          totalCount={opportunitiesMeta.count as unknown as number} // TODO: need to fix this
           paginationOptions={paginationOptions}
         />
       </div>

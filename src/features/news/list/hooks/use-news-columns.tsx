@@ -1,6 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { News } from '@/schemas/news/news'
-import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 import NewsRowAction from '../components/news-row-actions'
 

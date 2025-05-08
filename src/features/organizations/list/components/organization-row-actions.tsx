@@ -1,15 +1,13 @@
 import { FC } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
 import { IconEdit, IconTrash } from '@tabler/icons-react'
-import Tags from '@/schemas/tags/tags'
+import { Organization } from '@/schemas/organization/organization'
 
 type OrganizationRowActionProps = {
   row: Row<Organization>
 }
 
-const OrganizationRowAction: FC<OrganizationRowActionProps> = ({ row }) => {
-  const navigate = useNavigate()
+const OrganizationRowAction: FC<OrganizationRowActionProps> = ({ }) => {
   const handleEdit = () => {
     console.log('ok')
     // navigate({

@@ -115,7 +115,7 @@ const IKUpload = forwardRef<HTMLInputElement, IKUploadProps & IKContextBaseProps
       return;
     }
 
-    var ikClient = getIKClient();
+    const ikClient = getIKClient();
 
     const file = e.target.files?.[0];
     if (!file) {
@@ -145,7 +145,7 @@ const IKUpload = forwardRef<HTMLInputElement, IKUploadProps & IKContextBaseProps
 
     xhr.upload.addEventListener('progress', progressCb);
 
-    var params = {
+    const params = {
       file: file,
       fileName: overrideValues.fileName || fileName || file.name,
       useUniqueFileName: overrideValues.useUniqueFileName || useUniqueFileName,
@@ -203,7 +203,7 @@ const IKUpload = forwardRef<HTMLInputElement, IKUploadProps & IKContextBaseProps
         setState({ xhr })
       })
       .catch((data) => {
-        var error;
+        let error;
         if (data instanceof Array) {
           error = data[0];
         }

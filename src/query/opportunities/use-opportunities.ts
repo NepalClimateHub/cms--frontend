@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
 import {
   opportunityControllerDeleteOpportunityMutation,
   opportunityControllerGetOpportunitiesOptions,
@@ -19,7 +18,7 @@ export const useDeleteOpportunity = () => {
     ...opportunityControllerDeleteOpportunityMutation(),
     onSuccess: () => {
       toast({
-        variant: 'success',
+        variant: 'default',
         title: 'Opportunity removed successfully.',
       })
 
@@ -27,6 +26,12 @@ export const useDeleteOpportunity = () => {
         opportunityControllerGetOpportunitiesOptions({
           ...paginationOptions,
           ...filterOptions,
+          query: {
+            limit: paginationOptions.pagination.limit,
+            offset: paginationOptions.pagination.offset,
+            title: "", // TODO: need to fix this
+            tagIds: []
+          }
         })
       )
     },
