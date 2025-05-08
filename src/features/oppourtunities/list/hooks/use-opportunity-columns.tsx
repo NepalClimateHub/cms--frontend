@@ -1,11 +1,11 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { OpportunityFormValues } from '@/schemas/opportunities/opportunities'
+import { OpportunityFormValuesWithId } from '@/schemas/opportunities/opportunities'
 import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 import OpportunitiesRowAction from '../components/opportunity-row-actions'
 
 export const useOpportunitiesColumns = () => {
-  const columns: ColumnDef<OpportunityFormValues>[] = [
+  const columns: ColumnDef<OpportunityFormValuesWithId>[] = [
     {
       accessorKey: 'title',
       header: ({ column }) => (
@@ -51,7 +51,8 @@ export const useOpportunitiesColumns = () => {
       ),
       cell: ({ row }) => (
         <div className='flex flex-wrap gap-2'>
-          {row.original.tags.map((tag) => ( // TODO: need to fix this immediately
+          {/* @ts-ignore */}
+          {row?.original?.tags?.map((tag) => ( // TODO: need to fix this immediately
             <Badge key={tag.id} variant='outline'>
               {tag.tag}
             </Badge>

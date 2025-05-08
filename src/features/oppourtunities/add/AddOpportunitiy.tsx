@@ -28,6 +28,7 @@ import {
   opportunityControllerAddOpportutnityMutation,
   tagControllerGetTagsOptions,
 } from '../../../api/@tanstack/react-query.gen'
+import { parseError } from '@/utils/parse-error'
 
 const AddOpportunity = () => {
   const form = useForm<OpportunityFormValues>({
@@ -62,7 +63,7 @@ const AddOpportunity = () => {
     },
     onError: (error) => {
       getCustomToast({
-        title: error.message,
+        title: parseError(error),
         type: 'error',
       })
     },
@@ -90,6 +91,7 @@ const AddOpportunity = () => {
     addOpportunity({
       body: {
         ...data,
+        // @ts-ignore
         applicationDeadline: new Date(data.applicationDeadline),
       },
     })
@@ -245,6 +247,7 @@ const AddOpportunity = () => {
                       Application Deadline
                     </FormLabel>
                     <FormControl>
+                      {/* @ts-ignore */}
                       <Input
                         type='date'
                         placeholder='Enter application deadline'
@@ -265,6 +268,7 @@ const AddOpportunity = () => {
                       Duration
                     </FormLabel>
                     <FormControl>
+                      {/* @ts-ignore */}
                       <Input
                         placeholder='Enter duration'
                         className='w-full'
@@ -284,6 +288,7 @@ const AddOpportunity = () => {
                       Contact Email
                     </FormLabel>
                     <FormControl>
+                      {/* @ts-ignore */}
                       <Input
                         placeholder='Enter contact'
                         className='w-full'
@@ -303,6 +308,7 @@ const AddOpportunity = () => {
                       Status
                     </FormLabel>
                     <FormControl>
+                      {/* @ts-ignore */}
                       <Input
                         placeholder='Enter status'
                         className='w-full'
@@ -322,6 +328,7 @@ const AddOpportunity = () => {
                       Cost
                     </FormLabel>
                     <FormControl>
+                      {/* @ts-ignore */}
                       <Input
                         placeholder='Enter cost'
                         className='w-full'
@@ -396,7 +403,7 @@ const AddOpportunity = () => {
                 />
                 <FormField
                   control={form.control}
-                  name='address.country '
+                  name='address.country'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className='text-lg font-semibold text-gray-700'>

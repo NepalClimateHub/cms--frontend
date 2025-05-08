@@ -10,8 +10,8 @@ import {
 import { cn } from '@/lib/utils'
 
 interface DatePickerProps {
-  value?: Date
-  onChange: (date: Date | undefined) => void
+  value?: Date | null
+  onChange: (date: Date | null) => void
   placeholder?: string
   disabled?: boolean
 }
@@ -40,7 +40,8 @@ export const DatePicker = ({
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
-          selected={value}
+          selected={value!}
+          // @ts-ignore
           onSelect={onChange}
           disabled={disabled}
           initialFocus

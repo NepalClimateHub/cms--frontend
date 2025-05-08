@@ -1,10 +1,10 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { OrganizationFormValues } from '@/schemas/organization/organization'
+import { Organization } from '@/schemas/organization/organization'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 import OrganizationRowAction from '../components/organization-row-actions'
 
 export const useOrganizationColumns = () => {
-  const columns: ColumnDef<OrganizationFormValues>[] = [
+  const columns: ColumnDef<Organization>[] = [
     {
       accessorKey: 'name',
       header: ({ column }) => (

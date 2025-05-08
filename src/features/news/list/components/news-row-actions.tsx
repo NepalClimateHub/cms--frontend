@@ -11,9 +11,10 @@ import {
   DialogHeader,
   DialogContent,
 } from '@/components/ui/dialog'
+import { NewsWithId } from '@/schemas/news/news'
 
 type NewsRowActionProps = {
-  row: Row<News>
+  row: Row<NewsWithId>
 }
 
 const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {

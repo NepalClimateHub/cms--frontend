@@ -11,6 +11,8 @@ export const AddNewsSchema = z.object({
   bannerImageId: z.string(),
   tagIds: z.array(z.string()),
   contributedBy: z.string(),
+  content: z.string(),
 })
 
 export type News = z.infer<typeof AddNewsSchema>
+export type NewsWithId = News & { id: string }

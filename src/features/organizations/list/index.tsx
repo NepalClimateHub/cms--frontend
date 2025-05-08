@@ -16,7 +16,7 @@ import { useOrganizationColumns } from './hooks/use-organization-columns'
 const ListOrganizations = () => {
   const roleColumns = useOrganizationColumns()
   const paginationOptions = usePagination()
-  const filterOptions = useFilters(OrganizationFilters) // TODO: need to fix immediately
+  const filterOptions = useFilters() // TODO: need to fix immediately
 
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions

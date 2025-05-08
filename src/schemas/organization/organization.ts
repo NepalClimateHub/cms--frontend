@@ -19,4 +19,7 @@ export const organizationSchema = z.object({
 })
 
 export type OrganizationFormValues = z.infer<typeof organizationSchema>
-export type Organization = z.infer<typeof organizationSchema>
+export type Organization = OrganizationFormValues & {
+  id: string,
+  businessName: string,
+}

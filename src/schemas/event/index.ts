@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { addressSchema, socialSchema } from '../shared'
 
-export const eventFormSchema = z.object({
+export const baseEventSchema = z.object({
   title: z.string(),
   organizer: z.string(),
   description: z.string(),
@@ -9,8 +9,8 @@ export const eventFormSchema = z.object({
   locationType: z.string(),
   type: z.string(),
   format: z.string(),
-  startDate: z.date().optional(),
-  registrationDeadline: z.date().optional(),
+  startDate: z.date().nullable(),
+  registrationDeadline: z.date().nullable(),
   registrationLink: z.string().optional(),
   contactEmail: z.string().optional(),
   status: z.string().optional(),
@@ -19,11 +19,23 @@ export const eventFormSchema = z.object({
   bannerImageUrl: z.string().nullable(),
   contributedBy: z.string(),
   tagIds: z.array(z.string()),
-  address: addressSchema,
-  socials: socialSchema
 })
 
+export const eventFormSchema = baseEventSchema.extend({
+  address: addressSchema,
+  socials: socialSchema,
+})
 export type EventFormValues = z.infer<typeof eventFormSchema>
+
+export const singleEventValues = eventFormSchema.extend({
+  socials: z.object({
+    data: socialSchema,
+  }),
+  // startDate: z.date().nullable().optional(),
+  // registrationDeadline: z.date().nullable().optional()
+})
+
+export type SingleEventValues = z.infer<typeof singleEventValues>
 
 export const EVENT_FORMAT_TYPE = [
   { label: 'In-Person', value: 'IN_PERSON' },

@@ -36,9 +36,9 @@ const NewsForm = () => {
     },
   })
   const tagsOptions = data?.data?.map((tag) => ({
-    value: tag.id,
-    label: tag.tag,
-  }))
+    value: tag.id as string,
+    label: tag.tag as string,
+  })) || []
 
   console.log('form errors', errors)
   const { mutate: addNewsMutation, isPending: isNewsPending } = useAddNews()

@@ -1,10 +1,10 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { News } from '@/schemas/news/news'
+import { NewsWithId } from '@/schemas/news/news'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 import NewsRowAction from '../components/news-row-actions'
 
 export const useNewsColumns = () => {
-  const columns: ColumnDef<News>[] = [
+  const columns: ColumnDef<NewsWithId>[] = [
     {
       accessorKey: 'title',
       header: ({ column }) => (

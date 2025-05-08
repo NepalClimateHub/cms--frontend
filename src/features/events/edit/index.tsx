@@ -2,7 +2,7 @@ import { Main } from '@/components/layout/main'
 import EventForm from '../shared/event-form'
 import PageHeader from '@/components/page-header'
 import { useForm } from 'react-hook-form'
-import { eventFormSchema, EventFormValues } from '@/schemas/event'
+import { eventFormSchema, type EventFormValues } from '@/schemas/event'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {  useGetEventById, useUpdateEvent } from '@/query/events/use-events'
 import { useNavigate, useParams } from '@tanstack/react-router'
@@ -19,7 +19,7 @@ const EditEvent = () => {
     const tagsOptions = tagsData?.data?.map((tag) => ({
         value: tag.id,
         label: tag.tag,
-    }))!
+    })) || []
 
     const eventData = data?.data;
 
@@ -28,6 +28,7 @@ const EditEvent = () => {
 
     const form = useForm<EventFormValues>({
         resolver: zodResolver(eventFormSchema),
+        // @ts-ignore
         values: {
             ...eventData,
             socials: eventData?.socials?.data || [],

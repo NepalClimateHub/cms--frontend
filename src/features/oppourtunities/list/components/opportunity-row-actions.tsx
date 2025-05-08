@@ -1,5 +1,4 @@
 import { FC } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
 import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { useDeleteOpportunity } from '@/query/opportunities/use-opportunities'
@@ -13,9 +12,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { OpportunityFormValuesWithId } from '@/schemas/opportunities/opportunities'
 
 type OpportunitiesRowActionProps = {
-  row: Row<Opportunities> // TODO: need to fix this immediately
+  row: Row<OpportunityFormValuesWithId> // TODO: need to fix this immediately
 }
 
 const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {

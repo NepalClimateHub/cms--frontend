@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { EventFormValues } from '@/schemas/event'
+import { EventFormValues, SingleEventValues } from '@/schemas/event'
 import { handleServerError } from '@/utils/handle-server-error'
 import { cleanObj } from '@/utils/obj-utils'
 import { toast } from '@/hooks/use-toast'
@@ -66,7 +66,7 @@ export const useGetEvents = (
 
 export const useGetEventById = (eventId: string) => {
   return useQuery<{
-    data: EventFormValues[]
+    data: SingleEventValues
     meta: Meta
   }>({
     queryKey: [events.getall.key],

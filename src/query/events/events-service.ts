@@ -1,5 +1,5 @@
-import { EventFormValues } from '@/schemas/event'
-import { Meta } from '@/schemas/shared'
+import type { EventFormValues, SingleEventValues } from '@/schemas/event'
+import type { Meta } from '@/schemas/shared'
 import { buildQueryParams } from '@/utils/query-params'
 import apiClient from '../apiClient'
 import { events } from '../shared/routes'
@@ -7,7 +7,7 @@ import { events } from '../shared/routes'
 export const addEvent = async (
   payload: EventFormValues
 ): Promise<{
-  data: {}
+  data: null,
   meta: Meta
 }> => {
   const response = await apiClient.post(events.add.path, payload)
@@ -30,7 +30,7 @@ export const getEvents = async (
 export const getEventById = async (
   eventId: string
 ): Promise<{
-  data: EventFormValues[]
+  data: SingleEventValues
   meta: Meta
 }> => {
   const response = await apiClient.get(`${events.getbyid.path}/${eventId}`)

@@ -26,12 +26,15 @@ export const opportunitySchema = z.object({
     linkedin: z.string(),
     instagram: z.string(),
   }),
-  bannerImageUrl: z.string().optional(),
-  bannerImageId: z.string().optional(),
+  bannerImageUrl: z.string().nullable(),
+  bannerImageId: z.string().nullable(),
   tagIds: z.array(z.string()),
 })
 
 export type OpportunityFormValues = z.infer<typeof opportunitySchema>
+export type OpportunityFormValuesWithId = z.infer<typeof opportunitySchema> & {
+  id: string
+}
 
 // "name": "The Green Fellows Program",
 // "description": "The Green Fellows Program is designed to recognize and support individuals committed to addressing global sustainability challenges. By participating in our conference series and engaging with experts, fellows gain valuable knowledge, expand their networks, and enhance their research skills.",
