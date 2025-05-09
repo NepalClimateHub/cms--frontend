@@ -4,6 +4,7 @@ import { Row } from '@tanstack/react-table'
 import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { useDeleteNews } from '@/query/news/use-news'
 import Tags from '@/schemas/tags/tags'
+import { LucideEye, Pencil, Trash } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -25,11 +26,48 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
 
   return (
     <div className='flex items-center justify-center gap-4'>
-      <IconEdit onClick={() => {}} className='cursor-pointer' size={16} />
+      <Dialog>
+        <DialogTrigger>
+          <Button
+            size={'sm'}
+            variant={'default'}
+            className='h-6 bg-green-500 px-2'
+          >
+            <LucideEye />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>News Details</DialogTitle>
+            <DialogDescription>
+              <div>
+                <h1>{row.original.title}</h1>
+                <p>{row.original.source}</p>
+                <p>{row.original.mode}</p>
+                <p>{row.original.newsLink}</p>
+                <p>{row.original.publishedDate}</p>
+                <p>{row.original.publishedYear}</p>
+                <p>{row.original.contributedBy}</p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      <Button
+        onClick={() => {}}
+        size={'sm'}
+        variant={'default'}
+        className='h-6 bg-blue-500 px-2'
+      >
+        <Pencil />
+      </Button>
 
       <Dialog>
         <DialogTrigger>
-          <IconTrash className='cursor-pointer' size={16} />
+          <Button size={'sm'} variant={'destructive'} className='h-6 px-2'>
+            <Trash />
+          </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
