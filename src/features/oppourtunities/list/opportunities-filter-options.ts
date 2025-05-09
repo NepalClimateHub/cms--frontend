@@ -1,7 +1,7 @@
 import { parseAsString } from 'nuqs'
 
 export const opportunitiesFilterOptions = {
-  tag: parseAsString,
+  title: parseAsString,
 }
 
 export type OpportunitiesFilterOptions = typeof opportunitiesFilterOptions
