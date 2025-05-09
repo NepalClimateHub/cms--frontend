@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import { Cross2Icon } from '@radix-ui/react-icons'
 import { cleanObj } from '@/utils/obj-utils'
 import { useFilters } from '@/hooks/use-filters'
@@ -18,6 +18,8 @@ const NewsListFilters: FC<NewsListFiltersProps> = ({
   const isFirstRender = useIsFirstRender()
   const [search, setSearch] = useState<string>('')
 
+  const searchRef = useRef<HTMLInputElement>(null)
+
   const { filters, setFilterDebounce, removeFilter, resetFilters } =
     filterOptions
 
@@ -30,15 +32,18 @@ const NewsListFilters: FC<NewsListFiltersProps> = ({
   }, [filters])
 
   useEffect(() => {
-    setSearch((filters?.tag as string) ?? '')
+    setSearch((filters?.title as string) ?? '')
+    if (filters?.title) {
+      searchRef.current?.focus()
+    }
   }, [filters])
 
   const handleSearch = (value: string) => {
     setSearch(value)
     if (value) {
-      setFilterDebounce('tag', value)
+      setFilterDebounce('title', value)
     } else {
-      removeFilter('tag')
+      removeFilter('title')
     }
   }
 
@@ -46,8 +51,9 @@ const NewsListFilters: FC<NewsListFiltersProps> = ({
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
         <Input
-          placeholder='Search Tags...'
+          placeholder='Search News...'
           value={search}
+          ref={searchRef}
           onChange={(event) => handleSearch(event.target.value)}
           className='h-8 w-[150px] lg:w-[250px]'
         />

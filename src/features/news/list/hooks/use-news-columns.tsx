@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { ColumnDef } from '@tanstack/react-table'
 import { News } from '@/schemas/news/news'
 import { Badge } from '@/components/ui/badge'
@@ -26,21 +27,53 @@ export const useNewsColumns = () => {
       enableHiding: true,
     },
     {
-      accessorKey: 'content',
+      accessorKey: 'mode',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Content' />
+        <DataTableColumnHeader column={column} title='Mode' />
       ),
       cell: ({ row }) => {
-        const { content } = row.original
+        const { mode } = row.original
 
         return (
           <div className='flex space-x-2'>
-            <span>{content}</span>
+            <span>{mode}</span>
           </div>
         )
       },
       enableSorting: false,
       enableHiding: true,
+    },
+    {
+      accessorKey: 'source',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Source' />
+      ),
+      cell: ({ row }) => {
+        const { source } = row.original
+
+        return (
+          <div className='flex space-x-2'>
+            <span>{source}</span>
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: 'newsLink',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='News Link' />
+      ),
+      cell: ({ row }) => {
+        const { newsLink } = row.original
+
+        return (
+          <div className='flex space-x-2'>
+            <a href={newsLink} target='_blank'>
+              <span>{newsLink}</span>
+            </a>
+          </div>
+        )
+      },
     },
     {
       id: 'actions',

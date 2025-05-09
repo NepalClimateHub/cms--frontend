@@ -36,9 +36,9 @@ const OpportunitiesFilters: FC<OpportunitiesFiltersProps> = ({
   const handleSearch = (value: string) => {
     setSearch(value)
     if (value) {
-      setFilterDebounce('tag', value)
+      setFilterDebounce('title', value)
     } else {
-      removeFilter('tag')
+      removeFilter('title')
     }
   }
 
