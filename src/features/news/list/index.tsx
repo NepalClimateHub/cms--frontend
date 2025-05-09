@@ -21,7 +21,7 @@ export default function NewsList() {
   const [addDialogOpen, setAddDialogOpen] = useState(false)
 
   const navigate = useNavigate()
-  const roleColumns = useNewsColumns()
+  const newsColumns = useNewsColumns()
   const paginationOptions = usePagination()
   const filterOptions = useFilters(NewsListFilterOptions)
 
@@ -35,19 +35,19 @@ export default function NewsList() {
   //   },
   // })
 
+  console.log('filters', filters)
+
   const { data, isLoading } = useGetNews({
-    query: {
-      ...pagination,
-      ...filters,
-    },
+    ...pagination,
+    ...filters,
   })
 
-  const roleData = data?.data!
-  const roleMeta = data?.meta!
+  const newsData = data?.data!
+  const newsMeta = data?.meta!
 
   const table = useReactTable({
-    data: roleData,
-    columns: roleColumns,
+    data: newsData,
+    columns: newsColumns,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -88,7 +88,7 @@ export default function NewsList() {
       </div>
       <div className='mt-4'>
         <DataTablePagination
-          totalCount={roleMeta.count}
+          totalCount={newsMeta.count}
           paginationOptions={paginationOptions}
         />
       </div>
