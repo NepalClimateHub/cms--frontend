@@ -258,6 +258,9 @@ importers:
       globals:
         specifier: ^15.13.0
         version: 15.13.0
+      husky:
+        specifier: ^9.1.7
+        version: 9.1.7
       knip:
         specifier: ^5.41.1
         version: 5.41.1(@types/node@22.10.1)(typescript@5.7.2)
@@ -2553,6 +2556,11 @@ packages:
   highlight.js@11.11.1:
     resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
     engines: {node: '>=12.0.0'}
+
+  husky@9.1.7:
+    resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
@@ -5790,6 +5798,8 @@ snapshots:
       function-bind: 1.1.2
 
   highlight.js@11.11.1: {}
+
+  husky@9.1.7: {}
 
   ignore@5.3.2: {}
 

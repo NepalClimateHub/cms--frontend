@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "knip": "knip"
+    "knip": "knip",
+    "prepare": "husky"
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.10.0",
@@ -99,6 +100,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.13.0",
+    "husky": "^9.1.7",
     "knip": "^5.41.1",
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
