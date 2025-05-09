@@ -1,7 +1,6 @@
 import { PermissionModule } from '@/schemas/permissions/permissions'
 import { PermissionFormValues } from '@/schemas/roles/roles'
 
-
 /**
  * Prepares the permissions data for submission by ensuring that:
  * - If a specific permission is selected, all other permissions in the same module are set to `false`.
@@ -28,8 +27,8 @@ export function formatPermission(
   permissionModules.forEach((module) => {
     const selectedPermissionId =
       modulePermissionMap.get(module.key) || 'NO_ACCESS'
-      
-    module.permissions.forEach(({ id }) => {
+
+    module.permissions.forEach(({ id: any }) => {
       updatedPermissions.push({
         id,
         moduleKey: module.key,
