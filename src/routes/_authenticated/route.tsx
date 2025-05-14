@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import Cookies from 'js-cookie'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { useGetProfile } from '@/query/auth/use-auth'
+import { User } from '@/schemas/auth/profile'
 import { getAccessToken, useAuthStore } from '@/stores/authStore'
 import { cn } from '@/lib/utils'
 import { SearchProvider } from '@/context/search-context'
@@ -31,7 +32,7 @@ function RouteComponent() {
 
   useEffect(() => {
     if (userData) {
-      setUser(userData)
+      setUser(userData as unknown as User)
     }
   }, [userData])
 

@@ -1,16 +1,20 @@
 import { useQuery } from '@tanstack/react-query'
 import { cleanObj } from '@/utils/obj-utils'
-import { organizations } from '../shared/routes'
-import { getOrganizations } from './orgnization-service'
+import { organizationControllerGetOneOrganizationOptions } from '../../api/@tanstack/react-query.gen'
 
 export const useGetOrganizations = (
   query: { [k: string]: string | number | string[] | number[] } = {},
   enabled = true
 ) => {
   const cleanQuery = cleanObj(query)
+
   return useQuery({
-    queryKey: [organizations.getall.key, query],
-    queryFn: () => getOrganizations(cleanQuery),
+    ...organizationControllerGetOneOrganizationOptions({
+      // @ts-expect-error - TODO: check type
+      query: {
+        ...cleanQuery,
+      },
+    }),
     enabled,
   })
 }

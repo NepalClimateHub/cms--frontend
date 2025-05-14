@@ -1,8 +1,6 @@
-import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { useGetNews } from '@/query/news/use-news'
-import { useGetTags } from '@/query/tags/use-tags'
 import { PlusIcon } from 'lucide-react'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
@@ -18,8 +16,6 @@ import { useNewsColumns } from './hooks/use-news-columns'
 import { NewsListFilterOptions } from './news-filter-options'
 
 export default function NewsList() {
-  const [addDialogOpen, setAddDialogOpen] = useState(false)
-
   const navigate = useNavigate()
   const newsColumns = useNewsColumns()
   const paginationOptions = usePagination()
@@ -28,22 +24,15 @@ export default function NewsList() {
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
 
-  // const { data, isLoading } = useGetTags({
-  //   query: {
-  //     ...pagination,
-  //     ...filters,
-  //   },
-  // })
-
-  console.log('filters', filters)
-
   const { data, isLoading } = useGetNews({
     ...pagination,
     ...filters,
   })
 
-  const newsData = data?.data!
-  const newsMeta = data?.meta!
+  const newsData = data?.data ?? []
+  const newsMeta = {
+    count: typeof data?.meta?.count === 'number' ? data.meta.count : 0,
+  }
 
   const table = useReactTable({
     data: newsData,

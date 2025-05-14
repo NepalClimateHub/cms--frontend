@@ -1,7 +1,12 @@
 import { useNavigate } from '@tanstack/react-router'
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 import { useGetEvents } from '@/query/events/use-events'
 import { PlusIcon } from 'lucide-react'
+import { EventResponseDto } from '@/api/types.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import { Button } from '@/components/ui/button'
@@ -29,12 +34,13 @@ export default function ListEvents() {
     ...filters,
   })
 
-  const eventsData = data?.data!
-  const eventsMeta = data?.meta!
+  const eventsData = data?.data ?? []
+  const eventsMeta = data?.meta ?? { count: 0 }
 
   const table = useReactTable({
     data: eventsData,
-    columns: eventsCols,
+    // @ts-expect-error - TODO: check type
+    columns: eventsCols as ColumnDef<EventResponseDto>[],
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })

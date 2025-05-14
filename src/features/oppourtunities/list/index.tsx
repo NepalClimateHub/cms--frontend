@@ -1,13 +1,11 @@
-import React, { useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel } from '@tanstack/react-table'
 import { useReactTable } from '@tanstack/react-table'
+import { Meta } from '@/schemas/shared'
 import { PlusIcon } from 'lucide-react'
-import {
-  opportunityControllerGetOpportunitiesOptions,
-  tagControllerGetTagsOptions,
-} from '@/api/@tanstack/react-query.gen'
+import { opportunityControllerGetOpportunitiesOptions } from '@/api/@tanstack/react-query.gen'
+import { OpportunityResponseDto } from '@/api/types.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import { Button } from '@/components/ui/button'
@@ -24,7 +22,7 @@ import { opportunitiesFilterOptions } from './opportunities-filter-options'
 const ListOpportunity = () => {
   const navigate = useNavigate()
 
-  const [addDialogOpen, setAddDialogOpen] = useState(false)
+  // const [addDialogOpen, setAddDialogOpen] = useState(false)
 
   const opportunitiesColumns = useOpportunitiesColumns()
   const paginationOptions = usePagination()
@@ -33,22 +31,23 @@ const ListOpportunity = () => {
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
 
-  const { data, isLoading } = useQuery({
-    ...tagControllerGetTagsOptions({
-      query: {
-        isOpportunityTag: true,
-      },
-    }),
-  })
+  // const { data, isLoading } = useQuery({
+  //   ...tagControllerGetTagsOptions({
+  //     query: {
+  //       isOpportunityTag: true,
+  //     },
+  //   }),
+  // })
 
-  const tagsOptions = data?.data?.map((tag) => ({
-    value: tag.id,
-    label: tag.tag,
-  }))
+  // const tagsOptions = data?.data?.map((tag) => ({
+  //   value: tag.id,
+  //   label: tag.tag,
+  // }))
 
   const { data: opportunitiesList, isLoading: isLoadingOpportunities } =
     useQuery({
       ...opportunityControllerGetOpportunitiesOptions({
+        // @ts-ignore
         query: {
           ...pagination,
           ...filters,
@@ -56,8 +55,9 @@ const ListOpportunity = () => {
       }),
     })
 
-  const opportunitiesData = opportunitiesList?.data!
-  const opportunitiesMeta = opportunitiesList?.meta!
+  const opportunitiesData =
+    opportunitiesList?.data as unknown as OpportunityResponseDto[]
+  const opportunitiesMeta = opportunitiesList?.meta as unknown as Meta
 
   const table = useReactTable({
     data: opportunitiesData,
@@ -66,7 +66,7 @@ const ListOpportunity = () => {
     getCoreRowModel: getCoreRowModel(),
   })
 
-  if (isLoading || isLoadingOpportunities) {
+  if (isLoadingOpportunities) {
     return <BoxLoader />
   }
   return (
@@ -100,14 +100,11 @@ const ListOpportunity = () => {
         />
       </div>
       <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-        <DataTable
-          loading={isLoading || isLoadingOpportunities}
-          table={table}
-        />
+        <DataTable loading={isLoadingOpportunities} table={table} />
       </div>
       <div className='mt-4'>
         <DataTablePagination
-          totalCount={opportunitiesMeta.count}
+          totalCount={(opportunitiesMeta?.count ?? 0) as number}
           paginationOptions={paginationOptions}
         />
       </div>

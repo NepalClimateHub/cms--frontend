@@ -1,8 +1,8 @@
 import { FC } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
 import { useDeleteNews } from '@/query/news/use-news'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
+import { NewsResponseDto } from '@/api/types.gen'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -14,12 +14,10 @@ import {
 } from '@/components/ui/dialog'
 
 type NewsRowActionProps = {
-  row: Row<News>
+  row: Row<NewsResponseDto>
 }
 
 const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
-  const navigate = useNavigate()
-
   const { mutate: deleteNewsMutation } = useDeleteNews()
 
   return (

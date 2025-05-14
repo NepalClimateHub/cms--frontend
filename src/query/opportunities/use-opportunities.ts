@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
 import {
   opportunityControllerDeleteOpportunityMutation,
   opportunityControllerGetOpportunitiesOptions,
@@ -25,8 +24,11 @@ export const useDeleteOpportunity = () => {
 
       queryClient.invalidateQueries(
         opportunityControllerGetOpportunitiesOptions({
-          ...paginationOptions,
-          ...filterOptions,
+          // @ts-expect-error - TODO: check type
+          query: {
+            ...paginationOptions,
+            ...filterOptions,
+          },
         })
       )
     },

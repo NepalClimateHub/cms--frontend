@@ -4,6 +4,7 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from '@radix-ui/react-icons'
+import { usePagination } from '@/hooks/use-pagination'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -12,18 +13,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { usePagination } from '@/hooks/use-pagination'
 
 interface DataTablePaginationProps {
   totalCount: number
   paginationOptions: ReturnType<typeof usePagination>
-  pageSizeOptions?: number[];
+  pageSizeOptions?: number[]
 }
 
 export function DataTablePagination({
   totalCount,
   paginationOptions,
-  pageSizeOptions = [10, 20, 30, 40, 50]
+  pageSizeOptions = [10, 20, 30, 40, 50],
 }: DataTablePaginationProps) {
   const {
     pagination,
@@ -31,13 +31,13 @@ export function DataTablePagination({
     setLimit,
     setNextPage,
     setPage,
-    setPrevPage
-  } = paginationOptions;
+    setPrevPage,
+  } = paginationOptions
 
-  const { limit, offset } = pagination;
+  const { limit, offset } = pagination
   const totalPages = Math.floor(totalCount / limit)
   const isFirstPage = offset === 0
-  const isLastPage = offset === (totalPages * (limit - 1))
+  const isLastPage = offset === totalPages * (limit - 1)
 
   return (
     <div
@@ -66,8 +66,7 @@ export function DataTablePagination({
           </Select>
         </div>
         <div className='flex w-[100px] items-center justify-center text-sm font-medium'>
-          Page {currentPage} of{' '}
-          {totalPages === 0 ? 1 : totalPages}
+          Page {currentPage} of {totalPages === 0 ? 1 : totalPages}
         </div>
         <div className='flex items-center space-x-2'>
           <Button

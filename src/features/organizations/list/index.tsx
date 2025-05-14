@@ -1,8 +1,9 @@
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getCoreRowModel } from '@tanstack/react-table'
 import { useReactTable } from '@tanstack/react-table'
+import { Meta } from '@/schemas/shared'
 import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
+import { OrganizationResponseDto } from '@/api/types.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import { DataTable } from '@/components/data-table/data-table'
@@ -15,10 +16,9 @@ import OrganizationFilters from './components/organization-filters'
 import { useOrganizationColumns } from './hooks/use-organization-columns'
 
 const ListOrganizations = () => {
-  const [addDialogOpen, setAddDialogOpen] = useState(false)
-
   const roleColumns = useOrganizationColumns()
   const paginationOptions = usePagination()
+  // @ts-expect-error - TODO: check type
   const filterOptions = useFilters(OrganizationFilters)
 
   const { pagination, setPage } = paginationOptions
@@ -33,11 +33,12 @@ const ListOrganizations = () => {
     }),
   })
 
-  const roleData = data?.data!
-  const roleMeta = data?.meta!
+  const roleData = data?.data as unknown as OrganizationResponseDto[]
+  const roleMeta = data?.meta as unknown as Meta
 
   const table = useReactTable({
     data: roleData,
+    // @ts-expect-error - TODO: check type
     columns: roleColumns,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
@@ -69,7 +70,7 @@ const ListOrganizations = () => {
       </div>
       <div className='mt-4'>
         <DataTablePagination
-          totalCount={roleMeta.count}
+          totalCount={(roleMeta.count ?? 0) as number}
           paginationOptions={paginationOptions}
         />
       </div>

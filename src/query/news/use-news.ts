@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { CreateNewsDto } from '@/api'
 import { cleanObj } from '@/utils/obj-utils'
 import { toast } from '@/hooks/use-toast'
 import { newsControllerDeleteNewsMutation } from '../../api/@tanstack/react-query.gen'

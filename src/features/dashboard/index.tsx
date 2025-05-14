@@ -1,8 +1,5 @@
-import { Button } from '@/components/ui/button'
 import { Main } from '@/components/layout/main'
 import Analytics from './components/analytics'
-import { Overview } from './components/overview'
-import { RecentSales } from './components/recent-sales'
 
 export default function Dashboard() {
   return (

@@ -1,7 +1,12 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
+import { TagOutputDto } from '@/api/types.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import { DataTable } from '@/components/data-table/data-table'
@@ -35,12 +40,12 @@ export default function Tags() {
     }),
   })
 
-  const roleData = data?.data!
-  const roleMeta = data?.meta!
+  const roleData = data?.data ?? []
+  const roleMeta = data?.meta ?? {}
 
   const table = useReactTable({
     data: roleData,
-    columns: roleColumns,
+    columns: roleColumns as ColumnDef<TagOutputDto, unknown>[],
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -72,7 +77,7 @@ export default function Tags() {
         </div>
         <div className='mt-4'>
           <DataTablePagination
-            totalCount={roleMeta.count}
+            totalCount={(roleMeta.count ?? 0) as number}
             paginationOptions={paginationOptions}
           />
         </div>

@@ -1,9 +1,8 @@
 import { FC } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { useDeleteOpportunity } from '@/query/opportunities/use-opportunities'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
+import { OpportunityResponseDto } from '@/api/types.gen'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -16,20 +15,20 @@ import {
 } from '@/components/ui/dialog'
 
 type OpportunitiesRowActionProps = {
-  row: Row<Opportunities>
+  row: Row<OpportunityResponseDto>
 }
 
 const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {
-  const navigate = useNavigate()
-  const handleEdit = () => {
-    console.log('ok')
-    // navigate({
-    //     to: '/Tags/$roleId',
-    //     params: {
-    //         roleId: row.original.id
-    //     }
-    // })
-  }
+  // const navigate = useNavigate()
+  // const handleEdit = () => {
+  // console.log('ok')
+  // navigate({
+  //     to: '/Tags/$roleId',
+  //     params: {
+  //         roleId: row.original.id
+  //     }
+  // })
+  // }
 
   const { mutate: deleteOpportunityMutation } = useDeleteOpportunity()
 
@@ -64,11 +63,15 @@ const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {
                 />
                 <p>{row.original.location}</p>
                 <p>{row.original.format}</p>
-                <p>{row.original.startDate}</p>
-                <p>{row.original.endDate}</p>
+                {/* @ts-expect-error - TODO: check type */}
+                <p>{row.original.startDate?.toString()}</p>
+                {/* @ts-expect-error - TODO: check type */}
+                <p>{row.original.endDate?.toString()}</p>
                 <p>{row.original.status}</p>
-                <p>{row.original.createdAt}</p>
-                <p>{row.original.updatedAt}</p>
+                {/* @ts-expect-error - TODO: check type */}
+                <p>{row.original.createdAt?.toString()}</p>
+                {/* @ts-expect-error - TODO: check type */}
+                <p>{row.original.updatedAt?.toString()}</p>
               </div>
             </DialogDescription>
           </DialogHeader>

@@ -1,5 +1,9 @@
+import { FC, useState } from 'react'
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons'
+import { useGetOrganizations } from '@/query/organizations/use-organization'
+import { Values } from 'nuqs'
 import { cn } from '@/lib/utils'
+import { FilterValues, InitFilters } from '@/hooks/use-filters'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -13,18 +17,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { useGetOrganizations } from '@/query/organizations/use-organization'
-import { Values } from 'nuqs'
-import { FilterValues, InitFilters } from '@/hooks/use-filters'
-import { FC, useState } from 'react'
-import { Spinner } from '../ui/spinner'
-import { Separator } from '../ui/separator'
 import { Badge } from '../ui/badge'
 import { Input } from '../ui/input'
+import { Separator } from '../ui/separator'
+import { Spinner } from '../ui/spinner'
 
 type OrganizationFilterProps = {
   filters: Values<InitFilters>
-  filterKey: string;
+  filterKey: string
   setFilterValue: (key: string, value: FilterValues) => void
   removeFilter: (key: string) => void
 }
@@ -33,30 +33,37 @@ const OrganizationFilter: FC<OrganizationFilterProps> = ({
   filters,
   filterKey,
   setFilterValue,
-  removeFilter
+  removeFilter,
 }) => {
   const [orgName, setOrgName] = useState<string>('')
   const { data, isLoading } = useGetOrganizations({
-    businessName: orgName
-  });
-  const formattedOrgData = data?.data?.map((org) => ({
-    label: org.businessName,
-    value: org.id
-  }))
+    businessName: orgName,
+  })
+  // @ts-expect-error - TODO: check type
+  const formattedOrgData = data?.data?.map(
+    (org: { businessName: string; id: string }) => ({
+      label: org.businessName,
+      value: org.id,
+    })
+  )
 
-  const selectedValue = filters[filterKey];
-  const selectedLabel = selectedValue ? formattedOrgData?.find((org) => org.value === selectedValue)?.label : null
+  const selectedValue = filters[filterKey]
+  const selectedLabel = selectedValue
+    ? formattedOrgData?.find(
+        (org: { value: string; label: string }) => org.value === selectedValue
+      )?.label
+    : null
 
   const handleSearch = (value: string) => {
-    setOrgName(value);
-  };
+    setOrgName(value)
+  }
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button variant='outline' size='sm' className='h-8 border-dashed'>
           <PlusCircledIcon className='mr-2 h-4 w-4' />
-          {"Organizations"}
+          {'Organizations'}
           {selectedValue && (
             <>
               <Separator orientation='vertical' className='mx-2 h-4' />
@@ -73,22 +80,28 @@ const OrganizationFilter: FC<OrganizationFilterProps> = ({
       <PopoverContent className='w-[200px] p-0' align='start'>
         <Command>
           <Input
-            className='border-none focus:outline-none focus:ring-0 rounded-none'
-            onChange={(e) => { handleSearch(String(e.target.value)) }}
+            className='rounded-none border-none focus:outline-none focus:ring-0'
+            onChange={(e) => {
+              handleSearch(String(e.target.value))
+            }}
             value={orgName}
-            placeholder={"Search..."}
+            placeholder={'Search...'}
           />
           <Separator />
           <CommandList>
-            {
-              isLoading ? (
-                <CommandEmpty> <Spinner size={'small'} show={true} /></CommandEmpty>
-              ) : data?.meta.count === 0 ? (
-                <CommandEmpty>No results found.</CommandEmpty>
-              ) : (
-                <CommandGroup>
-                  {formattedOrgData?.map((org) => {
-                    const isSelected = org.value === selectedValue;
+            {isLoading ? (
+              <CommandEmpty>
+                {' '}
+                <Spinner size={'small'} show={true} />
+              </CommandEmpty>
+            ) : // @ts-expect-error - TODO: check type
+            data?.meta?.count === 0 ? (
+              <CommandEmpty>No results found.</CommandEmpty>
+            ) : (
+              <CommandGroup>
+                {formattedOrgData?.map(
+                  (org: { value: string; label: string }) => {
+                    const isSelected = org.value === selectedValue
                     return (
                       <CommandItem
                         key={org.label}
@@ -113,10 +126,10 @@ const OrganizationFilter: FC<OrganizationFilterProps> = ({
                         <span>{org.label}</span>
                       </CommandItem>
                     )
-                  })}
-                </CommandGroup>
-              )
-            }
+                  }
+                )}
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>

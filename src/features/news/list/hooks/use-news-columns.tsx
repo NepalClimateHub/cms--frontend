@@ -1,12 +1,10 @@
-import { Link } from '@tanstack/react-router'
 import { ColumnDef } from '@tanstack/react-table'
-import { News } from '@/schemas/news/news'
-import { Badge } from '@/components/ui/badge'
+import { NewsResponseDto } from '@/api/types.gen'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 import NewsRowAction from '../components/news-row-actions'
 
 export const useNewsColumns = () => {
-  const columns: ColumnDef<News>[] = [
+  const columns: ColumnDef<NewsResponseDto>[] = [
     {
       accessorKey: 'title',
       header: ({ column }) => (
@@ -14,8 +12,6 @@ export const useNewsColumns = () => {
       ),
       cell: ({ row }) => {
         const { title } = row.original
-
-        console.log(row.original)
 
         return (
           <div className='flex space-x-2'>
@@ -68,7 +64,7 @@ export const useNewsColumns = () => {
 
         return (
           <div className='flex space-x-2'>
-            <a href={newsLink} target='_blank'>
+            <a href={newsLink} target='_blank' rel='noopener noreferrer'>
               <span>{newsLink}</span>
             </a>
           </div>

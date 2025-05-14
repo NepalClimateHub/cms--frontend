@@ -60,12 +60,6 @@ const AuthenticatedSettingsIndexLazyImport = createFileRoute(
 const AuthenticatedHelpCenterIndexLazyImport = createFileRoute(
   '/_authenticated/help-center/',
 )()
-const AuthenticatedChatsIndexLazyImport = createFileRoute(
-  '/_authenticated/chats/',
-)()
-const AuthenticatedAppsIndexLazyImport = createFileRoute(
-  '/_authenticated/apps/',
-)()
 const AuthenticatedSettingsNotificationsLazyImport = createFileRoute(
   '/_authenticated/settings/notifications',
 )()
@@ -80,9 +74,6 @@ const AuthenticatedSettingsAccountLazyImport = createFileRoute(
 )()
 const AuthenticatedTagsAddIndexLazyImport = createFileRoute(
   '/_authenticated/tags/add/',
-)()
-const AuthenticatedTagsTagIdIndexLazyImport = createFileRoute(
-  '/_authenticated/tags/$tagId/',
 )()
 
 // Create/Update Routes
@@ -244,25 +235,6 @@ const AuthenticatedHelpCenterIndexLazyRoute =
     ),
   )
 
-const AuthenticatedChatsIndexLazyRoute =
-  AuthenticatedChatsIndexLazyImport.update({
-    id: '/chats/',
-    path: '/chats/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/chats/index.lazy').then((d) => d.Route),
-  )
-
-const AuthenticatedAppsIndexLazyRoute = AuthenticatedAppsIndexLazyImport.update(
-  {
-    id: '/apps/',
-    path: '/apps/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any,
-).lazy(() =>
-  import('./routes/_authenticated/apps/index.lazy').then((d) => d.Route),
-)
-
 const PublicLoginIndexRoute = PublicLoginIndexImport.update({
   id: '/login/',
   path: '/login/',
@@ -320,17 +292,6 @@ const AuthenticatedTagsAddIndexLazyRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/tags/add/index.lazy').then((d) => d.Route),
-  )
-
-const AuthenticatedTagsTagIdIndexLazyRoute =
-  AuthenticatedTagsTagIdIndexLazyImport.update({
-    id: '/tags/$tagId/',
-    path: '/tags/$tagId/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/tags/$tagId/index.lazy').then(
-      (d) => d.Route,
-    ),
   )
 
 const AuthenticatedOrganizationsListIndexRoute =
@@ -540,20 +501,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicLoginIndexImport
       parentRoute: typeof PublicRouteImport
     }
-    '/_authenticated/apps/': {
-      id: '/_authenticated/apps/'
-      path: '/apps'
-      fullPath: '/apps'
-      preLoaderRoute: typeof AuthenticatedAppsIndexLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/chats/': {
-      id: '/_authenticated/chats/'
-      path: '/chats'
-      fullPath: '/chats'
-      preLoaderRoute: typeof AuthenticatedChatsIndexLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
     '/_authenticated/help-center/': {
       id: '/_authenticated/help-center/'
       path: '/help-center'
@@ -652,13 +599,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrganizationsListIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
-    '/_authenticated/tags/$tagId/': {
-      id: '/_authenticated/tags/$tagId/'
-      path: '/tags/$tagId'
-      fullPath: '/tags/$tagId'
-      preLoaderRoute: typeof AuthenticatedTagsTagIdIndexLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
     '/_authenticated/tags/add/': {
       id: '/_authenticated/tags/add/'
       path: '/tags/add'
@@ -700,8 +640,6 @@ const AuthenticatedSettingsRouteLazyRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteLazyRoute: typeof AuthenticatedSettingsRouteLazyRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedAppsIndexLazyRoute: typeof AuthenticatedAppsIndexLazyRoute
-  AuthenticatedChatsIndexLazyRoute: typeof AuthenticatedChatsIndexLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedTagsIndexLazyRoute: typeof AuthenticatedTagsIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
@@ -715,7 +653,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOpportunitiesListIndexRoute: typeof AuthenticatedOpportunitiesListIndexRoute
   AuthenticatedOrganizationsAddIndexRoute: typeof AuthenticatedOrganizationsAddIndexRoute
   AuthenticatedOrganizationsListIndexRoute: typeof AuthenticatedOrganizationsListIndexRoute
-  AuthenticatedTagsTagIdIndexLazyRoute: typeof AuthenticatedTagsTagIdIndexLazyRoute
   AuthenticatedTagsAddIndexLazyRoute: typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
@@ -723,8 +660,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteLazyRoute:
     AuthenticatedSettingsRouteLazyRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedAppsIndexLazyRoute: AuthenticatedAppsIndexLazyRoute,
-  AuthenticatedChatsIndexLazyRoute: AuthenticatedChatsIndexLazyRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
   AuthenticatedTagsIndexLazyRoute: AuthenticatedTagsIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
@@ -742,7 +677,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedOrganizationsAddIndexRoute,
   AuthenticatedOrganizationsListIndexRoute:
     AuthenticatedOrganizationsListIndexRoute,
-  AuthenticatedTagsTagIdIndexLazyRoute: AuthenticatedTagsTagIdIndexLazyRoute,
   AuthenticatedTagsAddIndexLazyRoute: AuthenticatedTagsAddIndexLazyRoute,
 }
 
@@ -780,8 +714,6 @@ export interface FileRoutesByFullPath {
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/login': typeof PublicLoginIndexRoute
-  '/apps': typeof AuthenticatedAppsIndexLazyRoute
-  '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/tags': typeof AuthenticatedTagsIndexLazyRoute
@@ -796,7 +728,6 @@ export interface FileRoutesByFullPath {
   '/opportunities/list': typeof AuthenticatedOpportunitiesListIndexRoute
   '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
   '/organizations/list': typeof AuthenticatedOrganizationsListIndexRoute
-  '/tags/$tagId': typeof AuthenticatedTagsTagIdIndexLazyRoute
   '/tags/add': typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
@@ -818,8 +749,6 @@ export interface FileRoutesByTo {
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/login': typeof PublicLoginIndexRoute
-  '/apps': typeof AuthenticatedAppsIndexLazyRoute
-  '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
   '/tags': typeof AuthenticatedTagsIndexLazyRoute
@@ -834,7 +763,6 @@ export interface FileRoutesByTo {
   '/opportunities/list': typeof AuthenticatedOpportunitiesListIndexRoute
   '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
   '/organizations/list': typeof AuthenticatedOrganizationsListIndexRoute
-  '/tags/$tagId': typeof AuthenticatedTagsTagIdIndexLazyRoute
   '/tags/add': typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
@@ -860,8 +788,6 @@ export interface FileRoutesById {
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/_public/login/': typeof PublicLoginIndexRoute
-  '/_authenticated/apps/': typeof AuthenticatedAppsIndexLazyRoute
-  '/_authenticated/chats/': typeof AuthenticatedChatsIndexLazyRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/_authenticated/tags/': typeof AuthenticatedTagsIndexLazyRoute
@@ -876,7 +802,6 @@ export interface FileRoutesById {
   '/_authenticated/opportunities/list/': typeof AuthenticatedOpportunitiesListIndexRoute
   '/_authenticated/organizations/add/': typeof AuthenticatedOrganizationsAddIndexRoute
   '/_authenticated/organizations/list/': typeof AuthenticatedOrganizationsListIndexRoute
-  '/_authenticated/tags/$tagId/': typeof AuthenticatedTagsTagIdIndexLazyRoute
   '/_authenticated/tags/add/': typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
@@ -901,8 +826,6 @@ export interface FileRouteTypes {
     | '/settings/display'
     | '/settings/notifications'
     | '/login'
-    | '/apps'
-    | '/chats'
     | '/help-center'
     | '/settings/'
     | '/tags'
@@ -917,7 +840,6 @@ export interface FileRouteTypes {
     | '/opportunities/list'
     | '/organizations/add'
     | '/organizations/list'
-    | '/tags/$tagId'
     | '/tags/add'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -938,8 +860,6 @@ export interface FileRouteTypes {
     | '/settings/display'
     | '/settings/notifications'
     | '/login'
-    | '/apps'
-    | '/chats'
     | '/help-center'
     | '/settings'
     | '/tags'
@@ -954,7 +874,6 @@ export interface FileRouteTypes {
     | '/opportunities/list'
     | '/organizations/add'
     | '/organizations/list'
-    | '/tags/$tagId'
     | '/tags/add'
   id:
     | '__root__'
@@ -978,8 +897,6 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
     | '/_public/login/'
-    | '/_authenticated/apps/'
-    | '/_authenticated/chats/'
     | '/_authenticated/help-center/'
     | '/_authenticated/settings/'
     | '/_authenticated/tags/'
@@ -994,7 +911,6 @@ export interface FileRouteTypes {
     | '/_authenticated/opportunities/list/'
     | '/_authenticated/organizations/add/'
     | '/_authenticated/organizations/list/'
-    | '/_authenticated/tags/$tagId/'
     | '/_authenticated/tags/add/'
   fileRoutesById: FileRoutesById
 }
@@ -1061,8 +977,6 @@ export const routeTree = rootRoute
       "children": [
         "/_authenticated/settings",
         "/_authenticated/",
-        "/_authenticated/apps/",
-        "/_authenticated/chats/",
         "/_authenticated/help-center/",
         "/_authenticated/tags/",
         "/_authenticated/tasks/",
@@ -1076,7 +990,6 @@ export const routeTree = rootRoute
         "/_authenticated/opportunities/list/",
         "/_authenticated/organizations/add/",
         "/_authenticated/organizations/list/",
-        "/_authenticated/tags/$tagId/",
         "/_authenticated/tags/add/"
       ]
     },
@@ -1154,14 +1067,6 @@ export const routeTree = rootRoute
       "filePath": "_public/login/index.tsx",
       "parent": "/_public"
     },
-    "/_authenticated/apps/": {
-      "filePath": "_authenticated/apps/index.lazy.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/chats/": {
-      "filePath": "_authenticated/chats/index.lazy.tsx",
-      "parent": "/_authenticated"
-    },
     "/_authenticated/help-center/": {
       "filePath": "_authenticated/help-center/index.lazy.tsx",
       "parent": "/_authenticated"
@@ -1216,10 +1121,6 @@ export const routeTree = rootRoute
     },
     "/_authenticated/organizations/list/": {
       "filePath": "_authenticated/organizations/list/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/tags/$tagId/": {
-      "filePath": "_authenticated/tags/$tagId/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/tags/add/": {
