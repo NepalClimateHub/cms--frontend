@@ -2,7 +2,7 @@ name: Deploy NCH CMS
 
 on:
   push:
-    branches: ["main"]
+    branches: ["develop"]
     
   workflow_dispatch:
 
