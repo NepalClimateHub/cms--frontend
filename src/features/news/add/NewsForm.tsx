@@ -39,7 +39,10 @@ const NewsForm = () => {
   const tagsOptions = data?.data?.map((tag) => ({
     value: tag.id,
     label: tag.tag,
-  }))
+  })) as {
+    value: string
+    label: string
+  }[] | undefined;
 
   const { mutate: addNewsMutation, isPending: isNewsPending } = useAddNews()
   const handleAddNews = async (data: any) => {
@@ -191,7 +194,7 @@ const NewsForm = () => {
             <div className='space-y-2'>
               <Label className='text-sm font-medium'>News Tags</Label>
               <MultiSelect
-                options={tagsOptions || []}
+                options={tagsOptions ?? []}
                 onValueChange={(v: string[]) => setValue('tagIds', v)}
                 placeholder='Select tags'
                 className='w-full'

@@ -18,7 +18,7 @@ export const useDeleteOpportunity = () => {
     ...opportunityControllerDeleteOpportunityMutation(),
     onSuccess: () => {
       toast({
-        variant: 'success',
+        variant: 'default',
         title: 'Opportunity removed successfully.',
       })
 
