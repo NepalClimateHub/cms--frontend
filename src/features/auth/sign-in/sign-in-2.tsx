@@ -3,57 +3,67 @@ import { UserAuthForm } from './components/user-auth-form'
 export default function SignIn2() {
   return (
     <div className='container relative grid h-svh flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0'>
-      <div className='relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex'>
-        <div className='absolute inset-0 bg-zinc-900' />
-        <div className='relative z-20 flex items-center text-lg font-medium'>
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            viewBox='0 0 24 24'
-            fill='none'
-            stroke='currentColor'
-            strokeWidth='2'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            className='mr-2 h-6 w-6'
-          >
-            <path d='M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3' />
-          </svg>
-          BrikX
+      <div
+        className='relative hidden h-full flex-col bg-cover bg-center bg-no-repeat p-16 text-white dark:border-r lg:flex'
+        style={{
+          backgroundImage: "url('/src/assets/images/mountain.png')",
+        }}
+      >
+        <div className='absolute inset-0 bg-gradient-to-br from-blue-900/80 to-blue-800/80' />
+        <div className='relative z-20 flex items-center text-2xl font-bold'>
+          <img
+            src='/src/assets/images/logo.png'
+            alt='Nepal Climate Hub'
+            className='mr-4 h-12 w-12'
+          />
+          <span className='text-3xl font-bold'>Nepal Climate Hub</span>
         </div>
 
         <div className='relative z-20 mt-auto'>
-          <blockquote className='space-y-2'>
+          <div className='space-y-4'>
+            <h2 className='text-4xl font-bold'>Welcome to Nepal Climate Hub</h2>
             <p className='text-lg'>
-              &ldquo;This template has saved me countless hours of work and
-              helped me deliver stunning designs to my clients faster than ever
-              before.&rdquo;
+              Join our community of climate enthusiasts and make a difference in
+              Nepal's environmental future
             </p>
-            <footer className='text-sm'>John Doe</footer>
-          </blockquote>
+            <div className='mt-8 space-y-4'>
+              <div className='flex items-center space-x-4'>
+                <div className='h-1 w-12 rounded-full bg-white/20' />
+                <p className='text-sm'>Stay updated with Climate News</p>
+              </div>
+              <div className='flex items-center space-x-4'>
+                <div className='h-1 w-12 rounded-full bg-white/20' />
+                <p className='text-sm'>Connect with Climate Enthusiasts</p>
+              </div>
+              <div className='flex items-center space-x-4'>
+                <div className='h-1 w-12 rounded-full bg-white/20' />
+                <p className='text-sm'>And many more.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div className='lg:p-8'>
-        <div className='mx-auto flex w-full flex-col justify-center space-y-2 sm:w-[350px]'>
-          <div className='flex flex-col space-y-2 text-left'>
-            <h1 className='text-2xl font-semibold tracking-tight'>Login</h1>
-            <p className='text-sm text-muted-foreground'>
-              Enter your email and password below <br />
-              to log into your account
-            </p>
+      <div className='lg:p-16'>
+        <div className='card flex w-full flex-col justify-center space-y-6 bg-white/5 p-20 shadow-lg backdrop-blur-sm'>
+          <div className='flex flex-col space-y-4 text-center'>
+            <h1 className='text-3xl font-bold tracking-tight text-blue-900'>
+              Login
+            </h1>
           </div>
           <UserAuthForm />
-          <p className='px-8 text-center text-sm text-muted-foreground'>
-            By clicking login, you agree to our{' '}
+
+          <p className='text-sm text-blue-600'>
+            By clicking continue, you agree to our{' '}
             <a
               href='/terms'
-              className='underline underline-offset-4 hover:text-primary'
+              className='font-medium underline underline-offset-4 hover:text-blue-800'
             >
               Terms of Service
             </a>{' '}
             and{' '}
             <a
               href='/privacy'
-              className='underline underline-offset-4 hover:text-primary'
+              className='font-medium underline underline-offset-4 hover:text-blue-800'
             >
               Privacy Policy
             </a>
