@@ -26,6 +26,7 @@ import { Route as AuthenticatedOpportunitiesListIndexImport } from './routes/_au
 import { Route as AuthenticatedOpportunitiesAddIndexImport } from './routes/_authenticated/opportunities/add/index'
 import { Route as AuthenticatedNewsListIndexImport } from './routes/_authenticated/news/list/index'
 import { Route as AuthenticatedNewsAddIndexImport } from './routes/_authenticated/news/add/index'
+import { Route as AuthenticatedNewsNewsIdIndexImport } from './routes/_authenticated/news/$newsId/index'
 import { Route as AuthenticatedEventsListIndexImport } from './routes/_authenticated/events/list/index'
 import { Route as AuthenticatedEventsAddIndexImport } from './routes/_authenticated/events/add/index'
 import { Route as AuthenticatedEventsEventIdIndexImport } from './routes/_authenticated/events/$eventId/index'
@@ -336,6 +337,13 @@ const AuthenticatedNewsAddIndexRoute = AuthenticatedNewsAddIndexImport.update({
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
+const AuthenticatedNewsNewsIdIndexRoute =
+  AuthenticatedNewsNewsIdIndexImport.update({
+    id: '/news/$newsId/',
+    path: '/news/$newsId/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
 const AuthenticatedEventsListIndexRoute =
   AuthenticatedEventsListIndexImport.update({
     id: '/events/list/',
@@ -557,6 +565,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEventsListIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/news/$newsId/': {
+      id: '/_authenticated/news/$newsId/'
+      path: '/news/$newsId'
+      fullPath: '/news/$newsId'
+      preLoaderRoute: typeof AuthenticatedNewsNewsIdIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/news/add/': {
       id: '/_authenticated/news/add/'
       path: '/news/add'
@@ -647,6 +662,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEventsEventIdIndexRoute: typeof AuthenticatedEventsEventIdIndexRoute
   AuthenticatedEventsAddIndexRoute: typeof AuthenticatedEventsAddIndexRoute
   AuthenticatedEventsListIndexRoute: typeof AuthenticatedEventsListIndexRoute
+  AuthenticatedNewsNewsIdIndexRoute: typeof AuthenticatedNewsNewsIdIndexRoute
   AuthenticatedNewsAddIndexRoute: typeof AuthenticatedNewsAddIndexRoute
   AuthenticatedNewsListIndexRoute: typeof AuthenticatedNewsListIndexRoute
   AuthenticatedOpportunitiesAddIndexRoute: typeof AuthenticatedOpportunitiesAddIndexRoute
@@ -667,6 +683,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEventsEventIdIndexRoute: AuthenticatedEventsEventIdIndexRoute,
   AuthenticatedEventsAddIndexRoute: AuthenticatedEventsAddIndexRoute,
   AuthenticatedEventsListIndexRoute: AuthenticatedEventsListIndexRoute,
+  AuthenticatedNewsNewsIdIndexRoute: AuthenticatedNewsNewsIdIndexRoute,
   AuthenticatedNewsAddIndexRoute: AuthenticatedNewsAddIndexRoute,
   AuthenticatedNewsListIndexRoute: AuthenticatedNewsListIndexRoute,
   AuthenticatedOpportunitiesAddIndexRoute:
@@ -722,6 +739,7 @@ export interface FileRoutesByFullPath {
   '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
   '/events/add': typeof AuthenticatedEventsAddIndexRoute
   '/events/list': typeof AuthenticatedEventsListIndexRoute
+  '/news/$newsId': typeof AuthenticatedNewsNewsIdIndexRoute
   '/news/add': typeof AuthenticatedNewsAddIndexRoute
   '/news/list': typeof AuthenticatedNewsListIndexRoute
   '/opportunities/add': typeof AuthenticatedOpportunitiesAddIndexRoute
@@ -757,6 +775,7 @@ export interface FileRoutesByTo {
   '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
   '/events/add': typeof AuthenticatedEventsAddIndexRoute
   '/events/list': typeof AuthenticatedEventsListIndexRoute
+  '/news/$newsId': typeof AuthenticatedNewsNewsIdIndexRoute
   '/news/add': typeof AuthenticatedNewsAddIndexRoute
   '/news/list': typeof AuthenticatedNewsListIndexRoute
   '/opportunities/add': typeof AuthenticatedOpportunitiesAddIndexRoute
@@ -796,6 +815,7 @@ export interface FileRoutesById {
   '/_authenticated/events/$eventId/': typeof AuthenticatedEventsEventIdIndexRoute
   '/_authenticated/events/add/': typeof AuthenticatedEventsAddIndexRoute
   '/_authenticated/events/list/': typeof AuthenticatedEventsListIndexRoute
+  '/_authenticated/news/$newsId/': typeof AuthenticatedNewsNewsIdIndexRoute
   '/_authenticated/news/add/': typeof AuthenticatedNewsAddIndexRoute
   '/_authenticated/news/list/': typeof AuthenticatedNewsListIndexRoute
   '/_authenticated/opportunities/add/': typeof AuthenticatedOpportunitiesAddIndexRoute
@@ -834,6 +854,7 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/events/add'
     | '/events/list'
+    | '/news/$newsId'
     | '/news/add'
     | '/news/list'
     | '/opportunities/add'
@@ -868,6 +889,7 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/events/add'
     | '/events/list'
+    | '/news/$newsId'
     | '/news/add'
     | '/news/list'
     | '/opportunities/add'
@@ -905,6 +927,7 @@ export interface FileRouteTypes {
     | '/_authenticated/events/$eventId/'
     | '/_authenticated/events/add/'
     | '/_authenticated/events/list/'
+    | '/_authenticated/news/$newsId/'
     | '/_authenticated/news/add/'
     | '/_authenticated/news/list/'
     | '/_authenticated/opportunities/add/'
@@ -984,6 +1007,7 @@ export const routeTree = rootRoute
         "/_authenticated/events/$eventId/",
         "/_authenticated/events/add/",
         "/_authenticated/events/list/",
+        "/_authenticated/news/$newsId/",
         "/_authenticated/news/add/",
         "/_authenticated/news/list/",
         "/_authenticated/opportunities/add/",
@@ -1097,6 +1121,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/events/list/": {
       "filePath": "_authenticated/events/list/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/news/$newsId/": {
+      "filePath": "_authenticated/news/$newsId/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/news/add/": {

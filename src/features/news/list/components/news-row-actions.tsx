@@ -1,4 +1,5 @@
 import { FC } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
 import { useDeleteNews } from '@/query/news/use-news'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
@@ -19,6 +20,14 @@ type NewsRowActionProps = {
 
 const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
   const { mutate: deleteNewsMutation } = useDeleteNews()
+
+  const navigate = useNavigate()
+
+  const handleEditNews = (newsId: string) => {
+    navigate({
+      to: `/news/${newsId}`,
+    })
+  }
 
   return (
     <div className='flex items-center justify-center gap-4'>
@@ -51,7 +60,7 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
       </Dialog>
 
       <Button
-        onClick={() => {}}
+        onClick={() => handleEditNews(row.original.id)}
         size={'sm'}
         variant={'default'}
         className='h-6 bg-blue-500 px-2'
