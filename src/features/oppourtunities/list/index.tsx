@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel } from '@tanstack/react-table'
 import { useReactTable } from '@tanstack/react-table'
+import { useGetOpportunity } from '@/query/opportunities/use-opportunities'
 import { Meta } from '@/schemas/shared'
 import { PlusIcon } from 'lucide-react'
 import { opportunityControllerGetOpportunitiesOptions } from '@/api/@tanstack/react-query.gen'
@@ -45,15 +46,7 @@ const ListOpportunity = () => {
   // }))
 
   const { data: opportunitiesList, isLoading: isLoadingOpportunities } =
-    useQuery({
-      ...opportunityControllerGetOpportunitiesOptions({
-        // @ts-ignore
-        query: {
-          ...pagination,
-          ...filters,
-        },
-      }),
-    })
+    useGetOpportunity(pagination, filters)
 
   const opportunitiesData =
     opportunitiesList?.data as unknown as OpportunityResponseDto[]
