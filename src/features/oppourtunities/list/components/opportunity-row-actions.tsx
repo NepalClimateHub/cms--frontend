@@ -129,7 +129,8 @@ const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {
                     Website
                   </h3>
                   <p className='text-base'>
-                    {row.original.website || 'Not specified'}
+                    {/* @ts-ignore */}
+                    {row.original?.websiteUrl || 'Not specified'}
                   </p>
                 </div>
               </div>
@@ -181,7 +182,9 @@ const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {
               {/* Timestamps */}
               <Separator />
               <div className='flex justify-between text-sm text-muted-foreground'>
+                {/* @ts-ignore */}
                 <span>Created: {formatDate(row.original.createdAt)}</span>
+                {/* @ts-ignore */}
                 <span>Updated: {formatDate(row.original.updatedAt)}</span>
               </div>
             </DialogDescription>

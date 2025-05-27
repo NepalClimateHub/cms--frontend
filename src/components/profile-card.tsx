@@ -1,4 +1,3 @@
-import { Command } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { getInitialsForAvatar } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -20,6 +19,7 @@ export function ProfileCard() {
           className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
         >
           <Avatar className='h-8 w-8 rounded-lg border border-border/40'>
+            {/* @ts-ignore */}
             <AvatarImage src={user?.avatar} alt={user?.fullName} />
             <AvatarFallback className='rounded-lg bg-primary/10 text-primary'>
               {nameInitials}

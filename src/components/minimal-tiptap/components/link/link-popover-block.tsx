@@ -1,7 +1,11 @@
 import * as React from 'react'
+import {
+  CopyIcon,
+  ExternalLinkIcon,
+  LinkBreak2Icon,
+} from '@radix-ui/react-icons'
 import { Separator } from '@/components/ui/separator'
 import { ToolbarButton } from '../toolbar-button'
-import { CopyIcon, ExternalLinkIcon, LinkBreak2Icon } from '@radix-ui/react-icons'
 
 interface LinkPopoverBlockProps {
   url: string
@@ -9,7 +13,11 @@ interface LinkPopoverBlockProps {
   onEdit: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
-export const LinkPopoverBlock: React.FC<LinkPopoverBlockProps> = ({ url, onClear, onEdit }) => {
+export const LinkPopoverBlock: React.FC<LinkPopoverBlockProps> = ({
+  url,
+  onClear,
+  onEdit,
+}) => {
   const [copyTitle, setCopyTitle] = React.useState<string>('Copy')
 
   const handleCopy = React.useCallback(
@@ -31,30 +39,37 @@ export const LinkPopoverBlock: React.FC<LinkPopoverBlockProps> = ({ url, onClear
   }, [url])
 
   return (
-    <div className="flex h-10 overflow-hidden rounded bg-background p-2 shadow-lg">
-      <div className="inline-flex items-center gap-1">
-        <ToolbarButton tooltip="Edit link" onClick={onEdit} className="w-auto px-2">
+    <div className='flex h-10 overflow-hidden rounded bg-background p-2 shadow-lg'>
+      <div className='inline-flex items-center gap-1'>
+        <ToolbarButton
+          tooltip='Edit link'
+          onClick={onEdit}
+          className='w-auto px-2'
+        >
           Edit link
         </ToolbarButton>
-        <Separator orientation="vertical" />
-        <ToolbarButton tooltip="Open link in a new tab" onClick={handleOpenLink}>
-          <ExternalLinkIcon className="size-4" />
+        <Separator orientation='vertical' />
+        <ToolbarButton
+          tooltip='Open link in a new tab'
+          onClick={handleOpenLink}
+        >
+          <ExternalLinkIcon className='size-4' />
         </ToolbarButton>
-        <Separator orientation="vertical" />
-        <ToolbarButton tooltip="Clear link" onClick={onClear}>
-          <LinkBreak2Icon className="size-4" />
+        <Separator orientation='vertical' />
+        <ToolbarButton tooltip='Clear link' onClick={onClear}>
+          <LinkBreak2Icon className='size-4' />
         </ToolbarButton>
-        <Separator orientation="vertical" />
+        <Separator orientation='vertical' />
         <ToolbarButton
           tooltip={copyTitle}
           onClick={handleCopy}
           tooltipOptions={{
-            onPointerDownOutside: (e) => {
+            onPointerDownOutside: (e: any) => {
               if (e.target === e.currentTarget) e.preventDefault()
-            }
+            },
           }}
         >
-          <CopyIcon className="size-4" />
+          <CopyIcon className='size-4' />
         </ToolbarButton>
       </div>
     </div>

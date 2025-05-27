@@ -24,7 +24,7 @@ export const useDeleteOpportunity = () => {
   const paginationOptions = usePagination()
   const filterOptions = useFilters(opportunitiesFilterOptions)
 
-  const { pagination, setPage } = paginationOptions
+  const { pagination } = paginationOptions
   const { filters } = filterOptions
 
   return useMutation({

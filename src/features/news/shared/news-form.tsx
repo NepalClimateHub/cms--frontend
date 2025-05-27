@@ -1,9 +1,7 @@
 import { FC } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { useNewsAPI } from '@/query/news/use-news'
-import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Form,
   FormControl,

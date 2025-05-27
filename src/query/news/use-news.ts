@@ -89,8 +89,3 @@ export const useDeleteNews = () => {
     },
   })
 }
-
-export const useAddNews = () => {
-  const queryClient = useQueryClient()
-  const navigate = useNavigate()
-}

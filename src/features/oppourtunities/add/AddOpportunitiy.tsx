@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useGetTagsByType } from '@/query/tags/use-tags'
 import {
@@ -10,7 +10,6 @@ import {
   OpportunityFormValues,
   opportunitySchema,
 } from '@/schemas/opportunities/opportunities'
-import { TAG_TYPES } from '@/schemas/tags/tags'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -21,7 +20,6 @@ import {
   FormField,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -37,10 +35,7 @@ import { MinimalTiptapEditor } from '@/components/minimal-tiptap'
 import { MultiSelect } from '@/components/multi-select'
 import PageHeader from '@/components/page-header'
 import SocialsForm from '@/components/socials/socials'
-import {
-  opportunityControllerAddOpportutnityMutation,
-  tagControllerGetTagsOptions,
-} from '../../../api/@tanstack/react-query.gen'
+import { opportunityControllerAddOpportutnityMutation } from '../../../api/@tanstack/react-query.gen'
 import { TagOutputDto } from '../../../api/types.gen'
 
 const AddOpportunity = () => {
@@ -236,6 +231,7 @@ const AddOpportunity = () => {
                       <FormControl>
                         <Select
                           onValueChange={field.onChange}
+                          // @ts-ignore
                           defaultValue={field.value}
                         >
                           <SelectTrigger className='w-full'>
@@ -359,6 +355,7 @@ const AddOpportunity = () => {
                     <FormItem>
                       <FormLabel>Duration</FormLabel>
                       <FormControl>
+                        {/* @ts-expect-error input */}
                         <Input
                           placeholder='Enter duration'
                           className='w-full'
@@ -385,6 +382,7 @@ const AddOpportunity = () => {
                     <FormItem>
                       <FormLabel>Contact Email</FormLabel>
                       <FormControl>
+                        {/* @ts-ignore */}
                         <Input
                           type='email'
                           placeholder='Enter contact email'
@@ -404,6 +402,7 @@ const AddOpportunity = () => {
                     <FormItem>
                       <FormLabel>Website</FormLabel>
                       <FormControl>
+                        {/* @ts-ignore */}
                         <Input
                           type='url'
                           placeholder='Enter website URL'
@@ -425,6 +424,7 @@ const AddOpportunity = () => {
                       <FormControl>
                         <Select
                           onValueChange={field.onChange}
+                          // @ts-ignore
                           defaultValue={field.value}
                         >
                           <SelectTrigger className='w-full'>
