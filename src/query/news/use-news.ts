@@ -30,8 +30,19 @@ export const useNewsAPI = () => {
         navigate({ to: '/news/list' })
       },
     }),
+
     updateNews: useMutation({
       ...newsControllerUpdateNewsMutation(),
+      onSuccess: () => {
+        // Invalidate and refetch
+        queryClient.invalidateQueries(newsControllerGetNewsOptions())
+        toast({
+          title: 'News updated',
+          description: 'News has been updated successfully.',
+          variant: 'default',
+        })
+        navigate({ to: '/news/list' })
+      },
     }),
   }
 }

@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   opportunityControllerDeleteOpportunityMutation,
   opportunityControllerGetOpportunitiesOptions,
@@ -8,14 +8,28 @@ import { usePagination } from '@/hooks/use-pagination'
 import { toast } from '@/hooks/use-toast'
 import { opportunitiesFilterOptions } from '@/features/oppourtunities/list/opportunities-filter-options'
 
+export const useGetOpportunity = (pagination: any, filters: any) => {
+  return useQuery({
+    ...opportunityControllerGetOpportunitiesOptions({
+      query: {
+        ...pagination,
+        ...filters,
+      },
+    }),
+  })
+}
 export const useDeleteOpportunity = () => {
   const queryClient = useQueryClient()
 
   const paginationOptions = usePagination()
   const filterOptions = useFilters(opportunitiesFilterOptions)
 
+  const { pagination, setPage } = paginationOptions
+  const { filters } = filterOptions
+
   return useMutation({
     ...opportunityControllerDeleteOpportunityMutation(),
+
     onSuccess: () => {
       toast({
         variant: 'default',
@@ -26,8 +40,8 @@ export const useDeleteOpportunity = () => {
         opportunityControllerGetOpportunitiesOptions({
           // @ts-expect-error - TODO: check type
           query: {
-            ...paginationOptions,
-            ...filterOptions,
+            ...pagination,
+            ...filters,
           },
         })
       )

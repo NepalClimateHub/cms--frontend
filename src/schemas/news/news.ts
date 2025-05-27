@@ -6,11 +6,9 @@ export const AddNewsSchema = z.object({
   mode: z.string(),
   publishedDate: z.date(),
   newsLink: z.string().url(),
-  publishedYear: z.date(),
   bannerImageUrl: z.string().url(),
   bannerImageId: z.string(),
   tagIds: z.array(z.string()),
-  contributedBy: z.string(),
 })
 
 export type News = z.infer<typeof AddNewsSchema>

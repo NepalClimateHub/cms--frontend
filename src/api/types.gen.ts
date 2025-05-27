@@ -715,10 +715,6 @@ export type CreateNewsDto = {
      */
     publishedDate: string;
     /**
-     * Published year
-     */
-    publishedYear: string;
-    /**
      * News link
      */
     newsLink: string;
@@ -734,10 +730,6 @@ export type CreateNewsDto = {
      * Tags IDs
      */
     tagIds?: Array<string>;
-    /**
-     * Contributed by
-     */
-    contributedBy: string;
 };
 
 export type NewsResponseDto = {

@@ -2,10 +2,15 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { useGetTagsByType } from '@/query/tags/use-tags'
 import {
+  OPPORTUNITY_COST,
+  OPPORTUNITY_FORMAT,
+  OPPORTUNITY_STATUS,
   OpportunityFormValues,
   opportunitySchema,
 } from '@/schemas/opportunities/opportunities'
+import { TAG_TYPES } from '@/schemas/tags/tags'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -17,6 +22,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { getCustomToast } from '@/components/custom-toast'
 import ImageUpload from '@/components/image-upload'
@@ -24,6 +36,7 @@ import { Main } from '@/components/layout/main'
 import { MinimalTiptapEditor } from '@/components/minimal-tiptap'
 import { MultiSelect } from '@/components/multi-select'
 import PageHeader from '@/components/page-header'
+import SocialsForm from '@/components/socials/socials'
 import {
   opportunityControllerAddOpportutnityMutation,
   tagControllerGetTagsOptions,
@@ -35,6 +48,7 @@ const AddOpportunity = () => {
     resolver: zodResolver(opportunitySchema),
     defaultValues: {
       description: '',
+      website: '',
       socials: {
         facebook: '',
         linkedin: '',
@@ -70,13 +84,7 @@ const AddOpportunity = () => {
     },
   })
 
-  const { data, isLoading: isLoadingTags } = useQuery({
-    ...tagControllerGetTagsOptions({
-      query: {
-        isOpportunityTag: true,
-      },
-    }),
-  })
+  const { data, isLoading: isLoadingTags } = useGetTagsByType('OPPORTUNITY')
 
   const handleImageUpload = (
     assetId: string | null,
@@ -98,6 +106,32 @@ const AddOpportunity = () => {
     })
   }
 
+  const opportunityTypes = [
+    'Internship',
+    'Fellowship',
+    'Volunteer',
+    'Job',
+    'Grant',
+    'Scholarship',
+    'Research Assistantship',
+    'Post Doctoral Fellowship',
+    'Exchange Program',
+    'Training',
+    'Online course',
+    'Award',
+    'Competition',
+  ]
+
+  const provinces = [
+    'Koshi',
+    'Madhesh',
+    'Bagmati',
+    'Gandaki',
+    'Lumbini',
+    'Karnali',
+    'Sudurpaschim',
+  ]
+
   return (
     <Main>
       <PageHeader
@@ -110,292 +144,164 @@ const AddOpportunity = () => {
           <form
             onSubmit={form.handleSubmit(handleAddOpportunity)}
             id='opportunity-form'
+            className='space-y-8'
           >
-            <div className='flex flex-col gap-4'>
-              <FormField
-                control={form.control}
-                name='title'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Title
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Enter opportunity name'
-                        className='w-full'
-                        autoComplete='off'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className='space-y-2'>
+            {/* Basic Information Section */}
+            <div className='rounded-lg border bg-card p-6 shadow-sm'>
+              <h2 className='mb-6 text-xl font-semibold text-gray-900'>
+                Basic Information
+              </h2>
+              <div className='grid gap-6 md:grid-cols-2'>
                 <FormField
                   control={form.control}
-                  name='description'
+                  name='title'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className='text-lg font-semibold text-gray-700'>
-                        Description
-                      </FormLabel>
+                      <FormLabel>Title</FormLabel>
                       <FormControl>
-                        <TooltipProvider>
-                          <MinimalTiptapEditor
-                            // value={value}
-                            // onChange={setValue}
-                            className='w-full'
-                            editorContentClassName='p-5'
-                            output='html'
-                            placeholder='Enter opportunity description...'
-                            autofocus={true}
-                            editable={true}
-                            editorClassName='focus:outline-none'
-                            {...field}
-                          />
-                        </TooltipProvider>
+                        <Input
+                          placeholder='Enter opportunity name'
+                          className='w-full'
+                          autoComplete='off'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='type'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Type</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className='w-full'>
+                            <SelectValue placeholder='Select opportunity type' />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {opportunityTypes.map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='format'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Format</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className='w-full'>
+                            <SelectValue placeholder='Select format' />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {OPPORTUNITY_FORMAT.map(({ value, label }) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='status'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className='w-full'>
+                            <SelectValue placeholder='Select status' />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {OPPORTUNITY_STATUS.map(({ value, label }) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+            </div>
+
+            {/* Description Section */}
+            <div className='rounded-lg border bg-card p-6 shadow-sm'>
+              <h2 className='mb-6 text-xl font-semibold text-gray-900'>
+                Description
+              </h2>
               <FormField
                 control={form.control}
-                name='location'
+                name='description'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Location
-                    </FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder='Enter address'
-                        className='w-full'
-                        {...field}
-                      />
+                      <TooltipProvider>
+                        <MinimalTiptapEditor
+                          className='w-full'
+                          editorContentClassName='p-5'
+                          output='html'
+                          placeholder='Enter opportunity description...'
+                          autofocus={true}
+                          editable={true}
+                          editorClassName='focus:outline-none'
+                          {...field}
+                        />
+                      </TooltipProvider>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='locationType'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Location Type
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Enter location type'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='type'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Type
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Enter type'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='format'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Format
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Enter format'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='applicationDeadline'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Application Deadline
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type='date'
-                        placeholder='Enter application deadline'
-                        className='w-full'
-                        value={field.value ?? ''}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='duration'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Duration
-                    </FormLabel>
-                    <FormControl>
-                      {/* @ts-expect-error - TODO: check type */}
-                      <Input
-                        placeholder='Enter duration'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='contactEmail'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Contact Email
-                    </FormLabel>
-                    <FormControl>
-                      {/* @ts-expect-error - TODO: check type */}
-                      <Input
-                        placeholder='Enter contact'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='status'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Status
-                    </FormLabel>
-                    <FormControl>
-                      {/* @ts-expect-error - TODO: check type */}
-                      <Input
-                        placeholder='Enter status'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='cost'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Cost
-                    </FormLabel>
-                    <FormControl>
-                      {/* @ts-expect-error - TODO: check type */}
-                      <Input
-                        placeholder='Enter cost'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='organizer'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Organizer
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Enter organizer'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='contributedBy'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Contributed By
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Enter contributed by'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* address */}
-              <Label className='text-lg font-semibold text-gray-700'>
-                Address
-              </Label>
-              <div className='flex flex-wrap gap-2'>
+            </div>
+
+            {/* Location & Duration Section */}
+            <div className='rounded-lg border bg-card p-6 shadow-sm'>
+              <h2 className='mb-6 text-xl font-semibold text-gray-900'>
+                Location & Duration
+              </h2>
+              <div className='grid gap-6 md:grid-cols-2'>
                 <FormField
                   control={form.control}
-                  name='address.state'
+                  name='location'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className='text-lg font-semibold text-gray-700'>
-                        State
-                      </FormLabel>
+                      <FormLabel>Location</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder='Enter state'
+                          placeholder='Enter address'
                           className='w-full'
                           {...field}
                         />
@@ -404,15 +310,218 @@ const AddOpportunity = () => {
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
-                  // @ts-expect-error - TODO: check type
-                  name='address.country '
+                  name='locationType'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className='text-lg font-semibold text-gray-700'>
-                        Country
-                      </FormLabel>
+                      <FormLabel>Location Type</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='Enter location type'
+                          className='w-full'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='applicationDeadline'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Application Deadline</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='date'
+                          placeholder='Enter application deadline'
+                          className='w-full'
+                          value={field.value ?? ''}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='duration'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Duration</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='Enter duration'
+                          className='w-full'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Contact & Cost Section */}
+            <div className='rounded-lg border bg-card p-6 shadow-sm'>
+              <h2 className='mb-6 text-xl font-semibold text-gray-900'>
+                Contact & Cost
+              </h2>
+              <div className='grid gap-6 md:grid-cols-2'>
+                <FormField
+                  control={form.control}
+                  name='contactEmail'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contact Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='email'
+                          placeholder='Enter contact email'
+                          className='w-full'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='website'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Website</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='url'
+                          placeholder='Enter website URL'
+                          className='w-full'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='cost'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cost</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className='w-full'>
+                            <SelectValue placeholder='Select cost type' />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {OPPORTUNITY_COST.map(({ value, label }) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='organizer'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Organizer</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='Enter organizer'
+                          className='w-full'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='contributedBy'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contributed By</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='Enter contributor'
+                          className='w-full'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Address Section */}
+            <div className='rounded-lg border bg-card p-6 shadow-sm'>
+              <h2 className='mb-6 text-xl font-semibold text-gray-900'>
+                Address Details
+              </h2>
+              <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
+                <FormField
+                  control={form.control}
+                  name='address.state'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Province</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className='w-full'>
+                            <SelectValue placeholder='Select province' />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {provinces.map((province) => (
+                              <SelectItem key={province} value={province}>
+                                {province}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='address.country'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country</FormLabel>
                       <FormControl>
                         <Input
                           placeholder='Enter country'
@@ -436,9 +545,7 @@ const AddOpportunity = () => {
                   name='address.city'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className='text-lg font-semibold text-gray-700'>
-                        City
-                      </FormLabel>
+                      <FormLabel>City</FormLabel>
                       <FormControl>
                         <Input
                           placeholder='Enter city'
@@ -450,157 +557,73 @@ const AddOpportunity = () => {
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name='address.street'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-lg font-semibold text-gray-700'>
-                        Street
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Enter street'
-                          className='w-full'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='address.postcode'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-lg font-semibold text-gray-700'>
-                        Postcode
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Enter postcode'
-                          className='w-full'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
-
-              {/* socials */}
-              {/* <Label className='text-lg font-semibold text-gray-700'>
-                Socials
-              </Label>
-              <div className='flex flex-wrap gap-2'>
-                <FormField
-                  control={form.control}
-                  name='socials.facebook'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Facebook
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Enter social'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='socials.linkedin'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      LinkedIn
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Enter linkedin'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='socials.instagram'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-lg font-semibold text-gray-700'>
-                      Instagram
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Enter instagram'
-                        className='w-full'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-                />
-                
-
-              </div> */}
-
-              <ImageUpload label={'Image'} handleImage={handleImageUpload} />
-
-              <div className='w-1/3'>
-                <FormField
-                  control={form.control}
-                  name='tagIds'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-lg font-semibold text-gray-700'>
-                        Tags
-                      </FormLabel>
-                      {isLoadingTags ? (
-                        <div>Loading...</div>
-                      ) : (
-                        <FormControl>
-                          <MultiSelect
-                            options={
-                              data?.data?.map((tag: TagOutputDto) => ({
-                                value: (tag as { id: string; tag: string }).id,
-                                label: (tag as { id: string; tag: string }).tag,
-                              })) || []
-                            }
-                            onValueChange={field.onChange}
-                            placeholder={'Tags'}
-                            className='w-full'
-                            disabled={isLoadingTags}
-                            {...field}
-                          />
-                        </FormControl>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <br />
             </div>
-            <Button type='submit' form='opportunity-form'>
-              Add Opportunity
-            </Button>
+
+            {/* socials */}
+            <SocialsForm form={form} fieldName='socials' />
+
+            {/* Media & Tags Section */}
+            <div className='rounded-lg border bg-card p-6 shadow-sm'>
+              <h2 className='mb-6 text-xl font-semibold text-gray-900'>
+                Media & Tags
+              </h2>
+              <div className='grid gap-6 md:grid-cols-2'>
+                <div>
+                  <FormField
+                    control={form.control}
+                    name='tagIds'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tags</FormLabel>
+                        {isLoadingTags ? (
+                          <div>Loading...</div>
+                        ) : (
+                          <FormControl>
+                            <MultiSelect
+                              options={
+                                data?.data?.map((tag: TagOutputDto) => ({
+                                  value: (tag as { id: string; tag: string })
+                                    .id,
+                                  label: (tag as { id: string; tag: string })
+                                    .tag,
+                                })) || []
+                              }
+                              onValueChange={field.onChange}
+                              placeholder={'Select tags'}
+                              className='w-full'
+                              disabled={isLoadingTags}
+                              {...field}
+                            />
+                          </FormControl>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className='mt-4'>
+                <FormLabel>Banner Image</FormLabel>
+                <br />
+                <ImageUpload
+                  label={'Upload Image'}
+                  handleImage={handleImageUpload}
+                  className='mt-2'
+                />
+              </div>
+            </div>
+
+            <div className='flex justify-end'>
+              <Button
+                type='submit'
+                form='opportunity-form'
+                className='min-w-[200px]'
+              >
+                Add Opportunity
+              </Button>
+            </div>
           </form>
         </Form>
       </div>

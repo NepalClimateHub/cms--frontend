@@ -51,9 +51,9 @@ export const useOpportunitiesColumns = () => {
       ),
       cell: ({ row }) => (
         <div className='flex flex-wrap gap-2'>
-          {row.original.tags?.map((tag) => (
-            <Badge key={tag} variant='outline'>
-              {tag}
+          {row.original.tags?.map((t: any) => (
+            <Badge key={t.tag} variant='outline'>
+              {t.tag}
             </Badge>
           ))}
         </div>
