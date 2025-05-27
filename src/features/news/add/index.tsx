@@ -6,7 +6,7 @@ import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { News, AddNewsSchema } from '@/schemas/news/news'
 import { Main } from '@/components/layout/main'
 import PageHeader from '@/components/page-header'
-import NewsForm from '../shared/NewsForm'
+import NewsForm from '../shared/news-form'
 
 const NewsAdd = () => {
   const addNewsMutation = useNewsAPI().addNews
@@ -41,7 +41,6 @@ const NewsAdd = () => {
         ...values,
         mode: values.mode as RequestMode,
         publishedDate: values.publishedDate.toISOString(),
-        publishedYear: values.publishedYear.toISOString(),
       },
     })
     navigate({
