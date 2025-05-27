@@ -1,6 +1,8 @@
+import { Link } from '@tanstack/react-router'
 import { useAnalyticsAPI } from '@/query/analytics/use-analytics'
 import { Newspaper, Briefcase, Calendar, Users } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+import { Card, CardTitle } from '@/components/ui/card'
 
 const Analytics = () => {
   const { data: analyticsData, isLoading } =
@@ -14,53 +16,77 @@ const Analytics = () => {
   }
 
   const icons = {
-    newsCount: <Newspaper className='h-5 w-5' />,
-    opportunityCount: <Briefcase className='h-5 w-5' />,
-    eventCount: <Calendar className='h-5 w-5' />,
-    userCount: <Users className='h-5 w-5' />,
+    newsCount: <Newspaper className='h-5 w-5 text-blue-600' />,
+    opportunityCount: <Briefcase className='h-5 w-5 text-green-600' />,
+    eventCount: <Calendar className='h-5 w-5 text-purple-600' />,
+    userCount: <Users className='h-5 w-5 text-pink-600' />,
   }
 
   const gradientColors = {
-    newsCount: 'from-blue-500 to-blue-600',
-    opportunityCount: 'from-green-500 to-green-600',
-    eventCount: 'from-purple-500 to-purple-600',
-    userCount: 'from-pink-500 to-pink-600',
+    newsCount: 'from-blue-500/20 to-blue-600/20',
+    opportunityCount: 'from-green-500/20 to-green-600/20',
+    eventCount: 'from-purple-500/20 to-purple-600/20',
+    userCount: 'from-pink-500/20 to-pink-600/20',
+  }
+
+  const iconBgColors = {
+    newsCount: 'bg-blue-100',
+    opportunityCount: 'bg-green-100',
+    eventCount: 'bg-purple-100',
+    userCount: 'bg-pink-100',
+  }
+
+  const routes = {
+    newsCount: '/news/list',
+    opportunityCount: '/opportunities/list',
+    eventCount: '/events/list',
+    userCount: '/users',
   }
 
   return (
-    <div className='flex w-full flex-row gap-4'>
+    <div className='flex w-full flex-row gap-6'>
       {isLoading ? (
         <div className='flex w-full items-center justify-center'>
           <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600'></div>
         </div>
       ) : (
         analyticsData?.data && (
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+          <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
             {Object.entries(analyticsData?.data).map(([key, value]) => (
-              <Card
+              <Link
                 key={key}
-                className='relative w-full overflow-hidden rounded-lg shadow-lg'
+                to={routes[key as keyof typeof routes]}
+                className='block transition-transform duration-200 hover:scale-[1.02]'
               >
-                <div
-                  className='absolute inset-0 bg-gradient-to-r opacity-5'
-                  style={{
-                    background: `linear-gradient(135deg, ${gradientColors[key as keyof typeof gradientColors]})`,
-                  }}
-                />
-                <div className='relative flex h-full flex-col p-4'>
-                  <div className='flex flex-row items-center justify-between pb-4'>
-                    <div className='flex flex-col space-y-1'>
-                      <CardTitle className='text-sm font-medium text-gray-500'>
-                        {switchText[key as keyof typeof switchText] ?? ''}
-                      </CardTitle>
-                      <div className='text-3xl font-bold'>{value}</div>
-                    </div>
-                    <div className='flex h-12 w-12 items-center justify-center rounded-lg bg-white/50 backdrop-blur-sm'>
-                      {icons[key as keyof typeof icons]}
+                <Card className='relative w-full overflow-hidden rounded-xl border-none shadow-lg transition-all duration-200 hover:shadow-xl'>
+                  <div
+                    className='absolute inset-0 bg-gradient-to-r opacity-10'
+                    style={{
+                      background: `linear-gradient(135deg, ${gradientColors[key as keyof typeof gradientColors]})`,
+                    }}
+                  />
+                  <div className='relative flex h-full flex-col p-8'>
+                    <div className='flex flex-row items-center justify-between'>
+                      <div className='flex flex-col space-y-2'>
+                        <CardTitle className='text-base font-medium text-muted-foreground'>
+                          {switchText[key as keyof typeof switchText] ?? ''}
+                        </CardTitle>
+                        <div className='text-4xl font-bold tracking-tight'>
+                          {value}
+                        </div>
+                      </div>
+                      <div
+                        className={cn(
+                          'flex h-10 w-10 items-center justify-center rounded-xl',
+                          iconBgColors[key as keyof typeof iconBgColors]
+                        )}
+                      >
+                        {icons[key as keyof typeof icons]}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </Link>
             ))}
           </div>
         )
