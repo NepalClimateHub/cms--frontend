@@ -1,5 +1,24 @@
 import { z } from 'zod'
 
+export const OPPORTUNITY_STATUS = [
+  { value: 'open', label: 'Open' },
+  { value: 'closed', label: 'Closed' },
+  { value: 'upcoming', label: 'Upcoming' },
+  { value: 'ongoing', label: 'Ongoing' },
+]
+
+export const OPPORTUNITY_FORMAT = [
+  { value: 'online', label: 'Online' },
+  { value: 'offline', label: 'Offline' },
+  { value: 'hybrid', label: 'Hybrid' },
+]
+
+export const OPPORTUNITY_COST = [
+  { value: 'free', label: 'Free' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'scholarship', label: 'Scholarship Available' },
+]
+
 export const opportunitySchema = z.object({
   title: z.string(),
   description: z.string(),
@@ -10,6 +29,7 @@ export const opportunitySchema = z.object({
   applicationDeadline: z.string().nullable(),
   duration: z.string().nullable(),
   contactEmail: z.string().nullable(),
+  website: z.string().nullable(),
   status: z.string().nullable(),
   cost: z.string().nullable(),
   contributedBy: z.string(),
