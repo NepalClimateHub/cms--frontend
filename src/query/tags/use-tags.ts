@@ -1,11 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { TagsType } from '@/schemas/tags/tags'
 import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
 import { toast } from '@/hooks/use-toast'
-import { tagControllerAddTagMutation } from '../../api/@tanstack/react-query.gen'
+import {
+  tagControllerAddTagMutation,
+  tagControllerGetTagsTypeOptions,
+} from '../../api/@tanstack/react-query.gen'
 
 export const useGetTags = (options: any) => {
   return useQuery({
     ...tagControllerGetTagsOptions(options),
+  })
+}
+
+export const useGetTagsByType = (type: TagsType) => {
+  return useQuery({
+    ...tagControllerGetTagsTypeOptions({
+      path: {
+        type: type,
+      },
+    }),
   })
 }
 
