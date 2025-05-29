@@ -2,6 +2,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import { NewsResponseDto } from '@/api/types.gen'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 import NewsRowAction from '../components/news-row-actions'
+import { Badge } from '@/components/ui/badge'
 
 export const useNewsColumns = () => {
   const columns: ColumnDef<NewsResponseDto>[] = [
@@ -67,6 +68,26 @@ export const useNewsColumns = () => {
             <a href={newsLink} target='_blank' rel='noopener noreferrer'>
               <span>{newsLink}</span>
             </a>
+          </div>
+        )
+      },
+    },
+    // add status column
+    {
+      accessorKey: 'isDraft',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Status' />
+      ),
+      cell: ({ row }) => {
+        const { isDraft } = row.original
+
+        return (
+          <div className='min-w-[100px] max-w-[100px]'>
+            {row.getValue('isDraft') ? (
+              <Badge className='bg-yellow-500'>Draft</Badge>
+            ) : (
+              <Badge className='bg-green-500'>Published</Badge>
+            )}
           </div>
         )
       },
