@@ -5,7 +5,6 @@ import { useGetProfile } from '@/query/auth/use-auth'
 import { User } from '@/schemas/auth/profile'
 import { getAccessToken, useAuthStore } from '@/stores/authStore'
 import { cn } from '@/lib/utils'
-import { SearchProvider } from '@/context/search-context'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { BoxLoader } from '@/components/loader'
@@ -41,25 +40,23 @@ function RouteComponent() {
   }
 
   return (
-    <SearchProvider>
-      <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar />
-        <div
-          id='content'
-          className={cn(
-            'ml-auto w-full max-w-full',
-            'peer-data-[state=collapsed]:w-[calc(100%-var(--sidebar-width-icon)-1rem)]',
-            'peer-data-[state=expanded]:w-[calc(100%-var(--sidebar-width))]',
-            'transition-[width] duration-200 ease-linear',
-            'flex h-svh flex-col',
-            'group-data-[scroll-locked=1]/body:h-full',
-            'group-data-[scroll-locked=1]/body:has-[main.fixed-main]:h-svh'
-          )}
-        >
-          <TopHeader />
-          <Outlet />
-        </div>
-      </SidebarProvider>
-    </SearchProvider>
+    <SidebarProvider defaultOpen={defaultOpen}>
+      <AppSidebar />
+      <div
+        id='content'
+        className={cn(
+          'ml-auto w-full max-w-full',
+          'peer-data-[state=collapsed]:w-[calc(100%-var(--sidebar-width-icon)-1rem)]',
+          'peer-data-[state=expanded]:w-[calc(100%-var(--sidebar-width))]',
+          'transition-[width] duration-200 ease-linear',
+          'flex h-svh flex-col',
+          'group-data-[scroll-locked=1]/body:h-full',
+          'group-data-[scroll-locked=1]/body:has-[main.fixed-main]:h-svh'
+        )}
+      >
+        <TopHeader />
+        <Outlet />
+      </div>
+    </SidebarProvider>
   )
 }
