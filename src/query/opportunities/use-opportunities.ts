@@ -9,6 +9,7 @@ import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import { toast } from '@/hooks/use-toast'
 import { opportunitiesFilterOptions } from '@/features/oppourtunities/list/opportunities-filter-options'
+import { opportunityControllerAddOpportutnityMutation } from '../../api/@tanstack/react-query.gen'
 
 export const useGetOpportunityById = (id: string) => {
   return useQuery({
@@ -24,6 +25,20 @@ export function useOpportunityAPI() {
   const queryClient = useQueryClient()
 
   return {
+    addOpportunity: useMutation({
+      ...opportunityControllerAddOpportutnityMutation(),
+
+      onSuccess: () => {
+        toast({
+          variant: 'default',
+          title: 'Opportunity added successfully.',
+        })
+        queryClient.invalidateQueries(
+          // @ts-expect-error - TODO: check type
+          opportunityControllerGetOpportunitiesOptions()
+        )
+      },
+    }),
     updateOpportunity: useMutation({
       ...opportunityControllerUpdateOpportunityMutation(),
       onSuccess: () => {

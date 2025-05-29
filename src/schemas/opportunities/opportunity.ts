@@ -32,7 +32,6 @@ export const opportunitySchema = z.object({
   website: z.string().nullable(),
   status: z.string().nullable(),
   cost: z.string().nullable(),
-  contributedBy: z.string(),
   organizer: z.string(),
   address: z.object({
     state: z.string().optional(),

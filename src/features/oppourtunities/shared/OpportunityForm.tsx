@@ -73,6 +73,8 @@ const OpportunityForm: FC<Props> = ({
     { value: 'CLOSED', label: 'Closed' },
   ]
 
+  console.log("form",form.getValues())
+
   return (
     <div className='mx-auto w-full p-6'>
       <Form {...form}>
