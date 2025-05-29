@@ -62,8 +62,10 @@ const EditOpportunity: FC = () => {
     if (opportunity) {
       form.reset({
         ...opportunity.data,
+        // @ts-ignore
         applicationDeadline: opportunity?.applicationDeadline
-          ? new Date(opportunity.applicationDeadline)
+          ? // @ts-ignore
+            new Date(opportunity?.applicationDeadline)
           : null,
         // @ts-ignore
         tagIds: opportunity?.tags?.map((tag) => tag.id) ?? [],
@@ -103,6 +105,7 @@ const EditOpportunity: FC = () => {
           path: {
             id: opportunityId,
           },
+          // @ts-ignore
           body: formattedValues,
         },
         {

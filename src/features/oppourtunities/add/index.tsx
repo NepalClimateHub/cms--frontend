@@ -101,6 +101,7 @@ const AddOpportunity: FC = () => {
 
       addOpportunity(
         {
+          // @ts-ignore
           body: formattedValues,
         },
         {
@@ -110,7 +111,7 @@ const AddOpportunity: FC = () => {
             })
             navigate({ to: '/opportunities/list' })
           },
-          onError: (error) => {
+          onError: (error: any) => {
             getCustomToast({
               title: error?.message ?? 'Failed to add opportunity',
               type: 'error',

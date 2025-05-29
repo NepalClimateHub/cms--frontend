@@ -879,10 +879,6 @@ export type OpportunityResponseDto = {
      */
     format: string;
     /**
-     * Contributed by
-     */
-    contributedBy: string;
-    /**
      * date
      */
     applicationDeadline?: string;
@@ -989,10 +985,6 @@ export type CreateOpportunityDto = {
      */
     organizer: string;
     /**
-     * Contributed by
-     */
-    contributedBy: string;
-    /**
      * Address
      */
     address?: AddressInput;
@@ -1050,10 +1042,6 @@ export type UpdateOpportunityDto = {
      * Opportunity type
      */
     format: string;
-    /**
-     * Contributed by
-     */
-    contributedBy: string;
     /**
      * date
      */
