@@ -1,3 +1,4 @@
+import { FC } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
 import {
@@ -28,24 +29,23 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import AddressForm from '@/components/address/address'
 import { DatePicker } from '@/components/datepicker'
 import ImageUpload from '@/components/image-upload'
 import { MinimalTiptapEditor } from '@/components/minimal-tiptap'
 import { MultiSelect } from '@/components/multi-select'
-import AddressForm from '@/components/address/address'
 import SocialsForm from '@/components/socials/socials'
-import { FC } from 'react'
 
 type Props = {
-  form: UseFormReturn<EventFormValues>,
-  handleImageUpload: (assetId: string | null, assetURL: string | null) => void,
+  form: UseFormReturn<EventFormValues>
+  handleImageUpload: (assetId: string | null, assetURL: string | null) => void
   handleFormSubmit: (values: EventFormValues) => Promise<void>
   isEdit: boolean
   isLoading: boolean
   tagsOptions: {
-    value: string;
-    label: string;
-}[]
+    value: string
+    label: string
+  }[]
 }
 
 const EventForm: FC<Props> = ({
@@ -54,7 +54,7 @@ const EventForm: FC<Props> = ({
   handleFormSubmit,
   isEdit,
   isLoading,
-  tagsOptions
+  tagsOptions,
 }) => {
   const navigate = useNavigate()
 
@@ -439,16 +439,10 @@ const EventForm: FC<Props> = ({
         </Card>
 
         {/* address */}
-        <AddressForm
-          form={form}
-          fieldPrefix='address'
-        />
+        <AddressForm form={form} fieldPrefix='address' />
 
         {/* socials */}
-        <SocialsForm
-          form={form}
-          fieldName='socials'
-        />
+        <SocialsForm form={form} fieldName='socials' />
 
         <Card>
           <CardHeader>
@@ -458,6 +452,8 @@ const EventForm: FC<Props> = ({
             <ImageUpload
               label={'Banner image'}
               handleImage={handleImageUpload}
+              initialImageId={form.getValues('bannerImageId')}
+              initialImageUrl={form.getValues('bannerImageUrl')}
             />
           </CardContent>
         </Card>
@@ -499,11 +495,7 @@ const EventForm: FC<Props> = ({
           >
             Cancel
           </Button>
-          <Button
-            type='submit'
-            loading={isLoading}
-            className='min-w-[100px]'
-          >
+          <Button type='submit' loading={isLoading} className='min-w-[100px]'>
             {isEdit ? 'Update Event' : 'Create Event'}
           </Button>
         </div>

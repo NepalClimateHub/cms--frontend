@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
-import { useDeleteNews } from '@/query/news/use-news'
+import { useDeleteNews, useNewsAPI } from '@/query/news/use-news'
 import {
   LucideEye,
   Pencil,
@@ -28,12 +28,25 @@ type NewsRowActionProps = {
 }
 
 const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
-  const { mutate: deleteNewsMutation } = useDeleteNews()
+  const { mutate: deleteNewsMutation } = useNewsAPI().deleteNews
+  const { mutate: updateNewsMutation } = useNewsAPI().updateNews
+
   const navigate = useNavigate()
 
   const handleEditNews = (newsId: string) => {
     navigate({
       to: `/news/${newsId}`,
+    })
+  }
+
+  const handleStatusToggle = (newsId: string, isDraft: boolean) => {
+    updateNewsMutation({
+      path: {
+        id: newsId,
+      },
+      body: {
+        isDraft: isDraft ? true : false,
+      },
     })
   }
 
@@ -46,7 +59,7 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
   }
 
   return (
-    <div className='flex items-center justify-center gap-4'>
+    <div className='flex items-center justify-end gap-2'>
       <Dialog>
         <DialogTrigger>
           <Button
@@ -92,7 +105,7 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
             {/* Tags */}
             {row.original.tags && row.original.tags.length > 0 && (
               <div className='flex flex-wrap gap-2'>
-                {row.original.tags.map((t: any) => (
+                {row.original.tags.map((t: { tag: string }) => (
                   <span
                     key={t.tag}
                     className='rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800'
@@ -143,6 +156,17 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* status trigger */}
+      <Button
+        onClick={() =>
+          handleStatusToggle(row.original.id, !row.original.isDraft)
+        }
+        size={'sm'}
+        className='h-6 bg-blue-500 px-2'
+      >
+        {row.original.isDraft ? 'Publish' : 'Conceal'}
+      </Button>
 
       <Button
         onClick={() => handleEditNews(row.original.id)}

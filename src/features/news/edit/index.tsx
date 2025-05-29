@@ -1,13 +1,13 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useParams } from '@tanstack/react-router'
+import { useNavigate, useParams } from '@tanstack/react-router'
 import { useGetNewsById, useNewsAPI } from '@/query/news/use-news'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { AddNewsSchema, type News } from '@/schemas/news/news'
 import { Main } from '@/components/layout/main'
 import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
-import NewsForm from '../shared/news-form'
+import NewsForm from '../shared/NewsForm'
 
 const NewsEdit = () => {
   const { newsId } = useParams({
@@ -32,7 +32,9 @@ const NewsEdit = () => {
     resolver: zodResolver(AddNewsSchema),
     values: {
       ...newsData,
-      publishedDate: new Date(newsData.publishedDate),
+      publishedDate: newsData?.publishedDate
+        ? new Date(newsData?.publishedDate)
+        : new Date(),
       // @ts-ignore
       tagIds: newsData?.tags?.map((tag: any) => tag?.id) || [],
     },
@@ -46,14 +48,23 @@ const NewsEdit = () => {
     form.setValue('bannerImageUrl', assetURL!)
   }
 
+  const navigate = useNavigate()
+
   const handleFormSubmit = async (values: News) => {
-    await newsMutation.mutate({
-      path: {
-        id: newsId,
+    await newsMutation.mutate(
+      {
+        path: {
+          id: newsId,
+        },
+        // @ts-ignore
+        body: values,
       },
-      // @ts-ignore
-      body: values,
-    })
+      {
+        onSuccess: () => {
+          navigate({ to: '/news/list' })
+        },
+      }
+    )
   }
 
   console.log('form err', form.formState.errors)

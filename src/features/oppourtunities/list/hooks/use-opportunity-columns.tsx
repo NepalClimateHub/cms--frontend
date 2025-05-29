@@ -45,22 +45,39 @@ export const useOpportunitiesColumns = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'tags',
+      accessorKey: 'status',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Tags' />
+        <DataTableColumnHeader column={column} title='Opportunity Status' />
       ),
       cell: ({ row }) => (
-        <div className='flex flex-wrap gap-2'>
-          {row.original.tags?.map((t: any) => (
-            <Badge key={t.tag} variant='outline'>
-              {t.tag}
-            </Badge>
-          ))}
+        <div className='flex items-center gap-2'>
+          <Badge
+            variant={row.original.status === 'open' ? 'default' : 'secondary'}
+            className='text-sm'
+          >
+            {row.original.status}
+          </Badge>
         </div>
       ),
       enableSorting: false,
       enableHiding: false,
     },
+    {
+      accessorKey: 'isDraft',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title=' Status' />
+      ),
+      cell: ({ row }) => (
+        <div className='min-w-[100px] max-w-[100px]'>
+          {row.getValue('isDraft') ? (
+            <Badge className='bg-yellow-500'>Draft</Badge>
+          ) : (
+            <Badge className='bg-green-500'>Published</Badge>
+          )}
+        </div>
+      ),
+    },
+
     {
       id: 'actions',
       cell: ({ row }) => <OpportunitiesRowAction row={row} />,

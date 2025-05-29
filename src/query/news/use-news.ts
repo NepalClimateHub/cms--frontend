@@ -12,7 +12,7 @@ import {
   newsControllerUpdateNewsMutation,
 } from '../../api/@tanstack/react-query.gen'
 
-export const useNewsAPI = () => {
+export function useNewsAPI() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -31,6 +31,26 @@ export const useNewsAPI = () => {
       },
     }),
 
+    deleteNews: useMutation({
+      ...newsControllerDeleteNewsMutation(),
+      onSuccess: () => {
+        // Invalidate and refetch
+        queryClient.invalidateQueries(newsControllerGetNewsOptions())
+        toast({
+          title: 'News deleted',
+          description: 'News has been deleted successfully.',
+          variant: 'default',
+        })
+      },
+
+      onError: () => {
+        toast({
+          title: 'Error deleting news',
+          description: 'There was an error deleting the news.',
+          variant: 'destructive',
+        })
+      },
+    }),
     updateNews: useMutation({
       ...newsControllerUpdateNewsMutation(),
       onSuccess: () => {
@@ -41,7 +61,6 @@ export const useNewsAPI = () => {
           description: 'News has been updated successfully.',
           variant: 'default',
         })
-        navigate({ to: '/news/list' })
       },
     }),
   }
@@ -66,26 +85,4 @@ export const useGetNewsById = (newsId: string) => {
   })
 }
 
-export const useDeleteNews = () => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    ...newsControllerDeleteNewsMutation(),
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries(newsControllerGetNewsOptions())
-      toast({
-        title: 'News deleted',
-        description: 'News has been deleted successfully.',
-        variant: 'default',
-      })
-    },
-
-    onError: () => {
-      toast({
-        title: 'Error deleting news',
-        description: 'There was an error deleting the news.',
-        variant: 'destructive',
-      })
-    },
-  })
-}
+export const useDeleteNews = () => {}

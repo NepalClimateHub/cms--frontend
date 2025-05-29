@@ -9,7 +9,7 @@ import {
   OPPORTUNITY_STATUS,
   OpportunityFormValues,
   opportunitySchema,
-} from '@/schemas/opportunities/opportunities'
+} from '@/schemas/opportunities/opportunity'
 import { Button } from '@/components/ui/button'
 import {
   Form,

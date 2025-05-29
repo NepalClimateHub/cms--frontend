@@ -7,7 +7,7 @@ import { eventFormSchema, EventFormValues } from '@/schemas/event'
 import { Main } from '@/components/layout/main'
 import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
-import EventForm from '../shared/event-form'
+import EventForm from '../shared/EventForm'
 
 const EditEvent = () => {
   const { eventId } = useParams({
@@ -30,14 +30,15 @@ const EditEvent = () => {
     resolver: zodResolver(eventFormSchema),
     values: {
       ...eventData,
-      socials: eventData?.socials || [],
+      socials: Array.isArray(eventData?.socials) ? eventData.socials : [],
       startDate: eventData?.startDate
         ? new Date(eventData?.startDate)
         : undefined,
       registrationDeadline: eventData?.registrationDeadline
         ? new Date(eventData?.registrationDeadline)
         : undefined,
-      // tagIds: eventData?.tags?.map((tag) => tag?.id) || []
+      // @ts-ignore
+      tagIds: eventData?.tags?.map((tag: any) => tag?.id) || [],
     },
   })
 
@@ -45,8 +46,8 @@ const EditEvent = () => {
     assetId: string | null,
     assetURL: string | null
   ) => {
-    form.setValue('bannerImageId', assetId)
-    form.setValue('bannerImageUrl', assetURL)
+    form.setValue('bannerImageId', assetId!)
+    form.setValue('bannerImageUrl', assetURL!)
   }
 
   const handleFormSubmit = async (values: EventFormValues) => {
