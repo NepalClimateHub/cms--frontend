@@ -24,6 +24,8 @@ import {
   DialogTitle,
   DialogHeader,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog'
 
 type EventCols = EventFormValues & {
@@ -260,14 +262,31 @@ const EventRowAction: FC<EventRowActionProps> = ({ row }) => {
         <Pencil />
       </Button>
       {/* delete trigger */}
-      <Button
-        onClick={() => handleDeleteEvent(row.original.id)}
-        size={'sm'}
-        variant={'destructive'}
-        className='h-6 px-2'
-      >
-        <Trash />
-      </Button>
+      <Dialog>
+        <DialogTrigger>
+          <Button size={'sm'} variant={'destructive'} className='h-6 px-2'>
+            <Trash />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Event</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this event? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type='submit'
+              variant='destructive'
+              onClick={() => handleDeleteEvent(row.original.id)}
+            >
+              Delete Event
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
