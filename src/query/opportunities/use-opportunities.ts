@@ -2,11 +2,43 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   opportunityControllerDeleteOpportunityMutation,
   opportunityControllerGetOpportunitiesOptions,
+  opportunityControllerGetOneOpportunityOptions,
+  opportunityControllerUpdateOpportunityMutation,
 } from '@/api/@tanstack/react-query.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import { toast } from '@/hooks/use-toast'
 import { opportunitiesFilterOptions } from '@/features/oppourtunities/list/opportunities-filter-options'
+
+export const useGetOpportunityById = (id: string) => {
+  return useQuery({
+    ...opportunityControllerGetOneOpportunityOptions({
+      path: {
+        id,
+      },
+    }),
+  })
+}
+
+export function useOpportunityAPI() {
+  const queryClient = useQueryClient()
+
+  return {
+    updateOpportunity: useMutation({
+      ...opportunityControllerUpdateOpportunityMutation(),
+      onSuccess: () => {
+        toast({
+          variant: 'default',
+          title: 'Opportunity updated successfully.',
+        })
+        queryClient.invalidateQueries(
+          // @ts-expect-error - TODO: check type
+          opportunityControllerGetOpportunitiesOptions()
+        )
+      },
+    }),
+  }
+}
 
 export const useGetOpportunity = (pagination: any, filters: any) => {
   return useQuery({
@@ -18,6 +50,7 @@ export const useGetOpportunity = (pagination: any, filters: any) => {
     }),
   })
 }
+
 export const useDeleteOpportunity = () => {
   const queryClient = useQueryClient()
 
