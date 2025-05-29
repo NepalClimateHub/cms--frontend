@@ -1,7 +1,11 @@
 import { FC } from 'react'
 import { format } from 'date-fns'
+import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
-import { useDeleteOpportunity } from '@/query/opportunities/use-opportunities'
+import {
+  useDeleteOpportunity,
+  useOpportunityAPI,
+} from '@/query/opportunities/use-opportunities'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
 import { OpportunityResponseDto } from '@/api/types.gen'
 import { Badge } from '@/components/ui/badge'
@@ -18,15 +22,35 @@ import {
 import { Separator } from '@/components/ui/separator'
 
 type OpportunitiesRowActionProps = {
-  row: Row<OpportunityResponseDto>
+  row: Row<OpportunityResponseDto & { isDraft: boolean }>
 }
 
 const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {
   const { mutate: deleteOpportunityMutation } = useDeleteOpportunity()
+  const { mutate: updateOpportunityMutation } =
+    useOpportunityAPI().updateOpportunity
+  const navigate = useNavigate()
+
+  const handleStatusToggle = (opportunityId: string, isDraft: boolean) => {
+    updateOpportunityMutation({
+      path: {
+        id: opportunityId,
+      },
+      body: {
+        isDraft: isDraft ? true : false,
+      },
+    })
+  }
 
   const formatDate = (date: string | undefined) => {
     if (!date) return 'Not specified'
     return format(new Date(date), 'PPP')
+  }
+
+  const handleEditOpportunity = (opportunityId: string) => {
+    navigate({
+      to: `/opportunities/${opportunityId}`,
+    })
   }
 
   return (
@@ -62,6 +86,12 @@ const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {
                   className='text-sm'
                 >
                   {row.original.status}
+                </Badge>
+                <Badge
+                  variant={row.original.isDraft ? 'secondary' : 'default'}
+                  className='text-sm'
+                >
+                  {row.original.isDraft ? 'Draft' : 'Published'}
                 </Badge>
               </div>
 
@@ -192,8 +222,19 @@ const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {
         </DialogContent>
       </Dialog>
 
+      {/* Status Toggle Button */}
       <Button
-        onClick={() => {}}
+        onClick={() =>
+          handleStatusToggle(row.original.id, !row.original.isDraft)
+        }
+        size={'sm'}
+        className='h-6 bg-blue-500 px-2 hover:bg-blue-600'
+      >
+        {row.original.isDraft ? 'Publish' : 'Conceal'}
+      </Button>
+
+      <Button
+        onClick={() => handleEditOpportunity(row.original.id)}
         size={'sm'}
         variant={'default'}
         className='h-6 bg-blue-500 px-2 hover:bg-blue-600'
