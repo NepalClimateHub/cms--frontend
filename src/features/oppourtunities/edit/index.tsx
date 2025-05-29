@@ -1,78 +1,115 @@
+import { FC, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, useParams } from '@tanstack/react-router'
+import { useParams, useNavigate } from '@tanstack/react-router'
 import {
   useGetOpportunityById,
   useOpportunityAPI,
 } from '@/query/opportunities/use-opportunities'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
-import {
-  opportunitySchema,
-  OpportunityFormValues,
-} from '@/schemas/opportunities/opportunity'
+import { OpportunityFormValues } from '@/schemas/opportunities/opportunity'
+import { opportunitySchema } from '@/schemas/opportunities/opportunity'
 import { Main } from '@/components/layout/main'
 import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
 import OpportunityForm from '../shared/OpportunityForm'
 
-const OpportunityEdit = () => {
+const EditOpportunity: FC = () => {
   const { opportunityId } = useParams({
     from: '/_authenticated/opportunities/$opportunityId/',
   })
+  const navigate = useNavigate()
 
-  const { data, isLoading } = useGetOpportunityById(opportunityId)
-  const { data: tagsData, isLoading: isLoadingTags } =
+  const { data: opportunity, isLoading: isLoadingOpportunity } =
+    useGetOpportunityById(opportunityId)
+  const { data: tags, isLoading: isLoadingTags } =
     useGetTagsByType('OPPORTUNITY')
-
-  const tagsOptions = tagsData?.data?.map((tag) => ({
-    value: tag.id,
-    label: tag.tag,
-  }))!
-
-  const opportunityData = data?.data as unknown as OpportunityFormValues
-
   const opportunityMutation = useOpportunityAPI().updateOpportunity
 
-  const form = useForm({
+  const form = useForm<OpportunityFormValues>({
     resolver: zodResolver(opportunitySchema),
-    values: {
-      ...opportunityData,
-      applicationDeadline: opportunityData?.applicationDeadline
-        ? new Date(opportunityData?.applicationDeadline)
-        : undefined,
-      // @ts-ignore
-      tagIds: opportunityData?.tags?.map((tag: any) => tag?.id) || [],
+    defaultValues: {
+      title: '',
+      description: '',
+      location: '',
+      locationType: '',
+      type: '',
+      format: '',
+      applicationDeadline: null,
+      duration: null,
+      contactEmail: null,
+      website: null,
+      cost: '',
+      status: '',
+      organizer: '',
+      address: {
+        street: '',
+        city: '',
+        state: '',
+        postcode: '',
+        country: '',
+      },
+      socials: {
+        facebook: '',
+        linkedin: '',
+        instagram: '',
+      },
+      tagIds: [],
     },
   })
+
+  useEffect(() => {
+    if (opportunity?.data) {
+      const opportunityData = opportunity.data
+      form.reset({
+        ...opportunityData,
+        applicationDeadline: opportunityData.applicationDeadline
+          ? new Date(opportunityData.applicationDeadline)
+          : null,
+        // @ts-ignore
+        tagIds: opportunityData.tags?.map((tag) => tag.id) ?? [],
+      })
+    }
+  }, [opportunity, form])
+
+  const handleFormSubmit = async (values: OpportunityFormValues) => {
+    try {
+      const formattedValues = {
+        ...values,
+        applicationDeadline: values.applicationDeadline?.toISOString(),
+        contactEmail: values.contactEmail ?? undefined,
+        website: values.website ?? undefined,
+        duration: values.duration ?? undefined,
+      }
+
+      await opportunityMutation.mutate(
+        {
+          path: {
+            id: opportunityId,
+          },
+          // @ts-ignore
+          body: formattedValues,
+        },
+        {
+          onSuccess: () => {
+            navigate({ to: '/opportunities/list' })
+          },
+        }
+      )
+    } catch (_error) {
+      // Error handling is done by the mutation
+    }
+  }
 
   const handleImageUpload = (
     assetId: string | null,
     assetURL: string | null
   ) => {
-    form.setValue('bannerImageId', assetId!)
-    form.setValue('bannerImageUrl', assetURL!)
+    form.setValue('bannerImageId', assetId ?? undefined)
+    form.setValue('bannerImageUrl', assetURL ?? undefined)
   }
 
-  const navigate = useNavigate()
-
-  const handleFormSubmit = async (values: Opportunity) => {
-    await opportunityMutation.mutate(
-      {
-        path: {
-          id: opportunityId,
-        },
-        // @ts-ignore
-        body: values,
-      },
-      {
-        onSuccess: () => {
-          navigate({ to: '/opportunities/list' })
-        },
-      }
-    )
-  }
-
-  if (isLoading || isLoadingTags) {
+  if (isLoadingOpportunity || isLoadingTags) {
     return <BoxLoader />
   }
 
@@ -86,10 +123,13 @@ const OpportunityEdit = () => {
             handleImageUpload={handleImageUpload}
             handleFormSubmit={handleFormSubmit}
             isEdit={true}
-            isLoading={
-              opportunityMutation.isPending || isLoading || isLoadingTags
+            isLoading={opportunityMutation.isPending}
+            tagsOptions={
+              tags?.data?.map((tag) => ({
+                value: tag.id,
+                label: tag.tag,
+              })) ?? []
             }
-            tagsOptions={tagsOptions}
           />
         </div>
       </div>
@@ -97,4 +137,4 @@ const OpportunityEdit = () => {
   )
 }
 
-export default OpportunityEdit
+export default EditOpportunity

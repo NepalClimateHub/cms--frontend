@@ -73,8 +73,6 @@ const OpportunityForm: FC<Props> = ({
     { value: 'CLOSED', label: 'Closed' },
   ]
 
-  console.log('err', form.formState.errors)
-
   return (
     <div className='mx-auto w-full p-6'>
       <Form {...form}>
@@ -483,8 +481,11 @@ const OpportunityForm: FC<Props> = ({
                             label='Upload banner image'
                             handleImage={(assetId, assetURL) => {
                               handleImageUpload(assetId, assetURL)
-                              field.onChange(assetId || '')
-                              form.setValue('bannerImageUrl', assetURL || '')
+                              field.onChange(assetId ?? undefined)
+                              form.setValue(
+                                'bannerImageUrl',
+                                assetURL ?? undefined
+                              )
                             }}
                             className='rounded-lg border border-gray-200 p-4'
                             initialImageId={form.getValues('bannerImageId')}

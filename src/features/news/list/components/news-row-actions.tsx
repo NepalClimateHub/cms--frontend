@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
-import { useDeleteNews, useNewsAPI } from '@/query/news/use-news'
+import { useNewsAPI } from '@/query/news/use-news'
 import {
   LucideEye,
   Pencil,
@@ -44,6 +44,7 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
       path: {
         id: newsId,
       },
+      // @ts-ignore
       body: {
         isDraft: isDraft ? true : false,
       },
@@ -105,7 +106,8 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
             {/* Tags */}
             {row.original.tags && row.original.tags.length > 0 && (
               <div className='flex flex-wrap gap-2'>
-                {row.original.tags.map((t: { tag: string }) => (
+                {/* @ts-ignore */}
+                {row.original?.tags?.map((t: { tag: string }) => (
                   <span
                     key={t.tag}
                     className='rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800'

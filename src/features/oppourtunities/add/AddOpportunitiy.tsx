@@ -336,6 +336,7 @@ const AddOpportunity = () => {
                           type='date'
                           placeholder='Enter application deadline'
                           className='w-full'
+                          // @ts-ignore
                           value={field.value ?? ''}
                           onChange={field.onChange}
                           onBlur={field.onBlur}

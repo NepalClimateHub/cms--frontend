@@ -80,6 +80,7 @@ export const useEventsColumns = () => {
     },
     {
       id: 'actions',
+      // @ts-ignore
       cell: ({ row }) => <EventRowAction row={row} />,
     },
   ]

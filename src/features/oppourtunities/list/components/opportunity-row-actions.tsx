@@ -1,13 +1,10 @@
-import { FC } from 'react'
 import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
-import { Row } from '@tanstack/react-table'
 import {
   useDeleteOpportunity,
   useOpportunityAPI,
 } from '@/query/opportunities/use-opportunities'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
-import { OpportunityResponseDto } from '@/api/types.gen'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,11 +18,7 @@ import {
 } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 
-type OpportunitiesRowActionProps = {
-  row: Row<OpportunityResponseDto & { isDraft: boolean }>
-}
-
-const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {
+const OpportunitiesRowAction = ({ row }: { row: any }) => {
   const { mutate: deleteOpportunityMutation } = useDeleteOpportunity()
   const { mutate: updateOpportunityMutation } =
     useOpportunityAPI().updateOpportunity
@@ -36,6 +29,8 @@ const OpportunitiesRowAction: FC<OpportunitiesRowActionProps> = ({ row }) => {
       path: {
         id: opportunityId,
       },
+
+      // @ts-ignore
       body: {
         isDraft: isDraft ? true : false,
       },

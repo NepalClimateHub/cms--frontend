@@ -1,8 +1,8 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { NewsResponseDto } from '@/api/types.gen'
+import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 import NewsRowAction from '../components/news-row-actions'
-import { Badge } from '@/components/ui/badge'
 
 export const useNewsColumns = () => {
   const columns: ColumnDef<NewsResponseDto>[] = [
@@ -79,8 +79,6 @@ export const useNewsColumns = () => {
         <DataTableColumnHeader column={column} title='Status' />
       ),
       cell: ({ row }) => {
-        const { isDraft } = row.original
-
         return (
           <div className='min-w-[100px] max-w-[100px]'>
             {row.getValue('isDraft') ? (

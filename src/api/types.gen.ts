@@ -163,7 +163,7 @@ export type OrganizationResponseDto = {
     /**
      * Banner image URL
      */
-    bannerImageUrl: string;
+    bannerImageUrl?: string;
     /**
      * Banner image ID
      */
@@ -252,7 +252,7 @@ export type CreateOrganizationDto = {
     /**
      * Banner image URL
      */
-    bannerImageUrl: string;
+    bannerImageUrl?: string;
     /**
      * Banner image ID
      */
@@ -314,7 +314,7 @@ export type UpdateOrganizationDto = {
     /**
      * Banner image URL
      */
-    bannerImageUrl: string;
+    bannerImageUrl?: string;
     /**
      * Banner image ID
      */
@@ -477,7 +477,7 @@ export type EventResponseDto = {
     /**
      * Banner image URL
      */
-    bannerImageUrl: string;
+    bannerImageUrl?: string;
     /**
      * Banner image ID
      */
@@ -585,7 +585,7 @@ export type CreateEventDto = {
     /**
      * Banner image URL
      */
-    bannerImageUrl: string;
+    bannerImageUrl?: string;
     /**
      * Banner image ID
      */
@@ -675,7 +675,7 @@ export type UpdateEventDto = {
     /**
      * Banner image URL
      */
-    bannerImageUrl: string;
+    bannerImageUrl?: string;
     /**
      * Banner image ID
      */
@@ -789,6 +789,10 @@ export type NewsResponseDto = {
      * Deleted at
      */
     deletedAt?: string;
+    /**
+     * isDraft
+     */
+    isDraft: boolean;
 };
 
 export type ApiResponseOfNewsResponseDto = {
@@ -836,9 +840,9 @@ export type UpdateNewsDto = {
      */
     tagIds?: Array<string>;
     /**
-     * Contributed by
+     * isDraft
      */
-    contributedBy: string;
+    isDraft: boolean;
 };
 
 export type OpportunityResponseDto = {
@@ -897,7 +901,7 @@ export type OpportunityResponseDto = {
     /**
      * Banner image URL
      */
-    bannerImageUrl: string;
+    bannerImageUrl?: string;
     /**
      * Banner image ID
      */
@@ -920,6 +924,10 @@ export type OpportunityResponseDto = {
      * Gallery
      */
     OpportunityGallery?: Array<string>;
+    /**
+     * isDraft
+     */
+    isDraft?: boolean;
 };
 
 export type OpportunityArrayApiResponse = {
@@ -952,6 +960,10 @@ export type CreateOpportunityDto = {
      * opportunity format
      */
     format: string;
+    /**
+     * Website URL
+     */
+    websiteUrl: string;
     /**
      * date
      */
@@ -993,7 +1005,7 @@ export type CreateOpportunityDto = {
     /**
      * Banner image URL
      */
-    bannerImageUrl: string;
+    bannerImageUrl?: string;
     /**
      * Banner image ID
      */
@@ -1071,7 +1083,7 @@ export type UpdateOpportunityDto = {
     /**
      * Banner image URL
      */
-    bannerImageUrl: string;
+    bannerImageUrl?: string;
     /**
      * Banner image ID
      */
@@ -1080,6 +1092,10 @@ export type UpdateOpportunityDto = {
      * Tags IDs
      */
     tagIds?: Array<string>;
+    /**
+     * isDraft
+     */
+    isDraft?: boolean;
 };
 
 export type AdminAnalyticsOutput = {
