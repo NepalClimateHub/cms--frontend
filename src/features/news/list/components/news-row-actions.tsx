@@ -21,6 +21,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogContent,
+  DialogFooter,
 } from '@/components/ui/dialog'
 
 type NewsRowActionProps = {
@@ -187,25 +188,27 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogTitle>Delete News</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
+              Are you sure you want to delete this news? This action cannot be
+              undone.
             </DialogDescription>
           </DialogHeader>
-
-          <Button
-            type='submit'
-            onClick={() => {
-              deleteNewsMutation({
-                path: {
-                  id: row.original.id,
-                },
-              })
-            }}
-          >
-            Confirm
-          </Button>
+          <DialogFooter>
+            <Button
+              type='submit'
+              variant='destructive'
+              onClick={() => {
+                deleteNewsMutation({
+                  path: {
+                    id: row.original.id,
+                  },
+                })
+              }}
+            >
+              Delete News
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
