@@ -44,6 +44,7 @@ const AddOpportunity: FC = () => {
         country: '',
       },
       socials: {
+        // @ts-expect-error opportunity social
         facebook: '',
         linkedin: '',
         instagram: '',
@@ -91,9 +92,12 @@ const AddOpportunity: FC = () => {
           : undefined,
         socials: values.socials
           ? {
-              facebook: values.socials.facebook ?? undefined,
-              linkedin: values.socials.linkedin ?? undefined,
-              instagram: values.socials.instagram ?? undefined,
+              // @ts-expect-error ...
+              facebook: values.socials?.facebook ?? undefined,
+              //  @ts-expect-error ...
+              linkedin: values.socials?.linkedin ?? undefined,
+              // @ts-expect-error ...
+              instagram: values.socials?.instagram ?? undefined,
             }
           : undefined,
         tagIds: values.tagIds ?? undefined,

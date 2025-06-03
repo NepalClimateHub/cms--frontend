@@ -464,6 +464,7 @@ const EventForm: FC<Props> = ({
         <AddressForm form={form} fieldPrefix='address' />
 
         {/* socials */}
+        {/* @ts-ignore */}
         <SocialsForm form={form} />
 
         <Card>

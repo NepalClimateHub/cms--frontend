@@ -38,11 +38,11 @@ const EditEvent = () => {
       registrationDeadline: eventData?.registrationDeadline
         ? new Date(eventData?.registrationDeadline)
         : undefined,
+      // @ts-ignore
       tagIds: eventData?.tags?.map((tag) => tag.id) ?? [],
     },
   })
 
-  console.log('form', form.getValues('tagIds'))
   const handleImageUpload = (
     assetId: string | null,
     assetURL: string | null

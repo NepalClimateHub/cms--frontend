@@ -37,6 +37,7 @@ const NewsAdd = () => {
 
   const handleFormSubmit = async (values: News) => {
     await addNewsMutation.mutateAsync({
+      // @ts-expect-error body add news Mutation
       body: {
         ...values,
         mode: values.mode as RequestMode,

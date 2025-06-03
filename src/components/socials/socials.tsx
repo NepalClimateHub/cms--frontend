@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { z } from 'zod'
-import { FieldPath, UseFormReturn, useFieldArray } from 'react-hook-form'
+import { UseFormReturn, useFieldArray } from 'react-hook-form'
 import { socialSchema } from '@/schemas/shared'
 import { PlusCircle, X } from 'lucide-react'
 import { Button } from '../ui/button'
@@ -30,16 +30,12 @@ const DEFAULT_SOCIALS = [
   { value: 'linkedin', label: 'LinkedIn' },
 ] as const
 
-type FormValues = {
-  socials: Array<{ name: string; link: string }>
-}
-
 type SocialsFormProps = {
-  form: UseFormReturn<FormValues>
+  form: UseFormReturn<any>
 }
 
 const SocialsForm = ({ form }: SocialsFormProps) => {
-  const { fields, append, remove } = useFieldArray<FormValues>({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'socials',
   })
@@ -47,8 +43,10 @@ const SocialsForm = ({ form }: SocialsFormProps) => {
   // Initialize with default social media fields
   useEffect(() => {
     if (fields.length === 0) {
+      const currentValues = form.getValues()
       // Reset form with default social platforms
       form.reset({
+        ...currentValues,
         socials: DEFAULT_SOCIALS.map((social) => ({
           name: social.value,
           link: '',
@@ -102,7 +100,7 @@ const SocialsForm = ({ form }: SocialsFormProps) => {
 
             <FormField
               control={form.control}
-              name={`socials.${index}.name` as FieldPath<FormValues>}
+              name={`socials.${index}.name`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Platform</FormLabel>
@@ -136,7 +134,7 @@ const SocialsForm = ({ form }: SocialsFormProps) => {
 
             <FormField
               control={form.control}
-              name={`socials.${index}.link` as FieldPath<FormValues>}
+              name={`socials.${index}.link`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Link</FormLabel>

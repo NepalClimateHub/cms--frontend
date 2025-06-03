@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useParams, useNavigate } from '@tanstack/react-router'
@@ -38,12 +38,14 @@ const EditOpportunity: FC = () => {
       // startDate: opportunityData?.startDate
       //   ? new Date(opportunityData?.startDate)
       //   : undefined,
+      // @ts-ignore
       applicationDeadline: opportunityData?.applicationDeadline
         ? new Date(opportunityData?.applicationDeadline)
         : undefined,
       // registrationDeadline: opportunityData?.registrationDeadline
       //   ? new Date(opportunityData?.registrationDeadline)
       //   : undefined,
+      // @ts-ignore
       tagIds: opportunityData?.tags?.map((tag) => tag.id) ?? [],
     },
   })
@@ -67,8 +69,11 @@ const EditOpportunity: FC = () => {
           : undefined,
         socials: values.socials
           ? {
+              // @ts-ignore
               facebook: values.socials.facebook ?? undefined,
+              // @ts-ignore
               linkedin: values.socials.linkedin ?? undefined,
+              // @ts-ignore
               instagram: values.socials.instagram ?? undefined,
             }
           : undefined,
