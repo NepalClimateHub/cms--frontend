@@ -26,52 +26,27 @@ const EditOpportunity: FC = () => {
     useGetTagsByType('OPPORTUNITY')
   const opportunityMutation = useOpportunityAPI().updateOpportunity
 
+  const opportunityData = opportunity?.data as unknown as OpportunityFormValues
+
   const form = useForm<OpportunityFormValues>({
     resolver: zodResolver(opportunitySchema),
-    defaultValues: {
-      title: '',
-      description: '',
-      location: '',
-      locationType: '',
-      type: '',
-      format: '',
-      applicationDeadline: null,
-      duration: null,
-      contactEmail: null,
-      website: null,
-      cost: '',
-      status: '',
-      organizer: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        postcode: '',
-        country: '',
-      },
-      socials: {
-        facebook: '',
-        linkedin: '',
-        instagram: '',
-      },
-      tagIds: [],
+    values: {
+      ...opportunityData,
+      socials: Array.isArray(opportunityData?.socials)
+        ? opportunityData.socials
+        : [],
+      // startDate: opportunityData?.startDate
+      //   ? new Date(opportunityData?.startDate)
+      //   : undefined,
+      applicationDeadline: opportunityData?.applicationDeadline
+        ? new Date(opportunityData?.applicationDeadline)
+        : undefined,
+      // registrationDeadline: opportunityData?.registrationDeadline
+      //   ? new Date(opportunityData?.registrationDeadline)
+      //   : undefined,
+      tagIds: opportunityData?.tags?.map((tag) => tag.id) ?? [],
     },
   })
-
-  useEffect(() => {
-    if (opportunity) {
-      form.reset({
-        ...opportunity.data,
-        // @ts-ignore
-        applicationDeadline: opportunity?.applicationDeadline
-          ? // @ts-ignore
-            new Date(opportunity?.applicationDeadline)
-          : null,
-        // @ts-ignore
-        tagIds: opportunity?.tags?.map((tag) => tag.id) ?? [],
-      })
-    }
-  }, [opportunity])
 
   const handleFormSubmit = async (values: OpportunityFormValues) => {
     try {
