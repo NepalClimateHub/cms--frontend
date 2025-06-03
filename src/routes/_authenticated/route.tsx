@@ -26,19 +26,8 @@ export const Route = createFileRoute('/_authenticated')({
 function RouteComponent() {
   const defaultOpen = Cookies.get('sidebar:state') !== 'false'
   const { accessToken, setUser } = useAuthStore()
-  const [enableProfileFetch, setEnableProfileFetch] = useState(false);
 
-  useEffect(() => {
-    // Introduce a small delay before enabling profile fetching
-    const timer = setTimeout(() => {
-      setEnableProfileFetch(true);
-    }, 50); // Adjust delay as needed
-
-    return () => clearTimeout(timer);
-  }, []); // Run once on mount
-
-  const { data: userData, isLoading: isLoadingProfile } =
-    useGetProfile(!!accessToken && enableProfileFetch)
+  const { data: userData, isLoading: isLoadingProfile } = useGetProfile(!!accessToken)
 
   useEffect(() => {
     if (userData) {
