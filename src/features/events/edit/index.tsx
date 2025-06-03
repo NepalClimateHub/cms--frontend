@@ -16,10 +16,11 @@ const EditEvent = () => {
   const { data, isLoading } = useGetEventById(eventId)
   const { data: tagsData, isLoading: isLoadingTags } = useGetTagsByType('EVENT')
 
-  const tagsOptions = tagsData?.data?.map((tag) => ({
-    value: tag.id,
-    label: tag.tag,
-  }))!
+  const tagsOptions =
+    tagsData?.data?.map((tag) => ({
+      value: tag.id,
+      label: tag.tag,
+    })) ?? []
 
   const eventData = data?.data as unknown as EventFormValues
 
@@ -37,11 +38,11 @@ const EditEvent = () => {
       registrationDeadline: eventData?.registrationDeadline
         ? new Date(eventData?.registrationDeadline)
         : undefined,
-      // @ts-ignore
-      tagIds: eventData?.tags?.map((tag: any) => tag?.id) || [],
+      tagIds: eventData?.tags?.map((tag) => tag.id) ?? [],
     },
   })
 
+  console.log('form', form.getValues('tagIds'))
   const handleImageUpload = (
     assetId: string | null,
     assetURL: string | null
