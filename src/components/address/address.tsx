@@ -1,55 +1,110 @@
 import { FieldPath, UseFormReturn } from 'react-hook-form'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from '../ui/form'
 import { Input } from '../ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select'
 
-type AddressFormProps<T extends Record<string, any>> = {
-    form: UseFormReturn<T>
-    // should be 'address' or what is used on the parent form
-    fieldPrefix: FieldPath<T>
-}
-
-const addressFields = [
-    { key: 'street', label: 'Street' },
-    { key: 'city', label: 'City' },
-    { key: 'state', label: 'State' },
-    { key: 'postcode', label: 'Postcode' },
-    { key: 'country', label: 'Country' },
+export const PROVINCES = [
+  { value: 'Koshi', label: 'Koshi' },
+  { value: 'Madhesh', label: 'Madhesh' },
+  { value: 'Bagmati', label: 'Bagmati' },
+  { value: 'Gandaki', label: 'Gandaki' },
+  { value: 'Lumbini', label: 'Lumbini' },
+  { value: 'Karnali', label: 'Karnali' },
+  { value: 'Sudurpaschim', label: 'Sudurpaschim' },
 ] as const
 
-const AddressForm = <T extends Record<string, any>>({
-    form,
-    fieldPrefix,
+type AddressFormProps<T extends Record<string, unknown>> = {
+  form: UseFormReturn<T>
+  // should be 'address' or what is used on the parent form
+  fieldPrefix: FieldPath<T>
+}
+
+const addressFields = [{ key: 'city', label: 'City', type: 'text' }] as const
+
+const AddressForm = <T extends Record<string, unknown>>({
+  form,
+  fieldPrefix,
 }: AddressFormProps<T>) => {
+  const withPrefix = (field: string) =>
+    `${fieldPrefix}.${field}` as FieldPath<T>
 
-    const withPrefix = (field: string) => `${fieldPrefix}.${field}` as FieldPath<T>
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Address Information</CardTitle>
+      </CardHeader>
+      <CardContent className='grid grid-cols-1 gap-6 md:grid-cols-2'>
+        <FormField
+          control={form.control}
+          name={withPrefix('state')}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Province</FormLabel>
+              <FormDescription>Select the province</FormDescription>
+              <FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value as string}
+                >
+                  <SelectTrigger className='w-full'>
+                    <SelectValue placeholder='Select province' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROVINCES.map((province) => (
+                      <SelectItem key={province.value} value={province.value}>
+                        {province.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Address</CardTitle>
-            </CardHeader>
-            <CardContent className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-                {addressFields.map(({ key, label }) => (
-                    <FormField
-                        key={key}
-                        control={form.control}
-                        name={withPrefix(key)}
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{label}</FormLabel>
-                                <FormControl>
-                                    <Input placeholder={`Enter ${label}`} {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                ))}
-            </CardContent>
-        </Card>
-
-    )
+        {addressFields.map(({ key, label, type }) => (
+          <FormField
+            key={key}
+            control={form.control}
+            name={withPrefix(key)}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{label}</FormLabel>
+                <FormDescription>
+                  Enter the {label.toLowerCase()}
+                </FormDescription>
+                <FormControl>
+                  <Input
+                    type={type}
+                    placeholder={`Enter ${label.toLowerCase()}`}
+                    className='w-full'
+                    {...field}
+                    value={(field.value as string) || ''}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
+      </CardContent>
+    </Card>
+  )
 }
 
 export default AddressForm
