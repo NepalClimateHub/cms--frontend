@@ -28,6 +28,7 @@ const NewsEdit = () => {
 
   const newsMutation = useNewsAPI().updateNews
 
+  console.log('newsData', newsData)
   const form = useForm<News>({
     resolver: zodResolver(AddNewsSchema),
     values: {
