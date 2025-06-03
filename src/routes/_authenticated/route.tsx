@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { useGetProfile } from '@/query/auth/use-auth'
@@ -26,8 +26,19 @@ export const Route = createFileRoute('/_authenticated')({
 function RouteComponent() {
   const defaultOpen = Cookies.get('sidebar:state') !== 'false'
   const { accessToken, setUser } = useAuthStore()
+  const [enableProfileFetch, setEnableProfileFetch] = useState(false);
+
+  useEffect(() => {
+    // Introduce a small delay before enabling profile fetching
+    const timer = setTimeout(() => {
+      setEnableProfileFetch(true);
+    }, 50); // Adjust delay as needed
+
+    return () => clearTimeout(timer);
+  }, []); // Run once on mount
+
   const { data: userData, isLoading: isLoadingProfile } =
-    useGetProfile(!!accessToken)
+    useGetProfile(!!accessToken && enableProfileFetch)
 
   useEffect(() => {
     if (userData) {
@@ -35,7 +46,7 @@ function RouteComponent() {
     }
   }, [userData])
 
-  if (isLoadingProfile) {
+  if (isLoadingProfile || !userData) {
     return <BoxLoader />
   }
 

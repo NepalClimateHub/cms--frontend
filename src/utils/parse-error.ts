@@ -1,27 +1,28 @@
 export const parseError = (error: any): string => {
+  console.log('Raw error object in parseError:', JSON.stringify(error, null, 2));
+
   try {
-    if (error.response?.data) {
-      const errorData = error.response.data
-      if (errorData.error?.details?.errors) {
-        const errors = errorData.error.details.errors
-        if (Array.isArray(errors)) {
-          const messages = errors.map((single) => {
-            if (single.message) {
-              return `${single?.message}`
-            }
-            return `${single.join(' ')}`
-          })
-          return messages.join(' ')
-        }
-        const messages = Object.keys(errors).map((key) => {
-          return `${errors[key].join(' ')}`
-        })
-        return messages.join(' ')
-      }
-      return errorData.error?.message || 'An unknown error occurred'
+  
+    if (error.error?.message) {
+      console.log('Error message (from error.error):', error.error.message);
+      return error.error.message; 
     }
-    return error.message || 'An unknown error occurred'
+
+  
+    if (error.error?.details?.message) {
+      console.log('Details message:', error.error.details.message);
+      return error.error.details.message;
+    }
+
+
+    throw new Error('No message found in error object');
   } catch (err) {
-    return 'An unknown error occurred'
+  
+    if (err instanceof Error) {
+      console.error('Error in parseError:', err.message);
+    } else {
+      console.error('Error in parseError:', err);
+    }
+    throw err; 
   }
-}
+};
