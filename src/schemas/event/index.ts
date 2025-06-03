@@ -15,12 +15,12 @@ export const eventFormSchema = z.object({
   contactEmail: z.string().optional(),
   status: z.string().optional(),
   cost: z.string().optional(),
-  bannerImageId: z.string().nullable(),
-  bannerImageUrl: z.string().nullable(),
-  contributedBy: z.string(),
+  website: z.string().optional(),
+  bannerImageId: z.string().nullable().optional(),
+  bannerImageUrl: z.string().nullable().optional(),
   tagIds: z.array(z.string()),
   address: addressSchema,
-  socials: socialSchema
+  socials: socialSchema,
 })
 
 export type EventFormValues = z.infer<typeof eventFormSchema>
@@ -49,6 +49,7 @@ export const EVENT_TYPE = [
   { label: 'Symposium', value: 'SYMPOSIUM' },
   { label: 'Webinar', value: 'WEBINAR' },
   { label: 'Workshop', value: 'WORKSHOP' },
+  { label: 'Discussion', value: 'DISCUSSION' },
 ]
 export const EventTypeSchema = z.enum([
   'CONFERENCE',
@@ -66,6 +67,7 @@ export const EVENT_COST = [
   { label: 'Partially Funded', value: 'PARTIALLY_FUNDED' },
   { label: 'Paid', value: 'PAID' },
   { label: 'Free', value: 'FREE' },
+  { label: 'Invite Only', value: 'INVITE_ONLY' },
 ]
 export const EventCostSchema = z.enum([
   'FULLY_FUNDED',

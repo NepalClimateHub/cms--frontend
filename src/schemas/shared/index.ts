@@ -31,7 +31,6 @@ export const ProvinceSchema = z.enum([
 ])
 export type Province = z.infer<typeof ProvinceSchema>
 
-
 export const addressSchema = z.object({
   street: z.string().optional(),
   city: z.string().optional(),

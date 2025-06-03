@@ -16,6 +16,7 @@ import {
   Tag,
   DollarSign,
   Clock,
+  LucideGlobe,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -173,6 +174,15 @@ const EventRowAction: FC<EventRowActionProps> = ({ row }) => {
                 </div>
                 <p className='text-sm font-medium capitalize text-gray-900'>
                   {row.original.cost?.toLowerCase().replace('_', ' ')}
+                </p>
+              </div>
+              <div className='space-y-2'>
+                <div className='flex items-center gap-2 text-sm text-gray-600'>
+                  <LucideGlobe className='h-4 w-4' />
+                  <span>Website:</span>
+                </div>
+                <p className='text-sm font-medium capitalize text-gray-900'>
+                  {row.original.website}
                 </p>
               </div>
             </div>

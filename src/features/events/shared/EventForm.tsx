@@ -61,7 +61,7 @@ const EventForm: FC<Props> = ({
   return (
     <Form {...form}>
       <form
-        id='tag-form'
+        id='event-form'
         onSubmit={form.handleSubmit(handleFormSubmit)}
         className='space-y-8'
       >
@@ -283,6 +283,27 @@ const EventForm: FC<Props> = ({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name='website'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Website</FormLabel>
+                  <FormDescription>Website of the event</FormDescription>
+                  <FormControl>
+                    <Input
+                      placeholder='Enter website'
+                      className='w-full'
+                      autoComplete='off'
+                      type='url'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
         </Card>
 
@@ -423,6 +444,7 @@ const EventForm: FC<Props> = ({
                   </FormDescription>
                   <FormControl>
                     <MultiSelect
+                      defaultValue={field.value}
                       options={tagsOptions || []}
                       onValueChange={field.onChange}
                       placeholder={'Select tags'}
@@ -442,7 +464,7 @@ const EventForm: FC<Props> = ({
         <AddressForm form={form} fieldPrefix='address' />
 
         {/* socials */}
-        <SocialsForm form={form} fieldName='socials' />
+        <SocialsForm form={form} />
 
         <Card>
           <CardHeader>
@@ -454,35 +476,6 @@ const EventForm: FC<Props> = ({
               handleImage={handleImageUpload}
               initialImageId={form.getValues('bannerImageId')}
               initialImageUrl={form.getValues('bannerImageUrl')}
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Contributor Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FormField
-              control={form.control}
-              name='contributedBy'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contributed By</FormLabel>
-                  <FormDescription>
-                    Who contributed this event information?
-                  </FormDescription>
-                  <FormControl>
-                    <Input
-                      placeholder='Enter contributor details'
-                      className='w-full'
-                      autoComplete='off'
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
             />
           </CardContent>
         </Card>

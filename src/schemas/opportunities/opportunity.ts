@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { socialSchema } from '../shared'
 
 export const OPPORTUNITY_STATUS = [
   { value: 'open', label: 'Open' },
@@ -18,6 +19,46 @@ export const OPPORTUNITY_COST = [
   { value: 'paid', label: 'Paid' },
   { value: 'scholarship', label: 'Scholarship Available' },
 ]
+
+export const OPPORTUNITY_TYPE = [
+  { value: 'JOB', label: 'Job' },
+  { value: 'INTERNSHIP', label: 'Internship' },
+  { value: 'FELLOWSHIP', label: 'Fellowship' },
+  { value: 'GRANT', label: 'Grant' },
+  { value: 'SCHOLARSHIP', label: 'Scholarship' },
+  {
+    value: 'VOLUNTEER',
+    label: 'Volunteer',
+  },
+  {
+    value: 'TRAINING',
+    label: 'Training',
+  },
+  {
+    value: 'AWARDS',
+    label: 'Awards',
+  },
+  {
+    value: 'COMPETITIONS',
+    label: 'Competitions',
+  },
+  {
+    value: 'ONLINE_COURSE',
+    label: 'Online Course',
+  },
+]
+
+// const costOptions = [
+//   { value: 'FULLY_FUNDED', label: 'Fully Funded' },
+//   { value: 'PARTIALLY_FUNDED', label: 'Partially Funded' },
+//   { value: 'PAID', label: 'Paid' },
+//   { value: 'FREE', label: 'Free' },
+// ]
+
+// const statusOptions = [
+//   { value: 'OPEN', label: 'Open' },
+//   { value: 'CLOSED', label: 'Closed' },
+// ]
 
 export const opportunitySchema = z.object({
   title: z.string(),
@@ -40,11 +81,7 @@ export const opportunitySchema = z.object({
     street: z.string().optional(),
     postcode: z.string().optional(),
   }),
-  socials: z.object({
-    facebook: z.string().optional(),
-    linkedin: z.string().optional(),
-    instagram: z.string().optional(),
-  }),
+  socials:socialSchema, 
   bannerImageUrl: z.string().optional(),
   bannerImageId: z.string().optional(),
   tagIds: z.array(z.string()),
