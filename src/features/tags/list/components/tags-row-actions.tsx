@@ -1,51 +1,51 @@
-import { FC } from 'react'
 import { Row } from '@tanstack/react-table'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
 import Tags from '@/schemas/tags/tags'
-import { useToast } from '@/components/ui/use-toast'
-import { useMutation, useQueryClient } from 'react-query'
-import { deleteTagById } from '@/lib/tags'
-import { handleServerError } from '@/lib/utils'
+// import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { FC } from 'react'
+// import { useToast } from '@/hooks/use-toast'
+// import { deleteTagById } from '@/query/use-tags';
+// import { handleServerError } from '@/utils/handle-server-error'
+// import { Pencil, Trash } from 'lucide-react';
 
 type TagsRowActionProps = {
   row: Row<Tags>
 }
 
 const TagsRowAction: FC<TagsRowActionProps> = ({ row: _row }) => {
-  const { toast } = useToast()
-  const queryClient = useQueryClient()
+  // const { toast } = useToast()
+  // const queryClient = useQueryClient()
 
-  const { mutate: deleteTag } = useMutation({
-    mutationFn: () => deleteTagById(_row.original.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tags'] })
-      toast({
-        title: 'Success',
-        description: 'Tag deleted successfully',
-      })
-    },
-    onError: (error) => {
-      handleServerError(error)
-    },
-  })
+  // const { mutate: deleteTag } = useMutation({
+  //   mutationFn: () => deleteTagById(_row.original.id),
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['tags'] })
+  //     toast({
+  //       title: 'Success',
+  //       description: 'Tag deleted successfully',
+  //     })
+  //   },
+  //   onError: (error) => {
+  //     handleServerError(error)
+  //   },
+  // })
 
-  const handleEdit = () => {
+  // const handleEdit = () => {
     // TODO: Implement edit functionality
     // - Add navigation to edit page
     // - Pass tag ID as parameter
-  }
+  // }
 
-  const handleDelete = () => {
+  // const handleDelete = () => {
     // TODO: Implement delete functionality
     // - Add confirmation dialog
     // - Call delete API
     // - Show success/error toast
-  }
+  // }
 
   return (
     <div className='flex items-center justify-center gap-4'>
-      <IconEdit onClick={handleEdit} className='cursor-pointer' size={16} />
-      <IconTrash onClick={handleDelete} className='cursor-pointer' size={16} />
+      {/* <Pencil onClick={handleEdit} className='cursor-pointer' size={16} />
+      <Trash onClick={handleDelete} className='cursor-pointer' size={16} /> */}
     </div>
   )
 }

@@ -29,7 +29,6 @@ export const useTagsColumns = () => {
           isUserTag,
         } = row.original;
 
-        console.log(row.original)
 
         return (
           <div className="flex space-x-2">
