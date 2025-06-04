@@ -26,8 +26,8 @@ export const Route = createFileRoute('/_authenticated')({
 function RouteComponent() {
   const defaultOpen = Cookies.get('sidebar:state') !== 'false'
   const { accessToken, setUser } = useAuthStore()
-  const { data: userData, isLoading: isLoadingProfile } =
-    useGetProfile(!!accessToken)
+
+  const { data: userData, isLoading: isLoadingProfile } = useGetProfile(!!accessToken)
 
   useEffect(() => {
     if (userData) {
@@ -35,7 +35,7 @@ function RouteComponent() {
     }
   }, [userData])
 
-  if (isLoadingProfile) {
+  if (isLoadingProfile || !userData) {
     return <BoxLoader />
   }
 

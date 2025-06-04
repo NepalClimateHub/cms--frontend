@@ -1,6 +1,6 @@
 export const auth = {
   profile: {
-    path: '/users/me',
+    path: '/api/v1/users/me',
     key: 'my-profile',
   },
   login: {

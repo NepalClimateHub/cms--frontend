@@ -2,12 +2,33 @@ import { FC } from 'react'
 import { Row } from '@tanstack/react-table'
 import { IconEdit, IconTrash } from '@tabler/icons-react'
 import Tags from '@/schemas/tags/tags'
+import { useToast } from '@/components/ui/use-toast'
+import { useMutation, useQueryClient } from 'react-query'
+import { deleteTagById } from '@/lib/tags'
+import { handleServerError } from '@/lib/utils'
 
 type TagsRowActionProps = {
   row: Row<Tags>
 }
 
 const TagsRowAction: FC<TagsRowActionProps> = ({ row: _row }) => {
+  const { toast } = useToast()
+  const queryClient = useQueryClient()
+
+  const { mutate: deleteTag } = useMutation({
+    mutationFn: () => deleteTagById(_row.original.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tags'] })
+      toast({
+        title: 'Success',
+        description: 'Tag deleted successfully',
+      })
+    },
+    onError: (error) => {
+      handleServerError(error)
+    },
+  })
+
   const handleEdit = () => {
     // TODO: Implement edit functionality
     // - Add navigation to edit page
