@@ -33,7 +33,10 @@ type AddressFormProps<T extends Record<string, unknown>> = {
   fieldPrefix: FieldPath<T>
 }
 
-const addressFields = [{ key: 'city', label: 'City', type: 'text' }] as const
+const addressFields = [
+  { key: 'country', label: 'Country', type: 'text' },
+  { key: 'city', label: 'City', type: 'text' }
+] as const
 
 const AddressForm = <T extends Record<string, unknown>>({
   form,

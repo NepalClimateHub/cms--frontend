@@ -117,7 +117,6 @@ const EditOpportunity: FC = () => {
       <div className='mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
         <div className='w-full'>
           <OpportunityForm
-            // @ts-expect-error opportunity form
             form={form}
             handleImageUpload={handleImageUpload}
             handleFormSubmit={handleFormSubmit}

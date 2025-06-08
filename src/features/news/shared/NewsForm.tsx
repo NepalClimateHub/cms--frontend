@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import AddressForm from '@/components/address/address'
 import { DatePicker } from '@/components/datepicker'
 import ImageUpload from '@/components/image-upload'
 import { MultiSelect } from '@/components/multi-select'
@@ -248,8 +247,6 @@ const NewsForm: FC<Props> = ({
             />
           </CardContent>
         </Card>
-
-        <AddressForm form={form} fieldPrefix='address' />
 
         <div className='flex justify-end gap-4'>
           <Button
