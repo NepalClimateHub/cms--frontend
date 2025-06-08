@@ -5,7 +5,6 @@ export const OPPORTUNITY_STATUS = [
   { value: 'open', label: 'Open' },
   { value: 'closed', label: 'Closed' },
   { value: 'upcoming', label: 'Upcoming' },
-  { value: 'ongoing', label: 'Ongoing' },
 ]
 
 export const OPPORTUNITY_FORMAT = [
@@ -15,9 +14,10 @@ export const OPPORTUNITY_FORMAT = [
 ]
 
 export const OPPORTUNITY_COST = [
-  { value: 'free', label: 'Free' },
+  { value: 'fully_funded', label: 'Fully Funded' },
+  { value: 'partially_funded', label: 'Partially Funded' },
   { value: 'paid', label: 'Paid' },
-  { value: 'scholarship', label: 'Scholarship Available' },
+  { value: 'free', label: 'Free' },
 ]
 
 export const OPPORTUNITY_TYPE = [
@@ -61,19 +61,21 @@ export const OPPORTUNITY_TYPE = [
 // ]
 
 export const opportunitySchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  location: z.string(),
-  locationType: z.string(),
-  type: z.string(),
-  format: z.string(),
-  applicationDeadline: z.date().nullable(),
-  duration: z.string().nullable(),
-  contactEmail: z.string().nullable(),
-  website: z.string().nullable(),
-  status: z.string().nullable(),
-  cost: z.string().nullable(),
-  organizer: z.string(),
+  title: z.string().min(1, "Title is required"),
+  organizer: z.string().min(1, "Organizer is required"),
+  type: z.string().min(1, "Type is required"),
+  format: z.string().min(1, "Format is required"),
+  cost: z.string().min(1, "Cost is required"),
+  status: z.string().min(1, "Status is required"),
+  locationType: z.string().min(1, "Location Type is required"),
+  description: z.string().min(1, "Description is required"),
+  tagIds: z.array(z.string()).min(1, "At least one tag is required"),
+  
+  location: z.string().optional(),
+  applicationDeadline: z.date().nullable().optional(),
+  duration: z.string().nullable().optional(),
+  contactEmail: z.string().nullable().optional(),
+  website: z.string().nullable().optional(),
   address: z.object({
     state: z.string().optional(),
     country: z.string().optional(),
@@ -81,10 +83,9 @@ export const opportunitySchema = z.object({
     street: z.string().optional(),
     postcode: z.string().optional(),
   }),
-  socials:socialSchema, 
+  socials: socialSchema,
   bannerImageUrl: z.string().optional(),
   bannerImageId: z.string().optional(),
-  tagIds: z.array(z.string()),
 })
 
 export type OpportunityFormValues = z.infer<typeof opportunitySchema>

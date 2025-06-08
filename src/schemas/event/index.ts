@@ -2,23 +2,24 @@ import { z } from 'zod'
 import { addressSchema, socialSchema } from '../shared'
 
 export const eventFormSchema = z.object({
-  title: z.string(),
-  organizer: z.string(),
-  description: z.string(),
-  location: z.string(),
-  locationType: z.string(),
-  type: z.string(),
-  format: z.string(),
+  title: z.string().min(1, "Title is required"),
+  organizer: z.string().min(1, "Organizer is required"),
+  type: z.string().min(1, "Type is required"),
+  format: z.string().min(1, "Format is required"),
+  cost: z.string().min(1, "Cost is required"),
+  status: z.string().min(1, "Status is required"),
+  locationType: z.string().min(1, "Location Type is required"),
+  description: z.string().min(1, "Description is required"),
+  tagIds: z.array(z.string()).min(1, "At least one tag is required"),
+  
+  location: z.string().optional(),
   startDate: z.date().optional(),
   registrationDeadline: z.date().optional(),
   registrationLink: z.string().optional(),
   contactEmail: z.string().optional(),
-  status: z.string().optional(),
-  cost: z.string().optional(),
   website: z.string().optional(),
   bannerImageId: z.string().nullable().optional(),
   bannerImageUrl: z.string().nullable().optional(),
-  tagIds: z.array(z.string()),
   address: addressSchema,
   socials: socialSchema,
 })
@@ -67,7 +68,6 @@ export const EVENT_COST = [
   { label: 'Partially Funded', value: 'PARTIALLY_FUNDED' },
   { label: 'Paid', value: 'PAID' },
   { label: 'Free', value: 'FREE' },
-  { label: 'Invite Only', value: 'INVITE_ONLY' },
 ]
 export const EventCostSchema = z.enum([
   'FULLY_FUNDED',
