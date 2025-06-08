@@ -10,7 +10,7 @@ export const AddNewsSchema = z.object({
   bannerImageUrl: z.string().url().optional().nullable(),
   bannerImageId: z.string().optional().nullable(),
   tagIds: z.array(z.string()),
-  address: addressSchema,
+  address: addressSchema.optional(),
 })
 
 export type News = z.infer<typeof AddNewsSchema>

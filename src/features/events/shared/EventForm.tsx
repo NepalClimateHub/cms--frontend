@@ -58,6 +58,7 @@ const EventForm: FC<Props> = ({
 }) => {
   const navigate = useNavigate()
 
+  console.log('errors', form.formState.errors)
   return (
     <Form {...form}>
       <form

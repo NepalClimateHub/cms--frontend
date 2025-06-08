@@ -54,6 +54,7 @@ const NewsForm: FC<Props> = ({
   ]
 
   console.log('form', form.getValues())
+  console.log('form errors', form.formState.errors)
   return (
     <Form {...form}>
       <form
@@ -239,6 +240,7 @@ const NewsForm: FC<Props> = ({
                       placeholder='Select tags'
                       className='w-full'
                       disabled={isLoading}
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />

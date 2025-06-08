@@ -35,7 +35,7 @@ type AddressFormProps<T extends Record<string, unknown>> = {
 
 const addressFields = [
   { key: 'country', label: 'Country', type: 'text' },
-  { key: 'city', label: 'City', type: 'text' }
+  { key: 'city', label: 'City', type: 'text' },
 ] as const
 
 const AddressForm = <T extends Record<string, unknown>>({
@@ -51,6 +51,31 @@ const AddressForm = <T extends Record<string, unknown>>({
         <CardTitle>Address Information</CardTitle>
       </CardHeader>
       <CardContent className='grid grid-cols-1 gap-6 md:grid-cols-2'>
+        {addressFields.map(({ key, label, type }) => (
+          <FormField
+            key={key}
+            control={form.control}
+            name={withPrefix(key)}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{label}</FormLabel>
+                <FormDescription>
+                  Enter the {label.toLowerCase()}
+                </FormDescription>
+                <FormControl>
+                  <Input
+                    type={type}
+                    placeholder={`Enter ${label.toLowerCase()}`}
+                    className='w-full'
+                    {...field}
+                    value={(field.value as string) || ''}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
         <FormField
           control={form.control}
           name={withPrefix('state')}
@@ -79,32 +104,6 @@ const AddressForm = <T extends Record<string, unknown>>({
             </FormItem>
           )}
         />
-
-        {addressFields.map(({ key, label, type }) => (
-          <FormField
-            key={key}
-            control={form.control}
-            name={withPrefix(key)}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{label}</FormLabel>
-                <FormDescription>
-                  Enter the {label.toLowerCase()}
-                </FormDescription>
-                <FormControl>
-                  <Input
-                    type={type}
-                    placeholder={`Enter ${label.toLowerCase()}`}
-                    className='w-full'
-                    {...field}
-                    value={(field.value as string) || ''}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
       </CardContent>
     </Card>
   )
