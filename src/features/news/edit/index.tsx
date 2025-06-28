@@ -38,6 +38,9 @@ const NewsEdit = () => {
         : new Date(),
       // @ts-ignore
       tagIds: newsData?.tags?.map((tag: any) => tag?.id) || [],
+      bannerImageUrl: newsData?.bannerImageUrl
+        ? newsData?.bannerImageUrl
+        : null,
     },
   })
 
@@ -46,7 +49,7 @@ const NewsEdit = () => {
     assetURL: string | null
   ) => {
     form.setValue('bannerImageId', assetId!)
-    form.setValue('bannerImageUrl', assetURL!)
+    form.setValue('bannerImageUrl', assetURL == '' ? null : assetURL!)
   }
 
   const navigate = useNavigate()
@@ -67,8 +70,6 @@ const NewsEdit = () => {
       }
     )
   }
-
-  console.log('form err', form.formState.errors)
 
   if (isLoading || isLoadingTags) {
     return <BoxLoader />

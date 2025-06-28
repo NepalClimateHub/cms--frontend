@@ -61,21 +61,21 @@ export const OPPORTUNITY_TYPE = [
 // ]
 
 export const opportunitySchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  organizer: z.string().min(1, "Organizer is required"),
-  type: z.string().min(1, "Type is required"),
-  format: z.string().min(1, "Format is required"),
-  cost: z.string().min(1, "Cost is required"),
-  status: z.string().min(1, "Status is required"),
-  locationType: z.string().min(1, "Location Type is required"),
-  description: z.string().min(1, "Description is required"),
-  tagIds: z.array(z.string()).min(1, "At least one tag is required"),
-  
+  title: z.string().min(1, 'Title is required'),
+  organizer: z.string().min(1, 'Organizer is required'),
+  type: z.string().min(1, 'Type is required'),
+  format: z.string().min(1, 'Format is required'),
+  cost: z.string().min(1, 'Cost is required'),
+  status: z.string().min(1, 'Status is required'),
+  locationType: z.string().min(1, 'Location Type is required'),
+  description: z.string().min(1, 'Description is required'),
+  tagIds: z.array(z.string()).min(1, 'At least one tag is required'),
+
   location: z.string().optional(),
   applicationDeadline: z.date().nullable().optional(),
   duration: z.string().nullable().optional(),
   contactEmail: z.string().nullable().optional(),
-  website: z.string().nullable().optional(),
+  websiteUrl: z.string().nullable().optional(),
   address: z.object({
     state: z.string().optional(),
     country: z.string().optional(),

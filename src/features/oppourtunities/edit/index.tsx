@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useParams, useNavigate } from '@tanstack/react-router'
@@ -28,36 +28,51 @@ const EditOpportunity: FC = () => {
 
   const opportunityData = opportunity?.data as unknown as OpportunityFormValues
 
+  const socialsObject = {
+    facebook: '',
+    instagram: '',
+    linkedin: '',
+    ...(opportunityData?.socials || {}),
+  }
+
   const form = useForm<OpportunityFormValues>({
     resolver: zodResolver(opportunitySchema),
-    values: {
-      ...opportunityData,
-      socials: Array.isArray(opportunityData?.socials)
-        ? opportunityData.socials
-        : [],
-      // startDate: opportunityData?.startDate
-      //   ? new Date(opportunityData?.startDate)
-      //   : undefined,
-      // @ts-ignore
-      applicationDeadline: opportunityData?.applicationDeadline
-        ? new Date(opportunityData?.applicationDeadline)
-        : undefined,
-      // registrationDeadline: opportunityData?.registrationDeadline
-      //   ? new Date(opportunityData?.registrationDeadline)
-      //   : undefined,
-      // @ts-ignore
-      tagIds: opportunityData?.tags?.map((tag) => tag.id) ?? [],
-    },
   })
+
+  useEffect(() => {
+    if (opportunityData) {
+      console.log('opda', opportunityData)
+      form.reset({
+        ...opportunityData,
+        websiteUrl: opportunityData?.websiteUrl ?? '',
+        socials: socialsObject,
+        bannerImageId: opportunityData?.bannerImageId ?? '',
+        locationType: opportunityData?.locationType ?? '',
+        applicationDeadline: opportunityData?.applicationDeadline
+          ? new Date(opportunityData?.applicationDeadline)
+          : undefined,
+        tagIds: Array.isArray((opportunityData as { tags?: unknown[] })?.tags)
+          ? ((opportunityData as { tags?: { id: string }[] }).tags || []).map(
+              (tag) => tag.id
+            )
+          : [],
+      })
+    }
+  }, [opportunityData])
 
   const handleFormSubmit = async (values: OpportunityFormValues) => {
     try {
-      const formattedValues = {
+      const formattedValues: Record<string, unknown> = {
         ...values,
+        socials: values.socials ?? {
+          facebook: '',
+          instagram: '',
+          linkedin: '',
+        },
+
         applicationDeadline: values.applicationDeadline
           ? new Date(values.applicationDeadline).toISOString()
           : undefined,
-
         address: values.address
           ? {
               street: values.address.street ?? undefined,
@@ -67,17 +82,13 @@ const EditOpportunity: FC = () => {
               country: values.address.country ?? undefined,
             }
           : undefined,
-        socials: values.socials
-          ? {
-              // @ts-ignore
-              facebook: values.socials.facebook ?? undefined,
-              // @ts-ignore
-              linkedin: values.socials.linkedin ?? undefined,
-              // @ts-ignore
-              instagram: values.socials.instagram ?? undefined,
-            }
-          : undefined,
         tagIds: values.tagIds ?? undefined,
+      }
+      if (values.bannerImageId) {
+        formattedValues.bannerImageId = values.bannerImageId
+      }
+      if (values.bannerImageUrl) {
+        formattedValues.bannerImageUrl = values.bannerImageUrl
       }
 
       await opportunityMutation.mutate(
@@ -85,8 +96,7 @@ const EditOpportunity: FC = () => {
           path: {
             id: opportunityId,
           },
-          // @ts-ignore
-          body: formattedValues,
+          body: formattedValues as any,
         },
         {
           onSuccess: () => {
@@ -103,8 +113,8 @@ const EditOpportunity: FC = () => {
     assetId: string | null,
     assetURL: string | null
   ) => {
-    form.setValue('bannerImageId', assetId ?? undefined)
-    form.setValue('bannerImageUrl', assetURL ?? undefined)
+    form.setValue('bannerImageId', assetId ?? '')
+    form.setValue('bannerImageUrl', assetURL ?? '')
   }
 
   if (isLoadingOpportunity || isLoadingTags) {
@@ -121,7 +131,7 @@ const EditOpportunity: FC = () => {
             handleImageUpload={handleImageUpload}
             handleFormSubmit={handleFormSubmit}
             isEdit={true}
-            isLoading={opportunityMutation.isPending}
+            isLoading={isLoadingOpportunity || opportunityMutation.isPending}
             tagsOptions={
               tags?.data?.map((tag) => ({
                 value: tag.id,

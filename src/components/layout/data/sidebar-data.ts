@@ -1,4 +1,4 @@
-import { IconHome, IconComponents } from '@tabler/icons-react'
+import { IconHome, IconComponents, IconArticle } from '@tabler/icons-react'
 import { Building, Calendar, Newspaper, PartyPopper } from 'lucide-react'
 import { NavGroup } from '../types'
 
@@ -24,14 +24,18 @@ export const superAdminSidebarData: NavGroup[] = [
       {
         title: 'News',
         url: '/news/list',
-        icon: Newspaper,
+        icon: IconArticle,
       },
       {
         title: 'Opportunities',
         url: '/opportunities/list',
         icon: PartyPopper,
       },
-
+      {
+        title: 'Blogs',
+        url: '/blog/list',
+        icon: Newspaper,
+      },
       {
         title: 'Tags',
         url: '/tags',

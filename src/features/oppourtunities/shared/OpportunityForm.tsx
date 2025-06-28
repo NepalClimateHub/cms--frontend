@@ -58,7 +58,10 @@ const OpportunityForm: FC<Props> = ({
 }) => {
   const navigate = useNavigate()
 
-  console.log('errors', form.formState.errors)
+  // Debug: log the current values for type and locationType
+  console.log('form type:', form.getValues('type'))
+  console.log('form locationType:', form.getValues('locationType'))
+  console.log('form', form.getValues())
 
   return (
     <Form {...form}>
@@ -132,17 +135,14 @@ const OpportunityForm: FC<Props> = ({
                     What type of opportunity is this?
                   </FormDescription>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value || undefined}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className='w-full'>
                         <SelectValue placeholder='Select type' />
                       </SelectTrigger>
                       <SelectContent>
-                        {OPPORTUNITY_TYPE.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                        {OPPORTUNITY_TYPE.map(({ value, label }) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -165,7 +165,7 @@ const OpportunityForm: FC<Props> = ({
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
-                      value={field.value || undefined}
+                      value={field.value ?? undefined}
                     >
                       <SelectTrigger className='w-full'>
                         <SelectValue placeholder='Select format' />
@@ -283,7 +283,7 @@ const OpportunityForm: FC<Props> = ({
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
-                      value={field.value || undefined}
+                      value={field.value ?? undefined}
                     >
                       <SelectTrigger className='w-full'>
                         <SelectValue placeholder='Select location type' />
@@ -375,7 +375,7 @@ const OpportunityForm: FC<Props> = ({
 
             <FormField
               control={form.control}
-              name='website'
+              name='websiteUrl'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Website URL</FormLabel>

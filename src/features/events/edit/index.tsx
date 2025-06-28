@@ -31,7 +31,6 @@ const EditEvent = () => {
     resolver: zodResolver(eventFormSchema),
     values: {
       ...eventData,
-      socials: Array.isArray(eventData?.socials) ? eventData.socials : [],
       startDate: eventData?.startDate
         ? new Date(eventData?.startDate)
         : undefined,
@@ -62,10 +61,6 @@ const EditEvent = () => {
   }
 
   console.log('form err', form.formState.errors)
-
-  if (isLoading || isLoadingTags) {
-    return <BoxLoader />
-  }
 
   return (
     <Main>

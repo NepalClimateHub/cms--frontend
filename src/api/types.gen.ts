@@ -447,6 +447,10 @@ export type EventResponseDto = {
      */
     format: string;
     /**
+     * event website
+     */
+    website: string;
+    /**
      * Contributed by
      */
     contributedBy: string;
@@ -541,10 +545,6 @@ export type CreateEventDto = {
      */
     format: string;
     /**
-     * Contributed by
-     */
-    contributedBy: string;
-    /**
      * date
      */
     startDate?: string;
@@ -576,6 +576,10 @@ export type CreateEventDto = {
      * Gallery iamges
      */
     gallery?: Array<string>;
+    /**
+     * website
+     */
+    website?: string;
     /**
      * Object of Socials
      */
@@ -631,9 +635,9 @@ export type UpdateEventDto = {
      */
     format: string;
     /**
-     * Contributed by
+     * website
      */
-    contributedBy: string;
+    website?: string;
     /**
      * date
      */
@@ -1436,6 +1440,27 @@ export type TagControllerGetTagsTypeResponses = {
 };
 
 export type TagControllerGetTagsTypeResponse = TagControllerGetTagsTypeResponses[keyof TagControllerGetTagsTypeResponses];
+
+export type TagControllerDeleteTagData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/tags/{id}';
+};
+
+export type TagControllerDeleteTagErrors = {
+    401: BaseApiErrorResponse;
+};
+
+export type TagControllerDeleteTagError = TagControllerDeleteTagErrors[keyof TagControllerDeleteTagErrors];
+
+export type TagControllerDeleteTagResponses = {
+    200: TagApiResponse;
+};
+
+export type TagControllerDeleteTagResponse = TagControllerDeleteTagResponses[keyof TagControllerDeleteTagResponses];
 
 export type ImagekitControllerGetAuthParamasData = {
     body?: never;

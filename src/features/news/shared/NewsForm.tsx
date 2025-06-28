@@ -211,7 +211,7 @@ const NewsForm: FC<Props> = ({
                       handleImage={(assetId, assetURL) => {
                         handleImageUpload(assetId, assetURL)
                         field.onChange(assetId || '')
-                        form.setValue('bannerImageUrl', assetURL || '')
+                        form.setValue('bannerImageUrl', assetURL ?? null)
                       }}
                       className='rounded-lg border border-gray-200 p-4'
                       initialImageId={form.getValues('bannerImageId')}

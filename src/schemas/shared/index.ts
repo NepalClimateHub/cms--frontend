@@ -32,20 +32,20 @@ export const ProvinceSchema = z.enum([
 export type Province = z.infer<typeof ProvinceSchema>
 
 export const addressSchema = z.object({
-  street: z.string().optional(),
   city: z.string().optional(),
   state: z.string().optional(),
-  postcode: z.string().optional(),
   country: z.string().optional(),
 })
 
 export type AddressType = z.infer<typeof addressSchema>
 
-export const socialSchema = z.array(
-  z.object({
-    name: z.string().min(1, 'Platform name is required'),
-    link: z.string().min(1, 'URL is required'),
+export const socialSchema = z
+  .object({
+    facebook: z.string().url().or(z.literal('')).optional(),
+    instagram: z.string().url().or(z.literal('')).optional(),
+    linkedin: z.string().url().or(z.literal('')).optional(),
   })
-)
+  .optional()
+  .nullable()
 
 export type SocialType = z.infer<typeof socialSchema>
