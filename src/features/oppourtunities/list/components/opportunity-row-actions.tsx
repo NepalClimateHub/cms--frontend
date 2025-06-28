@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
 import {
@@ -17,12 +18,15 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 
 const OpportunitiesRowAction = ({ row }: { row: any }) => {
   const { mutate: deleteOpportunityMutation } = useDeleteOpportunity()
   const { mutate: updateOpportunityMutation } =
     useOpportunityAPI().updateOpportunity
   const navigate = useNavigate()
+  const [open, setOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleStatusToggle = (opportunityId: string, isDraft: boolean) => {
     updateOpportunityMutation({
@@ -46,6 +50,23 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
     navigate({
       to: `/opportunities/${opportunityId}`,
     })
+  }
+
+  const handleDelete = () => {
+    setIsLoading(true)
+    deleteOpportunityMutation(
+      {
+        path: {
+          id: row.original.id,
+        },
+      },
+      {
+        onSettled: () => {
+          setIsLoading(false)
+          setOpen(false)
+        },
+      }
+    )
   }
 
   return (
@@ -237,37 +258,26 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
         <Pencil className='h-4 w-4' />
       </Button>
 
-      <Dialog>
-        <DialogTrigger>
-          <Button size={'sm'} variant={'destructive'} className='h-6 px-2'>
-            <Trash className='h-4 w-4' />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Opportunity</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this opportunity? This action
-              cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              type='submit'
-              variant='destructive'
-              onClick={() => {
-                deleteOpportunityMutation({
-                  path: {
-                    id: row.original.id,
-                  },
-                })
-              }}
-            >
-              Delete Opportunity
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <span>
+        <Button
+          size={'sm'}
+          variant={'destructive'}
+          className='h-6 px-2'
+          onClick={() => setOpen(true)}
+        >
+          <Trash className='h-4 w-4' />
+        </Button>
+        <ConfirmDialog
+          open={open}
+          onOpenChange={setOpen}
+          title='Delete Opportunity'
+          desc='Are you sure you want to delete this opportunity? This action cannot be undone.'
+          confirmText='Delete Opportunity'
+          destructive
+          isLoading={isLoading}
+          handleConfirm={handleDelete}
+        />
+      </span>
     </div>
   )
 }
