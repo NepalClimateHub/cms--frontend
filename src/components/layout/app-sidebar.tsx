@@ -27,20 +27,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {...props}
     >
       <SidebarHeader className='border-b border-border/40'>
-        <ProfileCard />
+        <div className='flex items-center px-3 py-4'>
+          <img
+            src='images/logo.png'
+            alt='Nepal Climate Hub'
+            className='mr-3 h-8 w-8'
+          />
+          <span className='text-lg font-bold text-foreground'>
+            NCH Dashboard
+          </span>
+        </div>
       </SidebarHeader>
       <SidebarContent className='py-4'>
         {sidebarData.navGroups.map((group, index) => (
-          <div key={group.title}>
+          <>
             <NavGroup {...group} />
             {index < sidebarData.navGroups.length - 1 && (
               <SidebarSeparator className='my-4' />
             )}
-          </div>
+          </>
         ))}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <ProfileCard />
+          <SidebarSeparator className='my-2' />
           <SidebarMenuItem>
             <SidebarMenuButton onClick={logout} tooltip='Logout'>
               <LogOut className='h-4 w-4' />

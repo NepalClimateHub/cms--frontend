@@ -19,7 +19,6 @@ type NavCollapsible = BaseNavItem & {
 type NavItem = NavCollapsible | NavLink
 
 interface NavGroup {
-  title: string
   items: NavItem[]
 }
 

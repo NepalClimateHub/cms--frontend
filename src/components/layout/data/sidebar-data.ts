@@ -4,7 +4,6 @@ import { NavGroup } from '../types'
 
 export const superAdminSidebarData: NavGroup[] = [
   {
-    title: 'Administrative',
     items: [
       {
         title: 'Home',

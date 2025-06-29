@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/collapsible'
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -29,14 +28,11 @@ import {
 } from '../ui/dropdown-menu'
 import { NavCollapsible, NavItem, NavLink, type NavGroup } from './types'
 
-export function NavGroup({ title, items }: NavGroup) {
+export function NavGroup({ items }: NavGroup) {
   const { state } = useSidebar()
   const href = useLocation({ select: (location) => location.href })
   return (
     <SidebarGroup className='space-y-1'>
-      <SidebarGroupLabel className='px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-        {title}
-      </SidebarGroupLabel>
       <SidebarMenu className='space-y-1'>
         {items.map((item) => {
           const key = `${item.title}-${item.url}`
