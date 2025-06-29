@@ -5,7 +5,6 @@ import { useGetEventById, useUpdateEvent } from '@/query/events/use-events'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { eventFormSchema, EventFormValues } from '@/schemas/event'
 import { Main } from '@/components/layout/main'
-import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
 import EventForm from '../shared/EventForm'
 

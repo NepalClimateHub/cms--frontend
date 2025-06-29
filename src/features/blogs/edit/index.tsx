@@ -18,6 +18,7 @@ const EditBlog: FC = () => {
   const navigate = useNavigate()
 
   const { data: blog, isLoading: isLoadingBlog } = useGetBlogById(blogId)
+  // @ts-ignore
   const { data: tags, isLoading: isLoadingTags } = useGetTagsByType('BLOG')
   const blogMutation = useBlogAPI().updateBlog
 

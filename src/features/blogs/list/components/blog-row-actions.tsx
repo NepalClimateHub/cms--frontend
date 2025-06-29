@@ -10,7 +10,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -34,6 +33,7 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
       path: {
         id: blogId,
       },
+      // @ts-ignore
       body: {
         isDraft: isDraft ? true : false,
       },

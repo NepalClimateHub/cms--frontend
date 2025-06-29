@@ -1,6 +1,5 @@
 // import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FC, useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 import { Row } from '@tanstack/react-table'
 import { useTagsAPI } from '@/query/tags/use-tags'
 import Tags from '@/schemas/tags/tags'
@@ -35,19 +34,19 @@ const TagsRowAction: FC<TagsRowActionProps> = ({ row: _row }) => {
         },
       },
       {
-    onSuccess: () => {
-      toast({
-        title: 'Success',
-        description: 'Tag deleted successfully',
-      })
+        onSuccess: () => {
+          toast({
+            title: 'Success',
+            description: 'Tag deleted successfully',
+          })
           setOpen(false)
-    },
-    onError: (error) => {
-      handleServerError(error)
-    },
+        },
+        onError: (error) => {
+          handleServerError(error)
+        },
         onSettled: () => {
           setIsLoading(false)
-      },
+        },
       }
     )
   }

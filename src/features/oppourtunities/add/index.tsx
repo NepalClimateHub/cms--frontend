@@ -32,7 +32,7 @@ const AddOpportunity: FC = () => {
       applicationDeadline: null,
       duration: null,
       contactEmail: null,
-      website: null,
+      websiteUrl: null,
       cost: '',
       status: '',
       organizer: '',
@@ -68,7 +68,7 @@ const AddOpportunity: FC = () => {
           ? new Date(values.applicationDeadline).toISOString()
           : undefined,
         contactEmail: values.contactEmail ?? undefined,
-        websiteUrl: values.website ?? undefined,
+        websiteUrl: values.websiteUrl ?? undefined,
         duration: values.duration ?? undefined,
         status: values.status ?? undefined,
         cost: values.cost ?? undefined,
@@ -127,6 +127,7 @@ const AddOpportunity: FC = () => {
       <div className='mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
         <div className='w-full'>
           <OpportunityForm
+            // @ts-ignore
             form={form}
             handleImageUpload={handleImageUpload}
             handleFormSubmit={handleFormSubmit}

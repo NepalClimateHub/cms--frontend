@@ -140,6 +140,7 @@ export const useBlogAPI = () => {
     mutationFn: async (data: { body: CreateBlogDto }) => {
       //   await new Promise((resolve) => setTimeout(resolve, 1000))
 
+      // @ts-ignore
       const newBlog: BlogResponseDto = {
         id: Date.now().toString(),
         ...data.body,

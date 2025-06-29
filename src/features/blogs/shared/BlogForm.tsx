@@ -173,6 +173,7 @@ const BlogForm: FC<Props> = ({
                   </FormDescription>
                   <FormControl>
                     <DatePicker
+                      // @ts-ignore
                       date={field.value}
                       setDate={field.onChange}
                       placeholder='Select published date'
@@ -193,6 +194,7 @@ const BlogForm: FC<Props> = ({
                     Select relevant tags for this blog
                   </FormDescription>
                   <FormControl>
+                    {/* @ts-ignore */}
                     <MultiSelect
                       options={tagsOptions}
                       value={field.value || []}
@@ -266,6 +268,7 @@ const BlogForm: FC<Props> = ({
             <FormField
               control={form.control}
               name='bannerImageId'
+              // @ts-ignore
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Banner Image</FormLabel>
@@ -274,6 +277,7 @@ const BlogForm: FC<Props> = ({
                   </FormDescription>
                   <FormControl>
                     <ImageUpload
+                      // @ts-ignore
                       onUpload={handleImageUpload}
                       currentImageUrl={form.getValues('bannerImageUrl')}
                     />

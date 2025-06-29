@@ -883,6 +883,10 @@ export type OpportunityResponseDto = {
      */
     format: string;
     /**
+     * duration
+     */
+    duration?: string;
+    /**
      * date
      */
     applicationDeadline?: string;
@@ -928,6 +932,10 @@ export type OpportunityResponseDto = {
      * isDraft
      */
     isDraft?: boolean;
+    /**
+     * Website URL
+     */
+    websiteUrl: string;
 };
 
 export type OpportunityArrayApiResponse = {

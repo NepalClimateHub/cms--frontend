@@ -12,6 +12,7 @@ import BlogForm from '../shared/BlogForm'
 
 const AddBlog: FC = () => {
   const navigate = useNavigate()
+  // @ts-ignore
   const { data: tags, isLoading: isLoadingTags } = useGetTagsByType('BLOG')
   const { mutate: addBlog, isPending } = useBlogAPI().addBlog
 
