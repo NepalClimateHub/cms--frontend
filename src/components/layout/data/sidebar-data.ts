@@ -11,11 +11,11 @@ export const superAdminSidebarData: NavGroup[] = [
         url: '/',
         icon: IconHome,
       },
-      {
-        title: 'Organizations',
-        url: '/organizations/list',
-        icon: Building,
-      },
+      // {
+      //   title: 'Organizations',
+      //   url: '/organizations/list',
+      //   icon: Building,
+      // },
       {
         title: 'Events',
         url: '/events/list',

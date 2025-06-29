@@ -1,4 +1,18 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import { cleanObj } from '@/utils/obj-utils'
+import { useToast } from '@/hooks/use-toast'
+import { getCustomToast } from '@/components/custom-toast'
+import {
+  blogControllerCreateBlogMutation,
+  blogControllerGetPublishedBlogsOptions,
+  blogControllerFindBlogByIdOptions,
+} from '../../api/@tanstack/react-query.gen'
+import {
+  blogControllerDeleteBlogMutation,
+  blogControllerFindAllBlogsOptions,
+} from '../../api/@tanstack/react-query.gen'
+import { blogControllerUpdateBlogMutation } from './../../api/@tanstack/react-query.gen'
 
 // Mock blog types - these should be replaced with actual API types when available
 export interface BlogResponseDto {
@@ -54,177 +68,92 @@ export interface BlogApiResponse {
   }
 }
 
-// Mock API functions - these should be replaced with actual API calls
-const mockBlogs: BlogResponseDto[] = [
-  {
-    id: '1',
-    title: 'Climate Change in Nepal',
-    content:
-      '<p>This is a sample blog content about climate change in Nepal...</p>',
-    excerpt: 'An overview of climate change impacts in Nepal',
-    author: 'John Doe',
-    category: 'Climate Science',
-    readingTime: '5 min read',
-    publishedDate: '2024-01-15',
-    isDraft: false,
-    isFeatured: true,
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-15T10:00:00Z',
-  },
-  {
-    id: '2',
-    title: 'Sustainable Development Goals',
-    content: '<p>Understanding the SDGs and their implementation...</p>',
-    excerpt: 'A comprehensive guide to SDGs',
-    author: 'Jane Smith',
-    category: 'Development',
-    readingTime: '8 min read',
-    publishedDate: '2024-01-10',
-    isDraft: true,
-    isFeatured: false,
-    createdAt: '2024-01-10T09:00:00Z',
-    updatedAt: '2024-01-10T09:00:00Z',
-  },
-]
-
-export const useGetBlogs = (pagination?: any, filters?: any) => {
+export const useGetBlogs = (
+  query: { [k: string]: string | number | string[] | number[] } = {}
+) => {
+  const cleanQuery = cleanObj(query)
   return useQuery({
-    queryKey: ['blogs', pagination, filters],
-    queryFn: async () => {
-      // Mock API call - replace with actual API
-      await new Promise((resolve) => setTimeout(resolve, 500))
+    ...blogControllerFindAllBlogsOptions({ query: cleanQuery }),
+  })
+}
 
-      let filteredBlogs = [...mockBlogs]
+export const useAddBlog = () => {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+  const navigate = useNavigate()
 
-      if (filters?.title) {
-        filteredBlogs = filteredBlogs.filter((blog) =>
-          blog.title.toLowerCase().includes(filters.title.toLowerCase())
-        )
-      }
+  return useMutation({
+    ...blogControllerCreateBlogMutation(),
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries(blogControllerGetPublishedBlogsOptions())
+      toast({
+        title: 'Blogs added',
+        description: 'Blogs has been added successfully.',
+        variant: 'default',
+      })
+      navigate({ to: '/blog/list' })
+    },
 
-      return {
-        data: filteredBlogs,
-        meta: {
-          count: filteredBlogs.length,
-        },
-      } as BlogArrayApiResponse
+    onError: (error: any) => {
+      getCustomToast({
+        title: (error as any)?.message ?? 'Failed to add blog',
+        type: 'error',
+      })
     },
   })
 }
 
-export const useGetBlogById = (id: string) => {
+export const useGetBlogById = (_blogId: string) => {
   return useQuery({
-    queryKey: ['blog', id],
-    queryFn: async () => {
-      // Mock API call - replace with actual API
-      await new Promise((resolve) => setTimeout(resolve, 300))
-
-      const blog = mockBlogs.find((b) => b.id === id)
-      if (!blog) {
-        throw new Error('Blog not found')
-      }
-
-      return {
-        data: blog,
-        meta: {},
-      } as BlogApiResponse
-    },
-    enabled: !!id,
+    ...blogControllerFindBlogByIdOptions({
+      path: {
+        id: _blogId,
+      },
+    }),
+    select: (data) => data.data,
   })
 }
 
-export const useBlogAPI = () => {
-  //   const apiClient = useApiClient()
-
-  const addBlog = useMutation({
-    mutationFn: async (data: { body: CreateBlogDto }) => {
-      //   await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // @ts-ignore
-      const newBlog: BlogResponseDto = {
-        id: Date.now().toString(),
-        ...data.body,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }
-
-      mockBlogs.push(newBlog)
-
-      return {
-        data: newBlog,
-        meta: {},
-      } as BlogApiResponse
+export const useUpdateBlog = () => {
+  return useMutation({
+    ...blogControllerUpdateBlogMutation({}),
+    onSuccess: (data: BlogApiResponse) => {
+      const blog = data.data
+      getCustomToast({
+        title: 'Blog updated',
+        description: `Blog "${blog.title}" has been updated successfully.`,
+        type: 'success',
+      })
+    },
+    onError: (error: any) => {
+      getCustomToast({
+        title: (error as any)?.message ?? 'Failed to update blog',
+        type: 'error',
+      })
     },
   })
-
-  const updateBlog = useMutation({
-    mutationFn: async (data: { path: { id: string }; body: UpdateBlogDto }) => {
-      // Mock API call - replace with actual API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      const index = mockBlogs.findIndex((b) => b.id === data.path.id)
-      if (index === -1) {
-        throw new Error('Blog not found')
-      }
-
-      mockBlogs[index] = {
-        ...mockBlogs[index],
-        ...data.body,
-        updatedAt: new Date().toISOString(),
-      }
-
-      return {
-        data: mockBlogs[index],
-        meta: {},
-      } as BlogApiResponse
-    },
-  })
-
-  const deleteBlog = useMutation({
-    mutationFn: async (data: { path: { id: string } }) => {
-      // Mock API call - replace with actual API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      const index = mockBlogs.findIndex((b) => b.id === data.path.id)
-      if (index === -1) {
-        throw new Error('Blog not found')
-      }
-
-      const deletedBlog = mockBlogs.splice(index, 1)[0]
-
-      return {
-        data: deletedBlog,
-        meta: {},
-      } as BlogApiResponse
-    },
-  })
-
-  return {
-    addBlog,
-    updateBlog,
-    deleteBlog,
-  }
 }
 
 export const useDeleteBlog = () => {
-  //   const apiClient = useApiClient()
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
 
   return useMutation({
-    mutationFn: async (data: { path: { id: string } }) => {
-      // Mock API call - replace with actual API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      const index = mockBlogs.findIndex((b) => b.id === data.path.id)
-      if (index === -1) {
-        throw new Error('Blog not found')
-      }
-
-      const deletedBlog = mockBlogs.splice(index, 1)[0]
-
-      return {
-        data: deletedBlog,
-        meta: {},
-      } as BlogApiResponse
+    ...blogControllerDeleteBlogMutation(),
+    onSuccess: () => {
+      queryClient.invalidateQueries(blogControllerFindAllBlogsOptions())
+      toast({
+        title: 'Blog deleted',
+        description: 'Blog has been deleted successfully.',
+        variant: 'default',
+      })
+    },
+    onError: (error: any) => {
+      getCustomToast({
+        title: (error as any)?.message ?? 'Failed to delete blog',
+        type: 'error',
+      })
     },
   })
 }

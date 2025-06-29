@@ -173,10 +173,9 @@ const BlogForm: FC<Props> = ({
                   </FormDescription>
                   <FormControl>
                     <DatePicker
-                      // @ts-ignore
-                      date={field.value}
-                      setDate={field.onChange}
-                      placeholder='Select published date'
+                      {...field}
+                      value={field.value ? new Date(field.value) : undefined}
+                      onChange={(date) => field.onChange(date)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -194,7 +193,7 @@ const BlogForm: FC<Props> = ({
                     Select relevant tags for this blog
                   </FormDescription>
                   <FormControl>
-                    {/* @ts-ignore */}
+                    {/* @ts-expect-error - MultiSelect component has type mismatch */}
                     <MultiSelect
                       options={tagsOptions}
                       value={field.value || []}
@@ -268,8 +267,7 @@ const BlogForm: FC<Props> = ({
             <FormField
               control={form.control}
               name='bannerImageId'
-              // @ts-ignore
-              render={({ field }) => (
+              render={({ field: _field }) => (
                 <FormItem>
                   <FormLabel>Banner Image</FormLabel>
                   <FormDescription>
@@ -277,9 +275,10 @@ const BlogForm: FC<Props> = ({
                   </FormDescription>
                   <FormControl>
                     <ImageUpload
-                      // @ts-ignore
-                      onUpload={handleImageUpload}
-                      currentImageUrl={form.getValues('bannerImageUrl')}
+                      label='Upload banner image'
+                      handleImage={handleImageUpload}
+                      initialImageId={form.getValues('bannerImageId')}
+                      initialImageUrl={form.getValues('bannerImageUrl')}
                     />
                   </FormControl>
                   <FormMessage />

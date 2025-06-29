@@ -28,10 +28,10 @@ const ListBlog = () => {
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
 
-  const { data: blogsList, isLoading: isLoadingBlogs } = useGetBlogs(
-    pagination,
-    filters
-  )
+  const { data: blogsList, isLoading: isLoadingBlogs } = useGetBlogs({
+    ...pagination,
+    ...filters,
+  })
 
   const blogsData = blogsList?.data as unknown as BlogResponseDto[]
   const blogsMeta = blogsList?.meta as unknown as Meta
