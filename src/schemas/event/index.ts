@@ -22,6 +22,7 @@ export const eventFormSchema = z.object({
   bannerImageUrl: z.string().nullable().optional(),
   address: addressSchema.optional(),
   socials: socialSchema,
+  isDraft: z.boolean().optional().default(false),
 })
 
 export type EventFormValues = z.infer<typeof eventFormSchema>

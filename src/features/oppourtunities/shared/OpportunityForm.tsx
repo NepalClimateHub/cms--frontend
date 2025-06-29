@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import AddressForm from '@/components/address/address'
 import { DatePicker } from '@/components/datepicker'
@@ -485,6 +486,27 @@ const OpportunityForm: FC<Props> = ({
                     />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='isDraft'
+              render={({ field }) => (
+                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+                  <div className='space-y-0.5'>
+                    <FormLabel className='text-base'>Draft Status</FormLabel>
+                    <FormDescription>
+                      Save as draft or publish immediately
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />

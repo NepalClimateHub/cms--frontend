@@ -86,6 +86,7 @@ export const opportunitySchema = z.object({
   socials: socialSchema,
   bannerImageUrl: z.string().optional(),
   bannerImageId: z.string().optional(),
+  isDraft: z.boolean().optional().default(false),
 })
 
 export type OpportunityFormValues = z.infer<typeof opportunitySchema>

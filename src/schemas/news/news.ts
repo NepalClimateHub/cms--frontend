@@ -17,6 +17,7 @@ export const AddNewsSchema = z.object({
   bannerImageId: z.string().optional().nullable(),
   tagIds: z.array(z.string()).optional(),
   address: addressSchema.optional(),
+  isDraft: z.boolean().optional().default(false),
 })
 
 export type News = z.infer<typeof AddNewsSchema>
