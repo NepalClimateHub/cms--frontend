@@ -24,7 +24,7 @@ import { tagsFilterOptions } from './tags-filter-options'
 export default function Tags() {
   const [addDialogOpen, setAddDialogOpen] = useState(false)
 
-  const roleColumns = useTagsColumns()
+  const tagColumns = useTagsColumns()
   const paginationOptions = usePagination()
   const filterOptions = useFilters(tagsFilterOptions)
 
@@ -45,7 +45,7 @@ export default function Tags() {
 
   const table = useReactTable({
     data: roleData,
-    columns: roleColumns as ColumnDef<TagOutputDto, unknown>[],
+    columns: tagColumns as ColumnDef<TagOutputDto, unknown>[],
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   })

@@ -364,6 +364,10 @@ export type AddTagDto = {
      */
     isNewsTag?: boolean;
     /**
+     * Indicates if this is a blog tag
+     */
+    isBlogTag?: boolean;
+    /**
      * Indicates if this is an opportunity tag
      */
     isOpportunityTag?: boolean;
@@ -1103,6 +1107,7 @@ export type AdminAnalyticsOutput = {
     userCount: string;
     eventCount: string;
     opportunityCount: string;
+    blogCount: string;
 };
 
 export type ApiResponseOfAdminAnalyticsOutput = {
@@ -1110,6 +1115,189 @@ export type ApiResponseOfAdminAnalyticsOutput = {
         [key: string]: unknown;
     };
     data: AdminAnalyticsOutput;
+};
+
+export type CreateBlogDto = {
+    /**
+     * Blog title
+     */
+    title: string;
+    /**
+     * Blog content
+     */
+    content: string;
+    /**
+     * Blog excerpt
+     */
+    excerpt?: string;
+    /**
+     * Blog author
+     */
+    author: string;
+    /**
+     * Blog category
+     */
+    category: string;
+    /**
+     * Estimated reading time
+     */
+    readingTime?: string;
+    /**
+     * Published date
+     */
+    publishedDate?: string;
+    /**
+     * Is draft
+     */
+    isDraft?: boolean;
+    /**
+     * Is featured
+     */
+    isFeatured?: boolean;
+    /**
+     * Banner image URL
+     */
+    bannerImageUrl?: string;
+    /**
+     * Banner image ID
+     */
+    bannerImageId?: string;
+    /**
+     * Tags IDs
+     */
+    tagIds?: Array<string>;
+};
+
+export type BlogResponseDto = {
+    /**
+     * Blog ID
+     */
+    id: string;
+    /**
+     * Blog title
+     */
+    title: string;
+    /**
+     * Blog content
+     */
+    content: string;
+    /**
+     * Blog excerpt
+     */
+    excerpt?: string;
+    /**
+     * Blog author
+     */
+    author: string;
+    /**
+     * Blog category
+     */
+    category: string;
+    /**
+     * Estimated reading time
+     */
+    readingTime?: string;
+    /**
+     * Published date
+     */
+    publishedDate?: string;
+    /**
+     * Is draft
+     */
+    isDraft: boolean;
+    /**
+     * Is featured
+     */
+    isFeatured: boolean;
+    /**
+     * Banner image URL
+     */
+    bannerImageUrl?: string;
+    /**
+     * Banner image ID
+     */
+    bannerImageId?: string;
+    /**
+     * Tags
+     */
+    tags?: Array<TagOutputDto>;
+    /**
+     * Contributed by
+     */
+    contributedBy: string;
+    /**
+     * Created at
+     */
+    createdAt: string;
+    /**
+     * Updated at
+     */
+    updatedAt: string;
+    /**
+     * Deleted at
+     */
+    deletedAt?: string;
+};
+
+export type BlogApiResponse = {
+    data: BlogResponseDto;
+    meta: ResponseMetadata;
+};
+
+export type BlogArrayApiResponse = {
+    data: Array<BlogResponseDto>;
+    meta: ResponseMetadata;
+};
+
+export type UpdateBlogDto = {
+    /**
+     * Blog title
+     */
+    title?: string;
+    /**
+     * Blog content
+     */
+    content?: string;
+    /**
+     * Blog excerpt
+     */
+    excerpt?: string;
+    /**
+     * Blog author
+     */
+    author?: string;
+    /**
+     * Blog category
+     */
+    category?: string;
+    /**
+     * Estimated reading time
+     */
+    readingTime?: string;
+    /**
+     * Published date
+     */
+    publishedDate?: string;
+    /**
+     * Is draft
+     */
+    isDraft?: boolean;
+    /**
+     * Is featured
+     */
+    isFeatured?: boolean;
+    /**
+     * Banner image URL
+     */
+    bannerImageUrl?: string;
+    /**
+     * Banner image ID
+     */
+    bannerImageId?: string;
+    /**
+     * Tags IDs
+     */
+    tagIds?: Array<string>;
 };
 
 export type AppControllerGetHelloData = {
@@ -1837,6 +2025,160 @@ export type AnalyticsControllerGetAdminAnalyticsResponses = {
 };
 
 export type AnalyticsControllerGetAdminAnalyticsResponse = AnalyticsControllerGetAdminAnalyticsResponses[keyof AnalyticsControllerGetAdminAnalyticsResponses];
+
+export type BlogControllerFindAllBlogsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Optional, defaults to 100
+         */
+        limit?: number;
+        /**
+         * Optional, defaults to 0
+         */
+        offset?: number;
+        title?: string;
+        category?: string;
+        author?: string;
+        tagIds?: Array<string>;
+        isDraft?: boolean;
+        isFeatured?: boolean;
+    };
+    url: '/api/v1/blogs';
+};
+
+export type BlogControllerFindAllBlogsErrors = {
+    401: BaseApiErrorResponse;
+};
+
+export type BlogControllerFindAllBlogsError = BlogControllerFindAllBlogsErrors[keyof BlogControllerFindAllBlogsErrors];
+
+export type BlogControllerFindAllBlogsResponses = {
+    200: BlogArrayApiResponse;
+};
+
+export type BlogControllerFindAllBlogsResponse = BlogControllerFindAllBlogsResponses[keyof BlogControllerFindAllBlogsResponses];
+
+export type BlogControllerCreateBlogData = {
+    body: CreateBlogDto;
+    path?: never;
+    query?: never;
+    url: '/api/v1/blogs';
+};
+
+export type BlogControllerCreateBlogErrors = {
+    401: BaseApiErrorResponse;
+};
+
+export type BlogControllerCreateBlogError = BlogControllerCreateBlogErrors[keyof BlogControllerCreateBlogErrors];
+
+export type BlogControllerCreateBlogResponses = {
+    201: BlogApiResponse;
+};
+
+export type BlogControllerCreateBlogResponse = BlogControllerCreateBlogResponses[keyof BlogControllerCreateBlogResponses];
+
+export type BlogControllerGetFeaturedBlogsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/blogs/featured';
+};
+
+export type BlogControllerGetFeaturedBlogsErrors = {
+    401: BaseApiErrorResponse;
+};
+
+export type BlogControllerGetFeaturedBlogsError = BlogControllerGetFeaturedBlogsErrors[keyof BlogControllerGetFeaturedBlogsErrors];
+
+export type BlogControllerGetFeaturedBlogsResponses = {
+    200: BlogArrayApiResponse;
+};
+
+export type BlogControllerGetFeaturedBlogsResponse = BlogControllerGetFeaturedBlogsResponses[keyof BlogControllerGetFeaturedBlogsResponses];
+
+export type BlogControllerGetPublishedBlogsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/blogs/published';
+};
+
+export type BlogControllerGetPublishedBlogsErrors = {
+    401: BaseApiErrorResponse;
+};
+
+export type BlogControllerGetPublishedBlogsError = BlogControllerGetPublishedBlogsErrors[keyof BlogControllerGetPublishedBlogsErrors];
+
+export type BlogControllerGetPublishedBlogsResponses = {
+    200: BlogArrayApiResponse;
+};
+
+export type BlogControllerGetPublishedBlogsResponse = BlogControllerGetPublishedBlogsResponses[keyof BlogControllerGetPublishedBlogsResponses];
+
+export type BlogControllerDeleteBlogData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/blogs/{id}';
+};
+
+export type BlogControllerDeleteBlogErrors = {
+    404: BaseApiErrorResponse;
+};
+
+export type BlogControllerDeleteBlogError = BlogControllerDeleteBlogErrors[keyof BlogControllerDeleteBlogErrors];
+
+export type BlogControllerDeleteBlogResponses = {
+    200: BlogApiResponse;
+};
+
+export type BlogControllerDeleteBlogResponse = BlogControllerDeleteBlogResponses[keyof BlogControllerDeleteBlogResponses];
+
+export type BlogControllerFindBlogByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/blogs/{id}';
+};
+
+export type BlogControllerFindBlogByIdErrors = {
+    404: BaseApiErrorResponse;
+};
+
+export type BlogControllerFindBlogByIdError = BlogControllerFindBlogByIdErrors[keyof BlogControllerFindBlogByIdErrors];
+
+export type BlogControllerFindBlogByIdResponses = {
+    200: BlogApiResponse;
+};
+
+export type BlogControllerFindBlogByIdResponse = BlogControllerFindBlogByIdResponses[keyof BlogControllerFindBlogByIdResponses];
+
+export type BlogControllerUpdateBlogData = {
+    body: UpdateBlogDto;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/blogs/{id}';
+};
+
+export type BlogControllerUpdateBlogErrors = {
+    404: BaseApiErrorResponse;
+};
+
+export type BlogControllerUpdateBlogError = BlogControllerUpdateBlogErrors[keyof BlogControllerUpdateBlogErrors];
+
+export type BlogControllerUpdateBlogResponses = {
+    200: BlogApiResponse;
+};
+
+export type BlogControllerUpdateBlogResponse = BlogControllerUpdateBlogResponses[keyof BlogControllerUpdateBlogResponses];
 
 export type ClientOptions = {
     baseUrl: string;

@@ -1,36 +1,38 @@
-import { FC, useEffect } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { useParams, useNavigate } from '@tanstack/react-router'
-import { useGetBlogById, useBlogAPI } from '@/query/blogs/use-blogs'
+import { useGetBlogById, useUpdateBlog } from '@/query/blogs/use-blogs'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { BlogFormValues } from '@/schemas/blog'
 import { blogSchema } from '@/schemas/blog'
 import { Main } from '@/components/layout/main'
 import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
+import { blogControllerFindBlogByIdOptions } from '../../../api/@tanstack/react-query.gen'
 import BlogForm from '../shared/BlogForm'
 
-const EditBlog: FC = () => {
+const EditBlog = () => {
   const { blogId } = useParams({
     from: '/_authenticated/blogs/$blogId/',
   })
   const navigate = useNavigate()
 
-  const { data: blog, isLoading: isLoadingBlog } = useGetBlogById(blogId)
-  // @ts-ignore
-  const { data: tags, isLoading: isLoadingTags } = useGetTagsByType('BLOG')
-  const blogMutation = useBlogAPI().updateBlog
+  const { data: blogData, isLoading: isLoadingBlog } = useGetBlogById(blogId)
+  const [isFormReady, setIsFormReady] = useState(false)
+  const hasReset = useRef(false)
 
-  const blogData = blog?.data as unknown as BlogFormValues
+  const { data: tags, isLoading: isLoadingTags } = useGetTagsByType('EVENT')
+  const blogMutation = useUpdateBlog()
 
   const form = useForm<BlogFormValues>({
     resolver: zodResolver(blogSchema),
   })
 
+  // Reset form when data is available
   useEffect(() => {
-    if (blogData) {
-      console.log('blogData', blogData)
+    if (blogData && !hasReset.current) {
       form.reset({
         ...blogData,
         bannerImageId: blogData?.bannerImageId ?? '',
@@ -43,8 +45,10 @@ const EditBlog: FC = () => {
             )
           : [],
       })
+      hasReset.current = true
+      setIsFormReady(true)
     }
-  }, [blogData])
+  }, [blogData, form])
 
   const handleFormSubmit = async (values: BlogFormValues) => {
     try {
@@ -62,19 +66,13 @@ const EditBlog: FC = () => {
         formattedValues.bannerImageUrl = values.bannerImageUrl
       }
 
-      await blogMutation.mutate(
-        {
-          path: {
-            id: blogId,
-          },
-          body: formattedValues as any,
+      await blogMutation.mutate({
+        path: {
+          id: blogId,
         },
-        {
-          onSuccess: () => {
-            navigate({ to: '/blog/list' })
-          },
-        }
-      )
+        body: formattedValues,
+      })
+      navigate({ to: '/blog/list' })
     } catch (_error) {
       // Error handling is done by the mutation
     }
@@ -88,7 +86,8 @@ const EditBlog: FC = () => {
     form.setValue('bannerImageUrl', assetURL ?? '')
   }
 
-  if (isLoadingBlog || isLoadingTags) {
+  // Show loader until data is loaded and form is ready
+  if (isLoadingBlog || isLoadingTags || !blogData || !isFormReady) {
     return <BoxLoader />
   }
 
@@ -102,7 +101,7 @@ const EditBlog: FC = () => {
             handleImageUpload={handleImageUpload}
             handleFormSubmit={handleFormSubmit}
             isEdit={true}
-            isLoading={isLoadingBlog || blogMutation.isPending}
+            isLoading={blogMutation.isPending}
             tagsOptions={
               tags?.data?.map((tag) => ({
                 value: tag.id,

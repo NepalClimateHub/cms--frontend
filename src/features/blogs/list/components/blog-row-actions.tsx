@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
-import { useDeleteBlog, useBlogAPI } from '@/query/blogs/use-blogs'
+import { useDeleteBlog } from '@/query/blogs/use-blogs'
+// import { useDeleteBlog, useBlogAPI } from '@/query/blogs/use-blogs'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -22,13 +23,14 @@ interface BlogRowActionProps {
 }
 
 const BlogRowAction = ({ row }: BlogRowActionProps) => {
-  const { mutate: deleteBlogMutation } = useDeleteBlog()
-  const { mutate: updateBlogMutation } = useBlogAPI().updateBlog
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
+  const blogDeleteMutation = useDeleteBlog()
+
   const handleStatusToggle = (blogId: string, isDraft: boolean) => {
+    // @ts-ignore
     updateBlogMutation({
       path: {
         id: blogId,
@@ -53,7 +55,7 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
 
   const handleDelete = () => {
     setIsLoading(true)
-    deleteBlogMutation(
+    blogDeleteMutation.mutate(
       {
         path: {
           id: row.original.id,

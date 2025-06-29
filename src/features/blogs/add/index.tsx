@@ -2,19 +2,19 @@ import { FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { useBlogAPI } from '@/query/blogs/use-blogs'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { BlogFormValues, blogSchema } from '@/schemas/blog'
 import { getCustomToast } from '@/components/custom-toast'
 import { Main } from '@/components/layout/main'
 import PageHeader from '@/components/page-header'
+import { useAddBlog } from '../../../query/blogs/use-blogs'
 import BlogForm from '../shared/BlogForm'
 
 const AddBlog: FC = () => {
   const navigate = useNavigate()
   // @ts-ignore
   const { data: tags, isLoading: isLoadingTags } = useGetTagsByType('BLOG')
-  const { mutate: addBlog, isPending } = useBlogAPI().addBlog
+  const { mutate: addBlog, isPending } = useAddBlog()
 
   const form = useForm<BlogFormValues>({
     resolver: zodResolver(blogSchema),
@@ -62,25 +62,9 @@ const AddBlog: FC = () => {
         tagIds: values.tagIds ?? undefined,
       }
 
-      addBlog(
-        {
-          body: formattedValues as any,
-        },
-        {
-          onSuccess: () => {
-            getCustomToast({
-              title: 'Blog added successfully',
-            })
-            navigate({ to: '/blog/list' })
-          },
-          onError: (error: any) => {
-            getCustomToast({
-              title: (error as any)?.message ?? 'Failed to add blog',
-              type: 'error',
-            })
-          },
-        }
-      )
+      addBlog({
+        body: formattedValues as any,
+      })
     } catch (_error) {
       // Error handling is done by the mutation
     }
