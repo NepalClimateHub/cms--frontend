@@ -37,8 +37,8 @@ const EditEvent = () => {
   // Reset form when data is available
   useEffect(() => {
     if (eventData && !hasReset.current) {
+      // @ts-ignore
       const typedEventData = eventData as EventResponseDto
-      console.log('typedEventData', typedEventData)
       form.reset({
         ...typedEventData,
         startDate: typedEventData?.startDate
