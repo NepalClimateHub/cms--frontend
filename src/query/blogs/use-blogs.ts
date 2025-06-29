@@ -117,12 +117,11 @@ export const useGetBlogById = (_blogId: string) => {
 
 export const useUpdateBlog = () => {
   return useMutation({
+    // @ts-ignore
     ...blogControllerUpdateBlogMutation({}),
-    onSuccess: (data: BlogApiResponse) => {
-      const blog = data.data
+    onSuccess: () => {
       getCustomToast({
         title: 'Blog updated',
-        description: `Blog "${blog.title}" has been updated successfully.`,
         type: 'success',
       })
     },

@@ -1,5 +1,5 @@
 import { IconHome, IconComponents, IconArticle } from '@tabler/icons-react'
-import { Building, Calendar, Newspaper, PartyPopper } from 'lucide-react'
+import { Calendar, Newspaper, PartyPopper } from 'lucide-react'
 import { NavGroup } from '../types'
 
 export const superAdminSidebarData: NavGroup[] = [

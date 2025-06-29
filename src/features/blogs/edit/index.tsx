@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
 import { useParams, useNavigate } from '@tanstack/react-router'
 import { useGetBlogById, useUpdateBlog } from '@/query/blogs/use-blogs'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
@@ -10,7 +9,6 @@ import { blogSchema } from '@/schemas/blog'
 import { Main } from '@/components/layout/main'
 import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
-import { blogControllerFindBlogByIdOptions } from '../../../api/@tanstack/react-query.gen'
 import BlogForm from '../shared/BlogForm'
 
 const EditBlog = () => {
