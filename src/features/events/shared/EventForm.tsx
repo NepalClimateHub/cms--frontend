@@ -58,7 +58,6 @@ const EventForm: FC<Props> = ({
 }) => {
   const navigate = useNavigate()
 
-  console.log('errors', form.formState.errors)
   return (
     <Form {...form}>
       <form
@@ -150,10 +149,7 @@ const EventForm: FC<Props> = ({
                   <FormLabel>Location Type</FormLabel>
                   <FormDescription>Select the type of venue</FormDescription>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className='w-full'>
                         <SelectValue placeholder='Select location type' />
                       </SelectTrigger>
@@ -180,10 +176,7 @@ const EventForm: FC<Props> = ({
                     How will the event be conducted?
                   </FormDescription>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className='w-full'>
                         <SelectValue placeholder='Select format' />
                       </SelectTrigger>
@@ -208,10 +201,7 @@ const EventForm: FC<Props> = ({
                   <FormLabel>Event Type</FormLabel>
                   <FormDescription>What kind of event is this?</FormDescription>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className='w-full'>
                         <SelectValue placeholder='Select event type' />
                       </SelectTrigger>
@@ -236,10 +226,7 @@ const EventForm: FC<Props> = ({
                   <FormLabel>Cost</FormLabel>
                   <FormDescription>Is there a cost to attend?</FormDescription>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className='w-full'>
                         <SelectValue placeholder='Select cost type' />
                       </SelectTrigger>
@@ -264,10 +251,7 @@ const EventForm: FC<Props> = ({
                   <FormLabel>Status</FormLabel>
                   <FormDescription>Current status of the event</FormDescription>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className='w-full'>
                         <SelectValue placeholder='Select status' />
                       </SelectTrigger>
@@ -465,7 +449,7 @@ const EventForm: FC<Props> = ({
         <AddressForm form={form} fieldPrefix='address' />
 
         {/* socials */}
-        {/* @ts-ignore */}
+        {/* @ts-expect-error - SocialsForm component has type mismatch with form prop */}
         <SocialsForm form={form} />
 
         <Card>

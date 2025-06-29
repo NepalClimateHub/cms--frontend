@@ -57,7 +57,7 @@ export const useGetEvents = (
 ) => {
   const cleanQuery = cleanObj(query)
   return useQuery({
-    queryKey: [events.getall.key, query],
+    queryKey: [events.getall.key, cleanQuery],
     queryFn: () => getEvents(cleanQuery),
     enabled,
   })
@@ -65,9 +65,10 @@ export const useGetEvents = (
 
 export const useGetEventById = (eventId: string) => {
   return useQuery({
-    queryKey: [events.getall.key],
+    queryKey: [events.getall.key, eventId],
     queryFn: () => getEventById(eventId),
-    enabled: true,
+    select: (data) => data.data,
+    enabled: !!eventId,
   })
 }
 

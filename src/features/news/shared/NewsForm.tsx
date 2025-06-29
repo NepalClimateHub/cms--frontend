@@ -23,7 +23,7 @@ import {
 import { DatePicker } from '@/components/datepicker'
 import ImageUpload from '@/components/image-upload'
 import { MultiSelect } from '@/components/multi-select'
-import { News } from '../../../schemas/news/news'
+import { News, modeOptions } from '../../../schemas/news/news'
 
 type Props = {
   form: UseFormReturn<News>
@@ -47,14 +47,6 @@ const NewsForm: FC<Props> = ({
 }) => {
   const navigate = useNavigate()
 
-  const modeOptions = [
-    { value: 'National', label: 'National' },
-    { value: 'International', label: 'International' },
-    { value: 'Regional', label: 'Regional' },
-  ]
-
-  console.log('form', form.getValues())
-  console.log('form errors', form.formState.errors)
   return (
     <Form {...form}>
       <form
@@ -118,10 +110,7 @@ const NewsForm: FC<Props> = ({
                     Select the scope of the news
                   </FormDescription>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className='w-full'>
                         <SelectValue placeholder='Select mode' />
                       </SelectTrigger>

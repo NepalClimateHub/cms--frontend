@@ -10,7 +10,7 @@ export const eventFormSchema = z.object({
   status: z.string().min(1, 'Status is required'),
   locationType: z.string().min(1, 'Location Type is required'),
   description: z.string().min(1, 'Description is required'),
-  tagIds: z.array(z.string()).min(1, 'At least one tag is required'),
+  tagIds: z.array(z.string()).optional(),
 
   location: z.string().optional(),
   startDate: z.date().optional(),

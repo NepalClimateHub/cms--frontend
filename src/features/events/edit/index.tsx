@@ -1,10 +1,13 @@
+import { useEffect, useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { useGetEventById, useUpdateEvent } from '@/query/events/use-events'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { eventFormSchema, EventFormValues } from '@/schemas/event'
+import { EventResponseDto } from '@/api/types.gen'
 import { Main } from '@/components/layout/main'
+import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
 import EventForm from '../shared/EventForm'
 
@@ -12,7 +15,10 @@ const EditEvent = () => {
   const { eventId } = useParams({
     from: '/_authenticated/events/$eventId/',
   })
-  const { data, isLoading } = useGetEventById(eventId)
+  const { data: eventData, isLoading } = useGetEventById(eventId)
+  const [isFormReady, setIsFormReady] = useState(false)
+  const hasReset = useRef(false)
+
   const { data: tagsData, isLoading: isLoadingTags } = useGetTagsByType('EVENT')
 
   const tagsOptions =
@@ -21,25 +27,36 @@ const EditEvent = () => {
       label: tag.tag,
     })) ?? []
 
-  const eventData = data?.data as unknown as EventFormValues
-
   const eventMutation = useUpdateEvent()
   const navigate = useNavigate()
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventFormSchema),
-    values: {
-      ...eventData,
-      startDate: eventData?.startDate
-        ? new Date(eventData?.startDate)
-        : undefined,
-      registrationDeadline: eventData?.registrationDeadline
-        ? new Date(eventData?.registrationDeadline)
-        : undefined,
-      // @ts-ignore
-      tagIds: eventData?.tags?.map((tag) => tag.id) ?? [],
-    },
   })
+
+  // Reset form when data is available
+  useEffect(() => {
+    if (eventData && !hasReset.current) {
+      const typedEventData = eventData as EventResponseDto
+      console.log('typedEventData', typedEventData)
+      form.reset({
+        ...typedEventData,
+        startDate: typedEventData?.startDate
+          ? new Date(typedEventData?.startDate)
+          : new Date(),
+        registrationDeadline: typedEventData?.registrationDeadline
+          ? new Date(typedEventData?.registrationDeadline)
+          : new Date(),
+        // API returns tags as array of strings, not objects with id
+        tagIds: typedEventData?.tags || [],
+        bannerImageUrl: typedEventData?.bannerImageUrl
+          ? typedEventData?.bannerImageUrl
+          : null,
+      })
+      hasReset.current = true
+      setIsFormReady(true)
+    }
+  }, [eventData])
 
   const handleImageUpload = (
     assetId: string | null,
@@ -59,7 +76,10 @@ const EditEvent = () => {
     })
   }
 
-  console.log('form err', form.formState.errors)
+  // Show loader until data is loaded and form is ready
+  if (isLoading || isLoadingTags || !eventData || !isFormReady) {
+    return <BoxLoader />
+  }
 
   return (
     <Main>
@@ -74,7 +94,7 @@ const EditEvent = () => {
           handleImageUpload={handleImageUpload}
           handleFormSubmit={handleFormSubmit}
           isEdit={true}
-          isLoading={eventMutation.isPending || isLoading || isLoadingTags}
+          isLoading={eventMutation.isPending}
           tagsOptions={tagsOptions}
         />
       </div>

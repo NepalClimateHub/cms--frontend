@@ -82,6 +82,9 @@ export const useGetNewsById = (newsId: string) => {
         id: newsId,
       },
     }),
+    select(data) {
+      return data.data
+    },
   })
 }
 

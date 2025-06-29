@@ -1,6 +1,12 @@
 import { z } from 'zod'
 import { addressSchema } from '../shared'
 
+export const modeOptions = [
+  { value: 'National', label: 'National' },
+  { value: 'International', label: 'International' },
+  { value: 'Regional', label: 'Regional' },
+]
+
 export const AddNewsSchema = z.object({
   title: z.string(),
   source: z.string(),
@@ -9,7 +15,7 @@ export const AddNewsSchema = z.object({
   newsLink: z.string().url(),
   bannerImageUrl: z.string().url().optional().nullable(),
   bannerImageId: z.string().optional().nullable(),
-  tagIds: z.array(z.string()),
+  tagIds: z.array(z.string()).optional(),
   address: addressSchema.optional(),
 })
 

@@ -1,3 +1,4 @@
+import { useEffect, useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useParams } from '@tanstack/react-router'
@@ -14,35 +15,42 @@ const NewsEdit = () => {
     from: '/_authenticated/news/$newsId/',
   })
 
-  const { data, isLoading } = useGetNewsById(newsId)
-  console.log('data', data)
+  const { data: newsData, isLoading } = useGetNewsById(newsId)
+  const [isFormReady, setIsFormReady] = useState(false)
+  const hasReset = useRef(false)
 
   const { data: tagsData, isLoading: isLoadingTags } = useGetTagsByType('NEWS')
 
-  const tagsOptions = tagsData?.data?.map((tag) => ({
-    value: tag.id,
-    label: tag.tag,
-  }))!
-
-  const newsData = data?.data as unknown as News
+  const tagsOptions =
+    tagsData?.data?.map((tag) => ({
+      value: tag.id,
+      label: tag.tag,
+    })) || []
 
   const newsMutation = useNewsAPI().updateNews
 
-  console.log('newsData', newsData)
   const form = useForm<News>({
     resolver: zodResolver(AddNewsSchema),
-    values: {
-      ...newsData,
-      publishedDate: newsData?.publishedDate
-        ? new Date(newsData?.publishedDate)
-        : new Date(),
-      // @ts-ignore
-      tagIds: newsData?.tags?.map((tag: any) => tag?.id) || [],
-      bannerImageUrl: newsData?.bannerImageUrl
-        ? newsData?.bannerImageUrl
-        : null,
-    },
   })
+
+  // Reset form when data is available
+  useEffect(() => {
+    if (newsData && !hasReset.current) {
+      form.reset({
+        ...newsData,
+        publishedDate: newsData?.publishedDate
+          ? new Date(newsData?.publishedDate)
+          : new Date(),
+        // @ts-expect-error - tags mapping type mismatch
+        tagIds: newsData?.tags?.map((tag: { id: string }) => tag?.id) || [],
+        bannerImageUrl: newsData?.bannerImageUrl
+          ? newsData?.bannerImageUrl
+          : null,
+      })
+      hasReset.current = true
+      setIsFormReady(true)
+    }
+  }, [newsData])
 
   const handleImageUpload = (
     assetId: string | null,
@@ -60,7 +68,7 @@ const NewsEdit = () => {
         path: {
           id: newsId,
         },
-        // @ts-ignore
+        // @ts-expect-error - body type mismatch
         body: values,
       },
       {
@@ -71,7 +79,8 @@ const NewsEdit = () => {
     )
   }
 
-  if (isLoading || isLoadingTags) {
+  // Show loader until data is loaded and form is ready
+  if (isLoading || isLoadingTags || !newsData || !isFormReady) {
     return <BoxLoader />
   }
 
@@ -85,7 +94,7 @@ const NewsEdit = () => {
             handleImageUpload={handleImageUpload}
             handleFormSubmit={handleFormSubmit}
             isEdit={true}
-            isLoading={newsMutation.isPending || isLoading || isLoadingTags}
+            isLoading={newsMutation.isPending}
             tagsOptions={tagsOptions}
           />
         </div>
