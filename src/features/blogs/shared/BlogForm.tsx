@@ -250,6 +250,12 @@ const BlogForm: FC<Props> = ({
                       value={field.value || ''}
                       onChange={field.onChange}
                       placeholder='Start writing your blog content...'
+                      className='w-full'
+                      editorContentClassName='p-5'
+                      output='html'
+                      autofocus={true}
+                      editable={true}
+                      editorClassName='focus:outline-none'
                     />
                   </FormControl>
                   <FormMessage />

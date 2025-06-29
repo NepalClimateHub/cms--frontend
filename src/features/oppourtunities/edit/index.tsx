@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useParams, useNavigate } from '@tanstack/react-router'
@@ -26,22 +26,31 @@ const EditOpportunity: FC = () => {
     useGetTagsByType('OPPORTUNITY')
   const opportunityMutation = useOpportunityAPI().updateOpportunity
 
+  const [isFormReady, setIsFormReady] = useState(false)
+  const hasReset = useRef(false)
+
   const opportunityData = opportunity?.data as unknown as OpportunityFormValues
 
-  const socialsObject = {
-    facebook: '',
-    instagram: '',
-    linkedin: '',
-    ...(opportunityData?.socials || {}),
-  }
+  const tagsOptions =
+    tags?.data?.map((tag) => ({
+      value: tag.id,
+      label: tag.tag,
+    })) || []
 
   const form = useForm<OpportunityFormValues>({
     resolver: zodResolver(opportunitySchema),
   })
 
+  // Reset form when data is available
   useEffect(() => {
-    if (opportunityData) {
-      console.log('opda', opportunityData)
+    if (opportunityData && !hasReset.current) {
+      const socialsObject = {
+        facebook: '',
+        instagram: '',
+        linkedin: '',
+        ...(opportunityData?.socials || {}),
+      }
+
       form.reset({
         ...opportunityData,
         websiteUrl: opportunityData?.websiteUrl ?? '',
@@ -57,6 +66,8 @@ const EditOpportunity: FC = () => {
             )
           : [],
       })
+      hasReset.current = true
+      setIsFormReady(true)
     }
   }, [opportunityData])
 
@@ -96,7 +107,8 @@ const EditOpportunity: FC = () => {
           path: {
             id: opportunityId,
           },
-          body: formattedValues as any,
+          // @ts-expect-error - body type mismatch
+          body: formattedValues,
         },
         {
           onSuccess: () => {
@@ -117,7 +129,13 @@ const EditOpportunity: FC = () => {
     form.setValue('bannerImageUrl', assetURL ?? '')
   }
 
-  if (isLoadingOpportunity || isLoadingTags) {
+  // Show loader until data is loaded and form is ready
+  if (
+    isLoadingOpportunity ||
+    isLoadingTags ||
+    !opportunityData ||
+    !isFormReady
+  ) {
     return <BoxLoader />
   }
 
@@ -132,12 +150,7 @@ const EditOpportunity: FC = () => {
             handleFormSubmit={handleFormSubmit}
             isEdit={true}
             isLoading={isLoadingOpportunity || opportunityMutation.isPending}
-            tagsOptions={
-              tags?.data?.map((tag) => ({
-                value: tag.id,
-                label: tag.tag,
-              })) ?? []
-            }
+            tagsOptions={tagsOptions}
           />
         </div>
       </div>
