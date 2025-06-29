@@ -5,8 +5,6 @@ import { Link } from '@tanstack/react-router'
 import { useLogin } from '@/query/auth/use-auth'
 import { LoginPayload, loginSchema } from '@/schemas/auth/login'
 import { Loader2 } from 'lucide-react'
-import logoImage from '@/assets/images/logo.png'
-import mountainImage from '@/assets/images/mountain.png'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -102,7 +100,7 @@ export default function SignIn2() {
       <div
         className='relative hidden h-full min-h-screen flex-col justify-between bg-cover bg-center bg-no-repeat p-12 lg:flex'
         style={{
-          backgroundImage: `url(${mountainImage})`,
+          backgroundImage: "url('/images/mountain.png')",
         }}
       >
         {/* Overlay */}
@@ -111,7 +109,7 @@ export default function SignIn2() {
         {/* Logo */}
         <div className='relative z-10 flex items-center'>
           <img
-            src={logoImage}
+            src='/images/logo.png'
             alt='Nepal Climate Hub'
             className='mr-3 h-10 w-10'
           />
@@ -170,7 +168,7 @@ export default function SignIn2() {
           {/* Mobile Logo */}
           <div className='mb-8 flex items-center justify-center lg:hidden'>
             <img
-              src={logoImage}
+              src='/images/logo.png'
               alt='Nepal Climate Hub'
               className='mr-2 h-8 w-8'
             />
