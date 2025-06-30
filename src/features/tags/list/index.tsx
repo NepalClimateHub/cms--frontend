@@ -40,11 +40,11 @@ export default function Tags() {
     }),
   })
 
-  const roleData = data?.data ?? []
-  const roleMeta = data?.meta ?? {}
+  const tagsData = data?.data ?? []
+  const tagsMeta = data?.meta ?? {}
 
   const table = useReactTable({
-    data: roleData,
+    data: tagsData,
     columns: tagColumns as ColumnDef<TagOutputDto, unknown>[],
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
@@ -77,7 +77,7 @@ export default function Tags() {
         </div>
         <div className='mt-4'>
           <DataTablePagination
-            totalCount={(roleMeta.count ?? 0) as number}
+            totalCount={(tagsMeta.count ?? 0) as number}
             paginationOptions={paginationOptions}
           />
         </div>
