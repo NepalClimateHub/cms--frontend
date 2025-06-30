@@ -284,6 +284,7 @@ const EventForm: FC<Props> = ({
                       autoComplete='off'
                       type='url'
                       {...field}
+                      value={field.value ?? ''}
                     />
                   </FormControl>
                   <FormMessage />
@@ -351,6 +352,7 @@ const EventForm: FC<Props> = ({
                       className='w-full'
                       autoComplete='off'
                       {...field}
+                      value={field.value ?? ''}
                     />
                   </FormControl>
                   <FormMessage />
@@ -443,27 +445,7 @@ const EventForm: FC<Props> = ({
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name='isDraft'
-              render={({ field }) => (
-                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                  <div className='space-y-0.5'>
-                    <FormLabel className='text-base'>Draft Status</FormLabel>
-                    <FormDescription>
-                      Save as draft or publish immediately
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            <br />
           </CardContent>
         </Card>
 
@@ -487,6 +469,28 @@ const EventForm: FC<Props> = ({
             />
           </CardContent>
         </Card>
+
+        {/* Draft Status at the end of the form */}
+        <FormField
+          control={form.control}
+          name='isDraft'
+          render={({ field }) => (
+            <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+              <div className='space-y-0.5'>
+                <FormLabel className='text-base'>Draft Status</FormLabel>
+                <FormDescription>
+                  Save as draft or publish immediately
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
         <div className='flex justify-end gap-4'>
           <Button

@@ -41,14 +41,21 @@ const EditEvent = () => {
       const typedEventData = eventData as EventResponseDto
       form.reset({
         ...typedEventData,
+        location: typedEventData.location ?? '',
+        registrationLink: typedEventData.registrationLink ?? '',
+        address: {
+          country: typedEventData?.address?.country ?? '',
+          city: typedEventData?.address?.city ?? '',
+        },
         startDate: typedEventData?.startDate
           ? new Date(typedEventData?.startDate)
           : new Date(),
         registrationDeadline: typedEventData?.registrationDeadline
           ? new Date(typedEventData?.registrationDeadline)
           : new Date(),
-        // API returns tags as array of strings, not objects with id
-        tagIds: typedEventData?.tags || [],
+        tagIds:
+          // @ts-ignore
+          typedEventData?.tags?.map((tag: { id: string }) => tag?.id) || [],
         bannerImageUrl: typedEventData?.bannerImageUrl
           ? typedEventData?.bannerImageUrl
           : null,

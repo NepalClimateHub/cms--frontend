@@ -64,12 +64,12 @@ export const useGetEvents = (
 }
 
 export const useGetEventById = (eventId: string) => {
-  return useQuery({
+      return useQuery({
     queryKey: [events.getall.key, eventId],
-    queryFn: () => getEventById(eventId),
-    select: (data) => data.data,
+        queryFn: () => getEventById(eventId),
+        select: (data) => data.data,
     enabled: !!eventId,
-  })
+      })
 }
 
 export const useUpdateEvent = () => {
