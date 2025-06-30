@@ -107,24 +107,24 @@ const Analytics = () => {
 
   return (
     <div className='space-y-8'>
-      {/* Analytics Cards */}
+            {/* Analytics Cards */}
       <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5'>
         {Object.entries(analyticsData.data).map(([key, value]) => (
-          <Link
-            key={key}
-            to={routes[key as keyof typeof routes]}
+                <Link
+                  key={key}
+                  to={routes[key as keyof typeof routes]}
             className='group'
-          >
+                >
             <Card className='border-0 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md'>
               <div className='space-y-2'>
-                <div
-                  className={cn(
+                        <div
+                          className={cn(
                     'flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50',
                     colors[key as keyof typeof colors]
-                  )}
-                >
-                  {icons[key as keyof typeof icons]}
-                </div>
+                          )}
+                        >
+                          {icons[key as keyof typeof icons]}
+                        </div>
                 <div>
                   <p className='text-xs font-medium uppercase tracking-wide text-gray-500'>
                     {switchText[key as keyof typeof switchText]}
@@ -132,12 +132,12 @@ const Analytics = () => {
                   <p className='text-xl font-semibold text-gray-900'>
                     {value.toLocaleString()}
                   </p>
-                </div>
-              </div>
-            </Card>
-          </Link>
-        ))}
-      </div>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
 
       {/* Content Section */}
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
@@ -173,9 +173,9 @@ const Analytics = () => {
                 }}
               />
               <Bar dataKey='count' radius={[2, 2, 0, 0]} fill='#3b82f6' />
-            </BarChart>
-          </ResponsiveContainer>
-        </Card>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
 
         {/* Quote */}
         <Card className='border-0 bg-white p-6 shadow-sm'>
@@ -193,11 +193,11 @@ const Analytics = () => {
               </div>
               <div className='space-y-3'>
                 <p className='text-sm leading-relaxed text-gray-600'>
-                  "{quoteOfTheDay.quote}"
-                </p>
+                 "{quoteOfTheDay.quote}"
+               </p>
                 <p className='text-xs font-medium text-gray-500'>
                   — {quoteOfTheDay.author}
-                </p>
+               </p>
               </div>
             </div>
           </div>

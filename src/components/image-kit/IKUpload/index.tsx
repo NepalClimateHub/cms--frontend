@@ -1,15 +1,15 @@
-import React, { forwardRef, useContext, useEffect, useState } from 'react';
-import { IKContextBaseProps } from "../IKContext/props";
-import { IKUploadProps, OverrideValues } from "./props";
-import { ImageKitContext } from '../IKContext';
-import useImageKitComponent from '../ImageKitComponent';
-import { Button } from '@/components/ui/button';
-import { UploadCloud } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import React, { forwardRef, useContext, useEffect, useState } from 'react'
+import { UploadCloud } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { ImageKitContext } from '../IKContext'
+import { IKContextBaseProps } from '../IKContext/props'
+import useImageKitComponent from '../ImageKitComponent'
+import { IKUploadProps, OverrideValues } from './props'
 
 type IKUploadState = {
-  xhr?: XMLHttpRequest;
-};
+  xhr?: XMLHttpRequest
+}
 
 type CustomIKUploadProps = {
   label: string
@@ -17,24 +17,30 @@ type CustomIKUploadProps = {
   isUploading: boolean
 }
 
-const IKUpload = forwardRef<HTMLInputElement, IKUploadProps & IKContextBaseProps & CustomIKUploadProps>((props, ref) => {
-  const [state, setState] = useState<IKUploadState>({});
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-  const contextOptions = useContext(ImageKitContext);
-  const { getIKClient } = useImageKitComponent({ ...props });
-
+const IKUpload = forwardRef<
+  HTMLInputElement,
+  IKUploadProps & IKContextBaseProps & CustomIKUploadProps
+>((props, ref) => {
+  const [state, setState] = useState<IKUploadState>({})
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
+  const contextOptions = useContext(ImageKitContext)
+  const { getIKClient } = useImageKitComponent({ ...props })
 
   useEffect(() => {
     const abort = () => {
       if (state.xhr) {
-        state.xhr.abort();
+        state.xhr.abort()
       }
-    };
-    if (ref && typeof ref === "object" && ref.hasOwnProperty("current")) {
-      const refObject = ref as any;
-      refObject.current.abort = abort;
     }
-  }, [state.xhr, ref]);
+    if (ref && typeof ref === 'object' && 'current' in ref) {
+      const refObject = ref as React.MutableRefObject<
+        HTMLInputElement & { abort: () => void }
+      >
+      if (refObject.current) {
+        refObject.current.abort = abort
+      }
+    }
+  }, [state.xhr, ref])
 
   const {
     publicKey,
@@ -67,85 +73,86 @@ const IKUpload = forwardRef<HTMLInputElement, IKUploadProps & IKContextBaseProps
     isUploading,
     disabled,
     ...restProps
-  } = props;
+  } = props
 
   const uploadFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const publicKey = props.publicKey || contextOptions.publicKey
+    const authenticator = props.authenticator || contextOptions.authenticator
+    const urlEndpoint = props.urlEndpoint || contextOptions.urlEndpoint
 
-    const publicKey = props.publicKey || contextOptions.publicKey;
-    const authenticator = props.authenticator || contextOptions.authenticator;
-    const urlEndpoint = props.urlEndpoint || contextOptions.urlEndpoint;
-
-    if (!publicKey || publicKey.trim() === "") {
-      console.error("Missing publicKey");
-      if (onError && typeof onError === "function") {
+    if (!publicKey || publicKey.trim() === '') {
+      if (onError && typeof onError === 'function') {
         onError({
-          message: "Missing publicKey"
-        });
+          message: 'Missing publicKey',
+        })
       }
-      return;
+      return
     }
 
     if (!authenticator) {
-      console.error("The authenticator function is not provided.");
-      if (onError && typeof onError === "function") {
+      if (onError && typeof onError === 'function') {
         onError({
-          message: "The authenticator function is not provided."
-        });
+          message: 'The authenticator function is not provided.',
+        })
       }
-      return;
+      return
     }
 
     if (typeof authenticator !== 'function') {
-      console.error("The provided authenticator is not a function.");
-      if (onError && typeof onError === "function") {
+      if (onError && typeof onError === 'function') {
         onError({
-          message: "The provided authenticator is not a function."
-        });
+          message: 'The provided authenticator is not a function.',
+        })
       }
-      return;
+      return
     }
 
-    if (!urlEndpoint || urlEndpoint.trim() === "") {
-      console.error("Missing urlEndpoint");
-      if (onError && typeof onError === "function") {
+    if (!urlEndpoint || urlEndpoint.trim() === '') {
+      if (onError && typeof onError === 'function') {
         onError({
-          message: "Missing urlEndpoint"
-        });
+          message: 'Missing urlEndpoint',
+        })
       }
-      return;
+      return
     }
 
-    var ikClient = getIKClient();
+    const ikClient = getIKClient()
 
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (!file) {
-      return;
+      return
     }
 
     if (props.validateFile && !props.validateFile(file)) {
-      return;
+      return
     }
 
-    if (props.onUploadStart && typeof props.onUploadStart === "function") {
-      props.onUploadStart(e);
+    if (props.onUploadStart && typeof props.onUploadStart === 'function') {
+      props.onUploadStart(e)
     }
 
-    let overrideValues: OverrideValues = {};
+    let overrideValues: OverrideValues = {}
 
-    if (props.overrideParameters && typeof props.overrideParameters === 'function') {
-      overrideValues = props.overrideParameters(file) || {};
+    if (
+      props.overrideParameters &&
+      typeof props.overrideParameters === 'function'
+    ) {
+      overrideValues = props.overrideParameters(file) || {}
     }
 
-    const xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest()
     const progressCb = (e: ProgressEvent<XMLHttpRequestEventTarget>) => {
-      if (props.onUploadProgress && typeof props.onUploadProgress === 'function') {
-        props.onUploadProgress(e);
+      if (
+        props.onUploadProgress &&
+        typeof props.onUploadProgress === 'function'
+      ) {
+        props.onUploadProgress(e)
       }
-    };
+    }
 
-    xhr.upload.addEventListener('progress', progressCb);
+    xhr.upload.addEventListener('progress', progressCb)
 
-    var params = {
+    const params = {
       file: file,
       fileName: overrideValues.fileName || fileName || file.name,
       useUniqueFileName: overrideValues.useUniqueFileName || useUniqueFileName,
@@ -159,117 +166,123 @@ const IKUpload = forwardRef<HTMLInputElement, IKUploadProps & IKContextBaseProps
       overwriteFile: overrideValues.overwriteFile || overwriteFile,
       overwriteAITags: overrideValues.overwriteAITags || overwriteAITags,
       overwriteTags: overrideValues.overwriteTags || overwriteTags,
-      overwriteCustomMetadata: overrideValues.overwriteCustomMetadata || overwriteCustomMetadata,
+      overwriteCustomMetadata:
+        overrideValues.overwriteCustomMetadata || overwriteCustomMetadata,
       customMetadata: overrideValues.customMetadata || customMetadata,
       signature: '',
       expire: 0,
       token: '',
       xhr,
       transformation: overrideValues.transformation || transformation,
-      checks: overrideValues.checks || checks
-    };
+      checks: overrideValues.checks || checks,
+    }
 
-    const authPromise = authenticator();
+    const authPromise = authenticator()
 
     if (!(authPromise instanceof Promise)) {
-      if (onError && typeof onError === "function") {
+      if (onError && typeof onError === 'function') {
         onError({
-          message: "The authenticator function is expected to return a Promise instance."
-        });
+          message:
+            'The authenticator function is expected to return a Promise instance.',
+        })
       }
-      return;
+      return
     }
 
     authPromise
       .then(({ signature, token, expire }) => {
-        params['signature'] = signature;
-        params['expire'] = expire;
+        params['signature'] = signature
+        params['expire'] = expire
         params['token'] = token
-        ikClient.upload(params, (err: any, result: any) => {
-          if (err) {
-            if (onError && typeof onError === "function") {
-              console.log(err)
-              onError(err);
+        ikClient.upload(
+          params,
+          (err: Error | null, result: any | null) => {
+            if (err) {
+              if (onError && typeof onError === 'function') {
+                onError(err)
+              }
+            } else {
+              if (onSuccess && typeof onSuccess === 'function') {
+                onSuccess(result)
+              }
             }
-          } else {
-            if (onSuccess && typeof onSuccess === "function") {
-              onSuccess(result);
-            }
+            xhr.upload.removeEventListener('progress', progressCb)
+            setState({ xhr })
+          },
+          {
+            publicKey,
           }
-          xhr.upload.removeEventListener('progress', progressCb);
-        }, {
-          publicKey,
-        });
-        setState({ xhr })
+        )
       })
       .catch((data) => {
-        var error;
+        let error
         if (data instanceof Array) {
-          error = data[0];
-        }
-        else {
+          error = data[0]
+        } else {
           error = data
         }
 
-        if (onError && typeof onError === "function") {
+        if (onError && typeof onError === 'function') {
           onError({
-            message: String(error)
-          });
+            message: String(error),
+          })
         }
-        return;
+        return
       })
-  };
-
+  }
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
-      setUploadedFileName(file.name);
+      setUploadedFileName(file.name)
     }
 
-    if (props.onChange && typeof props.onChange === "function") {
-      props.onChange(e);
+    if (props.onChange && typeof props.onChange === 'function') {
+      props.onChange(e)
     }
-    uploadFile(e);
-  };
+    uploadFile(e)
+  }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-1">
-        <div className="text-lg font-semibold text-gray-600">
-          {label}
-        </div>
+    <div className='flex flex-col gap-3'>
+      <div className='flex flex-col gap-1'>
+        <div className='text-lg font-semibold text-gray-600'>{label}</div>
 
-        <div className="text-sm text-gray-500">
-          {description}
-        </div>
+        <div className='text-sm text-gray-500'>{description}</div>
       </div>
 
-
-      <div className="flex items-center gap-3">
-        <Button loading={isUploading} disabled={disabled || isUploading} variant="outline" className="relative flex items-center gap-2 px-4 py-2">
-          <UploadCloud className="w-5 h-5 text-gray-600" />
-          <label htmlFor="file-upload" className="cursor-pointer">
-            {fileName ? "Change File" : "Choose File"}
+      <div className='flex items-center gap-3'>
+        <Button
+          type='button'
+          loading={isUploading}
+          disabled={disabled || isUploading}
+          variant='outline'
+          className='relative flex items-center gap-2 px-4 py-2'
+        >
+          <UploadCloud className='h-5 w-5 text-gray-600' />
+          <label htmlFor='file-upload' className='cursor-pointer'>
+            {fileName ? 'Change File' : 'Choose File'}
           </label>
         </Button>
 
         {fileName && (
-          <span className="text-sm text-gray-500 truncate max-w-[200px]">{uploadedFileName}</span>
+          <span className='max-w-[200px] truncate text-sm text-gray-500'>
+            {uploadedFileName}
+          </span>
         )}
 
         <Input
           {...restProps}
           disabled={isUploading || disabled}
           ref={ref}
-          type="file"
+          type='file'
           onChange={onFileChange}
-          id="file-upload"
-          className="hidden"
+          id='file-upload'
+          className='hidden'
         />
       </div>
     </div>
-  );
-});
+  )
+})
 
-export default IKUpload;
+export default IKUpload

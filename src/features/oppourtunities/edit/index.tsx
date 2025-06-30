@@ -44,12 +44,12 @@ const EditOpportunity: FC = () => {
   // Reset form when data is available
   useEffect(() => {
     if (opportunityData && !hasReset.current) {
-      const socialsObject = {
-        facebook: '',
-        instagram: '',
-        linkedin: '',
-        ...(opportunityData?.socials || {}),
-      }
+  const socialsObject = {
+    facebook: '',
+    instagram: '',
+    linkedin: '',
+    ...(opportunityData?.socials || {}),
+  }
 
       form.reset({
         ...opportunityData,
