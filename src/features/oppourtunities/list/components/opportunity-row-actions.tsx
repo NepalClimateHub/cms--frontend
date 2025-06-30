@@ -86,6 +86,16 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
               {row.original.title}
             </DialogTitle>
             <DialogDescription className='space-y-6'>
+              {/* Banner Image Section */}
+              {(row.original.bannerImageUrl || row.original.imageUrl) && (
+                <div className='relative aspect-video w-full overflow-hidden rounded-lg'>
+                  <img
+                    src={row.original.bannerImageUrl || row.original.imageUrl}
+                    alt={row.original.title}
+                    className='h-full w-full object-cover'
+                  />
+                </div>
+              )}
               {/* Header Section */}
               <div className='flex items-center gap-2'>
                 <Badge variant='outline' className='text-sm'>
