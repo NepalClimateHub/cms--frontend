@@ -1,5 +1,5 @@
 import { IconLoader } from '@tabler/icons-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/ui/shadcn/lib/utils'
 import { FormControl } from '@/components/ui/form'
 import {
   Select,

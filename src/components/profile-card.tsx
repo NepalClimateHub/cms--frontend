@@ -1,5 +1,5 @@
+import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
 import { useAuthStore } from '@/stores/authStore'
-import { getInitialsForAvatar } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   SidebarMenu,

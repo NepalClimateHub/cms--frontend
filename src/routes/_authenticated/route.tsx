@@ -3,8 +3,8 @@ import Cookies from 'js-cookie'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { useGetProfile } from '@/query/auth/use-auth'
 import { User } from '@/schemas/auth/profile'
+import { cn } from '@/ui/shadcn/lib/utils'
 import { getAccessToken, useAuthStore } from '@/stores/authStore'
-import { cn } from '@/lib/utils'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { BoxLoader } from '@/components/loader'
@@ -27,7 +27,8 @@ function RouteComponent() {
   const defaultOpen = Cookies.get('sidebar:state') !== 'false'
   const { accessToken, setUser } = useAuthStore()
 
-  const { data: userData, isLoading: isLoadingProfile } = useGetProfile(!!accessToken)
+  const { data: userData, isLoading: isLoadingProfile } =
+    useGetProfile(!!accessToken)
 
   useEffect(() => {
     if (userData) {

@@ -1,14 +1,19 @@
 import * as React from 'react'
-import type { Editor } from '@tiptap/react'
-import type { FormatAction } from '../types'
-import type { VariantProps } from 'class-variance-authority'
-import type { toggleVariants } from '@/components/ui/toggle'
-import { cn } from '@/lib/utils'
 import { CaretDownIcon } from '@radix-ui/react-icons'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { ToolbarButton } from './toolbar-button'
-import { ShortcutKey } from './shortcut-key'
+import { cn } from '@/ui/shadcn/lib/utils'
+import type { Editor } from '@tiptap/react'
+import type { VariantProps } from 'class-variance-authority'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import type { toggleVariants } from '@/components/ui/toggle'
+import type { FormatAction } from '../types'
 import { getShortcutKey } from '../utils'
+import { ShortcutKey } from './shortcut-key'
+import { ToolbarButton } from './toolbar-button'
 
 interface ToolbarSectionProps extends VariantProps<typeof toggleVariants> {
   editor: Editor
@@ -23,22 +28,25 @@ interface ToolbarSectionProps extends VariantProps<typeof toggleVariants> {
 export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
   editor,
   actions,
-  activeActions = actions.map(action => action.value),
+  activeActions = actions.map((action) => action.value),
   mainActionCount = 0,
   dropdownIcon,
   dropdownTooltip = 'More options',
   dropdownClassName = 'w-12',
   size,
-  variant
+  variant,
 }) => {
   const { mainActions, dropdownActions } = React.useMemo(() => {
     const sortedActions = actions
-      .filter(action => activeActions.includes(action.value))
-      .sort((a, b) => activeActions.indexOf(a.value) - activeActions.indexOf(b.value))
+      .filter((action) => activeActions.includes(action.value))
+      .sort(
+        (a, b) =>
+          activeActions.indexOf(a.value) - activeActions.indexOf(b.value)
+      )
 
     return {
       mainActions: sortedActions.slice(0, mainActionCount),
-      dropdownActions: sortedActions.slice(mainActionCount)
+      dropdownActions: sortedActions.slice(mainActionCount),
     }
   }, [actions, activeActions, mainActionCount])
 
@@ -49,7 +57,7 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
         onClick={() => action.action(editor)}
         disabled={!action.canExecute(editor)}
         isActive={action.isActive(editor)}
-        tooltip={`${action.label} ${action.shortcuts.map(s => getShortcutKey(s).symbol).join(' ')}`}
+        tooltip={`${action.label} ${action.shortcuts.map((s) => getShortcutKey(s).symbol).join(' ')}`}
         aria-label={action.label}
         size={size}
         variant={variant}
@@ -67,11 +75,11 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
         onClick={() => action.action(editor)}
         disabled={!action.canExecute(editor)}
         className={cn('flex flex-row items-center justify-between gap-4', {
-          'bg-accent': action.isActive(editor)
+          'bg-accent': action.isActive(editor),
         })}
         aria-label={action.label}
       >
-        <span className="grow">{action.label}</span>
+        <span className='grow'>{action.label}</span>
         <ShortcutKey keys={action.shortcuts} />
       </DropdownMenuItem>
     ),
@@ -79,7 +87,7 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
   )
 
   const isDropdownActive = React.useMemo(
-    () => dropdownActions.some(action => action.isActive(editor)),
+    () => dropdownActions.some((action) => action.isActive(editor)),
     [dropdownActions, editor]
   )
 
@@ -97,10 +105,10 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
               size={size}
               variant={variant}
             >
-              {dropdownIcon || <CaretDownIcon className="size-5" />}
+              {dropdownIcon || <CaretDownIcon className='size-5' />}
             </ToolbarButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-full">
+          <DropdownMenuContent align='start' className='w-full'>
             {dropdownActions.map(renderDropdownMenuItem)}
           </DropdownMenuContent>
         </DropdownMenu>

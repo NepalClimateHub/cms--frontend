@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
+import { cn } from '@/ui/shadcn/lib/utils'
 import { ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import {
   Collapsible,
   CollapsibleContent,

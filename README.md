@@ -12,3 +12,4 @@ Production branch : main
 - **organisms**: Groups of molecules that form distinct sections of the UI, such as a header or a footer.
 - **templates/layouts**: Page-level components that define the layout and structure of a page, using organisms.
 - **pages**: The highest level of components that represent complete pages, composed of templates and other components.
+- **shadcn**: all the downloaded shadcn components appear here.

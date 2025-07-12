@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { cn } from '@/ui/shadcn/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {
   CheckIcon,
@@ -7,7 +8,6 @@ import {
   XIcon,
   WandSparkles,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {

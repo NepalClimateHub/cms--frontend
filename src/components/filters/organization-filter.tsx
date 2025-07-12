@@ -1,8 +1,8 @@
 import { FC, useState } from 'react'
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons'
 import { useGetOrganizations } from '@/query/organizations/use-organization'
+import { cn } from '@/ui/shadcn/lib/utils'
 import { Values } from 'nuqs'
-import { cn } from '@/lib/utils'
 import { FilterValues, InitFilters } from '@/hooks/use-filters'
 import { Button } from '@/components/ui/button'
 import {

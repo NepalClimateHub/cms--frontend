@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { IconArticle } from '@tabler/icons-react'
 import { climateQuotes } from '@/data/climate-quotes'
 import { useAnalyticsAPI } from '@/query/analytics/use-analytics'
+import { cn } from '@/ui/shadcn/lib/utils'
 import { Calendar, Users, Quote, Briefcase, Newspaper } from 'lucide-react'
 import {
   BarChart,
@@ -13,7 +14,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { cn } from '@/lib/utils'
 import { Card, CardTitle } from '@/components/ui/card'
 
 const Analytics = () => {

@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import { cn } from '@/ui/shadcn/lib/utils'
 import { CalendarIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -7,7 +8,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
 
 interface DatePickerProps {
   value?: Date
@@ -26,20 +26,20 @@ export const DatePicker = ({
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant='outline'
           className={cn(
             'w-full justify-start text-left font-normal',
             !value && 'text-muted-foreground'
           )}
           disabled={disabled}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className='mr-2 h-4 w-4' />
           {value ? format(value, 'PPP') : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className='w-auto p-0' align='start'>
         <Calendar
-          mode="single"
+          mode='single'
           selected={value}
           onSelect={onChange}
           disabled={disabled}
