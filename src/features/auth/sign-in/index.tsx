@@ -78,7 +78,10 @@ function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 </FormItem>
               )}
             />
-            <Button className='mt-2' disabled={isPending}>
+            <Button
+              className='mt-2 w-full rounded-lg bg-blue-600 py-3 font-medium text-white transition-colors duration-200 hover:bg-blue-700'
+              disabled={isPending}
+            >
               {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
               Login
             </Button>
@@ -174,14 +177,11 @@ export default function SignIn2() {
           </div>
 
           {/* Form Container */}
-          <div className='w-[500px] space-y-6 p-4 shadow-lg'>
-            <div className='space-y-2 text-center'>
+          <div className='w-[500px] space-y-6 rounded-lg border border-gray-200 bg-white p-8 shadow-lg'>
+            <div className='mb-10 space-y-2 text-center'>
               <h1 className='text-3xl font-bold tracking-tight text-gray-900'>
-                Welcome back
+                NCH Login
               </h1>
-              <p className='text-gray-600'>
-                Sign in to your account to continue
-              </p>
             </div>
 
             <UserAuthForm />
@@ -204,6 +204,19 @@ export default function SignIn2() {
                   Privacy Policy
                 </a>
               </p>
+            </div>
+
+            {/* Sign Up Link */}
+            <div className='mt-6 text-center'>
+              <span className='text-sm text-gray-600'>
+                Don't have an account?{' '}
+                <a
+                  href='/sign-up'
+                  className='font-medium text-blue-600 underline underline-offset-4 transition-colors hover:text-blue-700'
+                >
+                  Sign Up
+                </a>
+              </span>
             </div>
           </div>
         </div>
