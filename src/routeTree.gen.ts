@@ -17,9 +17,11 @@ import { Route as PublicRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
 import { Route as authSignInImport } from './routes/(auth)/sign-in'
+import { Route as authOtpVerificationImport } from './routes/(auth)/otp-verification'
 import { Route as authOtpImport } from './routes/(auth)/otp'
 import { Route as auth500Import } from './routes/(auth)/500'
 import { Route as PublicLoginIndexImport } from './routes/_public/login/index'
+import { Route as AuthenticatedSubscribedEmailsIndexImport } from './routes/_authenticated/subscribed-emails/index'
 import { Route as AuthenticatedBlogListImport } from './routes/_authenticated/blog/list'
 import { Route as AuthenticatedBlogAddImport } from './routes/_authenticated/blog/add'
 import { Route as AuthenticatedBlogIdImport } from './routes/_authenticated/blog/$id'
@@ -173,6 +175,12 @@ const authSignInRoute = authSignInImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const authOtpVerificationRoute = authOtpVerificationImport.update({
+  id: '/(auth)/otp-verification',
+  path: '/otp-verification',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const authOtpRoute = authOtpImport.update({
   id: '/(auth)/otp',
   path: '/otp',
@@ -238,6 +246,13 @@ const PublicLoginIndexRoute = PublicLoginIndexImport.update({
   path: '/login/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+
+const AuthenticatedSubscribedEmailsIndexRoute =
+  AuthenticatedSubscribedEmailsIndexImport.update({
+    id: '/subscribed-emails/',
+    path: '/subscribed-emails/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 const AuthenticatedSettingsNotificationsLazyRoute =
   AuthenticatedSettingsNotificationsLazyImport.update({
@@ -434,6 +449,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authOtpImport
       parentRoute: typeof rootRoute
     }
+    '/(auth)/otp-verification': {
+      id: '/(auth)/otp-verification'
+      path: '/otp-verification'
+      fullPath: '/otp-verification'
+      preLoaderRoute: typeof authOtpVerificationImport
+      parentRoute: typeof rootRoute
+    }
     '/(auth)/sign-in': {
       id: '/(auth)/sign-in'
       path: '/sign-in'
@@ -552,6 +574,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/notifications'
       preLoaderRoute: typeof AuthenticatedSettingsNotificationsLazyImport
       parentRoute: typeof AuthenticatedSettingsRouteLazyImport
+    }
+    '/_authenticated/subscribed-emails/': {
+      id: '/_authenticated/subscribed-emails/'
+      path: '/subscribed-emails'
+      fullPath: '/subscribed-emails'
+      preLoaderRoute: typeof AuthenticatedSubscribedEmailsIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
     }
     '/_public/login/': {
       id: '/_public/login/'
@@ -730,6 +759,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBlogIdRoute: typeof AuthenticatedBlogIdRoute
   AuthenticatedBlogAddRoute: typeof AuthenticatedBlogAddRoute
   AuthenticatedBlogListRoute: typeof AuthenticatedBlogListRoute
+  AuthenticatedSubscribedEmailsIndexRoute: typeof AuthenticatedSubscribedEmailsIndexRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedTagsIndexLazyRoute: typeof AuthenticatedTagsIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
@@ -757,6 +787,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBlogIdRoute: AuthenticatedBlogIdRoute,
   AuthenticatedBlogAddRoute: AuthenticatedBlogAddRoute,
   AuthenticatedBlogListRoute: AuthenticatedBlogListRoute,
+  AuthenticatedSubscribedEmailsIndexRoute:
+    AuthenticatedSubscribedEmailsIndexRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
   AuthenticatedTagsIndexLazyRoute: AuthenticatedTagsIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
@@ -801,6 +833,7 @@ export interface FileRoutesByFullPath {
   '': typeof PublicRouteRouteWithChildren
   '/500': typeof errors500LazyRoute
   '/otp': typeof authOtpRoute
+  '/otp-verification': typeof authOtpVerificationRoute
   '/sign-in': typeof authSignInRoute
   '/settings': typeof AuthenticatedSettingsRouteLazyRouteWithChildren
   '/forgot-password': typeof authForgotPasswordLazyRoute
@@ -817,6 +850,7 @@ export interface FileRoutesByFullPath {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/subscribed-emails': typeof AuthenticatedSubscribedEmailsIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
@@ -843,6 +877,7 @@ export interface FileRoutesByTo {
   '': typeof PublicRouteRouteWithChildren
   '/500': typeof errors500LazyRoute
   '/otp': typeof authOtpRoute
+  '/otp-verification': typeof authOtpVerificationRoute
   '/sign-in': typeof authSignInRoute
   '/forgot-password': typeof authForgotPasswordLazyRoute
   '/sign-up': typeof authSignUpLazyRoute
@@ -858,6 +893,7 @@ export interface FileRoutesByTo {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/subscribed-emails': typeof AuthenticatedSubscribedEmailsIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
@@ -886,6 +922,7 @@ export interface FileRoutesById {
   '/_public': typeof PublicRouteRouteWithChildren
   '/(auth)/500': typeof auth500Route
   '/(auth)/otp': typeof authOtpRoute
+  '/(auth)/otp-verification': typeof authOtpVerificationRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteLazyRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordLazyRoute
@@ -903,6 +940,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/_authenticated/subscribed-emails/': typeof AuthenticatedSubscribedEmailsIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
@@ -931,6 +969,7 @@ export interface FileRouteTypes {
     | ''
     | '/500'
     | '/otp'
+    | '/otp-verification'
     | '/sign-in'
     | '/settings'
     | '/forgot-password'
@@ -947,6 +986,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/subscribed-emails'
     | '/login'
     | '/help-center'
     | '/settings/'
@@ -972,6 +1012,7 @@ export interface FileRouteTypes {
     | ''
     | '/500'
     | '/otp'
+    | '/otp-verification'
     | '/sign-in'
     | '/forgot-password'
     | '/sign-up'
@@ -987,6 +1028,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/subscribed-emails'
     | '/login'
     | '/help-center'
     | '/settings'
@@ -1013,6 +1055,7 @@ export interface FileRouteTypes {
     | '/_public'
     | '/(auth)/500'
     | '/(auth)/otp'
+    | '/(auth)/otp-verification'
     | '/(auth)/sign-in'
     | '/_authenticated/settings'
     | '/(auth)/forgot-password'
@@ -1030,6 +1073,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
+    | '/_authenticated/subscribed-emails/'
     | '/_public/login/'
     | '/_authenticated/help-center/'
     | '/_authenticated/settings/'
@@ -1058,6 +1102,7 @@ export interface RootRouteChildren {
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   auth500Route: typeof auth500Route
   authOtpRoute: typeof authOtpRoute
+  authOtpVerificationRoute: typeof authOtpVerificationRoute
   authSignInRoute: typeof authSignInRoute
   authForgotPasswordLazyRoute: typeof authForgotPasswordLazyRoute
   authSignUpLazyRoute: typeof authSignUpLazyRoute
@@ -1073,6 +1118,7 @@ const rootRouteChildren: RootRouteChildren = {
   PublicRouteRoute: PublicRouteRouteWithChildren,
   auth500Route: auth500Route,
   authOtpRoute: authOtpRoute,
+  authOtpVerificationRoute: authOtpVerificationRoute,
   authSignInRoute: authSignInRoute,
   authForgotPasswordLazyRoute: authForgotPasswordLazyRoute,
   authSignUpLazyRoute: authSignUpLazyRoute,
@@ -1097,6 +1143,7 @@ export const routeTree = rootRoute
         "/_public",
         "/(auth)/500",
         "/(auth)/otp",
+        "/(auth)/otp-verification",
         "/(auth)/sign-in",
         "/(auth)/forgot-password",
         "/(auth)/sign-up",
@@ -1115,6 +1162,7 @@ export const routeTree = rootRoute
         "/_authenticated/blog/$id",
         "/_authenticated/blog/add",
         "/_authenticated/blog/list",
+        "/_authenticated/subscribed-emails/",
         "/_authenticated/help-center/",
         "/_authenticated/tags/",
         "/_authenticated/tasks/",
@@ -1146,6 +1194,9 @@ export const routeTree = rootRoute
     },
     "/(auth)/otp": {
       "filePath": "(auth)/otp.tsx"
+    },
+    "/(auth)/otp-verification": {
+      "filePath": "(auth)/otp-verification.tsx"
     },
     "/(auth)/sign-in": {
       "filePath": "(auth)/sign-in.tsx"
@@ -1213,6 +1264,10 @@ export const routeTree = rootRoute
     "/_authenticated/settings/notifications": {
       "filePath": "_authenticated/settings/notifications.lazy.tsx",
       "parent": "/_authenticated/settings"
+    },
+    "/_authenticated/subscribed-emails/": {
+      "filePath": "_authenticated/subscribed-emails/index.tsx",
+      "parent": "/_authenticated"
     },
     "/_public/login/": {
       "filePath": "_public/login/index.tsx",

@@ -3,11 +3,7 @@ import { useForm } from 'react-hook-form'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { fonts } from '@/config/fonts'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { useFont } from '@/context/font-context'
-import { useTheme } from '@/context/theme-context'
-import { toast } from '@/hooks/use-toast'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/ui/shadcn/button'
 import {
   Form,
   FormControl,
@@ -16,8 +12,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+} from '@/ui/shadcn/form'
+import { cn } from '@/ui/shadcn/lib/utils'
+import { RadioGroup, RadioGroupItem } from '@/ui/shadcn/radio-group'
+import { useFont } from '@/context/font-context'
+import { useTheme } from '@/context/theme-context'
+import { toast } from '@/hooks/use-toast'
 
 const appearanceFormSchema = z.object({
   theme: z.enum(['light', 'dark'], {

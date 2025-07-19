@@ -3,8 +3,7 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
@@ -12,7 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
+} from '@/ui/shadcn/dialog'
 import {
   Form,
   FormControl,
@@ -20,9 +19,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
+import { ScrollArea } from '@/ui/shadcn/scroll-area'
+import { toast } from '@/hooks/use-toast'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { userTypes } from '../data/data'

@@ -4,15 +4,15 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from '@radix-ui/react-icons'
-import { usePagination } from '@/hooks/use-pagination'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/ui/shadcn/select'
+import { usePagination } from '@/hooks/use-pagination'
 
 interface DataTablePaginationProps {
   totalCount: number

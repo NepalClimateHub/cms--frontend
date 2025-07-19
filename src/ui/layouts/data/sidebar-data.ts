@@ -1,5 +1,5 @@
 import { IconHome, IconComponents, IconArticle } from '@tabler/icons-react'
-import { Calendar, Newspaper, PartyPopper } from 'lucide-react'
+import { Calendar, Mail, Newspaper, PartyPopper } from 'lucide-react'
 import { NavGroup } from '../types'
 
 export const superAdminSidebarData: NavGroup[] = [
@@ -39,6 +39,11 @@ export const superAdminSidebarData: NavGroup[] = [
         title: 'Tags',
         url: '/tags',
         icon: IconComponents,
+      },
+      {
+        title: 'Subscribed Emails',
+        url: '/subscribed-emails',
+        icon: Mail,
       },
     ],
   },

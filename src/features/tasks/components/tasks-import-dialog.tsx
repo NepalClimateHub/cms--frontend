@@ -1,8 +1,7 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogClose,
@@ -11,7 +10,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
+} from '@/ui/shadcn/dialog'
 import {
   Form,
   FormControl,
@@ -19,8 +18,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
+import { toast } from '@/hooks/use-toast'
 
 const formSchema = z.object({
   file: z

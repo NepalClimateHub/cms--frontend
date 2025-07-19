@@ -5,7 +5,7 @@ import { useNavigate, useParams } from '@tanstack/react-router'
 import { useGetNewsById, useNewsAPI } from '@/query/news/use-news'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { AddNewsSchema, type News } from '@/schemas/news/news'
-import { Main } from '@/components/layout/main'
+import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
 import NewsForm from '../shared/NewsForm'
@@ -23,8 +23,8 @@ const NewsEdit = () => {
 
   const tagsOptions =
     tagsData?.data?.map((tag) => ({
-    value: tag.id,
-    label: tag.tag,
+      value: tag.id,
+      label: tag.tag,
     })) || []
 
   const newsMutation = useNewsAPI().updateNews
@@ -37,16 +37,16 @@ const NewsEdit = () => {
   useEffect(() => {
     if (newsData && !hasReset.current) {
       form.reset({
-      ...newsData,
-      publishedDate: newsData?.publishedDate
-        ? new Date(newsData?.publishedDate)
-        : new Date(),
+        ...newsData,
+        publishedDate: newsData?.publishedDate
+          ? new Date(newsData?.publishedDate)
+          : new Date(),
         // @ts-expect-error - tags mapping type mismatch
         tagIds: newsData?.tags?.map((tag: { id: string }) => tag?.id) || [],
-      bannerImageUrl: newsData?.bannerImageUrl
-        ? newsData?.bannerImageUrl
-        : null,
-  })
+        bannerImageUrl: newsData?.bannerImageUrl
+          ? newsData?.bannerImageUrl
+          : null,
+      })
       hasReset.current = true
       setIsFormReady(true)
     }

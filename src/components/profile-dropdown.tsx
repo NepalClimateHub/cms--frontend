@@ -1,9 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { useLogout } from '@/query/auth/use-auth'
-import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
-import { useAuthStore } from '@/stores/authStore'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
+import { Button } from '@/ui/shadcn/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/ui/shadcn/dropdown-menu'
+import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
+import { useAuthStore } from '@/stores/authStore'
 
 export function ProfileDropdown() {
   const logOut = useLogout()

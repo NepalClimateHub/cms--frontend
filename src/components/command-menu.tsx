@@ -6,8 +6,6 @@ import {
   IconMoon,
   IconSun,
 } from '@tabler/icons-react'
-import { useSearch } from '@/context/search-context'
-import { useTheme } from '@/context/theme-context'
 import {
   CommandDialog,
   CommandEmpty,
@@ -16,9 +14,11 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@/components/ui/command'
-import { useSideBarData } from './layout/data/use-sidebar-data'
-import { ScrollArea } from './ui/scroll-area'
+} from '@/ui/shadcn/command'
+import { useSearch } from '@/context/search-context'
+import { useTheme } from '@/context/theme-context'
+import { useSideBarData } from '../ui/layouts/data/use-sidebar-data'
+import { ScrollArea } from '../ui/shadcn/scroll-area'
 
 export function CommandMenu() {
   const navigate = useNavigate()

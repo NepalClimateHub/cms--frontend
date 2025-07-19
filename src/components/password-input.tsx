@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { IconEye, IconEyeOff } from '@tabler/icons-react'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { Button } from './ui/button'
+import { Button } from '../ui/shadcn/button'
 
 type PasswordInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,

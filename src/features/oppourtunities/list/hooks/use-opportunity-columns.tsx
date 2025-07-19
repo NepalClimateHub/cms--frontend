@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table'
+import { Badge } from '@/ui/shadcn/badge'
 import { OpportunityResponseDto } from '@/api/types.gen'
-import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 import OpportunitiesRowAction from '../components/opportunity-row-actions'
 

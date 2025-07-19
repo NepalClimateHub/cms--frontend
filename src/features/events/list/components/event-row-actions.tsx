@@ -4,6 +4,16 @@ import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
 import { useDeleteEvent, useUpdateEventStatus } from '@/query/events/use-events'
 import { EventFormValues } from '@/schemas/event'
+import { Button } from '@/ui/shadcn/button'
+import {
+  Dialog,
+  DialogTrigger,
+  DialogTitle,
+  DialogHeader,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+} from '@/ui/shadcn/dialog'
 import {
   LucideEye,
   Pencil,
@@ -18,16 +28,6 @@ import {
   Clock,
   LucideGlobe,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogTrigger,
-  DialogTitle,
-  DialogHeader,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
 
 type EventCols = EventFormValues & {
   id: string

@@ -1,4 +1,6 @@
+import { FC } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { TAG_TYPES, TagFormValues, TagsInitializer } from '@/schemas/tags/tags'
 import {
   Form,
   FormControl,
@@ -6,11 +8,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { FC } from 'react'
-import { TAG_TYPES, TagFormValues, TagsInitializer } from '@/schemas/tags/tags'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/ui/shadcn/select'
 
 type TagFormProps = {
   form: UseFormReturn<TagFormValues>
@@ -18,12 +24,11 @@ type TagFormProps = {
 }
 
 export const TagForm: FC<TagFormProps> = ({ form, onSubmit }) => {
-
   const handleFormSubmit = (values: TagFormValues) => {
     const { tagType, tag } = values
     const payload: TagsInitializer = {
       tag,
-      [tagType] : true
+      [tagType]: true,
     }
     onSubmit(payload)
   }
@@ -31,24 +36,24 @@ export const TagForm: FC<TagFormProps> = ({ form, onSubmit }) => {
   return (
     <Form {...form}>
       <form
-        id="tag-form"
+        id='tag-form'
         onSubmit={form.handleSubmit(handleFormSubmit)}
-        className="space-y-6"
+        className='space-y-6'
       >
         {/* Tag Name Field */}
         <FormField
           control={form.control}
-          name="tag"
+          name='tag'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-lg font-semibold text-gray-700">
+              <FormLabel className='text-lg font-semibold text-gray-700'>
                 Tag Name
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter tag name"
-                  className="w-full"
-                  autoComplete="off"
+                  placeholder='Enter tag name'
+                  className='w-full'
+                  autoComplete='off'
                   {...field}
                 />
               </FormControl>
@@ -60,14 +65,19 @@ export const TagForm: FC<TagFormProps> = ({ form, onSubmit }) => {
         {/* Tag Type Selection */}
         <FormField
           control={form.control}
-          name="tagType"
+          name='tagType'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-lg font-semibold text-gray-700">Tag Type</FormLabel>
+              <FormLabel className='text-lg font-semibold text-gray-700'>
+                Tag Type
+              </FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a tag type" />
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger className='w-full'>
+                    <SelectValue placeholder='Select a tag type' />
                   </SelectTrigger>
                   <SelectContent>
                     {TAG_TYPES.map(({ name, label }) => (

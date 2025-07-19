@@ -1,5 +1,5 @@
 import { IconPlus } from '@tabler/icons-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 
 export function OrganizationsListActionButtons({
   setAddDialogOpen,

@@ -3,17 +3,16 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
+import { useSignup } from '@/query/auth/use-auth'
 import { orgSchema, indSchema } from '@/schemas/auth/signup'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardDescription,
-} from '@/components/ui/card'
+} from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
@@ -21,15 +20,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
+import { cn } from '@/ui/shadcn/lib/utils'
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/ui/shadcn/select'
+import { Loader2 } from 'lucide-react'
 import { PasswordInput } from '@/components/password-input'
 
 const organizationTypes = [
@@ -152,7 +153,7 @@ type TabType = 'organization' | 'individual'
 
 export default function SignUp() {
   const [tab, setTab] = useState<TabType>('organization')
-  const [showSuccess, setShowSuccess] = useState(false)
+  const { mutate: mutateSignup, isPending } = useSignup()
 
   // Organization form
   const orgForm = useForm<OrgForm>({
@@ -181,11 +182,30 @@ export default function SignUp() {
     },
   })
 
-  function handleOrgSubmit(_data: OrgForm) {
-    setShowSuccess(true)
+  function handleOrgSubmit(data: OrgForm) {
+    const payload = {
+      body: {
+        name: data.adminName,
+        username: data.orgEmail,
+        password: data.password,
+        email: data.orgEmail,
+        userType: 'ORGANIZATION' as const,
+      },
+    }
+    mutateSignup(payload)
   }
-  function handleIndSubmit(_data: IndForm) {
-    setShowSuccess(true)
+
+  function handleIndSubmit(data: IndForm) {
+    const payload = {
+      body: {
+        name: data.fullName,
+        username: data.email,
+        password: data.password,
+        email: data.email,
+        userType: 'INDIVIDUAL' as const,
+      },
+    }
+    mutateSignup(payload)
   }
 
   return (
@@ -230,300 +250,287 @@ export default function SignUp() {
             </Button>
           </div>
 
-          {/* Success Message */}
-          {showSuccess ? (
-            <Alert className='mb-6 mt-4 border-blue-200 bg-blue-50'>
-              <AlertTitle className='text-blue-800'>
-                Thanks for registering!
-              </AlertTitle>
-              <AlertDescription className='text-blue-700'>
-                We've sent a verification link to your email address. Please
-                verify to continue.
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <div className='grid gap-6'>
-              {/* Organization Form */}
-              {tab === 'organization' && (
-                <Form {...orgForm}>
-                  <form
-                    onSubmit={orgForm.handleSubmit(handleOrgSubmit)}
-                    className='space-y-4'
-                  >
-                    <FormField
-                      control={orgForm.control}
-                      name='orgName'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Organization Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} autoComplete='organization' />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={orgForm.control}
-                      name='orgEmail'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Organization Email</FormLabel>
-                          <FormControl>
-                            <Input
-                              type='email'
-                              {...field}
-                              autoComplete='email'
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={orgForm.control}
-                      name='orgType'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Organization Type</FormLabel>
-                          <FormControl>
-                            <Select
-                              value={field.value}
-                              onValueChange={(val) =>
-                                orgForm.setValue('orgType', val)
-                              }
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder='Select type' />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {organizationTypes.map((type) => (
-                                  <SelectItem key={type} value={type}>
-                                    {type}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    {/* Show text input if 'Other' is selected */}
-                    {orgForm.watch('orgType') === 'Other' && (
-                      <FormField
-                        control={orgForm.control}
-                        name='orgTypeOther'
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Other (please specify)</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+          <div className='grid gap-6'>
+            {/* Organization Form */}
+            {tab === 'organization' && (
+              <Form {...orgForm}>
+                <form
+                  onSubmit={orgForm.handleSubmit(handleOrgSubmit)}
+                  className='space-y-4'
+                >
+                  <FormField
+                    control={orgForm.control}
+                    name='orgName'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Organization Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} autoComplete='organization' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
+                  />
+                  <FormField
+                    control={orgForm.control}
+                    name='orgEmail'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Organization Email</FormLabel>
+                        <FormControl>
+                          <Input type='email' {...field} autoComplete='email' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={orgForm.control}
+                    name='orgType'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Organization Type</FormLabel>
+                        <FormControl>
+                          <Select
+                            value={field.value}
+                            onValueChange={(val) =>
+                              orgForm.setValue('orgType', val)
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder='Select type' />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {organizationTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* Show text input if 'Other' is selected */}
+                  {orgForm.watch('orgType') === 'Other' && (
                     <FormField
                       control={orgForm.control}
-                      name='province'
+                      name='orgTypeOther'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Province</FormLabel>
+                          <FormLabel>Other (please specify)</FormLabel>
                           <FormControl>
-                            <Select
-                              value={field.value}
-                              onValueChange={(val) => {
-                                orgForm.setValue('province', val)
-                                orgForm.setValue('district', '')
-                              }}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder='Select province' />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {provinces.map((prov) => (
-                                  <SelectItem key={prov} value={prov}>
-                                    {prov}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <Input {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={orgForm.control}
-                      name='district'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>District</FormLabel>
-                          <FormControl>
-                            <Select
-                              value={field.value}
-                              onValueChange={(val) =>
-                                orgForm.setValue('district', val)
-                              }
-                              disabled={!orgForm.watch('province')}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder='Select district' />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {(
-                                  districtsByProvince[
-                                    orgForm.watch('province')
-                                  ] || []
-                                ).map((d) => (
-                                  <SelectItem key={d} value={d}>
-                                    {d}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={orgForm.control}
-                      name='adminName'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Admin Full Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} autoComplete='name' />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={orgForm.control}
-                      name='password'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              {...field}
-                              autoComplete='new-password'
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={orgForm.control}
-                      name='confirmPassword'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Confirm Password</FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              {...field}
-                              autoComplete='new-password'
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      className='mt-2 h-10 w-full rounded-lg bg-blue-600 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700 sm:h-11 sm:text-base'
-                      type='submit'
-                    >
-                      Register
-                    </Button>
-                  </form>
-                </Form>
-              )}
-
-              {/* Individual Form */}
-              {tab === 'individual' && (
-                <Form {...indForm}>
-                  <form
-                    onSubmit={indForm.handleSubmit(handleIndSubmit)}
-                    className='space-y-4'
+                  )}
+                  <FormField
+                    control={orgForm.control}
+                    name='province'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Province</FormLabel>
+                        <FormControl>
+                          <Select
+                            value={field.value}
+                            onValueChange={(val) => {
+                              orgForm.setValue('province', val)
+                              orgForm.setValue('district', '')
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder='Select province' />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {provinces.map((prov) => (
+                                <SelectItem key={prov} value={prov}>
+                                  {prov}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={orgForm.control}
+                    name='district'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>District</FormLabel>
+                        <FormControl>
+                          <Select
+                            value={field.value}
+                            onValueChange={(val) =>
+                              orgForm.setValue('district', val)
+                            }
+                            disabled={!orgForm.watch('province')}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder='Select district' />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {(
+                                districtsByProvince[
+                                  orgForm.watch('province')
+                                ] || []
+                              ).map((d) => (
+                                <SelectItem key={d} value={d}>
+                                  {d}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={orgForm.control}
+                    name='adminName'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Admin Full Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} autoComplete='name' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={orgForm.control}
+                    name='password'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <PasswordInput
+                            {...field}
+                            autoComplete='new-password'
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={orgForm.control}
+                    name='confirmPassword'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <PasswordInput
+                            {...field}
+                            autoComplete='new-password'
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    className='mt-2 h-10 w-full rounded-lg bg-blue-600 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700 sm:h-11 sm:text-base'
+                    type='submit'
+                    disabled={isPending}
                   >
-                    <FormField
-                      control={indForm.control}
-                      name='fullName'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} autoComplete='name' />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={indForm.control}
-                      name='email'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email Address</FormLabel>
-                          <FormControl>
-                            <Input
-                              type='email'
-                              {...field}
-                              autoComplete='email'
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={indForm.control}
-                      name='password'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              {...field}
-                              autoComplete='new-password'
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={indForm.control}
-                      name='confirmPassword'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Confirm Password</FormLabel>
-                          <FormControl>
-                            <PasswordInput
-                              {...field}
-                              autoComplete='new-password'
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      className='mt-2 h-10 w-full rounded-lg bg-blue-600 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700 sm:h-11 sm:text-base'
-                      type='submit'
-                    >
-                      Register
-                    </Button>
-                  </form>
-                </Form>
-              )}
-            </div>
-          )}
+                    {isPending && (
+                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    )}
+                    Register
+                  </Button>
+                </form>
+              </Form>
+            )}
+
+            {/* Individual Form */}
+            {tab === 'individual' && (
+              <Form {...indForm}>
+                <form
+                  onSubmit={indForm.handleSubmit(handleIndSubmit)}
+                  className='space-y-4'
+                >
+                  <FormField
+                    control={indForm.control}
+                    name='fullName'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} autoComplete='name' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={indForm.control}
+                    name='email'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                          <Input type='email' {...field} autoComplete='email' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={indForm.control}
+                    name='password'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <PasswordInput
+                            {...field}
+                            autoComplete='new-password'
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={indForm.control}
+                    name='confirmPassword'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <PasswordInput
+                            {...field}
+                            autoComplete='new-password'
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    className='mt-2 h-10 w-full rounded-lg bg-blue-600 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700 sm:h-11 sm:text-base'
+                    type='submit'
+                    disabled={isPending}
+                  >
+                    {isPending && (
+                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    )}
+                    Register
+                  </Button>
+                </form>
+              </Form>
+            )}
+          </div>
 
           {/* Footer */}
           <div className='mt-6 text-center'>

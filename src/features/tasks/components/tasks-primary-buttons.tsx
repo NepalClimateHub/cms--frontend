@@ -1,5 +1,5 @@
 import { IconDownload, IconPlus } from '@tabler/icons-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import { useTasks } from '../context/tasks-context'
 
 export function TasksPrimaryButtons() {

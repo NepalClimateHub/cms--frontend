@@ -3,10 +3,8 @@ import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
 import { useDeleteBlog } from '@/query/blogs/use-blogs'
-// import { useDeleteBlog, useBlogAPI } from '@/query/blogs/use-blogs'
-import { LucideEye, Pencil, Trash } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/ui/shadcn/badge'
+import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
@@ -14,8 +12,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { Separator } from '@/components/ui/separator'
+} from '@/ui/shadcn/dialog'
+import { Separator } from '@/ui/shadcn/separator'
+// import { useDeleteBlog, useBlogAPI } from '@/query/blogs/use-blogs'
+import { LucideEye, Pencil, Trash } from 'lucide-react'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 
 interface BlogRowActionProps {

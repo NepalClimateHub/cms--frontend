@@ -1,7 +1,4 @@
-import {
-  flexRender,
-  Table as TableType,
-} from '@tanstack/react-table'
+import { flexRender, Table as TableType } from '@tanstack/react-table'
 import {
   Table,
   TableBody,
@@ -9,19 +6,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { TableLoader } from '../loader';
-import { BookDashed } from 'lucide-react';
+} from '@/ui/shadcn/table'
+import { BookDashed } from 'lucide-react'
+import { TableLoader } from '../loader'
 
 interface DataTableProps<TData> {
-  loading: boolean;
+  loading: boolean
   table: TableType<TData>
 }
 
-export function DataTable<TData>({
-  loading,
-  table,
-}: DataTableProps<TData>) {
+export function DataTable<TData>({ loading, table }: DataTableProps<TData>) {
   return (
     <div className='space-y-4'>
       <div className='rounded-md border'>
@@ -35,9 +29,9 @@ export function DataTable<TData>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   )
                 })}
@@ -45,47 +39,41 @@ export function DataTable<TData>({
             ))}
           </TableHeader>
           <TableBody>
-            {
-              loading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={table.getAllColumns().length}
-                  >
-                    <TableLoader />
-                  </TableCell>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={table.getAllColumns().length}>
+                  <TableLoader />
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={table.getAllColumns().length}
-                    className='h-56 text-center'
-                  >
-                    <div className='flex flex-col items-center gap-2'>
-                      <BookDashed />
-                      <div>
-                        No results.
-                      </div>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )
-            }
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={table.getAllColumns().length}
+                  className='h-56 text-center'
+                >
+                  <div className='flex flex-col items-center gap-2'>
+                    <BookDashed />
+                    <div>No results.</div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

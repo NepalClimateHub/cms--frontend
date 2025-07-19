@@ -6,6 +6,7 @@ export type UserOutput = {
     fullName: string;
     isSuperAdmin: boolean;
     isAccountVerified: boolean;
+    userType: 'ADMIN' | 'ORGANIZATION' | 'INDIVIDUAL';
     gender: {
         [key: string]: unknown;
     };
@@ -80,6 +81,7 @@ export type RegisterInput = {
     username: string;
     password: string;
     email: string;
+    userType: 'ADMIN' | 'ORGANIZATION' | 'INDIVIDUAL';
 };
 
 export type RegisterOutput = {
@@ -89,6 +91,7 @@ export type RegisterOutput = {
     roles: Array<string>;
     email: string;
     isAccountDisabled: boolean;
+    userType: 'ADMIN' | 'ORGANIZATION' | 'INDIVIDUAL';
     createdAt: string;
     updatedAt: string;
 };
@@ -2179,6 +2182,41 @@ export type BlogControllerUpdateBlogResponses = {
 };
 
 export type BlogControllerUpdateBlogResponse = BlogControllerUpdateBlogResponses[keyof BlogControllerUpdateBlogResponses];
+
+export type EmailSubscriptionControllerSubscribeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/email-subscription/subscribe';
+};
+
+export type EmailSubscriptionControllerSubscribeResponses = {
+    201: unknown;
+};
+
+export type EmailSubscriptionControllerFindAllData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/email-subscription';
+};
+
+export type EmailSubscriptionControllerFindAllResponses = {
+    200: unknown;
+};
+
+export type EmailSubscriptionControllerRemoveData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/email-subscription/{id}';
+};
+
+export type EmailSubscriptionControllerRemoveResponses = {
+    200: unknown;
+};
 
 export type ClientOptions = {
     baseUrl: string;

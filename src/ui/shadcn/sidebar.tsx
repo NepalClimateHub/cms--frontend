@@ -1,26 +1,26 @@
 import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import { Button } from '@/ui/shadcn/button'
+import { Input } from '@/ui/shadcn/input'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { VariantProps, cva } from 'class-variance-authority'
-import { PanelLeft } from 'lucide-react'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
+import { Separator } from '@/ui/shadcn/separator'
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetTitle,
-} from '@/components/ui/sheet'
-import { Skeleton } from '@/components/ui/skeleton'
+} from '@/ui/shadcn/sheet'
+import { Skeleton } from '@/ui/shadcn/skeleton'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/ui/shadcn/tooltip'
+import { VariantProps, cva } from 'class-variance-authority'
+import { PanelLeft } from 'lucide-react'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7

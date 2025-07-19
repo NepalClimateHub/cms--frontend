@@ -2,8 +2,7 @@ import { HTMLAttributes, useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   Form,
   FormControl,
@@ -11,8 +10,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
+import { cn } from '@/ui/shadcn/lib/utils'
 
 type ForgotFormProps = HTMLAttributes<HTMLDivElement>
 

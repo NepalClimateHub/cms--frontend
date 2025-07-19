@@ -1,13 +1,9 @@
 import { format } from 'date-fns'
+import { Button } from '@/ui/shadcn/button'
+import { Calendar } from '@/ui/shadcn/calendar'
 import { cn } from '@/ui/shadcn/lib/utils'
+import { Popover, PopoverContent, PopoverTrigger } from '@/ui/shadcn/popover'
 import { CalendarIcon } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
 
 interface DatePickerProps {
   value?: Date

@@ -2,9 +2,7 @@ import { z } from 'zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { toast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   Form,
   FormControl,
@@ -13,16 +11,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
+import { cn } from '@/ui/shadcn/lib/utils'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+} from '@/ui/shadcn/select'
+import { Textarea } from '@/ui/shadcn/textarea'
+import { toast } from '@/hooks/use-toast'
 
 const profileFormSchema = z.object({
   username: z

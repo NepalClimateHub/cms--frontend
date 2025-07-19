@@ -19,12 +19,12 @@ export const ImageKitContext = createContext<IKContextExtractedProps>({});
 const IKContext = (props: React.PropsWithChildren<IKContextProps>) => {
 
   const extractContextOptions = (mergedOptions: InferProps<IKContextExtractedProps>) => {
-    var result: IKContextExtractedProps = {};
+    const result: IKContextExtractedProps = {};
 
     const propKeys = Object.keys(IKContextExtractedProps);
 
-    for (var i = 0; i < propKeys.length; i++) {
-      var key = propKeys[i];
+    for (let i = 0; i < propKeys.length; i++) {
+      const key = propKeys[i];
       const value = mergedOptions[key as keyof IKContextExtractedProps];
       if (value) {
         result[key as keyof IKContextExtractedProps] = value;

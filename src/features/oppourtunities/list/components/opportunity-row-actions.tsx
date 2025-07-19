@@ -5,9 +5,8 @@ import {
   useDeleteOpportunity,
   useOpportunityAPI,
 } from '@/query/opportunities/use-opportunities'
-import { LucideEye, Pencil, Trash } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/ui/shadcn/badge'
+import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
@@ -15,8 +14,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { Separator } from '@/components/ui/separator'
+} from '@/ui/shadcn/dialog'
+import { Separator } from '@/ui/shadcn/separator'
+import { LucideEye, Pencil, Trash } from 'lucide-react'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 
 const OpportunitiesRowAction = ({ row }: { row: any }) => {

@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { UseFormReturn } from 'react-hook-form'
 import { OpportunityFormValues } from '@/schemas/opportunities/opportunity'
 import { socialSchema } from '@/schemas/shared'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/shadcn/card'
 import {
   FormControl,
   FormField,
@@ -10,8 +10,8 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from '../ui/form'
-import { Input } from '../ui/input'
+} from '../../ui/shadcn/form'
+import { Input } from '../../ui/shadcn/input'
 
 export type Socials = z.infer<typeof socialSchema>
 

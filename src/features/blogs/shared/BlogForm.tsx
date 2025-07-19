@@ -2,8 +2,8 @@ import { FC } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
 import { BLOG_CATEGORY, BlogFormValues } from '@/schemas/blog'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/ui/shadcn/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
@@ -12,17 +12,17 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
-import { Textarea } from '@/components/ui/textarea'
+} from '@/ui/shadcn/select'
+import { Switch } from '@/ui/shadcn/switch'
+import { Textarea } from '@/ui/shadcn/textarea'
 import { DatePicker } from '@/components/datepicker'
 import ImageUpload from '@/components/image-upload'
 import { MinimalTiptapEditor } from '@/components/minimal-tiptap'

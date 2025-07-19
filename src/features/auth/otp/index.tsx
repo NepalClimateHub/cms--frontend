@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Card } from '@/components/ui/card'
+import { Card } from '@/ui/shadcn/card'
 import AuthLayout from '../auth-layout'
 import { OtpForm } from './components/otp-form'
 

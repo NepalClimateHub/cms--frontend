@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { BlogResponseDto } from '@/query/blogs/use-blogs'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/ui/shadcn/badge'
 import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 import BlogRowAction from '../components/blog-row-actions'
 

@@ -1,19 +1,17 @@
 import { HTMLAttributes } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { useLogin } from '@/query/auth/use-auth'
 import { LoginPayload, loginSchema } from '@/schemas/auth/login'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardDescription,
-} from '@/components/ui/card'
+} from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
@@ -21,20 +19,40 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
+import { cn } from '@/ui/shadcn/lib/utils'
+import { Loader2 } from 'lucide-react'
 import { PasswordInput } from '@/components/password-input'
 
 // Minimal, modern login form
 function UserAuthForm({ className }: HTMLAttributes<HTMLDivElement>) {
-  const { mutate: mutateLogin, isPending } = useLogin()
+  const { mutate: mutateLogin, isPending, error } = useLogin()
+  const navigate = useNavigate()
   const form = useForm<LoginPayload>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   })
+
   function onSubmit(payload: LoginPayload) {
     mutateLogin({ body: { ...payload } })
   }
+
+  function handleVerifyAccount() {
+    navigate({
+      to: '/otp-verification',
+      search: { email: form.watch('email') },
+    })
+  }
+
+  // Check if it's an unverified account error
+  const isUnverifiedAccount =
+    error &&
+    typeof error === 'object' &&
+    'error' in error &&
+    (error as unknown as { error?: { message?: string } }).error?.message ===
+      'This account is not verified!'
+
   return (
     <Form {...form}>
       <form
@@ -82,6 +100,23 @@ function UserAuthForm({ className }: HTMLAttributes<HTMLDivElement>) {
           {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
           Login
         </Button>
+
+        {isUnverifiedAccount && (
+          <div className='mt-3 text-center'>
+            <p className='mb-2 text-sm text-red-600'>
+              Your account is not verified. Please check your email for
+              verification instructions.
+            </p>
+            <Button
+              type='button'
+              variant='link'
+              onClick={handleVerifyAccount}
+              className='p-0 text-blue-600 underline underline-offset-4 hover:text-blue-700'
+            >
+              Verify Account
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   )

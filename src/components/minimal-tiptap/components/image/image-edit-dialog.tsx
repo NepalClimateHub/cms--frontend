@@ -1,17 +1,17 @@
-import type { Editor } from '@tiptap/react'
-import type { VariantProps } from 'class-variance-authority'
-import type { toggleVariants } from '@/components/ui/toggle'
 import { useState } from 'react'
 import { ImageIcon } from '@radix-ui/react-icons'
-import { ToolbarButton } from '../toolbar-button'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogDescription,
   DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog'
+  DialogTrigger,
+} from '@/ui/shadcn/dialog'
+import type { toggleVariants } from '@/ui/shadcn/toggle'
+import type { Editor } from '@tiptap/react'
+import type { VariantProps } from 'class-variance-authority'
+import { ToolbarButton } from '../toolbar-button'
 import { ImageEditBlock } from './image-edit-block'
 
 interface ImageEditDialogProps extends VariantProps<typeof toggleVariants> {
@@ -26,18 +26,20 @@ const ImageEditDialog = ({ editor, size, variant }: ImageEditDialogProps) => {
       <DialogTrigger asChild>
         <ToolbarButton
           isActive={editor.isActive('image')}
-          tooltip="Image"
-          aria-label="Image"
+          tooltip='Image'
+          aria-label='Image'
           size={size}
           variant={variant}
         >
-          <ImageIcon className="size-5" />
+          <ImageIcon className='size-5' />
         </ToolbarButton>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className='sm:max-w-lg'>
         <DialogHeader>
           <DialogTitle>Select image</DialogTitle>
-          <DialogDescription className="sr-only">Upload an image from your computer</DialogDescription>
+          <DialogDescription className='sr-only'>
+            Upload an image from your computer
+          </DialogDescription>
         </DialogHeader>
         <ImageEditBlock editor={editor} close={() => setOpen(false)} />
       </DialogContent>

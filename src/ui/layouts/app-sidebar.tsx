@@ -1,5 +1,5 @@
 import { useLogout } from '@/query/auth/use-auth'
-import { LogOut } from 'lucide-react'
+import { NavGroup } from '@/ui/layouts/nav-group'
 import {
   Sidebar,
   SidebarContent,
@@ -10,9 +10,9 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from '@/components/ui/sidebar'
-import { NavGroup } from '@/components/layout/nav-group'
-import { ProfileCard } from '../profile-card'
+} from '@/ui/shadcn/sidebar'
+import { LogOut } from 'lucide-react'
+import { ProfileCard } from '../../components/profile-card'
 import { useSideBarData } from './data/use-sidebar-data'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -53,6 +53,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <ProfileCard />
           <SidebarSeparator className='my-2' />
           <SidebarMenuItem>
+            
             <SidebarMenuButton onClick={logout} tooltip='Logout'>
               <LogOut className='h-4 w-4' />
               <span>Logout</span>

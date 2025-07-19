@@ -1,5 +1,5 @@
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+import { Header } from '@/ui/layouts/header'
+import { Main } from '@/ui/layouts/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'

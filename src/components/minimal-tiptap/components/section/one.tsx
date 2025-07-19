@@ -1,16 +1,16 @@
 import * as React from 'react'
 import { CaretDownIcon, LetterCaseCapitalizeIcon } from '@radix-ui/react-icons'
-import { cn } from '@/ui/shadcn/lib/utils'
-import type { Level } from '@tiptap/extension-heading'
-import type { Editor } from '@tiptap/react'
-import type { VariantProps } from 'class-variance-authority'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import type { toggleVariants } from '@/components/ui/toggle'
+} from '@/ui/shadcn/dropdown-menu'
+import { cn } from '@/ui/shadcn/lib/utils'
+import type { toggleVariants } from '@/ui/shadcn/toggle'
+import type { Level } from '@tiptap/extension-heading'
+import type { Editor } from '@tiptap/react'
+import type { VariantProps } from 'class-variance-authority'
 import type { FormatAction } from '../../types'
 import { ShortcutKey } from '../shortcut-key'
 import { ToolbarButton } from '../toolbar-button'

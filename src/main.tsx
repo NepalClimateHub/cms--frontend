@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
-        // eslint-disable-next-line no-console
+         
         if (import.meta.env.MODE === 'development')
           console.log({ failureCount, error })
 

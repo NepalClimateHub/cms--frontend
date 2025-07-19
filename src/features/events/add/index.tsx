@@ -4,7 +4,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useAddEvents } from '@/query/events/use-events'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { eventFormSchema, EventFormValues } from '@/schemas/event'
-import { Main } from '@/components/layout/main'
+import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/components/page-header'
 import EventForm from '../shared/EventForm'
 

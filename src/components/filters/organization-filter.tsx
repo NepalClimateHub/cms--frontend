@@ -1,26 +1,22 @@
 import { FC, useState } from 'react'
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons'
 import { useGetOrganizations } from '@/query/organizations/use-organization'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { Values } from 'nuqs'
-import { FilterValues, InitFilters } from '@/hooks/use-filters'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandItem,
   CommandList,
-} from '@/components/ui/command'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { Badge } from '../ui/badge'
-import { Input } from '../ui/input'
-import { Separator } from '../ui/separator'
-import { Spinner } from '../ui/spinner'
+} from '@/ui/shadcn/command'
+import { cn } from '@/ui/shadcn/lib/utils'
+import { Popover, PopoverContent, PopoverTrigger } from '@/ui/shadcn/popover'
+import { Values } from 'nuqs'
+import { FilterValues, InitFilters } from '@/hooks/use-filters'
+import { Badge } from '../../ui/shadcn/badge'
+import { Input } from '../../ui/shadcn/input'
+import { Separator } from '../../ui/shadcn/separator'
+import { Spinner } from '../../ui/shadcn/spinner'
 
 type OrganizationFilterProps = {
   filters: Values<InitFilters>

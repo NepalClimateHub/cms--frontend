@@ -3,18 +3,18 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { toast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
+import { cn } from '@/ui/shadcn/lib/utils'
+import { Separator } from '@/ui/shadcn/separator'
+import { toast } from '@/hooks/use-toast'
 import { PinInput, PinInputField } from '@/components/pin-input'
 
 type OtpFormProps = HTMLAttributes<HTMLDivElement>

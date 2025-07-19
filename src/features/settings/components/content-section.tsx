@@ -1,5 +1,5 @@
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
+import { ScrollArea } from '@/ui/shadcn/scroll-area'
+import { Separator } from '@/ui/shadcn/separator'
 
 interface ContentSectionProps {
   title: string

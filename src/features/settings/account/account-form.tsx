@@ -3,10 +3,8 @@ import { format } from 'date-fns'
 import { useForm } from 'react-hook-form'
 import { CalendarIcon, CaretSortIcon, CheckIcon } from '@radix-ui/react-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { toast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import { Button } from '@/ui/shadcn/button'
+import { Calendar } from '@/ui/shadcn/calendar'
 import {
   Command,
   CommandEmpty,
@@ -14,7 +12,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command'
+} from '@/ui/shadcn/command'
 import {
   Form,
   FormControl,
@@ -23,13 +21,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
+import { cn } from '@/ui/shadcn/lib/utils'
+import { Popover, PopoverContent, PopoverTrigger } from '@/ui/shadcn/popover'
+import { toast } from '@/hooks/use-toast'
 
 const languages = [
   { label: 'English', value: 'en' },

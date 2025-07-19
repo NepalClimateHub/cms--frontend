@@ -9,7 +9,7 @@ import {
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { OpportunityFormValues } from '@/schemas/opportunities/opportunity'
 import { opportunitySchema } from '@/schemas/opportunities/opportunity'
-import { Main } from '@/components/layout/main'
+import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
 import OpportunityForm from '../shared/OpportunityForm'
@@ -44,12 +44,12 @@ const EditOpportunity: FC = () => {
   // Reset form when data is available
   useEffect(() => {
     if (opportunityData && !hasReset.current) {
-  const socialsObject = {
-    facebook: '',
-    instagram: '',
-    linkedin: '',
-    ...(opportunityData?.socials || {}),
-  }
+      const socialsObject = {
+        facebook: '',
+        instagram: '',
+        linkedin: '',
+        ...(opportunityData?.socials || {}),
+      }
 
       form.reset({
         ...opportunityData,

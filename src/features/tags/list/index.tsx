@@ -5,12 +5,12 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { Main } from '@/ui/layouts/main'
 import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
 import { TagOutputDto } from '@/api/types.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import { DataTable } from '@/components/data-table/data-table'
-import { Main } from '@/components/layout/main'
 import { BoxLoader } from '@/components/loader'
 import PageHeader from '@/components/page-header'
 import { DataTablePagination } from '../../../components/data-table/data-table-pagination'

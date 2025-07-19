@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { IconAlertTriangle } from '@tabler/icons-react'
+import { Alert, AlertDescription, AlertTitle } from '@/ui/shadcn/alert'
+import { Input } from '@/ui/shadcn/input'
+import { Label } from '@/ui/shadcn/label'
 import { toast } from '@/hooks/use-toast'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { User } from '../data/schema'
 

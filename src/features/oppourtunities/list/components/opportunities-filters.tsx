@@ -1,10 +1,10 @@
 import { FC, useEffect, useState } from 'react'
 import { Cross2Icon } from '@radix-ui/react-icons'
+import { Button } from '@/ui/shadcn/button'
+import { Input } from '@/ui/shadcn/input'
 import { cleanObj } from '@/utils/obj-utils'
 import { useFilters } from '@/hooks/use-filters'
 import { useIsFirstRender } from '@/hooks/use-first-render'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 
 type OpportunitiesFiltersProps = {
   setPage: (page: number | string) => void

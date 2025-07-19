@@ -4,7 +4,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useNewsAPI } from '@/query/news/use-news'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { News, AddNewsSchema } from '@/schemas/news/news'
-import { Main } from '@/components/layout/main'
+import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/components/page-header'
 import NewsForm from '../shared/NewsForm'
 

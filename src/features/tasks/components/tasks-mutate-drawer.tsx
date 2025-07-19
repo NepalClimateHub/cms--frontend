@@ -1,8 +1,7 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   Form,
   FormControl,
@@ -10,9 +9,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
+import { RadioGroup, RadioGroupItem } from '@/ui/shadcn/radio-group'
 import {
   Sheet,
   SheetClose,
@@ -21,7 +20,8 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from '@/components/ui/sheet'
+} from '@/ui/shadcn/sheet'
+import { toast } from '@/hooks/use-toast'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { Task } from '../data/schema'
 

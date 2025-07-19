@@ -8,8 +8,8 @@ import {
   OpportunityFormValues,
   opportunitySchema,
 } from '@/schemas/opportunities/opportunity'
+import { Main } from '@/ui/layouts/main'
 import { getCustomToast } from '@/components/custom-toast'
-import { Main } from '@/components/layout/main'
 import PageHeader from '@/components/page-header'
 import OpportunityForm from '../shared/OpportunityForm'
 

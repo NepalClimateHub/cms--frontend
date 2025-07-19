@@ -4,7 +4,7 @@ import {
   ExternalLinkIcon,
   LinkBreak2Icon,
 } from '@radix-ui/react-icons'
-import { Separator } from '@/components/ui/separator'
+import { Separator } from '@/ui/shadcn/separator'
 import { ToolbarButton } from '../toolbar-button'
 
 interface LinkPopoverBlockProps {

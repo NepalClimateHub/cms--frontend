@@ -8,7 +8,7 @@ import {
   TagFormValues,
   TagsInitializer,
 } from '@/schemas/tags/tags'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
+} from '@/ui/shadcn/dialog'
 import { TagForm } from '../shared/TagAddEditForm'
 
 interface Props {

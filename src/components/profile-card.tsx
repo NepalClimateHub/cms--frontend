@@ -1,11 +1,11 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
-import { useAuthStore } from '@/stores/authStore'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar'
+} from '@/ui/shadcn/sidebar'
+import { useAuthStore } from '@/stores/authStore'
 
 export function ProfileCard() {
   const { user } = useAuthStore()

@@ -1,8 +1,8 @@
 import { IconPlus } from '@tabler/icons-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 
 export function TagsListActionButtons({
-  setAddDialogOpen
+  setAddDialogOpen,
 }: {
   setAddDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) {

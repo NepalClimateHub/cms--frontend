@@ -5,15 +5,15 @@ import {
   EyeNoneIcon,
 } from '@radix-ui/react-icons'
 import { Column } from '@tanstack/react-table'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/shadcn/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/ui/shadcn/dropdown-menu'
+import { cn } from '@/ui/shadcn/lib/utils'
 
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {

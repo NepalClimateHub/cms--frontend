@@ -1,4 +1,3 @@
-import { cn } from '@/ui/shadcn/lib/utils'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -7,8 +6,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
+} from '@/ui/shadcn/alert-dialog'
+import { Button } from '@/ui/shadcn/button'
+import { cn } from '@/ui/shadcn/lib/utils'
 
 interface ConfirmDialogProps {
   open: boolean

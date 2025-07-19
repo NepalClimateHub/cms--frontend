@@ -3,6 +3,16 @@ import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
 import { useNewsAPI } from '@/query/news/use-news'
+import { Button } from '@/ui/shadcn/button'
+import {
+  Dialog,
+  DialogTrigger,
+  DialogTitle,
+  DialogDescription,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+} from '@/ui/shadcn/dialog'
 import {
   LucideEye,
   Pencil,
@@ -13,16 +23,6 @@ import {
   Newspaper,
 } from 'lucide-react'
 import { NewsResponseDto } from '@/api/types.gen'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
-  DialogHeader,
-  DialogContent,
-  DialogFooter,
-} from '@/components/ui/dialog'
 
 type NewsRowActionProps = {
   row: Row<NewsResponseDto>
