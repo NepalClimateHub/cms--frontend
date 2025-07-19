@@ -4,21 +4,7 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import { useLogout } from '@/query/auth/use-auth'
 import { Button } from '@/ui/shadcn/button'
 import { cn } from '@/ui/shadcn/lib/utils'
-import {
-  LayoutDashboard,
-  Users,
-  FileText,
-  Calendar,
-  Briefcase,
-  Newspaper,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-  Building2,
-  Tags,
-  BarChart3,
-} from 'lucide-react'
+import { LogOut, Menu, X } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { adminNavItems } from '@/constants/adminMenuList'
 

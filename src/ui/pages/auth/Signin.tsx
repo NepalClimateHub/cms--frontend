@@ -101,7 +101,7 @@ function UserAuthForm({ className }: HTMLAttributes<HTMLDivElement>) {
           Login
         </Button>
 
-        {isUnverifiedAccount && (
+        {(isUnverifiedAccount as any) && (
           <div className='mt-3 text-center'>
             <p className='mb-2 text-sm text-red-600'>
               Your account is not verified. Please check your email for

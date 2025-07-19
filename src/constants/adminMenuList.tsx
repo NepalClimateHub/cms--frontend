@@ -8,6 +8,7 @@ import {
   BarChart3,
   Tags,
   Newspaper,
+  Settings,
 } from 'lucide-react'
 
 export const adminNavItems = [

@@ -21,7 +21,6 @@ import {
   FormMessage,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
-import { cn } from '@/ui/shadcn/lib/utils'
 import { Loader2 } from 'lucide-react'
 
 const otpSchema = z.object({
