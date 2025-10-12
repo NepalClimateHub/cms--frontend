@@ -72,7 +72,6 @@ export default function AdminDashboardLayout({
               </Link>
             ))}
           </nav>
-
           {/* User Section */}
           <div className='border-t border-gray-200 p-4'>
             <div className='flex items-center space-x-3'>
@@ -82,12 +81,12 @@ export default function AdminDashboardLayout({
                 </span>
               </div>
               <div className='min-w-0 flex-1'>
-                <p className='truncate text-sm font-medium text-gray-900'>
+                <Link to='/profile' className='truncate text-sm font-medium text-gray-900'>
                   {user?.fullName || 'Admin User'}
-                </p>
-                <p className='truncate text-xs text-gray-500'>
+                </Link>
+                <Link to='/profile' className='truncate text-xs text-gray-500'>
                   {user?.email || 'admin@example.com'}
-                </p>
+                </Link>
               </div>
             </div>
             <Button

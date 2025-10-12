@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { OrganizationFormValues } from '@/schemas/organization/organization'
-import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
+import { DataTableColumnHeader } from '../../../../ui/data-table/data-table-column-header'
 import OrganizationRowAction from '../components/organization-row-actions'
 
 export const useOrganizationColumns = () => {

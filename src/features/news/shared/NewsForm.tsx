@@ -21,9 +21,9 @@ import {
   SelectValue,
 } from '@/ui/shadcn/select'
 import { Switch } from '@/ui/shadcn/switch'
-import { DatePicker } from '@/components/datepicker'
-import ImageUpload from '@/components/image-upload'
-import { MultiSelect } from '@/components/multi-select'
+import { DatePicker } from '@/ui/datepicker'
+import ImageUpload from '@/ui/image-upload'
+import { MultiSelect } from '@/ui/multi-select'
 import { News, modeOptions } from '../../../schemas/news/news'
 
 type Props = {

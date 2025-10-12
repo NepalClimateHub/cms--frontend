@@ -6,6 +6,7 @@ import {
   SidebarMenuItem,
 } from '@/ui/shadcn/sidebar'
 import { useAuthStore } from '@/stores/authStore'
+import { Link } from '@tanstack/react-router'
 
 export function ProfileCard() {
   const { user } = useAuthStore()
@@ -25,6 +26,7 @@ export function ProfileCard() {
               {nameInitials}
             </AvatarFallback>
           </Avatar>
+          <Link to='/profile'>
           <div className='grid flex-1 text-left text-sm leading-tight'>
             <span className='truncate font-semibold'>
               {user?.isSuperAdmin ? 'Super Admin' : user?.organization?.name}
@@ -33,6 +35,7 @@ export function ProfileCard() {
               {user?.email}
             </span>
           </div>
+          </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/ui/shadcn/alert'
 import { Input } from '@/ui/shadcn/input'
 import { Label } from '@/ui/shadcn/label'
 import { toast } from '@/hooks/use-toast'
-import { ConfirmDialog } from '@/components/confirm-dialog'
+import { ConfirmDialog } from '@/ui/confirm-dialog'
 import { User } from '../data/schema'
 
 interface Props {

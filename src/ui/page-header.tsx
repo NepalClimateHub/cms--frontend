@@ -1,7 +1,7 @@
 import { FC, JSX } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import useGoBack from '@/hooks/use-goback'
-import { Button } from '../ui/shadcn/button'
+import { Button } from './shadcn/button'
 
 type PageHeaderProps = {
   title: string

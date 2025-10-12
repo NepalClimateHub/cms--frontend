@@ -13,10 +13,10 @@ import { cn } from '@/ui/shadcn/lib/utils'
 import { Popover, PopoverContent, PopoverTrigger } from '@/ui/shadcn/popover'
 import { Values } from 'nuqs'
 import { FilterValues, InitFilters } from '@/hooks/use-filters'
-import { Badge } from '../../ui/shadcn/badge'
-import { Input } from '../../ui/shadcn/input'
-import { Separator } from '../../ui/shadcn/separator'
-import { Spinner } from '../../ui/shadcn/spinner'
+import { Badge } from '../shadcn/badge'
+import { Input } from '../shadcn/input'
+import { Separator } from '../shadcn/separator'
+import { Spinner } from '../shadcn/spinner'
 
 type OrganizationFilterProps = {
   filters: Values<InitFilters>

@@ -15,7 +15,7 @@ import { Input } from '@/ui/shadcn/input'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { Separator } from '@/ui/shadcn/separator'
 import { toast } from '@/hooks/use-toast'
-import { PinInput, PinInputField } from '@/components/pin-input'
+import { PinInput, PinInputField } from '@/ui/pin-input'
 
 type OtpFormProps = HTMLAttributes<HTMLDivElement>
 

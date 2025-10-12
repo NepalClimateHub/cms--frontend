@@ -1,5 +1,5 @@
 import { FieldPath, UseFormReturn } from 'react-hook-form'
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/shadcn/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../shadcn/card'
 import {
   FormControl,
   FormField,
@@ -7,15 +7,15 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from '../../ui/shadcn/form'
-import { Input } from '../../ui/shadcn/input'
+} from '../shadcn/form'
+import { Input } from '../shadcn/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../ui/shadcn/select'
+} from '../shadcn/select'
 
 export const PROVINCES = [
   { value: 'Koshi', label: 'Koshi' },

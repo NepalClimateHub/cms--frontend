@@ -5,7 +5,7 @@ import { useAddEvents } from '@/query/events/use-events'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { eventFormSchema, EventFormValues } from '@/schemas/event'
 import { Main } from '@/ui/layouts/main'
-import PageHeader from '@/components/page-header'
+import PageHeader from '@/ui/page-header'
 import EventForm from '../shared/EventForm'
 
 const AddEvent = () => {

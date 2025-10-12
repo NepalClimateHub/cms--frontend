@@ -6,7 +6,7 @@ import Tags from '@/schemas/tags/tags'
 import { Pencil, Trash } from 'lucide-react'
 import { handleServerError } from '@/utils/handle-server-error'
 import { useToast } from '@/hooks/use-toast'
-import { ConfirmDialog } from '@/components/confirm-dialog'
+import { ConfirmDialog } from '@/ui/confirm-dialog'
 
 // import { useToast } from '@/hooks/use-toast'
 // import { deleteTagById } from '@/query/use-tags';

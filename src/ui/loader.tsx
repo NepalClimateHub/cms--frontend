@@ -1,4 +1,4 @@
-import { Spinner } from '../ui/shadcn/spinner'
+import { Spinner } from './shadcn/spinner'
 
 export const BoxLoader = ({ height = 'h-screen' }: { height?: string }) => {
   return (

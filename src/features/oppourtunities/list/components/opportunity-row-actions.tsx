@@ -17,7 +17,7 @@ import {
 } from '@/ui/shadcn/dialog'
 import { Separator } from '@/ui/shadcn/separator'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
-import { ConfirmDialog } from '@/components/confirm-dialog'
+import { ConfirmDialog } from '@/ui/confirm-dialog'
 
 const OpportunitiesRowAction = ({ row }: { row: any }) => {
   const { mutate: deleteOpportunityMutation } = useDeleteOpportunity()

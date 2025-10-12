@@ -16,7 +16,7 @@ import {
 import { Separator } from '@/ui/shadcn/separator'
 // import { useDeleteBlog, useBlogAPI } from '@/query/blogs/use-blogs'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
-import { ConfirmDialog } from '@/components/confirm-dialog'
+import { ConfirmDialog } from '@/ui/confirm-dialog'
 
 interface BlogRowActionProps {
   row: Row<any>

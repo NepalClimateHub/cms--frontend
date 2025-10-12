@@ -20,7 +20,7 @@ import {
   ResetMarksOnEnter,
   FileHandler,
 } from '../extensions'
-import { useThrottle } from '../hooks/use-throttle'
+import { useThrottle } from './use-throttle'
 import { fileToBase64, getOutput, randomId } from '../utils'
 
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {

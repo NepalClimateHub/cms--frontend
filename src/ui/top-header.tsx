@@ -1,5 +1,4 @@
-import { Header } from '../ui/layouts/header'
-import { ProfileDropdown } from './profile-dropdown'
+import { Header } from './layouts/header'
 import { Search } from './search'
 import { ThemeSwitch } from './theme-switch'
 
@@ -9,7 +8,6 @@ const TopHeader = () => {
       <Search />
       <div className='ml-auto flex items-center gap-4'>
         <ThemeSwitch />
-        <ProfileDropdown />
       </div>
     </Header>
   )

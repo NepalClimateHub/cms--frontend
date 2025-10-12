@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/ui/shadcn/badge'
 import { NewsResponseDto } from '@/api/types.gen'
-import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
+import { DataTableColumnHeader } from '../../../../ui/data-table/data-table-column-header'
 import NewsRowAction from '../components/news-row-actions'
 
 export const useNewsColumns = () => {

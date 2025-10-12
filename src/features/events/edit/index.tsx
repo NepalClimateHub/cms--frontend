@@ -7,8 +7,8 @@ import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { eventFormSchema, EventFormValues } from '@/schemas/event'
 import { Main } from '@/ui/layouts/main'
 import { EventResponseDto } from '@/api/types.gen'
-import { BoxLoader } from '@/components/loader'
-import PageHeader from '@/components/page-header'
+import { BoxLoader } from '@/ui/loader'
+import PageHeader from '@/ui/page-header'
 import EventForm from '../shared/EventForm'
 
 const EditEvent = () => {

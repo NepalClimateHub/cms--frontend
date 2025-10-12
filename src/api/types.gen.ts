@@ -59,6 +59,7 @@ export type UserArrayApiResponse = {
 export type UpdateUserInput = {
     name?: string;
     password?: string;
+    isAccountVerified?: boolean;
 };
 
 export type LoginInput = {
@@ -99,6 +100,30 @@ export type RegisterOutput = {
 export type RegisterApiResponse = {
     data: RegisterOutput;
     meta: ResponseMetadata;
+};
+
+export type ResendVerificationInput = {
+    /**
+     * Email address to resend verification to
+     */
+    email: string;
+};
+
+export type BaseApiResponse = {
+    meta: {
+        [key: string]: unknown;
+    };
+};
+
+export type ChangePasswordInput = {
+    /**
+     * Current password
+     */
+    currentPassword: string;
+    /**
+     * New password
+     */
+    newPassword: string;
 };
 
 export type RefreshTokenInput = {
@@ -1384,9 +1409,7 @@ export type UserControllerGetUserResponse = UserControllerGetUserResponses[keyof
 
 export type UserControllerUpdateUserData = {
     body: UpdateUserInput;
-    path: {
-        id: number;
-    };
+    path?: never;
     query?: never;
     url: '/api/v1/users/{id}';
 };
@@ -1434,6 +1457,91 @@ export type AuthControllerRegisterLocalResponses = {
 };
 
 export type AuthControllerRegisterLocalResponse = AuthControllerRegisterLocalResponses[keyof AuthControllerRegisterLocalResponses];
+
+export type AuthControllerResendVerificationData = {
+    body: ResendVerificationInput;
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/resend-verification';
+};
+
+export type AuthControllerResendVerificationErrors = {
+    /**
+     * Invalid email or user already verified
+     */
+    400: BaseApiErrorResponse;
+    /**
+     * User not found
+     */
+    404: BaseApiErrorResponse;
+};
+
+export type AuthControllerResendVerificationError = AuthControllerResendVerificationErrors[keyof AuthControllerResendVerificationErrors];
+
+export type AuthControllerResendVerificationResponses = {
+    /**
+     * Verification email sent successfully
+     */
+    200: unknown;
+};
+
+export type AuthControllerVerifyEmailData = {
+    body?: never;
+    path?: never;
+    query: {
+        token: string;
+    };
+    url: '/api/v1/auth/verify-email';
+};
+
+export type AuthControllerVerifyEmailErrors = {
+    /**
+     * Invalid or expired token
+     */
+    400: BaseApiErrorResponse;
+    /**
+     * User not found
+     */
+    404: BaseApiErrorResponse;
+};
+
+export type AuthControllerVerifyEmailError = AuthControllerVerifyEmailErrors[keyof AuthControllerVerifyEmailErrors];
+
+export type AuthControllerVerifyEmailResponses = {
+    /**
+     * Email verified successfully
+     */
+    200: BaseApiResponse;
+};
+
+export type AuthControllerVerifyEmailResponse = AuthControllerVerifyEmailResponses[keyof AuthControllerVerifyEmailResponses];
+
+export type AuthControllerChangePasswordData = {
+    body: ChangePasswordInput;
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/change-password';
+};
+
+export type AuthControllerChangePasswordErrors = {
+    /**
+     * Invalid password format
+     */
+    400: BaseApiErrorResponse;
+    /**
+     * Invalid current password
+     */
+    401: BaseApiErrorResponse;
+};
+
+export type AuthControllerChangePasswordError = AuthControllerChangePasswordErrors[keyof AuthControllerChangePasswordErrors];
+
+export type AuthControllerChangePasswordResponses = {
+    /**
+     * Password changed successfully
+     */
+    200: unknown;
+};
 
 export type AuthControllerRefreshTokenData = {
     body: RefreshTokenInput;

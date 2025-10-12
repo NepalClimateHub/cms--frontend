@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from '@/ui/shadcn/select'
 import { Loader2 } from 'lucide-react'
-import { PasswordInput } from '@/components/password-input'
+import { PasswordInput } from '@/ui/password-input'
 
 const organizationTypes = [
   'Non-Profit / NGO',

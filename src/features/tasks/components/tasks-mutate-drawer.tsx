@@ -22,7 +22,7 @@ import {
   SheetTitle,
 } from '@/ui/shadcn/sheet'
 import { toast } from '@/hooks/use-toast'
-import { SelectDropdown } from '@/components/select-dropdown'
+import { SelectDropdown } from '@/ui/select-dropdown'
 import { Task } from '../data/schema'
 
 interface Props {

@@ -16,9 +16,9 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as PublicRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedProfileImport } from './routes/_authenticated/profile'
+import { Route as authVerifyEmailImport } from './routes/(auth)/verify-email'
 import { Route as authSignInImport } from './routes/(auth)/sign-in'
-import { Route as authOtpVerificationImport } from './routes/(auth)/otp-verification'
-import { Route as authOtpImport } from './routes/(auth)/otp'
 import { Route as auth500Import } from './routes/(auth)/500'
 import { Route as PublicLoginIndexImport } from './routes/_public/login/index'
 import { Route as AuthenticatedSubscribedEmailsIndexImport } from './routes/_authenticated/subscribed-emails/index'
@@ -169,21 +169,21 @@ const AuthenticatedSettingsRouteLazyRoute =
     import('./routes/_authenticated/settings/route.lazy').then((d) => d.Route),
   )
 
+const AuthenticatedProfileRoute = AuthenticatedProfileImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const authVerifyEmailRoute = authVerifyEmailImport.update({
+  id: '/(auth)/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const authSignInRoute = authSignInImport.update({
   id: '/(auth)/sign-in',
   path: '/sign-in',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const authOtpVerificationRoute = authOtpVerificationImport.update({
-  id: '/(auth)/otp-verification',
-  path: '/otp-verification',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const authOtpRoute = authOtpImport.update({
-  id: '/(auth)/otp',
-  path: '/otp',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -442,26 +442,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof auth500Import
       parentRoute: typeof rootRoute
     }
-    '/(auth)/otp': {
-      id: '/(auth)/otp'
-      path: '/otp'
-      fullPath: '/otp'
-      preLoaderRoute: typeof authOtpImport
-      parentRoute: typeof rootRoute
-    }
-    '/(auth)/otp-verification': {
-      id: '/(auth)/otp-verification'
-      path: '/otp-verification'
-      fullPath: '/otp-verification'
-      preLoaderRoute: typeof authOtpVerificationImport
-      parentRoute: typeof rootRoute
-    }
     '/(auth)/sign-in': {
       id: '/(auth)/sign-in'
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof authSignInImport
       parentRoute: typeof rootRoute
+    }
+    '/(auth)/verify-email': {
+      id: '/(auth)/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof authVerifyEmailImport
+      parentRoute: typeof rootRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileImport
+      parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -754,6 +754,7 @@ const AuthenticatedSettingsRouteLazyRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSettingsRouteLazyRoute: typeof AuthenticatedSettingsRouteLazyRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedBlogIdRoute: typeof AuthenticatedBlogIdRoute
@@ -781,6 +782,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSettingsRouteLazyRoute:
     AuthenticatedSettingsRouteLazyRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
@@ -832,9 +834,9 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '': typeof PublicRouteRouteWithChildren
   '/500': typeof errors500LazyRoute
-  '/otp': typeof authOtpRoute
-  '/otp-verification': typeof authOtpVerificationRoute
   '/sign-in': typeof authSignInRoute
+  '/verify-email': typeof authVerifyEmailRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRouteLazyRouteWithChildren
   '/forgot-password': typeof authForgotPasswordLazyRoute
   '/sign-up': typeof authSignUpLazyRoute
@@ -876,9 +878,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '': typeof PublicRouteRouteWithChildren
   '/500': typeof errors500LazyRoute
-  '/otp': typeof authOtpRoute
-  '/otp-verification': typeof authOtpVerificationRoute
   '/sign-in': typeof authSignInRoute
+  '/verify-email': typeof authVerifyEmailRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/forgot-password': typeof authForgotPasswordLazyRoute
   '/sign-up': typeof authSignUpLazyRoute
   '/401': typeof errors401LazyRoute
@@ -921,9 +923,9 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
   '/(auth)/500': typeof auth500Route
-  '/(auth)/otp': typeof authOtpRoute
-  '/(auth)/otp-verification': typeof authOtpVerificationRoute
   '/(auth)/sign-in': typeof authSignInRoute
+  '/(auth)/verify-email': typeof authVerifyEmailRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteLazyRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordLazyRoute
   '/(auth)/sign-up': typeof authSignUpLazyRoute
@@ -968,9 +970,9 @@ export interface FileRouteTypes {
   fullPaths:
     | ''
     | '/500'
-    | '/otp'
-    | '/otp-verification'
     | '/sign-in'
+    | '/verify-email'
+    | '/profile'
     | '/settings'
     | '/forgot-password'
     | '/sign-up'
@@ -1011,9 +1013,9 @@ export interface FileRouteTypes {
   to:
     | ''
     | '/500'
-    | '/otp'
-    | '/otp-verification'
     | '/sign-in'
+    | '/verify-email'
+    | '/profile'
     | '/forgot-password'
     | '/sign-up'
     | '/401'
@@ -1054,9 +1056,9 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/_public'
     | '/(auth)/500'
-    | '/(auth)/otp'
-    | '/(auth)/otp-verification'
     | '/(auth)/sign-in'
+    | '/(auth)/verify-email'
+    | '/_authenticated/profile'
     | '/_authenticated/settings'
     | '/(auth)/forgot-password'
     | '/(auth)/sign-up'
@@ -1101,9 +1103,8 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   auth500Route: typeof auth500Route
-  authOtpRoute: typeof authOtpRoute
-  authOtpVerificationRoute: typeof authOtpVerificationRoute
   authSignInRoute: typeof authSignInRoute
+  authVerifyEmailRoute: typeof authVerifyEmailRoute
   authForgotPasswordLazyRoute: typeof authForgotPasswordLazyRoute
   authSignUpLazyRoute: typeof authSignUpLazyRoute
   errors401LazyRoute: typeof errors401LazyRoute
@@ -1117,9 +1118,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
   auth500Route: auth500Route,
-  authOtpRoute: authOtpRoute,
-  authOtpVerificationRoute: authOtpVerificationRoute,
   authSignInRoute: authSignInRoute,
+  authVerifyEmailRoute: authVerifyEmailRoute,
   authForgotPasswordLazyRoute: authForgotPasswordLazyRoute,
   authSignUpLazyRoute: authSignUpLazyRoute,
   errors401LazyRoute: errors401LazyRoute,
@@ -1142,9 +1142,8 @@ export const routeTree = rootRoute
         "/_authenticated",
         "/_public",
         "/(auth)/500",
-        "/(auth)/otp",
-        "/(auth)/otp-verification",
         "/(auth)/sign-in",
+        "/(auth)/verify-email",
         "/(auth)/forgot-password",
         "/(auth)/sign-up",
         "/(errors)/401",
@@ -1157,6 +1156,7 @@ export const routeTree = rootRoute
     "/_authenticated": {
       "filePath": "_authenticated/route.tsx",
       "children": [
+        "/_authenticated/profile",
         "/_authenticated/settings",
         "/_authenticated/",
         "/_authenticated/blog/$id",
@@ -1192,14 +1192,15 @@ export const routeTree = rootRoute
     "/(auth)/500": {
       "filePath": "(auth)/500.tsx"
     },
-    "/(auth)/otp": {
-      "filePath": "(auth)/otp.tsx"
-    },
-    "/(auth)/otp-verification": {
-      "filePath": "(auth)/otp-verification.tsx"
-    },
     "/(auth)/sign-in": {
       "filePath": "(auth)/sign-in.tsx"
+    },
+    "/(auth)/verify-email": {
+      "filePath": "(auth)/verify-email.tsx"
+    },
+    "/_authenticated/profile": {
+      "filePath": "_authenticated/profile.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/settings": {
       "filePath": "_authenticated/settings/route.lazy.tsx",

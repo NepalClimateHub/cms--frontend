@@ -23,10 +23,10 @@ import {
 } from '@/ui/shadcn/select'
 import { Switch } from '@/ui/shadcn/switch'
 import { Textarea } from '@/ui/shadcn/textarea'
-import { DatePicker } from '@/components/datepicker'
-import ImageUpload from '@/components/image-upload'
-import { MinimalTiptapEditor } from '@/components/minimal-tiptap'
-import { MultiSelect } from '@/components/multi-select'
+import { DatePicker } from '@/ui/datepicker'
+import ImageUpload from '@/ui/image-upload'
+import { MinimalTiptapEditor } from '@/ui/minimal-tiptap'
+import { MultiSelect } from '@/ui/multi-select'
 
 type Props = {
   form: UseFormReturn<BlogFormValues>

@@ -23,8 +23,8 @@ import {
 import { Input } from '@/ui/shadcn/input'
 import { ScrollArea } from '@/ui/shadcn/scroll-area'
 import { toast } from '@/hooks/use-toast'
-import { PasswordInput } from '@/components/password-input'
-import { SelectDropdown } from '@/components/select-dropdown'
+import { PasswordInput } from '@/ui/password-input'
+import { SelectDropdown } from '@/ui/select-dropdown'
 import { userTypes } from '../data/data'
 import { User } from '../data/schema'
 

@@ -23,7 +23,7 @@ import {
 import { Input } from '@/ui/shadcn/input'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { Loader2 } from 'lucide-react'
-import { PasswordInput } from '@/components/password-input'
+import { PasswordInput } from '@/ui/password-input'
 
 // Minimal, modern login form
 function UserAuthForm({ className }: HTMLAttributes<HTMLDivElement>) {
@@ -40,7 +40,7 @@ function UserAuthForm({ className }: HTMLAttributes<HTMLDivElement>) {
 
   function handleVerifyAccount() {
     navigate({
-      to: '/otp-verification',
+      to: '/verify-email',
       search: { email: form.watch('email') },
     })
   }

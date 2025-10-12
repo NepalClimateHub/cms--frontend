@@ -7,8 +7,8 @@ import { AppSidebar } from '@/ui/layouts/app-sidebar'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { SidebarProvider } from '@/ui/shadcn/sidebar'
 import { getAccessToken, useAuthStore } from '@/stores/authStore'
-import { BoxLoader } from '@/components/loader'
-import TopHeader from '@/components/top-header'
+import { BoxLoader } from '@/ui/loader'
+import TopHeader from '@/ui/top-header'
 
 export const Route = createFileRoute('/_authenticated')({
   component: RouteComponent,

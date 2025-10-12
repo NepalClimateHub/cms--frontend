@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { cleanObj } from '@/utils/obj-utils'
 import { useToast } from '@/hooks/use-toast'
-import { getCustomToast } from '@/components/custom-toast'
+import { getCustomToast } from '@/ui/custom-toast'
 import {
   blogControllerCreateBlogMutation,
   blogControllerGetPublishedBlogsOptions,

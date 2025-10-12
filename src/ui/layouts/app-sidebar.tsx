@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
 } from '@/ui/shadcn/sidebar'
 import { LogOut } from 'lucide-react'
-import { ProfileCard } from '../../components/profile-card'
+import { ProfileCard } from '../profile-card'
 import { useSideBarData } from './data/use-sidebar-data'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

@@ -3,12 +3,37 @@ import { useNavigate } from '@tanstack/react-router'
 import { useAuthStore } from '@/stores/authStore'
 import { handleServerError } from '@/utils/handle-server-error'
 import {
+  authControllerChangePasswordMutation,
   authControllerLoginMutation,
   authControllerRegisterLocalMutation,
+  authControllerResendVerificationMutation,
 } from '../../api/@tanstack/react-query.gen'
 import { auth } from '../shared/routes'
-import { getProfile } from './auth-service'
+import apiClient from '@/query/apiClient'
+import { LoginPayload, LoginResponse } from '@/schemas/auth/login'
+import { Meta } from '@/schemas/shared'
+import { UserOutput } from '@/api/types.gen'
+import { getCustomToast } from '@/ui/custom-toast'
+import { toast } from '@/hooks/use-toast'
 
+// Auth service functions
+export const getProfile = async (): Promise<UserOutput> => {
+  // Use the apiClient with the interceptor to ensure token is included
+  const response = await apiClient.get(auth.profile.path)
+  return response?.data?.data as UserOutput
+}
+
+export const login = async (
+  payload: LoginPayload
+): Promise<{
+  data: LoginResponse
+  meta: Meta
+}> => {
+  const res = await apiClient.post(auth.login.path, payload)
+  return res.data
+}
+
+// React Query hooks
 export const useGetProfile = (enabled = true) => {
   return useQuery({
     queryKey: [auth.profile.key],
@@ -35,7 +60,7 @@ export const useLogin = () => {
           // Redirect to OTP verification page with email
           const email = errorObj.error?.details?.email || ''
           navigate({
-            to: '/otp-verification',
+            to: '/verify-email',
             search: { email },
             replace: true,
           })
@@ -69,10 +94,13 @@ export const useSignup = () => {
     onError: (err: unknown) => {
       handleServerError(err)
     },
-    onSuccess: () => {
-      // After successful registration, redirect to login page
+      onSuccess: (_, variables) => {
+      // After successful registration, redirect to email verification page
+      // Pass the email from the registration payload
+      const email = variables.body.email
       navigate({
-        to: '/sign-in',
+        to: '/verify-email',
+        search: { email },
         replace: true,
       })
     },
@@ -91,4 +119,36 @@ export const useLogout = () => {
       replace: true,
     })
   }
+}
+
+
+export const useResendVerification = () => {
+  return useMutation({
+    mutationFn: authControllerResendVerificationMutation().mutationFn,
+    onError: (error: unknown) => {
+      handleServerError(error)
+    },
+    onSuccess: (res:any) => {
+      return res.data.data.message
+      },
+    })
+  }
+
+
+
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: authControllerChangePasswordMutation().mutationFn,
+    onError: (error: unknown) => {
+      handleServerError(error)
+    },
+    onSuccess: (res: any) => {
+      console.log("Change password response:", res)
+      const message = res?.data?.message || 'Password changed successfully!'
+      toast({
+        title: message,
+        variant: 'default'
+      })
+    },
+  })
 }

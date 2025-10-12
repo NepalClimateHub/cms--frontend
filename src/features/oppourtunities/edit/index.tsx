@@ -10,8 +10,8 @@ import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { OpportunityFormValues } from '@/schemas/opportunities/opportunity'
 import { opportunitySchema } from '@/schemas/opportunities/opportunity'
 import { Main } from '@/ui/layouts/main'
-import { BoxLoader } from '@/components/loader'
-import PageHeader from '@/components/page-header'
+import { BoxLoader } from '@/ui/loader'
+import PageHeader from '@/ui/page-header'
 import OpportunityForm from '../shared/OpportunityForm'
 
 const EditOpportunity: FC = () => {

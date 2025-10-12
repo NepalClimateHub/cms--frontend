@@ -23,7 +23,7 @@ import {
 import { Input } from '@/ui/shadcn/input'
 import { Textarea } from '@/ui/shadcn/textarea'
 import { toast } from '@/hooks/use-toast'
-import { SelectDropdown } from '@/components/select-dropdown'
+import { SelectDropdown } from '@/ui/select-dropdown'
 import { userTypes } from '../data/data'
 
 const formSchema = z.object({

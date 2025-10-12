@@ -6,8 +6,8 @@ import { useGetNewsById, useNewsAPI } from '@/query/news/use-news'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { AddNewsSchema, type News } from '@/schemas/news/news'
 import { Main } from '@/ui/layouts/main'
-import { BoxLoader } from '@/components/loader'
-import PageHeader from '@/components/page-header'
+import { BoxLoader } from '@/ui/loader'
+import PageHeader from '@/ui/page-header'
 import NewsForm from '../shared/NewsForm'
 
 const NewsEdit = () => {

@@ -1,6 +1,6 @@
 import { ProfileDropdown } from '../../components/profile-dropdown'
-import { Search } from '../../components/search'
-import { ThemeSwitch } from '../../components/theme-switch'
+import { Search } from '../search'
+import { ThemeSwitch } from '../theme-switch'
 import { Header } from './header'
 
 export const PrimaryHeader = () => {

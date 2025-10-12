@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import Tags from '@/schemas/tags/tags'
 import { Badge } from '@/ui/shadcn/badge'
-import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
+import { DataTableColumnHeader } from '../../../../ui/data-table/data-table-column-header'
 import TagsRowAction from '../components/tags-row-actions'
 
 export const useTagsColumns = () => {
