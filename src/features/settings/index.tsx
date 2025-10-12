@@ -9,7 +9,6 @@ import {
 import { Header } from '@/ui/layouts/header'
 import { Main } from '@/ui/layouts/main'
 import { Separator } from '@/ui/shadcn/separator'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/ui/search'
 import { ThemeSwitch } from '@/ui/theme-switch'
 import SidebarNav from './components/sidebar-nav'
@@ -22,7 +21,6 @@ export default function Settings() {
         <Search />
         <div className='ml-auto flex items-center space-x-4'>
           <ThemeSwitch />
-          <ProfileDropdown />
         </div>
       </Header>
 

@@ -1,8 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { cleanObj } from '@/utils/obj-utils'
-import { useToast } from '@/hooks/use-toast'
-import { getCustomToast } from '@/ui/custom-toast'
+import { toast, useToast } from '@/hooks/use-toast'
 import {
   blogControllerCreateBlogMutation,
   blogControllerGetPublishedBlogsOptions,
@@ -96,9 +95,9 @@ export const useAddBlog = () => {
     },
 
     onError: (error: any) => {
-      getCustomToast({
+      toast({
         title: (error as any)?.message ?? 'Failed to add blog',
-        type: 'error',
+        variant: 'destructive',
       })
     },
   })
@@ -120,15 +119,15 @@ export const useUpdateBlog = () => {
     // @ts-ignore
     ...blogControllerUpdateBlogMutation({}),
     onSuccess: () => {
-      getCustomToast({
+      toast({
         title: 'Blog updated',
-        type: 'success',
+        variant: 'default',
       })
     },
     onError: (error: any) => {
-      getCustomToast({
+      toast({
         title: (error as any)?.message ?? 'Failed to update blog',
-        type: 'error',
+        variant: 'destructive',
       })
     },
   })
@@ -149,9 +148,9 @@ export const useDeleteBlog = () => {
       })
     },
     onError: (error: any) => {
-      getCustomToast({
+      toast({
         title: (error as any)?.message ?? 'Failed to delete blog',
-        type: 'error',
+        variant: 'destructive',
       })
     },
   })

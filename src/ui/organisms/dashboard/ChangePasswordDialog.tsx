@@ -5,7 +5,6 @@ import * as z from 'zod'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/ui/shadcn/dialog'
@@ -21,7 +20,6 @@ import {
 import { Input } from '@/ui/shadcn/input'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { useChangePassword } from '@/query/auth/use-auth'
-import { toast } from 'sonner'
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),

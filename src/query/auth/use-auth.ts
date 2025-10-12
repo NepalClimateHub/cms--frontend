@@ -13,7 +13,6 @@ import apiClient from '@/query/apiClient'
 import { LoginPayload, LoginResponse } from '@/schemas/auth/login'
 import { Meta } from '@/schemas/shared'
 import { UserOutput } from '@/api/types.gen'
-import { getCustomToast } from '@/ui/custom-toast'
 import { toast } from '@/hooks/use-toast'
 
 // Auth service functions

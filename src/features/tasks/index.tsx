@@ -1,6 +1,5 @@
 import { Header } from '@/ui/layouts/header'
 import { Main } from '@/ui/layouts/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/ui/search'
 import { ThemeSwitch } from '@/ui/theme-switch'
 import { columns } from './components/columns'
@@ -17,7 +16,6 @@ export default function Tasks() {
         <Search />
         <div className='ml-auto flex items-center space-x-4'>
           <ThemeSwitch />
-          <ProfileDropdown />
         </div>
       </Header>
 

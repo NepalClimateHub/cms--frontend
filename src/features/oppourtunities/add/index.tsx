@@ -9,9 +9,9 @@ import {
   opportunitySchema,
 } from '@/schemas/opportunities/opportunity'
 import { Main } from '@/ui/layouts/main'
-import { getCustomToast } from '@/ui/custom-toast'
 import PageHeader from '@/ui/page-header'
 import OpportunityForm from '../shared/OpportunityForm'
+import { toast } from '@/hooks/use-toast'
 
 const AddOpportunity: FC = () => {
   const navigate = useNavigate()
@@ -99,15 +99,15 @@ const AddOpportunity: FC = () => {
         },
         {
           onSuccess: () => {
-            getCustomToast({
+            toast({
               title: 'Opportunity added successfully',
             })
             navigate({ to: '/opportunities/list' })
           },
           onError: (error: any) => {
-            getCustomToast({
+            toast({
               title: (error as any)?.message ?? 'Failed to add opportunity',
-              type: 'error',
+              variant: 'destructive',
             })
           },
         }
