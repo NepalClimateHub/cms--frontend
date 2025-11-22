@@ -2,6 +2,10 @@ import { FC } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
 import { BLOG_CATEGORY, BlogFormValues } from '@/schemas/blog'
+import { DatePicker } from '@/ui/datepicker'
+import ImageUpload from '@/ui/image-upload'
+import { MinimalTiptapEditor } from '@/ui/minimal-tiptap'
+import { MultiSelect } from '@/ui/multi-select'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
@@ -23,14 +27,14 @@ import {
 } from '@/ui/shadcn/select'
 import { Switch } from '@/ui/shadcn/switch'
 import { Textarea } from '@/ui/shadcn/textarea'
-import { DatePicker } from '@/ui/datepicker'
-import ImageUpload from '@/ui/image-upload'
-import { MinimalTiptapEditor } from '@/ui/minimal-tiptap'
-import { MultiSelect } from '@/ui/multi-select'
 
 type Props = {
   form: UseFormReturn<BlogFormValues>
   handleImageUpload: (assetId: string | null, assetURL: string | null) => void
+  handleContentImageUpload: (
+    assetId: string | null,
+    assetURL: string | null
+  ) => void
   handleFormSubmit: (values: BlogFormValues) => Promise<void>
   isEdit: boolean
   isLoading: boolean
@@ -43,6 +47,7 @@ type Props = {
 const BlogForm: FC<Props> = ({
   form,
   handleImageUpload,
+  handleContentImageUpload,
   handleFormSubmit,
   isEdit,
   isLoading,
@@ -270,28 +275,61 @@ const BlogForm: FC<Props> = ({
             <CardTitle>Media & Settings</CardTitle>
           </CardHeader>
           <CardContent className='space-y-6'>
-            <FormField
-              control={form.control}
-              name='bannerImageId'
-              render={({ field: _field }) => (
-                <FormItem>
-                  <FormLabel>Banner Image</FormLabel>
-                  <FormDescription>
-                    Upload a banner image for your blog
-                  </FormDescription>
-                  <FormControl>
-                    <ImageUpload
-                      label='Upload banner image'
-                      handleImage={handleImageUpload}
-                      initialImageId={form.getValues('bannerImageId')}
-                      initialImageUrl={form.getValues('bannerImageUrl')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
+              <FormField
+                control={form.control}
+                name='bannerImageId'
+                render={({ field: _field }) => (
+                  <FormItem>
+                    <FormLabel>Banner Image</FormLabel>
+                    <FormDescription>
+                      Upload a banner image for your blog
+                    </FormDescription>
+                    <FormControl>
+                      <ImageUpload
+                        label='Upload banner image'
+                        handleImage={handleImageUpload}
+                        initialImageId={form.getValues('bannerImageId')}
+                        initialImageUrl={form.getValues('bannerImageUrl')}
+                        inputId='banner-image-upload'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
+              <FormField
+                control={form.control}
+                name='contentImageId'
+                render={({ field: _field }) => (
+                  <FormItem>
+                    <FormLabel>Content Image</FormLabel>
+                    <FormDescription>
+                      Upload an image for your blog content
+                    </FormDescription>
+                    <FormControl>
+                      <ImageUpload
+                        label='Upload content image'
+                        handleImage={handleContentImageUpload}
+                        initialImageId={form.getValues('contentImageId')}
+                        initialImageUrl={form.getValues('contentImageUrl')}
+                        inputId='content-image-upload'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Misc</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
               <FormField
                 control={form.control}

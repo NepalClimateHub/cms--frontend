@@ -1,9 +1,12 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import { useQueries } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { IconArticle } from '@tabler/icons-react'
 import { climateQuotes } from '@/data/climate-quotes'
 import { useAnalyticsAPI } from '@/query/analytics/use-analytics'
+import apiClient from '@/query/apiClient'
 import { Main } from '@/ui/layouts/main'
+import { MultiSelect } from '@/ui/multi-select'
 import { Card, CardTitle } from '@/ui/shadcn/card'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { Calendar, Users, Quote, Briefcase, Newspaper } from 'lucide-react'
@@ -17,9 +20,44 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-export default function Dashboard() {
+export default function AdminDashboardHomePage() {
   const { data: analyticsData, isLoading } =
     useAnalyticsAPI().getAnalyticsForAdmin
+
+  const currentYear = new Date().getFullYear()
+  const [selectedYears, setSelectedYears] = useState<string[]>([
+    currentYear.toString(),
+  ])
+
+  // Fetch data for all selected years using useQueries
+  const yearQueries = useQueries({
+    queries: selectedYears.map((year) => ({
+      queryKey: ['monthlyUserStats', parseInt(year, 10)],
+      queryFn: async () => {
+        const response = await apiClient.get(
+          '/api/v1/analytics/monthly-user-stats',
+          {
+            params: { year: year },
+          }
+        )
+        return response.data.data as {
+          monthlyStats: { month: string; count: number }[]
+          year: number
+        }
+      },
+      enabled: selectedYears.length > 0,
+    })),
+  })
+
+  const isLoadingMonthlyStats = yearQueries.some(
+    (query: { isLoading: boolean }) => query.isLoading
+  )
+  const monthlyStatsData = yearQueries
+    .map((query: { data: unknown }) => query.data)
+    .filter(Boolean) as Array<{
+    monthlyStats: { month: string; count: number }[]
+    year: number
+  }>
 
   const switchText = {
     newsCount: 'News',
@@ -53,31 +91,68 @@ export default function Dashboard() {
     blogCount: '/blog/list',
   }
 
-  // Prepare data for the chart
-  const chartData = analyticsData?.data
-    ? [
-        {
-          name: switchText.newsCount,
-          count: analyticsData.data.newsCount,
-          color: '#2563eb',
-        },
-        {
-          name: switchText.eventCount,
-          count: analyticsData.data.eventCount,
-          color: '#9333ea',
-        },
-        {
-          name: switchText.opportunityCount,
-          count: analyticsData.data.opportunityCount,
-          color: '#059669',
-        },
-        {
-          name: switchText.blogCount,
-          count: analyticsData.data.blogCount,
-          color: '#dc2626',
-        },
-      ]
-    : []
+  // Generate year options (current year and 4 years back)
+  const yearOptions = useMemo(() => {
+    const years = []
+    for (let i = 0; i < 5; i++) {
+      years.push(currentYear - i)
+    }
+    return years.map((year) => ({
+      label: year.toString(),
+      value: year.toString(),
+    }))
+  }, [currentYear])
+
+  // Prepare data for the user monthly chart - combine data from all selected years
+  const userChartData = useMemo(() => {
+    if (monthlyStatsData.length === 0) return []
+
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ]
+
+    // Create a map to combine data by month
+    const combinedData: Record<
+      string,
+      { month: string; [key: string]: string | number }
+    > = {}
+
+    monthNames.forEach((month) => {
+      combinedData[month] = { month }
+    })
+
+    // Add data for each year
+    monthlyStatsData.forEach((statsData, index) => {
+      const year = selectedYears[index]
+      statsData?.monthlyStats.forEach((stat) => {
+        if (combinedData[stat.month]) {
+          combinedData[stat.month][year] = stat.count
+        }
+      })
+    })
+
+    return Object.values(combinedData)
+  }, [monthlyStatsData, selectedYears])
+
+  // Generate colors for each year
+  const yearColors = [
+    '#ec4899', // pink
+    '#3b82f6', // blue
+    '#10b981', // green
+    '#f59e0b', // amber
+    '#8b5cf6', // purple
+  ]
 
   // Get the quote of the day
   const quoteOfTheDay = useMemo(() => {
@@ -154,42 +229,66 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* Content Section */}
+          {/* User Overview Section */}
           <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
             {/* Chart */}
             <Card className='border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2'>
-              <CardTitle className='mb-6 text-lg font-medium text-gray-900'>
-                Content Overview
-              </CardTitle>
-              <ResponsiveContainer width='100%' height={240}>
-                <BarChart
-                  data={chartData}
-                  margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray='3 3' stroke='#f8fafc' />
-                  <XAxis
-                    dataKey='name'
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 11, fill: '#64748b' }}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 11, fill: '#64748b' }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '6px',
-                      boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
-                      fontSize: '12px',
-                    }}
-                  />
-                  <Bar dataKey='count' radius={[2, 2, 0, 0]} fill='#3b82f6' />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className='mb-6 flex items-center justify-between'>
+                <CardTitle className='text-lg font-medium text-gray-900'>
+                  New Users Joined
+                </CardTitle>
+                <MultiSelect
+                  options={yearOptions}
+                  onValueChange={(values) => setSelectedYears(values)}
+                  defaultValue={selectedYears}
+                  placeholder='Select years'
+                  className='w-[300px]'
+                  showSelectAll={false}
+                />
+              </div>
+              {isLoadingMonthlyStats ? (
+                <div className='flex h-[240px] items-center justify-center'>
+                  <div className='h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-gray-800'></div>
+                </div>
+              ) : (
+                <ResponsiveContainer width='100%' height={240}>
+                  <BarChart
+                    data={userChartData}
+                    margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray='3 3' stroke='#f8fafc' />
+                    <XAxis
+                      dataKey='month'
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 11, fill: '#64748b' }}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 11, fill: '#64748b' }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '6px',
+                        boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
+                        fontSize: '12px',
+                      }}
+                    />
+                    {selectedYears.map((year, index) => (
+                      <Bar
+                        key={year}
+                        dataKey={year}
+                        radius={[2, 2, 0, 0]}
+                        fill={yearColors[index % yearColors.length]}
+                        name={year}
+                      />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </Card>
 
             {/* Quote */}

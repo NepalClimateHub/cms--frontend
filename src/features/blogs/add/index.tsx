@@ -27,6 +27,8 @@ const AddBlog: FC = () => {
       isFeatured: false,
       bannerImageUrl: '',
       bannerImageId: '',
+      contentImageUrl: '',
+      contentImageId: '',
       tagIds: [],
     },
   })
@@ -37,6 +39,14 @@ const AddBlog: FC = () => {
   ) => {
     form.setValue('bannerImageId', assetId ?? undefined)
     form.setValue('bannerImageUrl', assetURL ?? undefined)
+  }
+
+  const handleContentImageUpload = (
+    assetId: string | null,
+    assetURL: string | null
+  ) => {
+    form.setValue('contentImageId', assetId ?? undefined)
+    form.setValue('contentImageUrl', assetURL ?? undefined)
   }
 
   const handleFormSubmit = async (values: BlogFormValues) => {
@@ -56,6 +66,8 @@ const AddBlog: FC = () => {
         isFeatured: values.isFeatured ?? false,
         bannerImageUrl: values.bannerImageUrl ?? undefined,
         bannerImageId: values.bannerImageId ?? undefined,
+        contentImageUrl: values.contentImageUrl ?? undefined,
+        contentImageId: values.contentImageId ?? undefined,
         tagIds: values.tagIds ?? undefined,
       }
 
@@ -79,6 +91,7 @@ const AddBlog: FC = () => {
           <BlogForm
             form={form}
             handleImageUpload={handleImageUpload}
+            handleContentImageUpload={handleContentImageUpload}
             handleFormSubmit={handleFormSubmit}
             isEdit={false}
             isLoading={isPending || isLoadingTags}

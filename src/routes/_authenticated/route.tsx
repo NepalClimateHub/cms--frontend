@@ -4,11 +4,11 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { useGetProfile } from '@/query/auth/use-auth'
 import { User } from '@/schemas/auth/profile'
 import { AppSidebar } from '@/ui/layouts/app-sidebar'
+import { BoxLoader } from '@/ui/loader'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { SidebarProvider } from '@/ui/shadcn/sidebar'
-import { getAccessToken, useAuthStore } from '@/stores/authStore'
-import { BoxLoader } from '@/ui/loader'
 import TopHeader from '@/ui/top-header'
+import { getAccessToken, useAuthStore } from '@/stores/authStore'
 
 export const Route = createFileRoute('/_authenticated')({
   component: RouteComponent,

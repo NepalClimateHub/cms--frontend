@@ -122,7 +122,7 @@ function UserAuthForm({ className }: HTMLAttributes<HTMLDivElement>) {
   )
 }
 
-export default function SignIn2() {
+export default function SignIn() {
   return (
     <div className='flex min-h-screen items-center justify-center px-4 py-6 sm:px-6 lg:px-8'>
       <div className='flex w-full max-w-7xl overflow-hidden rounded-xl border border-border/60 bg-background shadow-sm'>

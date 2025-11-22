@@ -23,6 +23,7 @@ type ImageUploadProps = {
   className?: string
   initialImageId?: string | null
   initialImageUrl?: string | null
+  inputId?: string
 }
 
 const ImageUpload: FC<ImageUploadProps> = ({
@@ -31,6 +32,7 @@ const ImageUpload: FC<ImageUploadProps> = ({
   className,
   initialImageId,
   initialImageUrl,
+  inputId,
 }) => {
   const queryClient = useQueryClient()
   const [isUploading, setIsUploading] = useState(false)
@@ -108,6 +110,7 @@ const ImageUpload: FC<ImageUploadProps> = ({
                 onError={handleError}
                 onSuccess={handleUploadSuccess}
                 onUploadStart={handleUploadStart}
+                inputId={inputId}
                 validateFile={(file: File) => {
                   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
                     toast({

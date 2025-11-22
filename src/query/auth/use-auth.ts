@@ -1,7 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import apiClient from '@/query/apiClient'
+import { LoginPayload, LoginResponse } from '@/schemas/auth/login'
+import { Meta } from '@/schemas/shared'
+import { UserOutput } from '@/api/types.gen'
 import { useAuthStore } from '@/stores/authStore'
 import { handleServerError } from '@/utils/handle-server-error'
+import { toast } from '@/hooks/use-toast'
 import {
   authControllerChangePasswordMutation,
   authControllerLoginMutation,
@@ -9,11 +14,6 @@ import {
   authControllerResendVerificationMutation,
 } from '../../api/@tanstack/react-query.gen'
 import { auth } from '../shared/routes'
-import apiClient from '@/query/apiClient'
-import { LoginPayload, LoginResponse } from '@/schemas/auth/login'
-import { Meta } from '@/schemas/shared'
-import { UserOutput } from '@/api/types.gen'
-import { toast } from '@/hooks/use-toast'
 
 // Auth service functions
 export const getProfile = async (): Promise<UserOutput> => {
@@ -70,12 +70,33 @@ export const useLogin = () => {
     },
     onSuccess: (res) => {
       const { accessToken } = res.data
+      console.log('accessToken', accessToken)
       if (accessToken) {
         setAccessToken(accessToken)
-        navigate({
-          to: '/',
-          replace: true,
-        })
+
+        const decoded = JSON.parse(
+          atob(accessToken.split('.')[1])
+        ) as unknown as {
+          role: string
+        }
+
+        if (
+          !decoded?.role ||
+          (decoded?.role !== 'ADMIN' && decoded?.role !== 'USER')
+        ) {
+          toast({
+            title: 'Invalid Login',
+            variant: 'destructive',
+          })
+          return
+        } else {
+          navigate({
+            to: '/',
+            replace: true,
+            // @ts-ignore
+            state: { role: decoded?.role as 'ADMIN' | 'USER' },
+          })
+        }
       } else {
         resetAuthStore()
       }
@@ -93,7 +114,7 @@ export const useSignup = () => {
     onError: (err: unknown) => {
       handleServerError(err)
     },
-      onSuccess: (_, variables) => {
+    onSuccess: (_, variables) => {
       // After successful registration, redirect to email verification page
       // Pass the email from the registration payload
       const email = variables.body.email
@@ -120,20 +141,17 @@ export const useLogout = () => {
   }
 }
 
-
 export const useResendVerification = () => {
   return useMutation({
     mutationFn: authControllerResendVerificationMutation().mutationFn,
     onError: (error: unknown) => {
       handleServerError(error)
     },
-    onSuccess: (res:any) => {
+    onSuccess: (res: any) => {
       return res.data.data.message
-      },
-    })
-  }
-
-
+    },
+  })
+}
 
 export const useChangePassword = () => {
   return useMutation({
@@ -142,11 +160,11 @@ export const useChangePassword = () => {
       handleServerError(error)
     },
     onSuccess: (res: any) => {
-      console.log("Change password response:", res)
+      console.log('Change password response:', res)
       const message = res?.data?.message || 'Password changed successfully!'
       toast({
         title: message,
-        variant: 'default'
+        variant: 'default',
       })
     },
   })

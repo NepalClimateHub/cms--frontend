@@ -23,6 +23,8 @@ export const blogSchema = z.object({
   isFeatured: z.boolean().default(false),
   bannerImageUrl: z.string().optional(),
   bannerImageId: z.string().optional(),
+  contentImageUrl: z.string().optional(),
+  contentImageId: z.string().optional(),
   tagIds: z.array(z.string()).optional(),
 })
 

@@ -5,6 +5,7 @@ import { generalSidebarData, superAdminSidebarData } from './sidebar-data'
 export const useSideBarData = (): SidebarData => {
   const { user } = useAuthStore()
 
+  console.log('user', user)
   if (!user?.isSuperAdmin) {
     return {
       navGroups: generalSidebarData,
@@ -12,6 +13,6 @@ export const useSideBarData = (): SidebarData => {
   }
 
   return {
-    navGroups: [...superAdminSidebarData, ...generalSidebarData],
+    navGroups: [...superAdminSidebarData],
   }
 }

@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
 import { useDeleteBlog } from '@/query/blogs/use-blogs'
+import { ConfirmDialog } from '@/ui/confirm-dialog'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
 import {
@@ -16,7 +17,6 @@ import {
 import { Separator } from '@/ui/shadcn/separator'
 // import { useDeleteBlog, useBlogAPI } from '@/query/blogs/use-blogs'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
-import { ConfirmDialog } from '@/ui/confirm-dialog'
 
 interface BlogRowActionProps {
   row: Row<any>
@@ -82,101 +82,127 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
             <LucideEye className='h-4 w-4' />
           </Button>
         </DialogTrigger>
-        <DialogContent className='max-w-3xl'>
-          <DialogHeader>
+        <DialogContent className='flex max-h-[90vh] max-w-5xl flex-col overflow-hidden'>
+          <DialogHeader className='flex-shrink-0'>
             <DialogTitle className='text-2xl font-bold'>
               {row.original.title}
             </DialogTitle>
-            <DialogDescription className='space-y-6'>
-              {/* Header Section */}
-              <div className='flex items-center gap-2'>
-                <Badge variant='outline' className='text-sm'>
-                  {row.original.category}
-                </Badge>
-                <Badge
-                  variant={row.original.isDraft ? 'secondary' : 'default'}
-                  className='text-sm'
-                >
-                  {row.original.isDraft ? 'Draft' : 'Published'}
-                </Badge>
-              </div>
-
-              {/* Author Section */}
-              <div>
-                <h3 className='text-sm font-semibold text-muted-foreground'>
-                  Author
-                </h3>
-                <p className='text-base'>{row.original.author}</p>
-              </div>
-
-              {/* Content Section */}
-              <div>
-                <h3 className='text-sm font-semibold text-muted-foreground'>
-                  Content
-                </h3>
-                <div
-                  className='prose prose-sm mt-2 max-w-none text-base'
-                  dangerouslySetInnerHTML={{ __html: row.original.content }}
-                />
-              </div>
-
-              <Separator />
-
-              {/* Details Grid */}
-              <div className='grid grid-cols-2 gap-4'>
-                <div>
-                  <h3 className='text-sm font-semibold text-muted-foreground'>
-                    Category
-                  </h3>
-                  <p className='text-base'>{row.original.category}</p>
+          </DialogHeader>
+          <DialogDescription className='min-h-0 flex-1 space-y-6 overflow-y-auto pr-2'>
+            {/* Banner Image with Category, Status, and Author */}
+            <div className='flex items-center gap-4'>
+              {/* Banner Image (Cover Image) */}
+              {row.original.bannerImageUrl && (
+                <div className='relative h-[50px] w-[50px] flex-shrink-0 overflow-hidden rounded-lg'>
+                  <img
+                    src={row.original.bannerImageUrl}
+                    alt={`${row.original.title} banner`}
+                    className='h-full w-full object-cover'
+                  />
                 </div>
-                <div>
-                  <h3 className='text-sm font-semibold text-muted-foreground'>
-                    Reading Time
-                  </h3>
-                  <p className='text-base'>
-                    {row.original.readingTime || 'Not specified'}
-                  </p>
-                </div>
-                <div>
-                  <h3 className='text-sm font-semibold text-muted-foreground'>
-                    Published Date
-                  </h3>
-                  <p className='text-base'>
-                    {formatDate(row.original.publishedDate)}
-                  </p>
-                </div>
-                <div>
-                  <h3 className='text-sm font-semibold text-muted-foreground'>
-                    Featured
-                  </h3>
-                  <p className='text-base'>
-                    {row.original.isFeatured ? 'Yes' : 'No'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Excerpt Section */}
-              {row.original.excerpt && (
-                <>
-                  <Separator />
-                  <div>
-                    <h3 className='text-sm font-semibold text-muted-foreground'>
-                      Excerpt
-                    </h3>
-                    <p className='mt-2 text-base'>{row.original.excerpt}</p>
-                  </div>
-                </>
               )}
 
-              {/* Timestamps */}
-              <Separator />
-              <div className='flex justify-between text-sm text-muted-foreground'>
-                <span>Created: {formatDate(row.original.createdAt)}</span>
-                <span>Updated: {formatDate(row.original.updatedAt)}</span>
+              {/* Category, Status, and Author */}
+              <div className='flex flex-1 flex-row items-center justify-between gap-2'>
+                <div className='flex items-center gap-2'>
+                  <Badge variant='outline' className='text-sm'>
+                    {row.original.category}
+                  </Badge>
+                  <Badge
+                    variant={row.original.isDraft ? 'secondary' : 'default'}
+                    className='text-sm'
+                  >
+                    {row.original.isDraft ? 'Draft' : 'Published'}
+                  </Badge>
+                </div>
+                <div className='text-right'>
+                  <h3 className='text-start text-sm font-semibold text-muted-foreground'>
+                    Author
+                  </h3>
+                  <p className='text-base'>{row.original.author}</p>
+                </div>
               </div>
-            </DialogDescription>
-          </DialogHeader>
+            </div>
+
+            <hr />
+            {/* Content Image */}
+            {row.original.contentImageUrl && (
+              <div className='relative aspect-video w-full overflow-hidden rounded-lg'>
+                <img
+                  src={row.original.contentImageUrl}
+                  alt={`${row.original.title} content`}
+                  className='h-full w-full object-cover'
+                />
+              </div>
+            )}
+
+            {/* Content Section */}
+            <div>
+              <h3 className='text-sm font-semibold text-muted-foreground'>
+                Content
+              </h3>
+              <div
+                className='prose prose-sm mt-2 max-w-none text-base'
+                dangerouslySetInnerHTML={{ __html: row.original.content }}
+              />
+            </div>
+
+            <Separator />
+
+            {/* Details Grid */}
+            <div className='grid grid-cols-2 gap-4'>
+              <div>
+                <h3 className='text-sm font-semibold text-muted-foreground'>
+                  Category
+                </h3>
+                <p className='text-base'>{row.original.category}</p>
+              </div>
+              <div>
+                <h3 className='text-sm font-semibold text-muted-foreground'>
+                  Reading Time
+                </h3>
+                <p className='text-base'>
+                  {row.original.readingTime || 'Not specified'}
+                </p>
+              </div>
+              <div>
+                <h3 className='text-sm font-semibold text-muted-foreground'>
+                  Published Date
+                </h3>
+                <p className='text-base'>
+                  {formatDate(row.original.publishedDate)}
+                </p>
+              </div>
+              <div>
+                <h3 className='text-sm font-semibold text-muted-foreground'>
+                  Featured
+                </h3>
+                <p className='text-base'>
+                  {row.original.isFeatured ? 'Yes' : 'No'}
+                </p>
+              </div>
+            </div>
+
+            {/* Excerpt Section */}
+            {row.original.excerpt && (
+              <>
+                <Separator />
+                <div>
+                  <h3 className='text-sm font-semibold text-muted-foreground'>
+                    Excerpt
+                  </h3>
+                  <p className='mt-2 text-base'>{row.original.excerpt}</p>
+                </div>
+              </>
+            )}
+
+            {/* Timestamps */}
+            <Separator />
+            <div className='flex justify-between text-sm text-muted-foreground'>
+              <span>Created: {formatDate(row.original.createdAt)}</span>
+              <span>Updated: {formatDate(row.original.updatedAt)}</span>
+            </div>
+          </DialogDescription>
         </DialogContent>
       </Dialog>
 

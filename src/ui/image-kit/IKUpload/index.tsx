@@ -15,6 +15,7 @@ type CustomIKUploadProps = {
   label: string
   description: string
   isUploading: boolean
+  inputId?: string
 }
 
 const IKUpload = forwardRef<
@@ -72,6 +73,7 @@ const IKUpload = forwardRef<
     description,
     isUploading,
     disabled,
+    inputId = 'file-upload',
     ...restProps
   } = props
 
@@ -260,7 +262,7 @@ const IKUpload = forwardRef<
           className='relative flex items-center gap-2 px-4 py-2'
         >
           <UploadCloud className='h-5 w-5 text-gray-600' />
-          <label htmlFor='file-upload' className='cursor-pointer'>
+          <label htmlFor={inputId} className='cursor-pointer'>
             {fileName ? 'Change File' : 'Choose File'}
           </label>
         </Button>
@@ -277,7 +279,7 @@ const IKUpload = forwardRef<
           ref={ref}
           type='file'
           onChange={onFileChange}
-          id='file-upload'
+          id={inputId}
           className='hidden'
         />
       </div>

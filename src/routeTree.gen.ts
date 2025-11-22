@@ -22,6 +22,7 @@ import { Route as authSignInImport } from './routes/(auth)/sign-in'
 import { Route as auth500Import } from './routes/(auth)/500'
 import { Route as PublicLoginIndexImport } from './routes/_public/login/index'
 import { Route as AuthenticatedSubscribedEmailsIndexImport } from './routes/_authenticated/subscribed-emails/index'
+import { Route as AuthenticatedDashboardProfileImport } from './routes/_authenticated/dashboard/profile'
 import { Route as AuthenticatedBlogListImport } from './routes/_authenticated/blog/list'
 import { Route as AuthenticatedBlogAddImport } from './routes/_authenticated/blog/add'
 import { Route as AuthenticatedBlogIdImport } from './routes/_authenticated/blog/$id'
@@ -298,6 +299,13 @@ const AuthenticatedSettingsAccountLazyRoute =
     ),
   )
 
+const AuthenticatedDashboardProfileRoute =
+  AuthenticatedDashboardProfileImport.update({
+    id: '/dashboard/profile',
+    path: '/dashboard/profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
 const AuthenticatedBlogListRoute = AuthenticatedBlogListImport.update({
   id: '/blog/list',
   path: '/blog/list',
@@ -547,6 +555,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBlogListImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/dashboard/profile': {
+      id: '/_authenticated/dashboard/profile'
+      path: '/dashboard/profile'
+      fullPath: '/dashboard/profile'
+      preLoaderRoute: typeof AuthenticatedDashboardProfileImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/settings/account': {
       id: '/_authenticated/settings/account'
       path: '/account'
@@ -760,6 +775,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBlogIdRoute: typeof AuthenticatedBlogIdRoute
   AuthenticatedBlogAddRoute: typeof AuthenticatedBlogAddRoute
   AuthenticatedBlogListRoute: typeof AuthenticatedBlogListRoute
+  AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
   AuthenticatedSubscribedEmailsIndexRoute: typeof AuthenticatedSubscribedEmailsIndexRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedTagsIndexLazyRoute: typeof AuthenticatedTagsIndexLazyRoute
@@ -789,6 +805,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBlogIdRoute: AuthenticatedBlogIdRoute,
   AuthenticatedBlogAddRoute: AuthenticatedBlogAddRoute,
   AuthenticatedBlogListRoute: AuthenticatedBlogListRoute,
+  AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
   AuthenticatedSubscribedEmailsIndexRoute:
     AuthenticatedSubscribedEmailsIndexRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
@@ -848,6 +865,7 @@ export interface FileRoutesByFullPath {
   '/blog/$id': typeof AuthenticatedBlogIdRoute
   '/blog/add': typeof AuthenticatedBlogAddRoute
   '/blog/list': typeof AuthenticatedBlogListRoute
+  '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
@@ -891,6 +909,7 @@ export interface FileRoutesByTo {
   '/blog/$id': typeof AuthenticatedBlogIdRoute
   '/blog/add': typeof AuthenticatedBlogAddRoute
   '/blog/list': typeof AuthenticatedBlogListRoute
+  '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
@@ -938,6 +957,7 @@ export interface FileRoutesById {
   '/_authenticated/blog/$id': typeof AuthenticatedBlogIdRoute
   '/_authenticated/blog/add': typeof AuthenticatedBlogAddRoute
   '/_authenticated/blog/list': typeof AuthenticatedBlogListRoute
+  '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
@@ -984,6 +1004,7 @@ export interface FileRouteTypes {
     | '/blog/$id'
     | '/blog/add'
     | '/blog/list'
+    | '/dashboard/profile'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -1026,6 +1047,7 @@ export interface FileRouteTypes {
     | '/blog/$id'
     | '/blog/add'
     | '/blog/list'
+    | '/dashboard/profile'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -1071,6 +1093,7 @@ export interface FileRouteTypes {
     | '/_authenticated/blog/$id'
     | '/_authenticated/blog/add'
     | '/_authenticated/blog/list'
+    | '/_authenticated/dashboard/profile'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
@@ -1162,6 +1185,7 @@ export const routeTree = rootRoute
         "/_authenticated/blog/$id",
         "/_authenticated/blog/add",
         "/_authenticated/blog/list",
+        "/_authenticated/dashboard/profile",
         "/_authenticated/subscribed-emails/",
         "/_authenticated/help-center/",
         "/_authenticated/tags/",
@@ -1248,6 +1272,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/blog/list": {
       "filePath": "_authenticated/blog/list.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/dashboard/profile": {
+      "filePath": "_authenticated/dashboard/profile.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/settings/account": {
