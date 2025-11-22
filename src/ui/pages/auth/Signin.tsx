@@ -1,9 +1,10 @@
-import { HTMLAttributes } from 'react'
+import { HTMLAttributes, useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useLogin } from '@/query/auth/use-auth'
 import { LoginPayload, loginSchema } from '@/schemas/auth/login'
+import { PasswordInput } from '@/ui/password-input'
 import { Button } from '@/ui/shadcn/button'
 import {
   Card,
@@ -23,7 +24,6 @@ import {
 import { Input } from '@/ui/shadcn/input'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { Loader2 } from 'lucide-react'
-import { PasswordInput } from '@/ui/password-input'
 
 // Minimal, modern login form
 function UserAuthForm({ className }: HTMLAttributes<HTMLDivElement>) {
@@ -123,9 +123,31 @@ function UserAuthForm({ className }: HTMLAttributes<HTMLDivElement>) {
 }
 
 export default function SignIn() {
+  const features = [
+    'Stay updated with Climate News',
+    'Connect with Climate Enthusiasts',
+    'Access Climate Opportunities',
+    'Participate in Climate Events',
+  ]
+
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isVisible, setIsVisible] = useState(true)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsVisible(false)
+      setTimeout(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % features.length)
+        setIsVisible(true)
+      }, 300) // Wait for fade out animation
+    }, 3000) // Change every 3 seconds
+
+    return () => clearInterval(interval)
+  }, [features.length])
+
   return (
     <div className='flex min-h-screen items-center justify-center px-4 py-6 sm:px-6 lg:px-8'>
-      <div className='flex w-full max-w-7xl overflow-hidden rounded-xl border border-border/60 bg-background shadow-sm'>
+      <div className='flex w-full max-w-7xl overflow-hidden rounded-xl border border-gray-800 bg-background shadow-sm'>
         {/* Left Side - Branding & Features */}
         <div
           className='relative hidden flex-col justify-between bg-cover bg-center bg-no-repeat p-4 sm:p-6 lg:flex lg:w-3/5'
@@ -153,29 +175,18 @@ export default function SignIn() {
                   difference in Nepal's environmental future.
                 </p>
               </div>
-              <div className='space-y-2 pt-1'>
-                <div className='flex items-center space-x-3'>
+              <div className='min-h-[60px] pt-1'>
+                <div
+                  className={cn(
+                    'flex items-center space-x-3 transition-all duration-300',
+                    isVisible
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  )}
+                >
                   <div className='h-2 w-2 rounded-full bg-blue-300' />
                   <p className='font-medium text-blue-100'>
-                    Stay updated with Climate News
-                  </p>
-                </div>
-                <div className='flex items-center space-x-3'>
-                  <div className='h-2 w-2 rounded-full bg-blue-300' />
-                  <p className='font-medium text-blue-100'>
-                    Connect with Climate Enthusiasts
-                  </p>
-                </div>
-                <div className='flex items-center space-x-3'>
-                  <div className='h-2 w-2 rounded-full bg-blue-300' />
-                  <p className='font-medium text-blue-100'>
-                    Access Climate Opportunities
-                  </p>
-                </div>
-                <div className='flex items-center space-x-3'>
-                  <div className='h-2 w-2 rounded-full bg-blue-300' />
-                  <p className='font-medium text-blue-100'>
-                    Participate in Climate Events
+                    {features[currentIndex]}
                   </p>
                 </div>
               </div>
@@ -184,7 +195,7 @@ export default function SignIn() {
         </div>
         {/* Right Side - Login Form */}
         <div className='flex h-full items-center justify-center p-3 sm:p-4 lg:w-2/5 lg:p-6'>
-          <Card className='w-full max-w-md border-0 bg-white p-4 shadow-none sm:p-5'>
+          <Card className='flex h-full w-full max-w-md flex-col border-0 bg-white p-4 shadow-none sm:p-5'>
             <CardHeader className='mb-3 text-center'>
               <CardTitle className='text-xl font-bold tracking-tight text-gray-900 sm:text-2xl'>
                 NCH Login
@@ -193,27 +204,29 @@ export default function SignIn() {
                 Sign in to your account
               </CardDescription>
             </CardHeader>
-            <CardContent className='space-y-3'>
-              <UserAuthForm />
-              <div className='text-center'>
-                <p className='text-xs leading-relaxed text-gray-500'>
-                  By signing in, you agree to our{' '}
-                  <a
-                    href='/terms'
-                    className='font-medium text-blue-600 transition-colors hover:text-blue-700'
-                  >
-                    Terms
-                  </a>{' '}
-                  and{' '}
-                  <a
-                    href='/privacy'
-                    className='font-medium text-blue-600 transition-colors hover:text-blue-700'
-                  >
-                    Privacy
-                  </a>
-                </p>
+            <CardContent className='flex flex-1 flex-col space-y-3'>
+              <div className='flex-1'>
+                <UserAuthForm />
+                <div className='mt-3 text-center'>
+                  <p className='text-xs leading-relaxed text-gray-500'>
+                    By signing in, you agree to our{' '}
+                    <a
+                      href='/terms'
+                      className='font-medium text-blue-600 transition-colors hover:text-blue-700'
+                    >
+                      Terms
+                    </a>{' '}
+                    and{' '}
+                    <a
+                      href='/privacy'
+                      className='font-medium text-blue-600 transition-colors hover:text-blue-700'
+                    >
+                      Privacy
+                    </a>
+                  </p>
+                </div>
               </div>
-              <div className='mt-6 text-center'>
+              <div className='mt-auto text-center'>
                 <span className='text-sm text-gray-600'>
                   Don't have an account?{' '}
                   <Link
