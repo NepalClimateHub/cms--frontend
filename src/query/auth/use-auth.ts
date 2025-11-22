@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { apiConfig } from '@/config/api.config'
 import apiClient from '@/query/apiClient'
 import { LoginPayload, LoginResponse } from '@/schemas/auth/login'
 import { Meta } from '@/schemas/shared'
@@ -73,6 +74,8 @@ export const useLogin = () => {
       console.log('accessToken', accessToken)
       if (accessToken) {
         setAccessToken(accessToken)
+        // Update API client config with new token
+        apiConfig()
 
         const decoded = JSON.parse(
           atob(accessToken.split('.')[1])
@@ -99,6 +102,8 @@ export const useLogin = () => {
         }
       } else {
         resetAuthStore()
+        // Update API client config to remove token
+        apiConfig()
       }
     },
   })
@@ -134,6 +139,8 @@ export const useLogout = () => {
   return () => {
     // add required cleanups on logout
     resetAuthStore()
+    // Update API client config to remove token
+    apiConfig()
     navigate({
       to: '/login',
       replace: true,
