@@ -69,6 +69,7 @@ export default function EditProfilePhotoDialog({
         // @ts-expect-error - path type mismatch in generated types
         path: { id: user.id },
         body: {
+          // @ts-ignore
           profilePhotoUrl,
           profilePhotoId,
         },
