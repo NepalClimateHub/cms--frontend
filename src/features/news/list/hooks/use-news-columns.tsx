@@ -1,11 +1,32 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/ui/shadcn/badge'
+import { ExternalLink } from 'lucide-react'
 import { NewsResponseDto } from '@/api/types.gen'
 import { DataTableColumnHeader } from '../../../../ui/data-table/data-table-column-header'
 import NewsRowAction from '../components/news-row-actions'
 
 export const useNewsColumns = () => {
   const columns: ColumnDef<NewsResponseDto>[] = [
+    {
+      id: 'image',
+      header: () => <span></span>,
+      cell: ({ row }) => {
+        const { bannerImageUrl, title } = row.original
+        const imageUrl = bannerImageUrl || 'images/logo.png'
+
+        return (
+          <div className='flex items-center justify-center'>
+            <img
+              src={imageUrl}
+              alt={title}
+              className='h-[80px] w-[80px] rounded object-cover'
+            />
+          </div>
+        )
+      },
+      enableSorting: false,
+      enableHiding: true,
+    },
     {
       accessorKey: 'title',
       header: ({ column }) => (
@@ -62,11 +83,19 @@ export const useNewsColumns = () => {
       ),
       cell: ({ row }) => {
         const { newsLink } = row.original
+        const displayText =
+          newsLink.length > 10 ? `${newsLink.slice(0, 20)}...` : newsLink
 
         return (
-          <div className='flex space-x-2'>
-            <a href={newsLink} target='_blank' rel='noopener noreferrer'>
-              <span>{newsLink}</span>
+          <div className='flex items-center space-x-2'>
+            <a
+              href={newsLink}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='flex items-center space-x-1 hover:underline'
+            >
+              <span>{displayText}</span>
+              <ExternalLink className='h-3 w-3 flex-shrink-0 text-gray-500' />
             </a>
           </div>
         )
@@ -92,6 +121,8 @@ export const useNewsColumns = () => {
     },
     {
       id: 'actions',
+      // put name in column
+      header: () => <span>Actions</span>,
       cell: ({ row }) => <NewsRowAction row={row} />,
     },
   ]

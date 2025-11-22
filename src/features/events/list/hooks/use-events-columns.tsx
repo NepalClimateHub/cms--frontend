@@ -12,6 +12,26 @@ type EventCols = EventFormValues & {
 export const useEventsColumns = () => {
   const columns: ColumnDef<EventCols>[] = [
     {
+      id: 'image',
+      header: () => <span>Image</span>,
+      cell: ({ row }) => {
+        const { bannerImageUrl, title } = row.original as any
+        const imageUrl = bannerImageUrl || 'images/logo.png'
+
+        return (
+          <div className='flex items-center justify-center'>
+            <img
+              src={imageUrl}
+              alt={title}
+              className='h-[80px] w-[80px] rounded object-cover'
+            />
+          </div>
+        )
+      },
+      enableSorting: false,
+      enableHiding: true,
+    },
+    {
       accessorKey: 'id',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Title' />
