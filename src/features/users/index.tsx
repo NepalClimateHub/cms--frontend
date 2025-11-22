@@ -60,7 +60,7 @@ const mapUserOutputToUser = (user: UserOutput): User => {
   // Map status based on isAccountVerified
   const status = user.isAccountVerified ? 'active' : 'inactive'
 
-  // Map role based on isSuperAdmin and userType
+  // Map role based on isSuperAdmin and userType (keep for backward compatibility)
   let role: 'superadmin' | 'admin' | 'cashier' | 'manager' = 'admin'
   if (user.isSuperAdmin) {
     role = 'superadmin'
@@ -81,6 +81,8 @@ const mapUserOutputToUser = (user: UserOutput): User => {
     phoneNumber,
     status: status as 'active' | 'inactive' | 'invited' | 'suspended',
     role,
+    userType: user.userType,
+    isSuperAdmin: user.isSuperAdmin,
     createdAt: new Date(user.createdAt),
     updatedAt: new Date(user.updatedAt),
   }

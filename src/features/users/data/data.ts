@@ -38,3 +38,21 @@ export const userTypes = [
     icon: IconCash,
   },
 ] as const
+
+export const userTypeOptions = [
+  {
+    label: 'Admin',
+    value: 'ADMIN',
+    icon: IconUserShield,
+  },
+  {
+    label: 'Organization',
+    value: 'ORGANIZATION',
+    icon: IconUsersGroup,
+  },
+  {
+    label: 'Individual',
+    value: 'INDIVIDUAL',
+    icon: IconCash,
+  },
+] as const

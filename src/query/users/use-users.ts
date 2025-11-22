@@ -1,5 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
-import { userControllerGetUsersOptions } from '@/api/@tanstack/react-query.gen'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  userControllerGetUsersOptions,
+  userControllerUpdateUserMutation,
+} from '@/api/@tanstack/react-query.gen'
 
 export const useGetUsers = (
   query: { limit?: number; offset?: number } = {},
@@ -13,5 +16,19 @@ export const useGetUsers = (
       },
     }),
     enabled,
+  })
+}
+
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    ...userControllerUpdateUserMutation(),
+    onSuccess: () => {
+      // Invalidate user profile query to refetch updated data
+      queryClient.invalidateQueries({
+        queryKey: ['userControllerGetMyProfile'],
+      })
+    },
   })
 }

@@ -145,13 +145,13 @@ export default function AdminDashboardHomePage() {
     return Object.values(combinedData)
   }, [monthlyStatsData, selectedYears])
 
-  // Generate colors for each year
+  // Generate colors for each year - green and blue theme
   const yearColors = [
-    '#ec4899', // pink
-    '#3b82f6', // blue
-    '#10b981', // green
-    '#f59e0b', // amber
-    '#8b5cf6', // purple
+    '#10b981', // emerald-500 (green)
+    '#3b82f6', // blue-500 (blue)
+    '#059669', // emerald-600 (darker green)
+    '#2563eb', // blue-600 (darker blue)
+    '#14b8a6', // teal-500 (teal-green)
   ]
 
   // Get the quote of the day

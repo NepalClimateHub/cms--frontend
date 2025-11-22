@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import ChangePasswordDialog from '@/ui/organisms/dashboard/ChangePasswordDialog'
+import EditProfileDialog from '@/ui/organisms/dashboard/EditProfileDialog'
+import EditProfilePhotoDialog from '@/ui/organisms/dashboard/EditProfilePhotoDialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
@@ -11,6 +13,7 @@ import {
   CardTitle,
 } from '@/ui/shadcn/card'
 import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
+import { cn } from '@/ui/shadcn/lib/utils'
 import { Separator } from '@/ui/shadcn/separator'
 import {
   CalendarDays,
@@ -20,6 +23,7 @@ import {
   Edit,
   Settings,
   Key,
+  Pencil,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -27,6 +31,9 @@ export default function UserProfilePage() {
   const { user } = useAuthStore()
   const nameInitials = getInitialsForAvatar(user?.fullName || 'User')
   const [isChangePasswordDialogOpen, setIsChangePasswordDialogOpen] =
+    useState(false)
+  const [isEditProfileDialogOpen, setIsEditProfileDialogOpen] = useState(false)
+  const [isEditProfilePhotoDialogOpen, setIsEditProfilePhotoDialogOpen] =
     useState(false)
 
   if (!user) {
@@ -55,7 +62,11 @@ export default function UserProfilePage() {
             Manage your account settings and view your information.
           </p>
         </div>
-        <Button variant='outline' size='sm'>
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={() => setIsEditProfileDialogOpen(true)}
+        >
           <Edit className='mr-2 h-4 w-4' />
           Edit Profile
         </Button>
@@ -76,18 +87,33 @@ export default function UserProfilePage() {
           <CardContent className='space-y-6'>
             {/* Avatar and Basic Info */}
             <div className='flex items-center space-x-4'>
-              <Avatar className='h-20 w-20'>
-                <AvatarImage src={undefined} alt={user.fullName} />
-                <AvatarFallback className='text-lg'>
-                  {nameInitials}
-                </AvatarFallback>
-              </Avatar>
+              <div className='group relative'>
+                <Avatar className='h-20 w-20'>
+                  <AvatarImage
+                    src={user.profilePhotoUrl || undefined}
+                    alt={user.fullName}
+                  />
+                  <AvatarFallback className='text-lg'>
+                    {nameInitials}
+                  </AvatarFallback>
+                </Avatar>
+                <Button
+                  type='button'
+                  size='icon'
+                  variant='secondary'
+                  className={cn(
+                    'absolute bottom-0 right-0 h-7 w-7 rounded-full border-2 border-white shadow-md',
+                    'opacity-0 transition-opacity duration-200 group-hover:opacity-100',
+                    'bg-white hover:bg-gray-100'
+                  )}
+                  onClick={() => setIsEditProfilePhotoDialogOpen(true)}
+                >
+                  <Pencil className='h-3.5 w-3.5' />
+                </Button>
+              </div>
               <div className='space-y-1'>
                 <h3 className='text-2xl font-semibold'>{user.fullName}</h3>
                 <div className='flex items-center gap-2'>
-                  <Badge variant={user.isActive ? 'default' : 'secondary'}>
-                    {user.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
                   {user.isSuperAdmin && (
                     <Badge variant='destructive'>
                       <Shield className='mr-1 h-3 w-3' />
@@ -136,7 +162,7 @@ export default function UserProfilePage() {
             <Button
               variant='outline'
               size='sm'
-              className='w-full'
+              className='w-1/3'
               onClick={() => setIsChangePasswordDialogOpen(true)}
             >
               <Key className='mr-2 h-4 w-4' />
@@ -149,6 +175,14 @@ export default function UserProfilePage() {
       <ChangePasswordDialog
         open={isChangePasswordDialogOpen}
         onOpenChange={setIsChangePasswordDialogOpen}
+      />
+      <EditProfileDialog
+        open={isEditProfileDialogOpen}
+        onOpenChange={setIsEditProfileDialogOpen}
+      />
+      <EditProfilePhotoDialog
+        open={isEditProfilePhotoDialogOpen}
+        onOpenChange={setIsEditProfilePhotoDialogOpen}
       />
     </div>
   )

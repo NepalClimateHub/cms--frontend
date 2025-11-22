@@ -8,6 +8,8 @@ export type User = {
   isActive: boolean
   isSuperAdmin: boolean
   organization: Organization | null
+  profilePhotoUrl?: string | null
+  profilePhotoId?: string | null
   createdAt: string
   updatedAt: string
 }

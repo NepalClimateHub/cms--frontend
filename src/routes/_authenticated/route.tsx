@@ -32,9 +32,27 @@ function RouteComponent() {
 
   useEffect(() => {
     if (userData) {
-      setUser(userData as unknown as User)
+      // Map UserOutput to User type
+      const mappedUser: User = {
+        id: userData.id,
+        email: userData.email,
+        fullName: userData.fullName,
+        permissions: [], // Permissions not in UserOutput, will be empty
+        isActive: userData.isAccountVerified,
+        isSuperAdmin: userData.isSuperAdmin,
+        organization: null, // Organization not in UserOutput
+        profilePhotoUrl:
+          (userData as { profilePhotoUrl?: string | null })?.profilePhotoUrl ||
+          null,
+        profilePhotoId:
+          (userData as { profilePhotoId?: string | null })?.profilePhotoId ||
+          null,
+        createdAt: userData.createdAt,
+        updatedAt: userData.updatedAt,
+      }
+      setUser(mappedUser)
     }
-  }, [userData])
+  }, [userData, setUser])
 
   if (isLoadingProfile || !userData) {
     return <BoxLoader />

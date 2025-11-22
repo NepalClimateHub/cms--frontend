@@ -1,44 +1,12 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/ui/shadcn/badge'
-import { Checkbox } from '@/ui/shadcn/checkbox'
-import { cn } from '@/ui/shadcn/lib/utils'
 import LongText from '@/ui/long-text'
-import { callTypes, userTypes } from '../data/data'
+import { cn } from '@/ui/shadcn/lib/utils'
+import { userTypes, userTypeOptions } from '../data/data'
 import { User } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTableRowActions } from './data-table-row-actions'
 
 export const columns: ColumnDef<User>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
-        className='translate-y-[2px]'
-      />
-    ),
-    meta: {
-      className: cn(
-        'sticky md:table-cell left-0 z-10 rounded-tl',
-        'bg-background transition-colors duration-200 group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted'
-      ),
-    },
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
-        className='translate-y-[2px]'
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: 'username',
     header: ({ column }) => (
@@ -51,7 +19,7 @@ export const columns: ColumnDef<User>[] = [
       className: cn(
         'drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.1)] dark:drop-shadow-[0_1px_2px_rgb(255_255_255_/_0.1)] lg:drop-shadow-none',
         'bg-background transition-colors duration-200 group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted',
-        'sticky left-6 md:table-cell'
+        'sticky left-0 md:table-cell'
       ),
     },
     enableHiding: false,
@@ -78,59 +46,57 @@ export const columns: ColumnDef<User>[] = [
     ),
   },
   {
-    accessorKey: 'phoneNumber',
+    accessorKey: 'userType',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phone Number' />
-    ),
-    cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
-    enableSorting: false,
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
+      <DataTableColumnHeader column={column} title='User Type' />
     ),
     cell: ({ row }) => {
-      const { status } = row.original
-      const badgeColor = callTypes.get(status)
-      return (
-        <div className='flex space-x-2'>
-          <Badge variant='outline' className={cn('capitalize', badgeColor)}>
-            {row.getValue('status')}
-          </Badge>
-        </div>
-      )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
-    enableHiding: false,
-    enableSorting: false,
-  },
-  {
-    accessorKey: 'role',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Role' />
-    ),
-    cell: ({ row }) => {
-      const { role } = row.original
-      const userType = userTypes.find(({ value }) => value === role)
+      const { userType, isSuperAdmin } = row.original
 
-      if (!userType) {
-        return null
+      // Show Superadmin if user is super admin
+      if (isSuperAdmin) {
+        const superAdminType = userTypes.find(
+          ({ value }) => value === 'superadmin'
+        )
+        if (superAdminType) {
+          return (
+            <div className='flex items-center gap-x-2'>
+              {superAdminType.icon && (
+                <superAdminType.icon
+                  size={16}
+                  className='text-muted-foreground'
+                />
+              )}
+              <span className='text-sm'>Superadmin</span>
+            </div>
+          )
+        }
+      }
+
+      const userTypeOption = userTypeOptions.find(
+        ({ value }) => value === userType
+      )
+
+      if (!userTypeOption) {
+        return <span className='text-sm'>{userType}</span>
       }
 
       return (
         <div className='flex items-center gap-x-2'>
-          {userType.icon && (
-            <userType.icon size={16} className='text-muted-foreground' />
+          {userTypeOption.icon && (
+            <userTypeOption.icon size={16} className='text-muted-foreground' />
           )}
-          <span className='text-sm capitalize'>{row.getValue('role')}</span>
+          <span className='text-sm'>{userTypeOption.label}</span>
         </div>
       )
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+    filterFn: (row, _id, value) => {
+      const { userType, isSuperAdmin } = row.original
+      // Include superadmin in filter if checking for admin
+      if (isSuperAdmin && value.includes('ADMIN')) {
+        return true
+      }
+      return value.includes(userType)
     },
     enableSorting: false,
     enableHiding: false,
