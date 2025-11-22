@@ -7,6 +7,26 @@ import OpportunitiesRowAction from '../components/opportunity-row-actions'
 export const useOpportunitiesColumns = () => {
   const columns: ColumnDef<OpportunityResponseDto>[] = [
     {
+      id: 'image',
+      header: () => <span>Image</span>,
+      cell: ({ row }) => {
+        const { bannerImageUrl, title } = row.original
+        const imageUrl = bannerImageUrl || 'images/logo.png'
+
+        return (
+          <div className='flex items-center justify-center'>
+            <img
+              src={imageUrl}
+              alt={title}
+              className='h-[80px] w-[80px] rounded object-cover'
+            />
+          </div>
+        )
+      },
+      enableSorting: false,
+      enableHiding: true,
+    },
+    {
       accessorKey: 'title',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Title' />
