@@ -9,6 +9,11 @@ import {
   OpportunityFormValues,
 } from '@/schemas/opportunities/opportunity'
 import { LOCATION_TYPE } from '@/schemas/shared'
+import AddressForm from '@/ui/address/address'
+import { DatePicker } from '@/ui/datepicker'
+import ImageUpload from '@/ui/image-upload'
+import { MinimalTiptapEditor } from '@/ui/minimal-tiptap'
+import { MultiSelect } from '@/ui/multi-select'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
@@ -30,11 +35,6 @@ import {
 } from '@/ui/shadcn/select'
 import { Switch } from '@/ui/shadcn/switch'
 import { TooltipProvider } from '@/ui/shadcn/tooltip'
-import AddressForm from '@/ui/address/address'
-import { DatePicker } from '@/ui/datepicker'
-import ImageUpload from '@/ui/image-upload'
-import { MinimalTiptapEditor } from '@/ui/minimal-tiptap'
-import { MultiSelect } from '@/ui/multi-select'
 import SocialsForm from '@/ui/socials/socials'
 
 type Props = {
@@ -59,11 +59,6 @@ const OpportunityForm: FC<Props> = ({
 }) => {
   const navigate = useNavigate()
 
-  // Debug: log the current values for type and locationType
-  console.log('form type:', form.getValues('type'))
-  console.log('form locationType:', form.getValues('locationType'))
-  console.log('form', form.getValues())
-
   return (
     <Form {...form}>
       <form
@@ -80,7 +75,9 @@ const OpportunityForm: FC<Props> = ({
               name='title'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>
+                    Title <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Enter a descriptive title for the opportunity
                   </FormDescription>
@@ -102,7 +99,9 @@ const OpportunityForm: FC<Props> = ({
               name='organizer'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organizer</FormLabel>
+                  <FormLabel>
+                    Organizer <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Who is organizing this opportunity?
                   </FormDescription>
@@ -131,7 +130,9 @@ const OpportunityForm: FC<Props> = ({
               name='type'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>
+                    Type <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     What type of opportunity is this?
                   </FormDescription>
@@ -159,7 +160,9 @@ const OpportunityForm: FC<Props> = ({
               name='format'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Format</FormLabel>
+                  <FormLabel>
+                    Format <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     How will this opportunity be conducted?
                   </FormDescription>
@@ -190,7 +193,9 @@ const OpportunityForm: FC<Props> = ({
               name='cost'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Cost</FormLabel>
+                  <FormLabel>
+                    Cost <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>What is the cost structure?</FormDescription>
                   <FormControl>
                     <Select
@@ -219,7 +224,9 @@ const OpportunityForm: FC<Props> = ({
               name='status'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>
+                    Status <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Current status of the opportunity
                   </FormDescription>
@@ -279,7 +286,9 @@ const OpportunityForm: FC<Props> = ({
               name='locationType'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location Type</FormLabel>
+                  <FormLabel>
+                    Location Type <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>Select the type of location</FormDescription>
                   <FormControl>
                     <Select
@@ -409,7 +418,9 @@ const OpportunityForm: FC<Props> = ({
               name='description'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>
+                    Description <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Provide detailed information about the opportunity
                   </FormDescription>
@@ -471,7 +482,9 @@ const OpportunityForm: FC<Props> = ({
               name='tagIds'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Opportunity Tags</FormLabel>
+                  <FormLabel>
+                    Opportunity Tags <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Add relevant tags to categorize the opportunity
                   </FormDescription>

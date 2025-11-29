@@ -10,8 +10,8 @@ import {
 } from '@/schemas/opportunities/opportunity'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
-import OpportunityForm from '../shared/OpportunityForm'
 import { toast } from '@/hooks/use-toast'
+import OpportunityForm from '../shared/OpportunityForm'
 
 const AddOpportunity: FC = () => {
   const navigate = useNavigate()

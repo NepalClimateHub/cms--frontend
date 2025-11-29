@@ -43,22 +43,11 @@ const NewsEdit = () => {
           : new Date(),
         // @ts-expect-error - tags mapping type mismatch
         tagIds: newsData?.tags?.map((tag: { id: string }) => tag?.id) || [],
-        bannerImageUrl: newsData?.bannerImageUrl
-          ? newsData?.bannerImageUrl
-          : null,
       })
       hasReset.current = true
       setIsFormReady(true)
     }
   }, [newsData])
-
-  const handleImageUpload = (
-    assetId: string | null,
-    assetURL: string | null
-  ) => {
-    form.setValue('bannerImageId', assetId!)
-    form.setValue('bannerImageUrl', assetURL == '' ? null : assetURL!)
-  }
 
   const navigate = useNavigate()
 
@@ -91,7 +80,6 @@ const NewsEdit = () => {
         <div className='w-full'>
           <NewsForm
             form={form}
-            handleImageUpload={handleImageUpload}
             handleFormSubmit={handleFormSubmit}
             isEdit={true}
             isLoading={newsMutation.isPending}

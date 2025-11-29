@@ -13,8 +13,6 @@ export const AddNewsSchema = z.object({
   mode: z.string(),
   publishedDate: z.date(),
   newsLink: z.string().url(),
-  bannerImageUrl: z.string().url().optional().nullable(),
-  bannerImageId: z.string().optional().nullable(),
   tagIds: z.array(z.string()).optional(),
   address: addressSchema.optional(),
   isDraft: z.boolean().optional().default(false),

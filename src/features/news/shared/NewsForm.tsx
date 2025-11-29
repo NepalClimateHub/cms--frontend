@@ -1,6 +1,8 @@
 import { FC } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
+import { DatePicker } from '@/ui/datepicker'
+import { MultiSelect } from '@/ui/multi-select'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
@@ -21,14 +23,10 @@ import {
   SelectValue,
 } from '@/ui/shadcn/select'
 import { Switch } from '@/ui/shadcn/switch'
-import { DatePicker } from '@/ui/datepicker'
-import ImageUpload from '@/ui/image-upload'
-import { MultiSelect } from '@/ui/multi-select'
 import { News, modeOptions } from '../../../schemas/news/news'
 
 type Props = {
   form: UseFormReturn<News>
-  handleImageUpload: (assetId: string | null, assetURL: string | null) => void
   handleFormSubmit: (values: News) => Promise<void>
   isEdit: boolean
   isLoading: boolean
@@ -40,7 +38,6 @@ type Props = {
 
 const NewsForm: FC<Props> = ({
   form,
-  handleImageUpload,
   handleFormSubmit,
   isEdit,
   isLoading,
@@ -64,7 +61,9 @@ const NewsForm: FC<Props> = ({
               name='title'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>
+                    Title <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Enter a descriptive title for your news article
                   </FormDescription>
@@ -85,7 +84,9 @@ const NewsForm: FC<Props> = ({
               name='source'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Source</FormLabel>
+                  <FormLabel>
+                    Source <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Where is this news from? (e.g., Kantipur, Ratopati)
                   </FormDescription>
@@ -106,7 +107,9 @@ const NewsForm: FC<Props> = ({
               name='mode'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mode</FormLabel>
+                  <FormLabel>
+                    Mode <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Select the scope of the news
                   </FormDescription>
@@ -134,7 +137,9 @@ const NewsForm: FC<Props> = ({
               name='newsLink'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>News Link</FormLabel>
+                  <FormLabel>
+                    News Link <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Link to the original news article
                   </FormDescription>
@@ -163,7 +168,9 @@ const NewsForm: FC<Props> = ({
               name='publishedDate'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Published Date</FormLabel>
+                  <FormLabel>
+                    Published Date <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     When was this news published?
                   </FormDescription>
@@ -183,36 +190,9 @@ const NewsForm: FC<Props> = ({
 
         <Card>
           <CardHeader>
-            <CardTitle>Media & Tags</CardTitle>
+            <CardTitle>Tags</CardTitle>
           </CardHeader>
           <CardContent className='space-y-6'>
-            <FormField
-              control={form.control}
-              name='bannerImageId'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Banner Image</FormLabel>
-                  <FormDescription>
-                    Upload a banner image for the news article
-                  </FormDescription>
-                  <FormControl>
-                    <ImageUpload
-                      label='Upload banner image'
-                      handleImage={(assetId, assetURL) => {
-                        handleImageUpload(assetId, assetURL)
-                        field.onChange(assetId || '')
-                        form.setValue('bannerImageUrl', assetURL ?? null)
-                      }}
-                      className='rounded-lg border border-gray-200 p-4'
-                      initialImageId={form.getValues('bannerImageId')}
-                      initialImageUrl={form.getValues('bannerImageUrl')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name='tagIds'

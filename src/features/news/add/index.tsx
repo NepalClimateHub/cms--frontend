@@ -21,19 +21,7 @@ const NewsAdd = () => {
 
   const form = useForm<News>({
     resolver: zodResolver(AddNewsSchema),
-    defaultValues: {
-      bannerImageId: undefined,
-      bannerImageUrl: undefined,
-    },
   })
-
-  const handleImageUpload = (
-    assetId: string | null,
-    assetURL: string | null
-  ) => {
-    form.setValue('bannerImageId', assetId ?? '')
-    form.setValue('bannerImageUrl', assetURL ?? '')
-  }
 
   const handleFormSubmit = async (values: News) => {
     await addNewsMutation.mutateAsync({
@@ -60,7 +48,6 @@ const NewsAdd = () => {
         <div className='w-full'>
           <NewsForm
             form={form}
-            handleImageUpload={handleImageUpload}
             handleFormSubmit={handleFormSubmit}
             isEdit={false}
             isLoading={addNewsMutation.isPending || isLoading}
