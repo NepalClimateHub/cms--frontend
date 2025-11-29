@@ -71,7 +71,9 @@ const BlogForm: FC<Props> = ({
               name='title'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>
+                    Title <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Enter a descriptive title for the blog
                   </FormDescription>
@@ -93,7 +95,9 @@ const BlogForm: FC<Props> = ({
               name='author'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Author</FormLabel>
+                  <FormLabel>
+                    Author <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Who is the author of this blog?
                   </FormDescription>
@@ -122,7 +126,9 @@ const BlogForm: FC<Props> = ({
               name='category'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>
+                    Category <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     What category does this blog belong to?
                   </FormDescription>
@@ -246,7 +252,9 @@ const BlogForm: FC<Props> = ({
               name='content'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Content</FormLabel>
+                  <FormLabel>
+                    Content <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Write the main content of your blog
                   </FormDescription>

@@ -80,17 +80,6 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
           </DialogHeader>
 
           <div className='mt-6 space-y-6'>
-            {/* Banner Image */}
-            {row.original.bannerImageUrl && (
-              <div className='relative aspect-video w-full overflow-hidden rounded-lg'>
-                <img
-                  src={row.original.bannerImageUrl}
-                  alt={row.original.title}
-                  className='h-full w-full object-cover'
-                />
-              </div>
-            )}
-
             {/* Title Section */}
             <div className='space-y-2'>
               <h2 className='text-xl font-semibold text-gray-900'>

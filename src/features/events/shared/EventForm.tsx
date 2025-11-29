@@ -9,6 +9,11 @@ import {
   EventFormValues,
 } from '@/schemas/event'
 import { LOCATION_TYPE } from '@/schemas/shared'
+import AddressForm from '@/ui/address/address'
+import { DatePicker } from '@/ui/datepicker'
+import ImageUpload from '@/ui/image-upload'
+import { MinimalTiptapEditor } from '@/ui/minimal-tiptap'
+import { MultiSelect } from '@/ui/multi-select'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
@@ -30,11 +35,6 @@ import {
 } from '@/ui/shadcn/select'
 import { Switch } from '@/ui/shadcn/switch'
 import { TooltipProvider } from '@/ui/shadcn/tooltip'
-import AddressForm from '@/ui/address/address'
-import { DatePicker } from '@/ui/datepicker'
-import ImageUpload from '@/ui/image-upload'
-import { MinimalTiptapEditor } from '@/ui/minimal-tiptap'
-import { MultiSelect } from '@/ui/multi-select'
 import SocialsForm from '@/ui/socials/socials'
 
 type Props = {
@@ -76,7 +76,9 @@ const EventForm: FC<Props> = ({
               name='title'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>
+                    Title <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Enter a descriptive title for your event
                   </FormDescription>
@@ -97,7 +99,9 @@ const EventForm: FC<Props> = ({
               name='organizer'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organizer</FormLabel>
+                  <FormLabel>
+                    Organizer <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Who is organizing this event?
                   </FormDescription>
@@ -147,7 +151,9 @@ const EventForm: FC<Props> = ({
               name='locationType'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location Type</FormLabel>
+                  <FormLabel>
+                    Location Type <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>Select the type of venue</FormDescription>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
@@ -172,7 +178,9 @@ const EventForm: FC<Props> = ({
               name='format'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Format</FormLabel>
+                  <FormLabel>
+                    Format <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     How will the event be conducted?
                   </FormDescription>
@@ -199,7 +207,9 @@ const EventForm: FC<Props> = ({
               name='type'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Event Type</FormLabel>
+                  <FormLabel>
+                    Event Type <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>What kind of event is this?</FormDescription>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
@@ -224,7 +234,9 @@ const EventForm: FC<Props> = ({
               name='cost'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Cost</FormLabel>
+                  <FormLabel>
+                    Cost <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>Is there a cost to attend?</FormDescription>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
@@ -249,7 +261,9 @@ const EventForm: FC<Props> = ({
               name='status'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>
+                    Status <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>Current status of the event</FormDescription>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
@@ -391,7 +405,9 @@ const EventForm: FC<Props> = ({
               name='description'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>
+                    Description <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     Provide detailed information about the event
                   </FormDescription>
