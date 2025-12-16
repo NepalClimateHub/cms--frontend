@@ -3,6 +3,13 @@ import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
 import { Label } from '@/ui/shadcn/label'
 import type { Editor } from '@tiptap/react'
+import { useGetIkAuthParams } from '@/query/imagekit/use-ik'
+import IKContext from '@/ui/image-kit/IKContext'
+import IKUpload from '@/ui/image-kit/IKUpload'
+import { MiniLoader } from '@/ui/loader'
+import { toast } from '@/hooks/use-toast'
+
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
 interface ImageEditBlockProps {
   editor: Editor
@@ -13,34 +20,14 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
   editor,
   close,
 }) => {
-  const fileInputRef = React.useRef<HTMLInputElement>(null)
   const [link, setLink] = React.useState('')
+  const [isUploading, setIsUploading] = React.useState(false)
+  const { data, isLoading } = useGetIkAuthParams()
 
-  const handleClick = React.useCallback(() => {
-    fileInputRef.current?.click()
-  }, [])
-
-  const handleFile = React.useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = e.target.files
-      if (!files?.length) return
-
-      const insertImages = async () => {
-        const contentBucket = []
-        const filesArray = Array.from(files)
-
-        for (const file of filesArray) {
-          contentBucket.push({ src: file })
-        }
-
-        editor.commands.setImages(contentBucket)
-      }
-
-      await insertImages()
-      close()
-    },
-    [editor, close]
-  )
+  const endpoint = data?.data?.endpoint
+  const publicKey = data?.data?.publicKey
+  const ikAuthParams = data?.data?.ikAuthParams
+  const folder = data?.data?.folder
 
   const handleSubmit = React.useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -54,6 +41,33 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
     },
     [editor, link, close]
   )
+
+  const handleUploadStart = () => {
+    setIsUploading(true)
+  }
+
+  const handleUploadError = () => {
+    setIsUploading(false)
+    toast({
+      variant: 'destructive',
+      title: 'Upload failed. Please try again.',
+    })
+  }
+
+  const handleUploadSuccess = (uploaded: any) => {
+    setIsUploading(false)
+    const url = uploaded?.url
+    if (url) {
+      editor.commands.setImages([{ src: url }])
+      toast({
+        variant: 'default',
+        title: 'Image added to content',
+      })
+      close()
+    } else {
+      handleUploadError()
+    }
+  }
 
   return (
     <form onSubmit={handleSubmit} className='space-y-6'>
@@ -76,17 +90,49 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
           </Button>
         </div>
       </div>
-      <Button type='button' className='w-full' onClick={handleClick}>
-        Upload from your computer
-      </Button>
-      <input
-        type='file'
-        accept='image/*'
-        ref={fileInputRef}
-        multiple
-        className='hidden'
-        onChange={handleFile}
-      />
+
+      <div className='space-y-3'>
+        <Label>Or upload from your computer</Label>
+        <MiniLoader isLoading={isLoading}>
+          <IKContext
+            publicKey={publicKey}
+            urlEndpoint={endpoint}
+            authenticator={() => new Promise((resolve) => resolve(ikAuthParams))}
+          >
+            <IKUpload
+              disabled={isUploading}
+              isUploading={isUploading}
+              label='Upload image'
+              description='Image size should not exceed 5MB!'
+              folder={folder}
+              isPrivateFile={false}
+              useUniqueFileName={true}
+              onError={handleUploadError}
+              onSuccess={handleUploadSuccess}
+              onUploadStart={handleUploadStart}
+              validateFile={(file: File) => {
+                if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+                  toast({
+                    variant: 'destructive',
+                    title: 'Only jpg, png, and webp formats are supported.',
+                  })
+                  return false
+                }
+                const sizeInMb = Math.floor(file.size / 1000000)
+                if (sizeInMb > 5) {
+                  toast({
+                    variant: 'destructive',
+                    title: 'Image size cannot be greater than 5MB.',
+                  })
+                  return false
+                }
+                return true
+              }}
+              checks={`"file.size" < "5mb"`}
+            />
+          </IKContext>
+        </MiniLoader>
+      </div>
     </form>
   )
 }
