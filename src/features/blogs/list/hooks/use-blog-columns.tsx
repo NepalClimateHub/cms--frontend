@@ -80,19 +80,28 @@ export const useBlogsColumns = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'isDraft',
+      accessorKey: 'status',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Status' />
       ),
-      cell: ({ row }) => (
-        <div className='min-w-[100px] max-w-[100px]'>
-          {row.getValue('isDraft') ? (
-            <Badge className='bg-yellow-500'>Draft</Badge>
-          ) : (
-            <Badge className='bg-green-500'>Published</Badge>
-          )}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const status = (row.original as any).status || 'DRAFT'
+        const statusConfig: Record<
+          string,
+          { label: string; className: string }
+        > = {
+          DRAFT: { label: 'Draft', className: 'bg-yellow-500' },
+          UNDER_REVIEW: { label: 'Under Review', className: 'bg-blue-500' },
+          PUBLISHED: { label: 'Published', className: 'bg-green-500' },
+          REJECTED: { label: 'Rejected', className: 'bg-red-500' },
+        }
+        const config = statusConfig[status] || statusConfig.DRAFT
+        return (
+          <div className='min-w-[100px] max-w-[100px]'>
+            <Badge className={config.className}>{config.label}</Badge>
+          </div>
+        )
+      },
     },
     {
       accessorKey: 'isFeatured',

@@ -4,6 +4,7 @@ import { Separator } from '@/ui/shadcn/separator'
 import type { Content, Editor } from '@tiptap/react'
 import { EditorContent } from '@tiptap/react'
 import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu'
+import { ImageBubbleMenu } from './components/bubble-menu/image-bubble-menu'
 import { MeasuredContainer } from './components/measured-container'
 import { SectionFive } from './components/section/five'
 import { SectionFour } from './components/section/four'
@@ -95,6 +96,7 @@ export const MinimalTiptapEditor = React.forwardRef<
         className={cn('minimal-tiptap-editor', editorContentClassName)}
       />
       <LinkBubbleMenu editor={editor} />
+      <ImageBubbleMenu editor={editor} />
     </MeasuredContainer>
   )
 })

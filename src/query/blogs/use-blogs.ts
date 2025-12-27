@@ -11,6 +11,7 @@ import {
   blogControllerDeleteBlogMutation,
   blogControllerFindAllBlogsOptions,
 } from '../../api/@tanstack/react-query.gen'
+import { client as apiClient } from '../../api/client.gen'
 import { blogControllerUpdateBlogMutation } from './../../api/@tanstack/react-query.gen'
 
 // Mock blog types - these should be replaced with actual API types when available
@@ -25,6 +26,8 @@ export interface BlogResponseDto {
   publishedDate?: string
   isDraft: boolean
   isFeatured: boolean
+  approvedByAdmin: boolean
+  status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED'
   bannerImageUrl?: string
   bannerImageId?: string
   tags?: Array<string>
@@ -150,6 +153,64 @@ export const useDeleteBlog = () => {
     onError: (error: any) => {
       toast({
         title: (error as any)?.message ?? 'Failed to delete blog',
+        variant: 'destructive',
+      })
+    },
+  })
+}
+
+export const useApproveBlog = () => {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      const response = await apiClient.patch({
+        url: `/api/v1/blogs/${id}/action`,
+        body: { action: 'approve' },
+      })
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(blogControllerFindAllBlogsOptions())
+      toast({
+        title: 'Blog approved',
+        description: 'Blog has been approved successfully.',
+        variant: 'default',
+      })
+    },
+    onError: (error: any) => {
+      toast({
+        title: (error as any)?.message ?? 'Failed to approve blog',
+        variant: 'destructive',
+      })
+    },
+  })
+}
+
+export const useRejectBlog = () => {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      const response = await apiClient.patch({
+        url: `/api/v1/blogs/${id}/action`,
+        body: { action: 'reject' },
+      })
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(blogControllerFindAllBlogsOptions())
+      toast({
+        title: 'Blog rejected',
+        description: 'Blog has been rejected.',
+        variant: 'default',
+      })
+    },
+    onError: (error: any) => {
+      toast({
+        title: (error as any)?.message ?? 'Failed to reject blog',
         variant: 'destructive',
       })
     },

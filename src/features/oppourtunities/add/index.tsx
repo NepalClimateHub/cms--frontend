@@ -19,6 +19,7 @@ const AddOpportunity: FC = () => {
     useGetTagsByType('OPPORTUNITY')
   const { mutate: addOpportunity, isPending } =
     useOpportunityAPI().addOpportunity
+  const { mutate: updateOpportunity } = useOpportunityAPI().updateOpportunity
 
   const form = useForm<OpportunityFormValues>({
     resolver: zodResolver(opportunitySchema),
@@ -62,6 +63,16 @@ const AddOpportunity: FC = () => {
 
   const handleFormSubmit = async (values: OpportunityFormValues) => {
     try {
+      // Check if socials have any non-empty values
+      const hasSocials = values.socials && (
+        (values.socials.facebook && values.socials.facebook.trim() !== '') ||
+        (values.socials.instagram && values.socials.instagram.trim() !== '') ||
+        (values.socials.linkedin && values.socials.linkedin.trim() !== '')
+      )
+
+      // Store socials separately for the update call
+      const socialsToUpdate = hasSocials ? values.socials : null
+
       const formattedValues = {
         ...values,
         applicationDeadline: values.applicationDeadline
@@ -98,11 +109,44 @@ const AddOpportunity: FC = () => {
           body: formattedValues as any,
         },
         {
-          onSuccess: () => {
-            toast({
-              title: 'Opportunity added successfully',
-            })
-            navigate({ to: '/opportunities/list' })
+          onSuccess: (response: any) => {
+            // If socials were provided, immediately update the opportunity
+            // This is a workaround for backend CREATE endpoint not persisting socials
+            const opportunityId = response?.data?.id || response?.data?.data?.id
+            if (socialsToUpdate && opportunityId) {
+              updateOpportunity(
+                {
+                  path: {
+                    id: opportunityId,
+                  },
+                  body: {
+                    ...formattedValues,
+                    socials: socialsToUpdate,
+                  } as any,
+                },
+                {
+                  onSuccess: () => {
+                    toast({
+                      title: 'Opportunity added successfully',
+                    })
+                    navigate({ to: '/opportunities/list' })
+                  },
+                  onError: () => {
+                    // Still show success even if socials update fails
+                    toast({
+                      title: 'Opportunity added successfully',
+                      description: 'Note: Social links may need to be updated manually',
+                    })
+                    navigate({ to: '/opportunities/list' })
+                  },
+                }
+              )
+            } else {
+              toast({
+                title: 'Opportunity added successfully',
+              })
+              navigate({ to: '/opportunities/list' })
+            }
           },
           onError: (error: any) => {
             toast({

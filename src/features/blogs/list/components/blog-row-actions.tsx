@@ -2,7 +2,11 @@ import { useState } from 'react'
 import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
-import { useDeleteBlog } from '@/query/blogs/use-blogs'
+import {
+  useDeleteBlog,
+  useApproveBlog,
+  useRejectBlog,
+} from '@/query/blogs/use-blogs'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
@@ -16,7 +20,8 @@ import {
 } from '@/ui/shadcn/dialog'
 import { Separator } from '@/ui/shadcn/separator'
 // import { useDeleteBlog, useBlogAPI } from '@/query/blogs/use-blogs'
-import { LucideEye, Pencil, Trash } from 'lucide-react'
+import { LucideEye, Pencil, Trash, CheckCircle, XCircle } from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
 
 interface BlogRowActionProps {
   row: Row<any>
@@ -26,8 +31,14 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const { user } = useAuthStore()
+  const isAdmin = user?.isSuperAdmin === true
 
   const blogDeleteMutation = useDeleteBlog()
+  const approveBlogMutation = useApproveBlog()
+  const rejectBlogMutation = useRejectBlog()
+
+  const blogStatus = (row.original as any).status || 'DRAFT'
 
   const handleStatusToggle = (blogId: string, isDraft: boolean) => {
     // @ts-ignore
@@ -108,12 +119,47 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
                   <Badge variant='outline' className='text-sm'>
                     {row.original.category}
                   </Badge>
-                  <Badge
-                    variant={row.original.isDraft ? 'secondary' : 'default'}
-                    className='text-sm'
-                  >
-                    {row.original.isDraft ? 'Draft' : 'Published'}
-                  </Badge>
+                  {(() => {
+                    const status = (row.original as any).status || 'DRAFT'
+                    const statusConfig: Record<
+                      string,
+                      {
+                        label: string
+                        variant: 'default' | 'secondary' | 'outline'
+                        className: string
+                      }
+                    > = {
+                      DRAFT: {
+                        label: 'Draft',
+                        variant: 'secondary',
+                        className: 'bg-yellow-100',
+                      },
+                      UNDER_REVIEW: {
+                        label: 'Under Review',
+                        variant: 'outline',
+                        className: 'bg-blue-100',
+                      },
+                      PUBLISHED: {
+                        label: 'Published',
+                        variant: 'default',
+                        className: 'bg-green-100',
+                      },
+                      REJECTED: {
+                        label: 'Rejected',
+                        variant: 'outline',
+                        className: 'bg-red-100',
+                      },
+                    }
+                    const config = statusConfig[status] || statusConfig.DRAFT
+                    return (
+                      <Badge
+                        variant={config.variant}
+                        className={`${config.className} text-sm`}
+                      >
+                        {config.label}
+                      </Badge>
+                    )
+                  })()}
                 </div>
                 <div className='text-right'>
                   <h3 className='text-start text-sm font-semibold text-muted-foreground'>
@@ -125,17 +171,6 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
             </div>
 
             <hr />
-            {/* Content Image */}
-            {row.original.contentImageUrl && (
-              <div className='relative aspect-video w-full overflow-hidden rounded-lg'>
-                <img
-                  src={row.original.contentImageUrl}
-                  alt={`${row.original.title} content`}
-                  className='h-full w-full object-cover'
-                />
-              </div>
-            )}
-
             {/* Content Section */}
             <div>
               <h3 className='text-sm font-semibold text-muted-foreground'>
@@ -205,6 +240,30 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
           </DialogDescription>
         </DialogContent>
       </Dialog>
+
+      {/* Approve/Reject Buttons - Only show for blogs under review and admin users */}
+      {blogStatus === 'UNDER_REVIEW' && isAdmin && (
+        <>
+          <Button
+            onClick={() => approveBlogMutation.mutate({ id: row.original.id })}
+            size={'sm'}
+            variant={'default'}
+            className='h-6 bg-green-500 px-2 hover:bg-green-600'
+            disabled={approveBlogMutation.isPending}
+          >
+            <CheckCircle className='h-4 w-4' />
+          </Button>
+          <Button
+            onClick={() => rejectBlogMutation.mutate({ id: row.original.id })}
+            size={'sm'}
+            variant={'default'}
+            className='h-6 bg-red-500 px-2 hover:bg-red-600'
+            disabled={rejectBlogMutation.isPending}
+          >
+            <XCircle className='h-4 w-4' />
+          </Button>
+        </>
+      )}
 
       {/* Status Toggle Button */}
       <Button

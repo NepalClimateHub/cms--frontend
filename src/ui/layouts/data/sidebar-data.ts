@@ -70,6 +70,11 @@ export const generalSidebarData: NavGroup[] = [
         icon: Home,
       },
       {
+        title: 'Blogs',
+        url: '/blog/list',
+        icon: Newspaper,
+      },
+      {
         title: 'Profile',
         url: '/dashboard/profile',
         icon: User,
