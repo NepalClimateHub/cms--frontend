@@ -34,7 +34,6 @@ const EditBlog = () => {
       form.reset({
         ...blogData,
         bannerImageId: blogData?.bannerImageId ?? '',
-        contentImageId: (blogData as any)?.contentImageId ?? '',
         publishedDate: blogData?.publishedDate
           ? new Date(blogData?.publishedDate)
           : undefined,
@@ -64,12 +63,6 @@ const EditBlog = () => {
       if (values.bannerImageUrl) {
         formattedValues.bannerImageUrl = values.bannerImageUrl
       }
-      if (values.contentImageId) {
-        formattedValues.contentImageId = values.contentImageId
-      }
-      if (values.contentImageUrl) {
-        formattedValues.contentImageUrl = values.contentImageUrl
-      }
 
       await blogMutation.mutate({
         path: {
@@ -91,14 +84,6 @@ const EditBlog = () => {
     form.setValue('bannerImageUrl', assetURL ?? '')
   }
 
-  const handleContentImageUpload = (
-    assetId: string | null,
-    assetURL: string | null
-  ) => {
-    form.setValue('contentImageId', assetId ?? '')
-    form.setValue('contentImageUrl', assetURL ?? '')
-  }
-
   // Show loader until data is loaded and form is ready
   if (isLoadingBlog || isLoadingTags || !blogData || !isFormReady) {
     return <BoxLoader />
@@ -112,7 +97,6 @@ const EditBlog = () => {
           <BlogForm
             form={form}
             handleImageUpload={handleImageUpload}
-            handleContentImageUpload={handleContentImageUpload}
             handleFormSubmit={handleFormSubmit}
             isEdit={true}
             isLoading={blogMutation.isPending}

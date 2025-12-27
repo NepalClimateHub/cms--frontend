@@ -27,14 +27,11 @@ import {
 } from '@/ui/shadcn/select'
 import { Switch } from '@/ui/shadcn/switch'
 import { Textarea } from '@/ui/shadcn/textarea'
+import { useAuthStore } from '@/stores/authStore'
 
 type Props = {
   form: UseFormReturn<BlogFormValues>
   handleImageUpload: (assetId: string | null, assetURL: string | null) => void
-  handleContentImageUpload: (
-    assetId: string | null,
-    assetURL: string | null
-  ) => void
   handleFormSubmit: (values: BlogFormValues) => Promise<void>
   isEdit: boolean
   isLoading: boolean
@@ -47,13 +44,14 @@ type Props = {
 const BlogForm: FC<Props> = ({
   form,
   handleImageUpload,
-  handleContentImageUpload,
   handleFormSubmit,
   isEdit,
   isLoading,
   tagsOptions,
 }) => {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
+  const isAdmin = user?.isSuperAdmin === true
 
   return (
     <Form {...form}>
@@ -90,29 +88,31 @@ const BlogForm: FC<Props> = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name='author'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Author <span className='text-red-500'>*</span>
-                  </FormLabel>
-                  <FormDescription>
-                    Who is the author of this blog?
-                  </FormDescription>
-                  <FormControl>
-                    <Input
-                      placeholder='Enter author name'
-                      className='w-full'
-                      {...field}
-                      value={field.value || ''}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {isAdmin && (
+              <FormField
+                control={form.control}
+                name='author'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Author <span className='text-red-500'>*</span>
+                    </FormLabel>
+                    <FormDescription>
+                      Who is the author of this blog?
+                    </FormDescription>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter author name'
+                        className='w-full'
+                        {...field}
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -283,62 +283,32 @@ const BlogForm: FC<Props> = ({
             <CardTitle>Media & Settings</CardTitle>
           </CardHeader>
           <CardContent className='space-y-6'>
-            <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-              <FormField
-                control={form.control}
-                name='bannerImageId'
-                render={({ field: _field }) => (
-                  <FormItem>
-                    <FormLabel>Banner Image</FormLabel>
-                    <FormDescription>
-                      Upload a banner image for your blog
-                    </FormDescription>
-                    <FormControl>
-                      <ImageUpload
-                        label='Upload banner image'
-                        handleImage={handleImageUpload}
-                        initialImageId={form.getValues('bannerImageId')}
-                        initialImageUrl={form.getValues('bannerImageUrl')}
-                        inputId='banner-image-upload'
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name='bannerImageId'
+              render={({ field: _field }) => (
+                <FormItem>
+                  <FormLabel>Banner Image</FormLabel>
+                  <FormDescription>
+                    Upload a banner image for your blog
+                  </FormDescription>
+                  <FormControl>
+                    <ImageUpload
+                      label='Upload banner image'
+                      handleImage={handleImageUpload}
+                      initialImageId={form.getValues('bannerImageId')}
+                      initialImageUrl={form.getValues('bannerImageUrl')}
+                      inputId='banner-image-upload'
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name='contentImageId'
-                render={({ field: _field }) => (
-                  <FormItem>
-                    <FormLabel>Content Image</FormLabel>
-                    <FormDescription>
-                      Upload an image for your blog content
-                    </FormDescription>
-                    <FormControl>
-                      <ImageUpload
-                        label='Upload content image'
-                        handleImage={handleContentImageUpload}
-                        initialImageId={form.getValues('contentImageId')}
-                        initialImageUrl={form.getValues('contentImageUrl')}
-                        inputId='content-image-upload'
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Misc</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
+            <div
+              className={`grid grid-cols-1 gap-6 ${isAdmin ? 'md:grid-cols-2' : ''}`}
+            >
               <FormField
                 control={form.control}
                 name='isDraft'
@@ -360,26 +330,30 @@ const BlogForm: FC<Props> = ({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name='isFeatured'
-                render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                    <div className='space-y-0.5'>
-                      <FormLabel className='text-base'>Featured Blog</FormLabel>
-                      <FormDescription>
-                        Mark this blog as featured
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {isAdmin && (
+                <FormField
+                  control={form.control}
+                  name='isFeatured'
+                  render={({ field }) => (
+                    <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+                      <div className='space-y-0.5'>
+                        <FormLabel className='text-base'>
+                          Featured Blog
+                        </FormLabel>
+                        <FormDescription>
+                          Mark this blog as featured
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
           </CardContent>
         </Card>

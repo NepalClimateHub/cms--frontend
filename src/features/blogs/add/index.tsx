@@ -1,10 +1,11 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { BlogFormValues, blogSchema } from '@/schemas/blog'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
+import { useAuthStore } from '@/stores/authStore'
 import { useAddBlog } from '../../../query/blogs/use-blogs'
 import BlogForm from '../shared/BlogForm'
 
@@ -12,6 +13,13 @@ const AddBlog: FC = () => {
   // @ts-ignore
   const { data: tags, isLoading: isLoadingTags } = useGetTagsByType('BLOG')
   const { mutate: addBlog, isPending } = useAddBlog()
+  const { user } = useAuthStore()
+  const isAdmin = user?.isSuperAdmin === true
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+  }, [])
 
   const form = useForm<BlogFormValues>({
     resolver: zodResolver(blogSchema),
@@ -19,7 +27,7 @@ const AddBlog: FC = () => {
       title: '',
       content: '',
       excerpt: '',
-      author: '',
+      author: isAdmin ? '' : user?.fullName || '',
       category: '',
       readingTime: '',
       publishedDate: undefined,
@@ -27,8 +35,6 @@ const AddBlog: FC = () => {
       isFeatured: false,
       bannerImageUrl: '',
       bannerImageId: '',
-      contentImageUrl: '',
-      contentImageId: '',
       tagIds: [],
     },
   })
@@ -39,14 +45,6 @@ const AddBlog: FC = () => {
   ) => {
     form.setValue('bannerImageId', assetId ?? undefined)
     form.setValue('bannerImageUrl', assetURL ?? undefined)
-  }
-
-  const handleContentImageUpload = (
-    assetId: string | null,
-    assetURL: string | null
-  ) => {
-    form.setValue('contentImageId', assetId ?? undefined)
-    form.setValue('contentImageUrl', assetURL ?? undefined)
   }
 
   const handleFormSubmit = async (values: BlogFormValues) => {
@@ -66,8 +64,6 @@ const AddBlog: FC = () => {
         isFeatured: values.isFeatured ?? false,
         bannerImageUrl: values.bannerImageUrl ?? undefined,
         bannerImageId: values.bannerImageId ?? undefined,
-        contentImageUrl: values.contentImageUrl ?? undefined,
-        contentImageId: values.contentImageId ?? undefined,
         tagIds: values.tagIds ?? undefined,
       }
 
@@ -91,7 +87,6 @@ const AddBlog: FC = () => {
           <BlogForm
             form={form}
             handleImageUpload={handleImageUpload}
-            handleContentImageUpload={handleContentImageUpload}
             handleFormSubmit={handleFormSubmit}
             isEdit={false}
             isLoading={isPending || isLoadingTags}
