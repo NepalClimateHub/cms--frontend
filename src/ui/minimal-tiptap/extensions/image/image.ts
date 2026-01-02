@@ -40,7 +40,10 @@ interface CustomImageOptions extends ImageOptions, Omit<FileValidationOptions, '
 declare module '@tiptap/react' {
   interface Commands<ReturnType> {
     setImages: {
-      setImages: (attrs: { src: string | File; alt?: string; title?: string }[]) => ReturnType
+      setImages: (attrs: { src: string | File; alt?: string; title?: string; caption?: string }[]) => ReturnType
+    }
+    setImage: {
+      setImage: (attrs: { src?: string; alt?: string; title?: string; caption?: string | null; width?: number; height?: number; [key: string]: any }) => ReturnType
     }
     downloadImage: {
       downloadImage: (attrs: DownloadImageCommandProps) => ReturnType
@@ -164,6 +167,9 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
       title: {
         default: null
       },
+      caption: {
+        default: null
+      },
       id: {
         default: null
       },
@@ -208,6 +214,7 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
                       src: blobUrl,
                       alt: image.alt,
                       title: image.title,
+                      caption: image.caption,
                       fileName: image.src.name
                     }
                   }
@@ -219,6 +226,7 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
                       src: image.src,
                       alt: image.alt,
                       title: image.title,
+                      caption: image.caption,
                       fileName: null
                     }
                   }

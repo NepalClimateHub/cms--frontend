@@ -21,6 +21,7 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
   close,
 }) => {
   const [link, setLink] = React.useState('')
+  const [caption, setCaption] = React.useState('')
   const [isUploading, setIsUploading] = React.useState(false)
   const { data, isLoading } = useGetIkAuthParams()
 
@@ -35,11 +36,11 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
       e.stopPropagation()
 
       if (link) {
-        editor.commands.setImages([{ src: link }])
+        editor.commands.setImages([{ src: link, caption: caption || undefined }])
         close()
       }
     },
-    [editor, link, close]
+    [editor, link, caption, close]
   )
 
   const handleUploadStart = () => {
@@ -58,7 +59,7 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
     setIsUploading(false)
     const url = uploaded?.url
     if (url) {
-      editor.commands.setImages([{ src: url }])
+      editor.commands.setImages([{ src: url, caption: caption || undefined }])
       toast({
         variant: 'default',
         title: 'Image added to content',
@@ -89,6 +90,19 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
             Submit
           </Button>
         </div>
+      </div>
+
+      <div className='space-y-1'>
+        <Label htmlFor='image-caption'>Image Caption (optional)</Label>
+        <Input
+          id='image-caption'
+          type='text'
+          placeholder='Enter a caption for this image...'
+          value={caption}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setCaption(e.target.value)
+          }
+        />
       </div>
 
       <div className='space-y-3'>
