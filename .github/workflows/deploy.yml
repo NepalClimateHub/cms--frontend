@@ -1,61 +1,56 @@
-name: Deploy NCH CMS
+name: Deploy NCH CMS Frontend
 
 on:
   push:
-    branches: ["main"]
-    
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
-env:
-  BUILD_PATH: "."
+    branches: ['main']
+  pull_request:
+    branches: ['main']
 
 jobs:
   build:
-    name: Build
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
-      - name: Install pnpm
-        run: npm install -g pnpm
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v5
+          node-version: 20
+
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
       - name: Install dependencies
-        run: pnpm install --fix-lockfile
-        working-directory: ${{ env.BUILD_PATH }}
-      - name: Build with Vite
-        env:
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
-          MODE: "production"
-        run: |
-          pnpm run build
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: ${{ env.BUILD_PATH }}/dist
+          name: dist
+          path: dist
 
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     needs: build
-    runs-on: ubuntu-latest
-    name: Deploy
+    runs-on: self-hosted
+
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: ./dist
+
+      - name: Deploy to Web Server Directory
+        run: |
+          echo "Build artifact downloaded. Deploying to runner..."
+          # Deploy to the specified path
+          cp -rv ./dist/* /home/azureuser/cms--frontend/dist
