@@ -32,6 +32,7 @@ const userSchema = z.object({
   role: userRoleSchema,
   userType: userTypeSchema,
   isSuperAdmin: z.boolean(),
+  profilePhotoUrl: z.string().nullable().optional(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 })

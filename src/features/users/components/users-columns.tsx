@@ -1,5 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import LongText from '@/ui/long-text'
+import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
+import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { userTypes, userTypeOptions } from '../data/data'
 import { User } from '../data/schema'
@@ -12,14 +14,27 @@ export const columns: ColumnDef<User>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Username' />
     ),
-    cell: ({ row }) => (
-      <LongText className='max-w-36'>{row.getValue('username')}</LongText>
-    ),
+    cell: ({ row }) => {
+      const { firstName, lastName, profilePhotoUrl } = row.original
+      const fullName = `${firstName} ${lastName}`
+      const initials = getInitialsForAvatar(fullName)
+      const username = row.getValue('username') as string
+
+      return (
+        <div className='flex items-center gap-2'>
+          <Avatar className='h-8 w-8 shrink-0'>
+            <AvatarImage src={profilePhotoUrl || undefined} alt={fullName} />
+            <AvatarFallback className='text-xs'>{initials}</AvatarFallback>
+          </Avatar>
+          <LongText className='max-w-35'>{username}</LongText>
+        </div>
+      )
+    },
     meta: {
       className: cn(
         'drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.1)] dark:drop-shadow-[0_1px_2px_rgb(255_255_255_/_0.1)] lg:drop-shadow-none',
         'bg-background transition-colors duration-200 group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted',
-        'sticky left-0 md:table-cell'
+        'sticky left-0 md:table-cell w-32'
       ),
     },
     enableHiding: false,
@@ -34,7 +49,7 @@ export const columns: ColumnDef<User>[] = [
       const fullName = `${firstName} ${lastName}`
       return <LongText className='max-w-36'>{fullName}</LongText>
     },
-    meta: { className: 'w-36' },
+    meta: { className: 'w-48' },
   },
   {
     accessorKey: 'email',
