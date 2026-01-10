@@ -45,8 +45,8 @@ export function DataTable<TData>({ loading, table }: DataTableProps<TData>) {
                   <TableLoader />
                 </TableCell>
               </TableRow>
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+            ) : table.getRowModel()?.rows?.length ? (
+              table.getRowModel()?.rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useGetProfile } from '@/query/auth/use-auth'
 import ChangePasswordDialog from '@/ui/organisms/dashboard/ChangePasswordDialog'
 import EditProfileDialog from '@/ui/organisms/dashboard/EditProfileDialog'
 import EditProfilePhotoDialog from '@/ui/organisms/dashboard/EditProfilePhotoDialog'
@@ -14,27 +15,43 @@ import {
 } from '@/ui/shadcn/card'
 import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { Separator } from '@/ui/shadcn/separator'
 import {
   CalendarDays,
   Mail,
   Shield,
   User,
   Edit,
-  Settings,
   Key,
   Pencil,
+  Loader2,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 
 export default function UserProfilePage() {
-  const { user } = useAuthStore()
+  const { user: authUser } = useAuthStore()
+  const { data: profileData, isLoading, refetch } = useGetProfile()
+
+  // Use profile data from API if available, otherwise fallback to auth store user
+  const user = profileData || authUser
   const nameInitials = getInitialsForAvatar(user?.fullName || 'User')
   const [isChangePasswordDialogOpen, setIsChangePasswordDialogOpen] =
     useState(false)
   const [isEditProfileDialogOpen, setIsEditProfileDialogOpen] = useState(false)
   const [isEditProfilePhotoDialogOpen, setIsEditProfilePhotoDialogOpen] =
     useState(false)
+
+  if (isLoading) {
+    return (
+      <div className='flex min-h-[400px] items-center justify-center'>
+        <div className='text-center'>
+          <Loader2 className='mx-auto h-12 w-12 animate-spin text-muted-foreground' />
+          <h3 className='mt-2 text-sm font-semibold text-gray-900'>
+            Loading profile...
+          </h3>
+        </div>
+      </div>
+    )
+  }
 
   if (!user) {
     return (
@@ -62,14 +79,24 @@ export default function UserProfilePage() {
             Manage your account settings and view your information.
           </p>
         </div>
-        <Button
-          variant='outline'
-          size='sm'
-          onClick={() => setIsEditProfileDialogOpen(true)}
-        >
-          <Edit className='mr-2 h-4 w-4' />
-          Edit Profile
-        </Button>
+        <div className='flex items-center gap-2'>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => setIsChangePasswordDialogOpen(true)}
+          >
+            <Key className='mr-2 h-4 w-4' />
+            Change Password
+          </Button>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => setIsEditProfileDialogOpen(true)}
+          >
+            <Edit className='mr-2 h-4 w-4' />
+            Edit Profile
+          </Button>
+        </div>
       </div>
 
       <div className='space-y-6'>
@@ -90,7 +117,7 @@ export default function UserProfilePage() {
               <div className='group relative'>
                 <Avatar className='h-20 w-20'>
                   <AvatarImage
-                    src={user.profilePhotoUrl || undefined}
+                    src={(user as any)?.profilePhotoUrl || undefined}
                     alt={user.fullName}
                   />
                   <AvatarFallback className='text-lg'>
@@ -111,20 +138,26 @@ export default function UserProfilePage() {
                   <Pencil className='h-3.5 w-3.5' />
                 </Button>
               </div>
-              <div className='space-y-1'>
-                <h3 className='text-2xl font-semibold'>{user.fullName}</h3>
-                <div className='flex items-center gap-2'>
-                  {user.isSuperAdmin && (
-                    <Badge variant='destructive'>
-                      <Shield className='mr-1 h-3 w-3' />
-                      Super Admin
-                    </Badge>
-                  )}
+              <div className='flex-1 space-y-2'>
+                <div className='space-y-2'>
+                  <h3 className='text-2xl font-semibold'>{user.fullName}</h3>
+                  <div className='flex items-center gap-2'>
+                    {user.isSuperAdmin && (
+                      <Badge variant='destructive'>
+                        <Shield className='mr-1 h-3 w-3' />
+                        Super Admin
+                      </Badge>
+                    )}
+                  </div>
                 </div>
+                {/* Bio below name */}
+                {(profileData as any)?.bio ? (
+                  <p className='whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground'>
+                    {(profileData as any).bio}
+                  </p>
+                ) : null}
               </div>
             </div>
-
-            <Separator />
 
             {/* Contact Information */}
             <div className='grid gap-4 md:grid-cols-2'>
@@ -145,29 +178,6 @@ export default function UserProfilePage() {
                 </div>
               </div>
             </div>
-
-            <Separator />
-          </CardContent>
-        </Card>
-
-        {/* Account Settings Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <Settings className='h-5 w-5' />
-              Account Settings
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button
-              variant='outline'
-              size='sm'
-              className='w-1/3'
-              onClick={() => setIsChangePasswordDialogOpen(true)}
-            >
-              <Key className='mr-2 h-4 w-4' />
-              Change Password
-            </Button>
           </CardContent>
         </Card>
       </div>
@@ -179,6 +189,7 @@ export default function UserProfilePage() {
       <EditProfileDialog
         open={isEditProfileDialogOpen}
         onOpenChange={setIsEditProfileDialogOpen}
+        onProfileUpdated={() => refetch()}
       />
       <EditProfilePhotoDialog
         open={isEditProfilePhotoDialogOpen}

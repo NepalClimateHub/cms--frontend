@@ -332,6 +332,11 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
               />
             )}
         </div>
+        {node.attrs.caption && (
+          <figcaption className='mt-2 text-sm text-muted-foreground italic text-center'>
+            {node.attrs.caption}
+          </figcaption>
+        )}
       </div>
     </NodeViewWrapper>
   )

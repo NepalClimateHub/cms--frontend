@@ -4,16 +4,16 @@ import { useReactTable } from '@tanstack/react-table'
 import { useGetBlogs } from '@/query/blogs/use-blogs'
 import { BlogResponseDto } from '@/query/blogs/use-blogs'
 import { Meta } from '@/schemas/shared'
+import { DataTable } from '@/ui/data-table/data-table'
+import { DataTablePagination } from '@/ui/data-table/data-table-pagination'
+import { DataTableToolbar } from '@/ui/data-table/data-table-toolbar'
 import { Main } from '@/ui/layouts/main'
+import { BoxLoader } from '@/ui/loader'
+import PageHeader from '@/ui/page-header'
 import { Button } from '@/ui/shadcn/button'
 import { PlusIcon } from 'lucide-react'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
-import { DataTable } from '@/ui/data-table/data-table'
-import { DataTablePagination } from '@/ui/data-table/data-table-pagination'
-import { DataTableToolbar } from '@/ui/data-table/data-table-toolbar'
-import { BoxLoader } from '@/ui/loader'
-import PageHeader from '@/ui/page-header'
 import { blogsFilterOptions } from './blogs-filter-options'
 import BlogsFilters from './components/blogs-filters'
 import { useBlogsColumns } from './hooks/use-blog-columns'
@@ -33,7 +33,7 @@ const ListBlog = () => {
     ...filters,
   })
 
-  const blogsData = blogsList?.data as unknown as BlogResponseDto[]
+  const blogsData = (blogsList?.data ?? []) as unknown as BlogResponseDto[]
   const blogsMeta = blogsList?.meta as unknown as Meta
 
   const table = useReactTable({

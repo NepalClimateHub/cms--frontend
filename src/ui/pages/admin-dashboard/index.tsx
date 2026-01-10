@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
-import { useQueries } from '@tanstack/react-query'
+import { useQueries, useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { IconArticle } from '@tabler/icons-react'
+import { emailSubscriptionControllerFindAll } from '@/api'
 import { climateQuotes } from '@/data/climate-quotes'
 import { useAnalyticsAPI } from '@/query/analytics/use-analytics'
 import apiClient from '@/query/apiClient'
@@ -9,7 +10,14 @@ import { Main } from '@/ui/layouts/main'
 import { MultiSelect } from '@/ui/multi-select'
 import { Card, CardTitle } from '@/ui/shadcn/card'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { Calendar, Users, Quote, Briefcase, Newspaper } from 'lucide-react'
+import {
+  Calendar,
+  Users,
+  Quote,
+  Briefcase,
+  Newspaper,
+  Mail,
+} from 'lucide-react'
 import {
   BarChart,
   Bar,
@@ -23,6 +31,22 @@ import {
 export default function AdminDashboardHomePage() {
   const { data: analyticsData, isLoading } =
     useAnalyticsAPI().getAnalyticsForAdmin
+
+  // Fetch subscribed email count
+  const { data: subscribedEmailsData } = useQuery({
+    queryKey: ['subscribedEmailsCount'],
+    queryFn: async () => {
+      const res = await emailSubscriptionControllerFindAll()
+      const data =
+        res &&
+        typeof res === 'object' &&
+        'data' in res &&
+        Array.isArray((res as unknown as { data: unknown }).data)
+          ? (res as { data: Array<{ id?: string; email?: string }> }).data
+          : []
+      return data.length
+    },
+  })
 
   const currentYear = new Date().getFullYear()
   const [selectedYears, setSelectedYears] = useState<string[]>([
@@ -198,7 +222,7 @@ export default function AdminDashboardHomePage() {
 
         <div className='space-y-8'>
           {/* Analytics Cards */}
-          <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5'>
+          <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6'>
             {Object.entries(analyticsData.data).map(([key, value]) => (
               <Link
                 key={key}
@@ -227,6 +251,24 @@ export default function AdminDashboardHomePage() {
                 </Card>
               </Link>
             ))}
+            {/* Subscribed Emails Card */}
+            <Link to='/subscribed-emails' className='group'>
+              <Card className='border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-gray-300 hover:shadow-md'>
+                <div className='space-y-2'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50 text-amber-600'>
+                    <Mail className='h-4 w-4' />
+                  </div>
+                  <div>
+                    <p className='text-xs font-medium uppercase tracking-wide text-gray-500'>
+                      Subscribed Emails
+                    </p>
+                    <p className='text-xl font-semibold text-gray-900'>
+                      {subscribedEmailsData?.toLocaleString() ?? '0'}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
           </div>
 
           {/* User Overview Section */}
