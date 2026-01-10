@@ -25,7 +25,7 @@ export const Route = createFileRoute('/_authenticated')({
 
 function RouteComponent() {
   const defaultOpen = Cookies.get('sidebar:state') !== 'false'
-  const { accessToken, setUser } = useAuthStore()
+  const { accessToken, setUser, user: authUser } = useAuthStore()
 
   const { data: userData, isLoading: isLoadingProfile } =
     useGetProfile(!!accessToken)
@@ -54,7 +54,14 @@ function RouteComponent() {
     }
   }, [userData, setUser])
 
-  if (isLoadingProfile || !userData) {
+  // Show loader if profile is loading OR if user data doesn't match auth store user
+  // This prevents showing the wrong menu when switching users
+  // Wait until userData exists AND either:
+  // 1. No authUser exists yet (first load), OR
+  // 2. authUser matches userData (user is set correctly)
+  const isUserDataReady = userData && (!authUser || authUser.id === userData.id)
+
+  if (isLoadingProfile || !userData || !isUserDataReady) {
     return <BoxLoader />
   }
 
