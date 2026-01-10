@@ -15,7 +15,6 @@ import {
 } from '@/ui/shadcn/card'
 import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { Separator } from '@/ui/shadcn/separator'
 import {
   CalendarDays,
   Mail,
