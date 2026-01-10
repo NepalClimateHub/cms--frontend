@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import apiClient from '@/query/apiClient'
 import { useGetProfile } from '@/query/auth/use-auth'
+import ImageUpload from '@/ui/image-upload'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
@@ -52,6 +53,8 @@ export default function EditProfileDialog({
 }: EditProfileDialogProps) {
   const { user, setUser } = useAuthStore()
   const { data: profileData, refetch: refetchProfile } = useGetProfile()
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null)
+  const [profilePhotoId, setProfilePhotoId] = useState<string | null>(null)
 
   const form = useForm<EditProfileFormData>({
     resolver: zodResolver(editProfileSchema),
@@ -60,6 +63,17 @@ export default function EditProfileDialog({
       bio: (profileData as any)?.bio || (user as any)?.bio || '',
     },
   })
+
+  // Reset profile photo when dialog opens
+  useEffect(() => {
+    if (open && profileData) {
+      setProfilePhotoUrl((profileData as any)?.profilePhotoUrl || null)
+      setProfilePhotoId((profileData as any)?.profilePhotoId || null)
+    } else if (open && user) {
+      setProfilePhotoUrl(user?.profilePhotoUrl || null)
+      setProfilePhotoId(user?.profilePhotoId || null)
+    }
+  }, [open, profileData, user])
 
   // Reset form when dialog opens or profile data changes
   useEffect(() => {
@@ -87,11 +101,20 @@ export default function EditProfileDialog({
     }
 
     try {
-      // Use PATCH /me endpoint to update current user's profile
-      await apiClient.patch('/api/v1/users/me', {
+      // Prepare update payload
+      const updatePayload: any = {
         name: data.name,
         bio: data.bio || undefined,
-      })
+      }
+
+      // Include profile photo if it was changed
+      if (profilePhotoId && profilePhotoUrl) {
+        updatePayload.profilePhotoUrl = profilePhotoUrl
+        updatePayload.profilePhotoId = profilePhotoId
+      }
+
+      // Use PATCH /me endpoint to update current user's profile
+      await apiClient.patch('/api/v1/users/me', updatePayload)
       // Refetch profile to get updated user data
       const profileData = await refetchProfile()
       if (profileData.data) {
@@ -213,6 +236,23 @@ export default function EditProfileDialog({
                 </FormItem>
               )}
             />
+
+            {/* Profile Photo Upload */}
+            <div className='space-y-2'>
+              <FormLabel className='text-sm font-medium text-gray-700'>
+                Profile Photo
+              </FormLabel>
+              <ImageUpload
+                label='Upload profile photo'
+                handleImage={(imageId, imageURL) => {
+                  setProfilePhotoId(imageId)
+                  setProfilePhotoUrl(imageURL)
+                }}
+                initialImageId={profilePhotoId}
+                initialImageUrl={profilePhotoUrl}
+                inputId='edit-profile-photo-upload'
+              />
+            </div>
 
             <div className='flex justify-end space-x-3 pt-6'>
               <Button

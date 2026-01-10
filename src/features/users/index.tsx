@@ -83,6 +83,7 @@ const mapUserOutputToUser = (user: UserOutput): User => {
     role,
     userType: user.userType,
     isSuperAdmin: user.isSuperAdmin,
+    profilePhotoUrl: (user as any)?.profilePhotoUrl || null,
     createdAt: new Date(user.createdAt),
     updatedAt: new Date(user.updatedAt),
   }
