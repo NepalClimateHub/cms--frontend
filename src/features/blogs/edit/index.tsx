@@ -21,7 +21,7 @@ const EditBlog = () => {
   const [isFormReady, setIsFormReady] = useState(false)
   const hasReset = useRef(false)
 
-  const { data: tags, isLoading: isLoadingTags } = useGetTagsByType('EVENT')
+  const { data: tags, isLoading: isLoadingTags } = useGetTagsByType('BLOG')
   const blogMutation = useUpdateBlog()
 
   const form = useForm<BlogFormValues>({

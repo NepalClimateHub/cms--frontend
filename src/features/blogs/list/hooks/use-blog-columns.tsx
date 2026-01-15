@@ -97,26 +97,11 @@ export const useBlogsColumns = () => {
         }
         const config = statusConfig[status] || statusConfig.DRAFT
         return (
-          <div className='min-w-[100px] max-w-[100px]'>
+          <div className='min-w-[140px] max-w-[140px]'>
             <Badge className={config.className}>{config.label}</Badge>
           </div>
         )
       },
-    },
-    {
-      accessorKey: 'isFeatured',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Featured' />
-      ),
-      cell: ({ row }) => (
-        <div className='min-w-[100px] max-w-[100px]'>
-          {row.getValue('isFeatured') ? (
-            <Badge className='bg-purple-500'>Featured</Badge>
-          ) : (
-            <Badge variant='secondary'>Regular</Badge>
-          )}
-        </div>
-      ),
     },
     {
       id: 'actions',
