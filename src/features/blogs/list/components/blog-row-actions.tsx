@@ -216,7 +216,44 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
                   {row.original.isFeatured ? 'Yes' : 'No'}
                 </p>
               </div>
+              {row.original.isTopRead && (
+                <div>
+                  <h3 className='text-sm font-semibold text-muted-foreground'>
+                    Top Read
+                  </h3>
+                  <p className='text-base'>
+                    {row.original.isTopRead ? 'Yes' : 'No'}
+                  </p>
+                </div>
+              )}
             </div>
+
+            {/* Tags Section */}
+            {row.original.tags &&
+              Array.isArray(row.original.tags) &&
+              row.original.tags.length > 0 && (
+                <>
+                  <Separator />
+                  <div>
+                    <h3 className='mb-2 text-sm font-semibold text-muted-foreground'>
+                      Tags
+                    </h3>
+                    <div className='flex flex-wrap gap-2'>
+                      {row.original.tags.map(
+                        (tag: { id: string; tag: string }) => (
+                          <Badge
+                            key={tag.id}
+                            variant='outline'
+                            className='text-sm'
+                          >
+                            {tag.tag}
+                          </Badge>
+                        )
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
 
             {/* Excerpt Section */}
             {row.original.excerpt && (

@@ -21,6 +21,7 @@ export const blogSchema = z.object({
   publishedDate: z.date().optional(),
   isDraft: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
+  isTopRead: z.boolean().default(false),
   bannerImageUrl: z.string().optional(),
   bannerImageId: z.string().optional(),
   tagIds: z.array(z.string()).optional(),

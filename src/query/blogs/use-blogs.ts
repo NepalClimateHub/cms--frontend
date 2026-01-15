@@ -26,6 +26,7 @@ export interface BlogResponseDto {
   publishedDate?: string
   isDraft: boolean
   isFeatured: boolean
+  isTopRead?: boolean
   approvedByAdmin: boolean
   status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED'
   bannerImageUrl?: string
