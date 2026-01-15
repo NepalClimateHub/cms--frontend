@@ -6,6 +6,7 @@ import {
   Newspaper,
   PartyPopper,
   User,
+  MessageCircle,
 } from 'lucide-react'
 import { NavGroup } from '../types'
 
@@ -57,6 +58,11 @@ export const superAdminSidebarData: NavGroup[] = [
         url: '/subscribed-emails',
         icon: Mail,
       },
+      {
+        title: 'Ask AI',
+        url: '/ask-ai',
+        icon: MessageCircle,
+      },
     ],
   },
 ]
@@ -75,9 +81,9 @@ export const generalSidebarData: NavGroup[] = [
         icon: Newspaper,
       },
       {
-        title: 'Profile',
-        url: '/dashboard/profile',
-        icon: User,
+        title: 'Ask AI',
+        url: '/ask-ai',
+        icon: MessageCircle,
       },
     ],
   },

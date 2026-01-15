@@ -22,6 +22,7 @@ import { Route as authSignInImport } from './routes/(auth)/sign-in'
 import { Route as auth500Import } from './routes/(auth)/500'
 import { Route as PublicLoginIndexImport } from './routes/_public/login/index'
 import { Route as AuthenticatedSubscribedEmailsIndexImport } from './routes/_authenticated/subscribed-emails/index'
+import { Route as AuthenticatedAskAiIndexImport } from './routes/_authenticated/ask-ai/index'
 import { Route as AuthenticatedDashboardProfileImport } from './routes/_authenticated/dashboard/profile'
 import { Route as AuthenticatedBlogListImport } from './routes/_authenticated/blog/list'
 import { Route as AuthenticatedBlogAddImport } from './routes/_authenticated/blog/add'
@@ -254,6 +255,12 @@ const AuthenticatedSubscribedEmailsIndexRoute =
     path: '/subscribed-emails/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+
+const AuthenticatedAskAiIndexRoute = AuthenticatedAskAiIndexImport.update({
+  id: '/ask-ai/',
+  path: '/ask-ai/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 const AuthenticatedSettingsNotificationsLazyRoute =
   AuthenticatedSettingsNotificationsLazyImport.update({
@@ -590,6 +597,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsNotificationsLazyImport
       parentRoute: typeof AuthenticatedSettingsRouteLazyImport
     }
+    '/_authenticated/ask-ai/': {
+      id: '/_authenticated/ask-ai/'
+      path: '/ask-ai'
+      fullPath: '/ask-ai'
+      preLoaderRoute: typeof AuthenticatedAskAiIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/subscribed-emails/': {
       id: '/_authenticated/subscribed-emails/'
       path: '/subscribed-emails'
@@ -776,6 +790,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBlogAddRoute: typeof AuthenticatedBlogAddRoute
   AuthenticatedBlogListRoute: typeof AuthenticatedBlogListRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
+  AuthenticatedAskAiIndexRoute: typeof AuthenticatedAskAiIndexRoute
   AuthenticatedSubscribedEmailsIndexRoute: typeof AuthenticatedSubscribedEmailsIndexRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedTagsIndexLazyRoute: typeof AuthenticatedTagsIndexLazyRoute
@@ -806,6 +821,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBlogAddRoute: AuthenticatedBlogAddRoute,
   AuthenticatedBlogListRoute: AuthenticatedBlogListRoute,
   AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
+  AuthenticatedAskAiIndexRoute: AuthenticatedAskAiIndexRoute,
   AuthenticatedSubscribedEmailsIndexRoute:
     AuthenticatedSubscribedEmailsIndexRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
@@ -870,6 +886,7 @@ export interface FileRoutesByFullPath {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/ask-ai': typeof AuthenticatedAskAiIndexRoute
   '/subscribed-emails': typeof AuthenticatedSubscribedEmailsIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
@@ -914,6 +931,7 @@ export interface FileRoutesByTo {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/ask-ai': typeof AuthenticatedAskAiIndexRoute
   '/subscribed-emails': typeof AuthenticatedSubscribedEmailsIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
@@ -962,6 +980,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/_authenticated/ask-ai/': typeof AuthenticatedAskAiIndexRoute
   '/_authenticated/subscribed-emails/': typeof AuthenticatedSubscribedEmailsIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
@@ -1009,6 +1028,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/ask-ai'
     | '/subscribed-emails'
     | '/login'
     | '/help-center'
@@ -1052,6 +1072,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/ask-ai'
     | '/subscribed-emails'
     | '/login'
     | '/help-center'
@@ -1098,6 +1119,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
+    | '/_authenticated/ask-ai/'
     | '/_authenticated/subscribed-emails/'
     | '/_public/login/'
     | '/_authenticated/help-center/'
@@ -1186,6 +1208,7 @@ export const routeTree = rootRoute
         "/_authenticated/blog/add",
         "/_authenticated/blog/list",
         "/_authenticated/dashboard/profile",
+        "/_authenticated/ask-ai/",
         "/_authenticated/subscribed-emails/",
         "/_authenticated/help-center/",
         "/_authenticated/tags/",
@@ -1293,6 +1316,10 @@ export const routeTree = rootRoute
     "/_authenticated/settings/notifications": {
       "filePath": "_authenticated/settings/notifications.lazy.tsx",
       "parent": "/_authenticated/settings"
+    },
+    "/_authenticated/ask-ai/": {
+      "filePath": "_authenticated/ask-ai/index.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/subscribed-emails/": {
       "filePath": "_authenticated/subscribed-emails/index.tsx",
