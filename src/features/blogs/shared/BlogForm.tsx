@@ -153,28 +153,6 @@ const BlogForm: FC<Props> = ({
 
             <FormField
               control={form.control}
-              name='readingTime'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Reading Time</FormLabel>
-                  <FormDescription>
-                    Estimated reading time (e.g., "5 min read")
-                  </FormDescription>
-                  <FormControl>
-                    <Input
-                      placeholder='Enter reading time'
-                      className='w-full'
-                      {...field}
-                      value={field.value || ''}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name='publishedDate'
               render={({ field }) => (
                 <FormItem>
@@ -187,29 +165,6 @@ const BlogForm: FC<Props> = ({
                       {...field}
                       value={field.value ? new Date(field.value) : undefined}
                       onChange={(date) => field.onChange(date)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='tagIds'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tags</FormLabel>
-                  <FormDescription>
-                    Select relevant tags for this blog
-                  </FormDescription>
-                  <FormControl>
-                    {/* @ts-expect-error - MultiSelect component has type mismatch */}
-                    <MultiSelect
-                      options={tagsOptions}
-                      value={field.value || []}
-                      onChange={field.onChange}
-                      placeholder='Select tags'
                     />
                   </FormControl>
                   <FormMessage />
@@ -269,6 +224,38 @@ const BlogForm: FC<Props> = ({
                       autofocus={true}
                       editable={true}
                       editorClassName='focus:outline-none'
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Tags</CardTitle>
+          </CardHeader>
+          <CardContent className='space-y-6'>
+            <FormField
+              control={form.control}
+              name='tagIds'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Blog Tags</FormLabel>
+                  <FormDescription>
+                    Add relevant tags to categorize the blog
+                  </FormDescription>
+                  <FormControl>
+                    <MultiSelect
+                      defaultValue={field.value}
+                      options={tagsOptions ?? []}
+                      onValueChange={field.onChange}
+                      placeholder='Select tags'
+                      className='w-full'
+                      disabled={isLoading}
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -342,6 +329,29 @@ const BlogForm: FC<Props> = ({
                         </FormLabel>
                         <FormDescription>
                           Mark this blog as featured
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {isAdmin && (
+                <FormField
+                  control={form.control}
+                  name='isTopRead'
+                  render={({ field }) => (
+                    <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+                      <div className='space-y-0.5'>
+                        <FormLabel className='text-base'>Top Read</FormLabel>
+                        <FormDescription>
+                          Mark this blog as a top read
                         </FormDescription>
                       </div>
                       <FormControl>
