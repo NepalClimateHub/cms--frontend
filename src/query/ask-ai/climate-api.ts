@@ -1,9 +1,9 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAccessToken } from '@/stores/authStore';
 
 const RAG_API_URL = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000';
 
-//  Types
+// ============ Types ============
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -29,13 +29,34 @@ export interface ChatResponse {
   metadata?: Record<string, unknown>;
 }
 
+export interface ChatSession {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChatHistoryResponse {
+  user_id: string;
+  conversations: ChatSession[];
+}
+
+export interface ChatSessionMessagesResponse {
+  session_id: string;
+  messages: Array<{
+    role: string;
+    content: string;
+    created_at: string;
+  }>;
+}
+
 export interface HealthResponse {
   status: string;
   pipeline_initialized: boolean;
   vector_store_loaded: boolean;
 }
 
-// API Client 
+// ============ API Client ============
 
 const ragFetch = async <T>(
   endpoint: string,
@@ -66,15 +87,21 @@ const ragFetch = async <T>(
   return response.json();
 };
 
-// React Query Hooks
+// ============ React Query Hooks ============
 
 export const useClimateChat = () => {
+  const queryClient = useQueryClient();
+  
   return useMutation({
     mutationFn: (request: ChatRequest) =>
       ragFetch<ChatResponse>('/chat', {
         method: 'POST',
         body: JSON.stringify(request),
       }),
+    onSuccess: () => {
+      // Invalidate chat history so list updates with new session/timestamp
+      queryClient.invalidateQueries({ queryKey: ['chat-history'] });
+    }
   });
 };
 
@@ -97,15 +124,37 @@ export const useClimateHealth = () => {
   });
 };
 
-export const useChatHistory = (conversationId?: string) => {
+export const useChatHistory = () => {
   const token = getAccessToken();
 
   return useQuery({
-    queryKey: ['chat-history', conversationId],
-    queryFn: () =>
-      ragFetch<{ conversations: ChatMessage[] }>(
-        `/chat/history${conversationId ? `?conversation_id=${conversationId}` : ''}`
-      ),
+    queryKey: ['chat-history'],
+    queryFn: () => ragFetch<ChatHistoryResponse>('/chat/history'),
     enabled: !!token,
+  });
+};
+
+export const useChatSession = (sessionId?: string) => {
+  const token = getAccessToken();
+
+  return useQuery({
+    queryKey: ['chat-session', sessionId],
+    queryFn: () =>
+      ragFetch<ChatSessionMessagesResponse>(`/chat/history/${sessionId}`),
+    enabled: !!token && !!sessionId,
+  });
+};
+
+export const useDeleteSession = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (sessionId: string) =>
+      ragFetch<{ message: string }>(`/chat/history/${sessionId}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chat-history'] });
+    },
   });
 };
