@@ -17,6 +17,9 @@ import {
   Briefcase,
   Newspaper,
   Mail,
+  Plus,
+  FileText,
+  Building2,
 } from 'lucide-react'
 import {
   BarChart,
@@ -359,6 +362,88 @@ export default function AdminDashboardHomePage() {
               </div>
             </Card>
           </div>
+
+          {/* Quick Actions Section */}
+          <Card className='border border-gray-200 bg-white p-6 shadow-sm'>
+            <CardTitle className='mb-4 text-lg font-medium text-gray-900'>
+              Quick Actions
+            </CardTitle>
+            <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5'>
+              <Link
+                to='/events/add'
+                className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
+              >
+                <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
+                  <Calendar className='h-5 w-5' />
+                </div>
+                <div className='flex-1'>
+                  <p className='text-sm font-medium text-gray-900'>Add Event</p>
+                  <p className='text-xs text-gray-500'>Create new event</p>
+                </div>
+                <Plus className='h-4 w-4 text-gray-400 group-hover:text-blue-600' />
+              </Link>
+
+              <Link
+                to='/opportunities/add'
+                className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-md'
+              >
+                <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100'>
+                  <Briefcase className='h-5 w-5' />
+                </div>
+                <div className='flex-1'>
+                  <p className='text-sm font-medium text-gray-900'>
+                    Add Opportunity
+                  </p>
+                  <p className='text-xs text-gray-500'>Post new opportunity</p>
+                </div>
+                <Plus className='h-4 w-4 text-gray-400 group-hover:text-emerald-600' />
+              </Link>
+
+              <Link
+                to='/blog/add'
+                className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:shadow-md'
+              >
+                <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-red-600 transition-colors group-hover:bg-red-100'>
+                  <FileText className='h-5 w-5' />
+                </div>
+                <div className='flex-1'>
+                  <p className='text-sm font-medium text-gray-900'>Add Blog</p>
+                  <p className='text-xs text-gray-500'>Create new blog post</p>
+                </div>
+                <Plus className='h-4 w-4 text-gray-400 group-hover:text-red-600' />
+              </Link>
+
+              <Link
+                to='/news/add'
+                className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
+              >
+                <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
+                  <Newspaper className='h-5 w-5' />
+                </div>
+                <div className='flex-1'>
+                  <p className='text-sm font-medium text-gray-900'>Add News</p>
+                  <p className='text-xs text-gray-500'>Add news article</p>
+                </div>
+                <Plus className='h-4 w-4 text-gray-400 group-hover:text-blue-600' />
+              </Link>
+
+              <Link
+                to='/organizations/add'
+                className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-md'
+              >
+                <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-100'>
+                  <Building2 className='h-5 w-5' />
+                </div>
+                <div className='flex-1'>
+                  <p className='text-sm font-medium text-gray-900'>
+                    Add Organization
+                  </p>
+                  <p className='text-xs text-gray-500'>Register organization</p>
+                </div>
+                <Plus className='h-4 w-4 text-gray-400 group-hover:text-purple-600' />
+              </Link>
+            </div>
+          </Card>
         </div>
       </div>
     </Main>
