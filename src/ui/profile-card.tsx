@@ -24,7 +24,7 @@ export function ProfileCard() {
         <SidebarMenuButton
           size='lg'
           onClick={handleProfileClick}
-          className='group cursor-pointer bg-sidebar-accent text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+          className='group/profile-card cursor-pointer bg-sidebar-accent text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
         >
           <Avatar className='h-8 w-8 rounded-lg border border-border/40'>
             <AvatarImage
@@ -40,10 +40,10 @@ export function ProfileCard() {
               <span className='truncate font-semibold'>
                 {user?.isSuperAdmin ? 'Super Admin' : user?.organization?.name}
               </span>
-              <span className='truncate text-xs text-muted-foreground group-hover:hidden'>
+              <span className='truncate text-xs text-muted-foreground group-hover/profile-card:hidden'>
                 {user?.email}
               </span>
-              <div className='hidden items-center gap-2 text-xs group-hover:flex'>
+              <div className='hidden items-center gap-2 text-xs group-hover/profile-card:flex'>
                 <span>View Account</span>
                 <ChevronRight className='h-4 w-4' />
               </div>

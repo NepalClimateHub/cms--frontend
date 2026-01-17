@@ -23,6 +23,7 @@ export const OPPORTUNITY_COST = [
 export const OPPORTUNITY_TYPE = [
   { value: 'JOB', label: 'Job' },
   { value: 'INTERNSHIP', label: 'Internship' },
+  { value: 'EXTERNSHIP', label: 'Externship' },
   { value: 'FELLOWSHIP', label: 'Fellowship' },
   { value: 'GRANT', label: 'Grant' },
   { value: 'SCHOLARSHIP', label: 'Scholarship' },
