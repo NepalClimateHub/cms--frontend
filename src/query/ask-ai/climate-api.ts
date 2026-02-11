@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAccessToken } from '@/stores/authStore';
 
+// All API calls go through CMS Backend (API Gateway)
+const CMS_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 const RAG_API_URL = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000';
 
-// ============ Types ============
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -27,13 +28,14 @@ export interface ChatResponse {
   }>;
   user_id?: string;
   metadata?: Record<string, unknown>;
+  createdAt?: string; // ISO timestamp from backend
 }
 
 export interface ChatSession {
   id: string;
   title: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ChatHistoryResponse {
@@ -46,7 +48,7 @@ export interface ChatSessionMessagesResponse {
   messages: Array<{
     role: string;
     content: string;
-    created_at: string;
+    createdAt: string;
   }>;
 }
 
@@ -56,9 +58,9 @@ export interface HealthResponse {
   vector_store_loaded: boolean;
 }
 
-// ============ API Client ============
+// ============ API Client (CMS Backend) ============
 
-const ragFetch = async <T>(
+const cmsFetch = async <T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> => {
@@ -68,7 +70,7 @@ const ragFetch = async <T>(
     throw new Error('Not authenticated');
   }
 
-  const response = await fetch(`${RAG_API_URL}${endpoint}`, {
+  const response = await fetch(`${CMS_API_URL}/api/v1${endpoint}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -84,7 +86,9 @@ const ragFetch = async <T>(
     throw new Error(`API error: ${response.statusText}`);
   }
 
-  return response.json();
+  const json = await response.json();
+  // CMS Backend wraps responses in { data: ..., meta: {} }
+  return json.data !== undefined ? json.data : json;
 };
 
 // ============ React Query Hooks ============
@@ -94,7 +98,7 @@ export const useClimateChat = () => {
   
   return useMutation({
     mutationFn: (request: ChatRequest) =>
-      ragFetch<ChatResponse>('/chat', {
+      cmsFetch<ChatResponse>('/ai-assistant/chat', {
         method: 'POST',
         body: JSON.stringify(request),
       }),
@@ -108,7 +112,7 @@ export const useClimateChat = () => {
 export const useClimateQuery = () => {
   return useMutation({
     mutationFn: (query: string) =>
-      ragFetch<ChatResponse>('/query', {
+      cmsFetch<ChatResponse>('/ai-assistant/chat', {
         method: 'POST',
         body: JSON.stringify({ query, top_k: 5 }),
       }),
@@ -129,7 +133,13 @@ export const useChatHistory = () => {
 
   return useQuery({
     queryKey: ['chat-history'],
-    queryFn: () => ragFetch<ChatHistoryResponse>('/chat/history'),
+    queryFn: async () => {
+      const sessions = await cmsFetch<ChatSession[]>('/ai-assistant/sessions');
+      return {
+        user_id: '',
+        conversations: sessions,
+      } as ChatHistoryResponse;
+    },
     enabled: !!token,
   });
 };
@@ -139,8 +149,13 @@ export const useChatSession = (sessionId?: string) => {
 
   return useQuery({
     queryKey: ['chat-session', sessionId],
-    queryFn: () =>
-      ragFetch<ChatSessionMessagesResponse>(`/chat/history/${sessionId}`),
+    queryFn: async () => {
+      const messages = await cmsFetch<any[]>(`/ai-assistant/sessions/${sessionId}/messages`);
+      return {
+        session_id: sessionId,
+        messages,
+      } as ChatSessionMessagesResponse;
+    },
     enabled: !!token && !!sessionId,
   });
 };
@@ -150,7 +165,7 @@ export const useDeleteSession = () => {
 
   return useMutation({
     mutationFn: (sessionId: string) =>
-      ragFetch<{ message: string }>(`/chat/history/${sessionId}`, {
+      cmsFetch<{ message: string }>(`/ai-assistant/sessions/${sessionId}`, {
         method: 'DELETE',
       }),
     onSuccess: () => {
@@ -158,3 +173,4 @@ export const useDeleteSession = () => {
     },
   });
 };
+
