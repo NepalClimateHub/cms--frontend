@@ -41,7 +41,7 @@ function AskAI() {
         id: crypto.randomUUID(),
         role: msg.role as 'user' | 'assistant',
         content: msg.content,
-        timestamp: new Date(msg.created_at),
+        timestamp: new Date(msg.createdAt),
       }))
       setMessages(loadedMessages)
     }
