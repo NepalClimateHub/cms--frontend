@@ -4,7 +4,7 @@ import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
 import { Button } from '@/ui/shadcn/button'
 import { Textarea } from '@/ui/shadcn/textarea'
-import { Send, Loader2, AlertCircle, CheckCircle2, Paperclip } from 'lucide-react'
+import { Send, Loader2, AlertCircle, CheckCircle2, Paperclip, ChevronRight, FileText } from 'lucide-react'
 import { useClimateChat, useClimateHealth, useChatSession } from '@/query/ask-ai/climate-api'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { ChatHistoryMenu } from '@/features/ask-ai/components/ChatHistoryMenu'
@@ -236,11 +236,89 @@ function AskAI() {
 }
 
 
-function ChatMessage({ message }: { message: Message }) {
-  const isUser = message.role === 'user'
+// Strip inline "Sources:" section from AI response text and extract source names
+function parseContentAndSources(content: string, existingSources?: Array<{ source?: string; page?: number }>) {
+  // Match "Sources:" or "**Sources:**" followed by a list at the end of content
+  const sourcesRegex = /\n*(?:\*{0,2}Sources:?\*{0,2})\s*\n([\s\S]*?)$/i
+  const match = content.match(sourcesRegex)
+
+  let cleanedContent = content
+  let parsedSources: Array<{ source?: string; page?: number }> = existingSources || []
+
+  if (match) {
+    cleanedContent = content.slice(0, match.index).trimEnd()
+
+    // If no structured sources from API, parse them from the text
+    if (!parsedSources || parsedSources.length === 0) {
+      const lines = match[1].split('\n').filter((l) => l.trim())
+      parsedSources = lines.map((line) => {
+        const cleaned = line.replace(/^[\s\-\*•]+/, '').trim()
+        return { source: cleaned }
+      })
+    }
+  }
+
+  return { cleanedContent, sources: parsedSources }
+}
+
+function SourcesCollapsible({ sources }: { sources: Array<{ source?: string; page?: number }> }) {
+  const [isOpen, setIsOpen] = useState(true)
 
   return (
-    <div className={cn('flex', isUser ? 'justify-end' : 'justify-start')}>
+    <div className='mt-2 max-w-[80%]'>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className='flex items-center gap-2 w-full px-4 py-2.5 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/30 hover:bg-blue-100/70 dark:hover:bg-blue-950/50 transition-all duration-200 group'
+      >
+        <div className='w-1 h-5 rounded-full bg-blue-500 flex-shrink-0' />
+        <span className='text-sm font-medium text-blue-700 dark:text-blue-300'>
+          Sources ({sources.length})
+        </span>
+        <ChevronRight
+          className={cn(
+            'h-4 w-4 text-blue-500 transition-transform duration-200',
+            isOpen && 'rotate-90'
+          )}
+        />
+      </button>
+
+      <div
+        className={cn(
+          'overflow-hidden transition-all duration-300 ease-in-out',
+          isOpen ? 'max-h-[500px] opacity-100 mt-2' : 'max-h-0 opacity-0'
+        )}
+      >
+        <div className='border-l-2 border-blue-400 dark:border-blue-600 pl-4 space-y-2'>
+          {sources.map((source, idx) => (
+            <div
+              key={idx}
+              className='flex items-start gap-2 text-sm text-muted-foreground py-1.5'
+            >
+              <FileText className='h-4 w-4 mt-0.5 text-blue-500 flex-shrink-0' />
+              <span>
+                {source.source || 'Unknown source'}
+                {source.page != null && (
+                  <span className='ml-1 text-xs text-muted-foreground/70'>
+                    — Page {source.page}
+                  </span>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ChatMessage({ message }: { message: Message }) {
+  const isUser = message.role === 'user'
+  const { cleanedContent, sources } = isUser
+    ? { cleanedContent: message.content, sources: [] }
+    : parseContentAndSources(message.content, message.sources)
+
+  return (
+    <div className={cn('flex flex-col', isUser ? 'items-end' : 'items-start')}>
       <div
         className={cn(
           'max-w-[80%] rounded-lg p-4',
@@ -265,30 +343,22 @@ function ChatMessage({ message }: { message: Message }) {
                         h3: ({node, ...props}) => <h3 {...props} className="text-sm font-bold mb-1" />,
                     }}
                 >
-                    {message.content}
+                    {cleanedContent}
                 </ReactMarkdown>
             )}
         </div>
 
-        {/* Sources */}
-        {message.sources && message.sources.length > 0 && (
-          <div className='mt-3 border-t border-border/50 pt-3'>
-            <p className='mb-1 text-xs font-medium opacity-70'>Sources:</p>
-            <ul className='space-y-1 text-xs opacity-60'>
-              {message.sources.map((source, idx) => (
-                <li key={idx}>
-                  📄 {source.source || 'Unknown'}
-                  {source.page && ` (Page ${source.page})`}
-                </li>
-              ))}
-            </ul>
-          </div>
+        {!isUser && (
+          <p className='mt-2 text-xs opacity-50'>
+            {message.timestamp.toLocaleTimeString()}
+          </p>
         )}
-
-        <p className='mt-2 text-xs opacity-50'>
-          {message.timestamp.toLocaleTimeString()}
-        </p>
       </div>
+
+      {/* Sources — outside the bubble */}
+      {!isUser && sources && sources.length > 0 && (
+        <SourcesCollapsible sources={sources} />
+      )}
     </div>
   )
 }
