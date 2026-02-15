@@ -1,8 +1,8 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import ListOrganizations from '@/features/organizations/list'
+import Users from '@/features/users'
 import { getRoleFromToken } from '@/utils/jwt.util'
 
-export const Route = createFileRoute('/_authenticated/organizations/list/')({
+export const Route = createFileRoute('/_authenticated/users/')({
   beforeLoad: () => {
     const role = getRoleFromToken()
     if (role !== 'ADMIN') {
@@ -11,5 +11,5 @@ export const Route = createFileRoute('/_authenticated/organizations/list/')({
       })
     }
   },
-  component: ListOrganizations,
+  component: Users,
 })

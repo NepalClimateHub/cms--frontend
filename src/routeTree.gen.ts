@@ -21,6 +21,7 @@ import { Route as authVerifyEmailImport } from './routes/(auth)/verify-email'
 import { Route as authSignInImport } from './routes/(auth)/sign-in'
 import { Route as auth500Import } from './routes/(auth)/500'
 import { Route as PublicLoginIndexImport } from './routes/_public/login/index'
+import { Route as AuthenticatedUsersIndexImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedSubscribedEmailsIndexImport } from './routes/_authenticated/subscribed-emails/index'
 import { Route as AuthenticatedSetupIndexImport } from './routes/_authenticated/setup/index'
 import { Route as AuthenticatedResourcesIndexImport } from './routes/_authenticated/resources/index'
@@ -61,9 +62,6 @@ const authForgotPasswordLazyImport = createFileRoute(
 )()
 const AuthenticatedSettingsRouteLazyImport = createFileRoute(
   '/_authenticated/settings',
-)()
-const AuthenticatedUsersIndexLazyImport = createFileRoute(
-  '/_authenticated/users/',
 )()
 const AuthenticatedTasksIndexLazyImport = createFileRoute(
   '/_authenticated/tasks/',
@@ -196,15 +194,6 @@ const auth500Route = auth500Import.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthenticatedUsersIndexLazyRoute =
-  AuthenticatedUsersIndexLazyImport.update({
-    id: '/users/',
-    path: '/users/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/users/index.lazy').then((d) => d.Route),
-  )
-
 const AuthenticatedTasksIndexLazyRoute =
   AuthenticatedTasksIndexLazyImport.update({
     id: '/tasks/',
@@ -239,6 +228,14 @@ const PublicLoginIndexRoute = PublicLoginIndexImport.update({
   path: '/login/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+
+const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any).lazy(() =>
+  import('./routes/_authenticated/users/index.lazy').then((d) => d.Route),
+)
 
 const AuthenticatedSubscribedEmailsIndexRoute =
   AuthenticatedSubscribedEmailsIndexImport.update({
@@ -687,6 +684,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSubscribedEmailsIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/users/': {
+      id: '/_authenticated/users/'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthenticatedUsersIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_public/login/': {
       id: '/_public/login/'
       path: '/login'
@@ -713,13 +717,6 @@ declare module '@tanstack/react-router' {
       path: '/tasks'
       fullPath: '/tasks'
       preLoaderRoute: typeof AuthenticatedTasksIndexLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/users/': {
-      id: '/_authenticated/users/'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AuthenticatedUsersIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/blogs/$blogId/': {
@@ -861,9 +858,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedResourcesIndexRoute: typeof AuthenticatedResourcesIndexRoute
   AuthenticatedSetupIndexRoute: typeof AuthenticatedSetupIndexRoute
   AuthenticatedSubscribedEmailsIndexRoute: typeof AuthenticatedSubscribedEmailsIndexRoute
+  AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
-  AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
   AuthenticatedBlogsBlogIdIndexRoute: typeof AuthenticatedBlogsBlogIdIndexRoute
   AuthenticatedBlogsAddIndexRoute: typeof AuthenticatedBlogsAddIndexRoute
   AuthenticatedEventsEventIdIndexRoute: typeof AuthenticatedEventsEventIdIndexRoute
@@ -898,9 +895,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSetupIndexRoute: AuthenticatedSetupIndexRoute,
   AuthenticatedSubscribedEmailsIndexRoute:
     AuthenticatedSubscribedEmailsIndexRoute,
+  AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
-  AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
   AuthenticatedBlogsBlogIdIndexRoute: AuthenticatedBlogsBlogIdIndexRoute,
   AuthenticatedBlogsAddIndexRoute: AuthenticatedBlogsAddIndexRoute,
   AuthenticatedEventsEventIdIndexRoute: AuthenticatedEventsEventIdIndexRoute,
@@ -967,11 +964,11 @@ export interface FileRoutesByFullPath {
   '/resources': typeof AuthenticatedResourcesIndexRoute
   '/setup': typeof AuthenticatedSetupIndexRoute
   '/subscribed-emails': typeof AuthenticatedSubscribedEmailsIndexRoute
+  '/users': typeof AuthenticatedUsersIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
-  '/users': typeof AuthenticatedUsersIndexLazyRoute
   '/blogs/$blogId': typeof AuthenticatedBlogsBlogIdIndexRoute
   '/blogs/add': typeof AuthenticatedBlogsAddIndexRoute
   '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
@@ -1017,11 +1014,11 @@ export interface FileRoutesByTo {
   '/resources': typeof AuthenticatedResourcesIndexRoute
   '/setup': typeof AuthenticatedSetupIndexRoute
   '/subscribed-emails': typeof AuthenticatedSubscribedEmailsIndexRoute
+  '/users': typeof AuthenticatedUsersIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
-  '/users': typeof AuthenticatedUsersIndexLazyRoute
   '/blogs/$blogId': typeof AuthenticatedBlogsBlogIdIndexRoute
   '/blogs/add': typeof AuthenticatedBlogsAddIndexRoute
   '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
@@ -1071,11 +1068,11 @@ export interface FileRoutesById {
   '/_authenticated/resources/': typeof AuthenticatedResourcesIndexRoute
   '/_authenticated/setup/': typeof AuthenticatedSetupIndexRoute
   '/_authenticated/subscribed-emails/': typeof AuthenticatedSubscribedEmailsIndexRoute
+  '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
-  '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
   '/_authenticated/blogs/$blogId/': typeof AuthenticatedBlogsBlogIdIndexRoute
   '/_authenticated/blogs/add/': typeof AuthenticatedBlogsAddIndexRoute
   '/_authenticated/events/$eventId/': typeof AuthenticatedEventsEventIdIndexRoute
@@ -1124,11 +1121,11 @@ export interface FileRouteTypes {
     | '/resources'
     | '/setup'
     | '/subscribed-emails'
+    | '/users'
     | '/login'
     | '/help-center'
     | '/settings/'
     | '/tasks'
-    | '/users'
     | '/blogs/$blogId'
     | '/blogs/add'
     | '/events/$eventId'
@@ -1173,11 +1170,11 @@ export interface FileRouteTypes {
     | '/resources'
     | '/setup'
     | '/subscribed-emails'
+    | '/users'
     | '/login'
     | '/help-center'
     | '/settings'
     | '/tasks'
-    | '/users'
     | '/blogs/$blogId'
     | '/blogs/add'
     | '/events/$eventId'
@@ -1225,11 +1222,11 @@ export interface FileRouteTypes {
     | '/_authenticated/resources/'
     | '/_authenticated/setup/'
     | '/_authenticated/subscribed-emails/'
+    | '/_authenticated/users/'
     | '/_public/login/'
     | '/_authenticated/help-center/'
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
-    | '/_authenticated/users/'
     | '/_authenticated/blogs/$blogId/'
     | '/_authenticated/blogs/add/'
     | '/_authenticated/events/$eventId/'
@@ -1319,9 +1316,9 @@ export const routeTree = rootRoute
         "/_authenticated/resources/",
         "/_authenticated/setup/",
         "/_authenticated/subscribed-emails/",
+        "/_authenticated/users/",
         "/_authenticated/help-center/",
         "/_authenticated/tasks/",
-        "/_authenticated/users/",
         "/_authenticated/blogs/$blogId/",
         "/_authenticated/blogs/add/",
         "/_authenticated/events/$eventId/",
@@ -1460,6 +1457,10 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/subscribed-emails/index.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/users/": {
+      "filePath": "_authenticated/users/index.tsx",
+      "parent": "/_authenticated"
+    },
     "/_public/login/": {
       "filePath": "_public/login/index.tsx",
       "parent": "/_public"
@@ -1474,10 +1475,6 @@ export const routeTree = rootRoute
     },
     "/_authenticated/tasks/": {
       "filePath": "_authenticated/tasks/index.lazy.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/users/": {
-      "filePath": "_authenticated/users/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/blogs/$blogId/": {
