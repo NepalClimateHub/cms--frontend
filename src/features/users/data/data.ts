@@ -27,16 +27,6 @@ export const userTypes = [
     value: 'admin',
     icon: IconUserShield,
   },
-  {
-    label: 'Manager',
-    value: 'manager',
-    icon: IconUsersGroup,
-  },
-  {
-    label: 'Cashier',
-    value: 'cashier',
-    icon: IconCash,
-  },
 ] as const
 
 export const userTypeOptions = [
