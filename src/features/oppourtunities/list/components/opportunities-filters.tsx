@@ -5,6 +5,13 @@ import { Input } from '@/ui/shadcn/input'
 import { cleanObj } from '@/utils/obj-utils'
 import { useFilters } from '@/hooks/use-filters'
 import { useIsFirstRender } from '@/hooks/use-first-render'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/ui/shadcn/select'
 
 type OpportunitiesFiltersProps = {
   setPage: (page: number | string) => void
@@ -18,7 +25,7 @@ const OpportunitiesFilters: FC<OpportunitiesFiltersProps> = ({
   const isFirstRender = useIsFirstRender()
   const [search, setSearch] = useState<string>('')
 
-  const { filters, setFilterDebounce, removeFilter, resetFilters } =
+  const { filters, setFilterDebounce, setFilterValue, removeFilter, resetFilters } =
     filterOptions
 
   const isFilterApplied = !!Object.keys(cleanObj(filters)).length
@@ -30,7 +37,7 @@ const OpportunitiesFilters: FC<OpportunitiesFiltersProps> = ({
   }, [filters])
 
   useEffect(() => {
-    setSearch((filters?.tag as string) ?? '')
+    setSearch((filters?.title as string) ?? '')
   }, [filters])
 
   const handleSearch = (value: string) => {
@@ -51,6 +58,21 @@ const OpportunitiesFilters: FC<OpportunitiesFiltersProps> = ({
           onChange={(event) => handleSearch(event.target.value)}
           className='h-8 w-[150px] lg:w-[250px]'
         />
+        <Select
+          value={(filters.status as string) ?? 'ALL'}
+          onValueChange={(value) =>
+            setFilterValue('status', value === 'ALL' ? null : value)
+          }
+        >
+          <SelectTrigger className='h-8 w-[150px]'>
+            <SelectValue placeholder='Status' />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='ALL'>All Statuses</SelectItem>
+            <SelectItem value='OPEN'>Open</SelectItem>
+            <SelectItem value='CLOSED'>Closed</SelectItem>
+          </SelectContent>
+        </Select>
         {isFilterApplied && (
           <Button
             variant='ghost'

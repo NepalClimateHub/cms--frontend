@@ -21,7 +21,7 @@ export default function CategoriesList() {
   const columns = useCategoryColumns();
   const paginationOptions = usePagination();
   const { pagination } = paginationOptions;
-  const filterOptions = useFilters([]);
+  const filterOptions = useFilters({});
   const { filters } = filterOptions;
 
   const { data, isLoading } = useGetCategories({

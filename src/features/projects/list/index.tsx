@@ -1,6 +1,7 @@
 
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { FC, useEffect, useState } from 'react'
 import { useGetProjects, ProjectResponseDto } from '@/query/projects/use-projects'
 import { DataTable } from '@/ui/data-table/data-table'
 import { DataTablePagination } from '@/ui/data-table/data-table-pagination'
@@ -15,6 +16,13 @@ import { useProjectColumns } from './hooks/use-project-columns'
 import { useFilters } from '@/hooks/use-filters'
 import { Input } from '@/ui/shadcn/input'
 import { parseAsString } from 'nuqs'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/ui/shadcn/select'
 
 const ProjectList = () => {
   const navigate = useNavigate()
@@ -22,10 +30,22 @@ const ProjectList = () => {
   const paginationOptions = usePagination()
   const filterOptions = useFilters({
     title: parseAsString,
+    status: parseAsString,
   })
 
   const { pagination } = paginationOptions
-  const { filters, setFilterDebounce } = filterOptions
+  const { filters, setFilterDebounce, setFilterValue } = filterOptions
+
+  const [searchTerm, setSearchTerm] = useState((filters.title as string) ?? '')
+
+  useEffect(() => {
+    setSearchTerm((filters.title as string) ?? '')
+  }, [filters.title])
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value)
+    setFilterDebounce('title', value)
+  }
 
   const { data: projectsList, isLoading } = useGetProjects({
     ...pagination,
@@ -73,10 +93,26 @@ const ProjectList = () => {
             <div className='flex items-center space-x-2'>
               <Input
                 placeholder='Search projects...'
-                value={(filters.title as string) ?? ''}
-                onChange={(e) => setFilterDebounce('title', e.target.value)}
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
                 className='h-8 w-[150px] lg:w-[250px]'
               />
+              <Select
+                value={(filters.status as string) ?? 'ALL'}
+                onValueChange={(value) =>
+                  setFilterValue('status', value === 'ALL' ? null : value)
+                }
+              >
+                <SelectTrigger className='h-8 w-[150px]'>
+                  <SelectValue placeholder='Status' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='ALL'>All Statuses</SelectItem>
+                  <SelectItem value='ONGOING'>Ongoing</SelectItem>
+                  <SelectItem value='COMPLETED'>Completed</SelectItem>
+                  <SelectItem value='UPCOMING'>Upcoming</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           }
         />

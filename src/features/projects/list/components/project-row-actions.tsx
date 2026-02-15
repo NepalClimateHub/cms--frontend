@@ -56,7 +56,7 @@ const ProjectRowActions: FC<DataTableRowActionsProps> = ({ row }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
           <DropdownMenuItem asChild>
-            <Link to={`/projects/${row.original.id}`}>
+            <Link to='/projects/$id' params={{ id: row.original.id }}>
               <Pen className='mr-2 h-3.5 w-3.5 text-muted-foreground/70' />
               Edit
             </Link>

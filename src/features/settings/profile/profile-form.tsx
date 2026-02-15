@@ -13,13 +13,7 @@ import {
   FormMessage,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/ui/shadcn/select'
+
 import { Textarea } from '@/ui/shadcn/textarea'
 import { toast } from '@/hooks/use-toast'
 import { useAuthStore } from '@/stores/authStore'
@@ -96,7 +90,7 @@ export default function ProfileForm() {
         onError: (error) => {
           toast({
             title: 'Error',
-            description: error.message || 'Failed to update profile.',
+            description: (error as any).error?.message || 'Failed to update profile.',
             variant: 'destructive',
           })
         },
