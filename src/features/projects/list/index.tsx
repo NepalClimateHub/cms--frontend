@@ -1,7 +1,7 @@
 
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { FC, useEffect, useState } from 'react'
+import {  useEffect, useState } from 'react'
 import { useGetProjects, ProjectResponseDto } from '@/query/projects/use-projects'
 import { DataTable } from '@/ui/data-table/data-table'
 import { DataTablePagination } from '@/ui/data-table/data-table-pagination'
