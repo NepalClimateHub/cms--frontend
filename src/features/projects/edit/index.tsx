@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from '@tanstack/react-router'
@@ -13,6 +12,8 @@ import { useGetTags } from '@/query/tags/use-tags'
 import { Tag } from '@/query/projects/use-projects'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from '@tanstack/react-router'
+import { Button } from '@/ui/shadcn/button'
+import { ArrowLeft } from 'lucide-react'
 
 export default function EditProject() {
   const { id } = useParams({ from: '/_authenticated/projects/$id' })
@@ -93,6 +94,11 @@ export default function EditProject() {
       <PageHeader
         title='Edit Project'
         description='Update project details'
+        actions={
+          <Button variant='outline' onClick={() => navigate({ to: '/projects' })}>
+            <ArrowLeft className='mr-2 h-4 w-4' /> Back
+          </Button>
+        }
       />
       <div className='mt-4'>
         <ProjectForm
