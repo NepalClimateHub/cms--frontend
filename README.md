@@ -16,4 +16,5 @@ Production branch : main
 
 
 <!-- screenshot of CMS -->
-![CMS](https://github.com/sdsys/nepalclimatehub/blob/main/cms--frontend/public/cms_screenshot.png)
+![CMS](https://github.com/NepalClimateHub/cms--frontend/blob/develop/public/images/cms_screenshot.png)
+
