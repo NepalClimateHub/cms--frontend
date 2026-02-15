@@ -7,6 +7,7 @@ import { userTypes, userTypeOptions } from '../data/data'
 import { User } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTableRowActions } from './data-table-row-actions'
+import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -22,10 +23,19 @@ export const columns: ColumnDef<User>[] = [
 
       return (
         <div className='flex items-center gap-2'>
-          <Avatar className='h-8 w-8 shrink-0'>
-            <AvatarImage src={profilePhotoUrl || undefined} alt={fullName} />
-            <AvatarFallback className='text-xs'>{initials}</AvatarFallback>
-          </Avatar>
+          <ImagePreviewDialog
+            src={profilePhotoUrl || 'images/logo.png'}
+            alt={fullName}
+            trigger={
+              <Avatar className='h-8 w-8 shrink-0 cursor-pointer transition-opacity hover:opacity-80'>
+                <AvatarImage
+                  src={profilePhotoUrl || undefined}
+                  alt={fullName}
+                />
+                <AvatarFallback className='text-xs'>{initials}</AvatarFallback>
+              </Avatar>
+            }
+          />
           <LongText className='max-w-35'>{username}</LongText>
         </div>
       )

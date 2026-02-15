@@ -17,8 +17,6 @@ const userTypeSchema = z.union([
 const userRoleSchema = z.union([
   z.literal('superadmin'),
   z.literal('admin'),
-  z.literal('cashier'),
-  z.literal('manager'),
 ])
 
 const userSchema = z.object({
