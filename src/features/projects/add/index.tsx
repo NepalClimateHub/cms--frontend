@@ -11,6 +11,7 @@ import PageHeader from '@/ui/page-header'
 import ProjectForm from '../shared/ProjectForm'
 import { useGetTags } from '@/query/tags/use-tags'
 import { Tag } from '@/query/projects/use-projects'
+import { toast } from '@/hooks/use-toast'
 
 export default function AddProject() {
   const createProjectMutation = useCreateProject()
@@ -43,7 +44,21 @@ export default function AddProject() {
   }
 
   const onSubmit = async (values: ProjectFormValues) => {
-    createProjectMutation.mutate(values)
+    createProjectMutation.mutate(values, {
+      onSuccess: () => {
+        toast({
+          title: 'Project created successfully',
+        })
+        navigate({ to: '/projects' })
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to create project',
+          description: error?.message || 'Something went wrong while creating the project.',
+          variant: 'destructive',
+        })
+      },
+    })
   }
 
   return (

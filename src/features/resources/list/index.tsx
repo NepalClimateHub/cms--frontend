@@ -79,7 +79,7 @@ export default function ResourceList() {
           </Button>
         }
       />
-      <div className='mt-4'>
+      <div className='mt-4 space-y-4'>
         <DataTableToolbar
           table={table}
           filterComponent={

@@ -11,6 +11,8 @@ import PageHeader from '@/ui/page-header'
 import ProjectForm from '../shared/ProjectForm'
 import { useGetTags } from '@/query/tags/use-tags'
 import { Tag } from '@/query/projects/use-projects'
+import { toast } from '@/hooks/use-toast'
+import { useNavigate } from '@tanstack/react-router'
 
 export default function EditProject() {
   const { id } = useParams({ from: '/_authenticated/projects/$id' })
@@ -58,8 +60,28 @@ export default function EditProject() {
     form.setValue('bannerImageUrl', assetURL || undefined)
   }
 
+  const navigate = useNavigate()
+
   const onSubmit = async (values: ProjectFormValues) => {
-    updateProjectMutation.mutate({ id, data: values })
+    updateProjectMutation.mutate(
+      { id, data: values },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Project updated successfully',
+            description: 'The project changes have been saved.',
+          })
+          navigate({ to: '/projects' })
+        },
+        onError: (error: any) => {
+          toast({
+            title: 'Failed to update project',
+            description: error?.message || 'Something went wrong while updating the project.',
+            variant: 'destructive',
+          })
+        },
+      }
+    )
   }
 
   if (isProjectLoading) {
