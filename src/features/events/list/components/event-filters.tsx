@@ -5,6 +5,13 @@ import { Input } from '@/ui/shadcn/input'
 import { cleanObj } from '@/utils/obj-utils'
 import { useFilters } from '@/hooks/use-filters'
 import { useIsFirstRender } from '@/hooks/use-first-render'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/ui/shadcn/select'
 
 type EventsFiltersProps = {
   setPage: (page: number | string) => void
@@ -15,7 +22,7 @@ const EventsFilters: FC<EventsFiltersProps> = ({ setPage, filterOptions }) => {
   const isFirstRender = useIsFirstRender()
   const [search, setSearch] = useState<string>('')
 
-  const { filters, setFilterDebounce, removeFilter, resetFilters } =
+  const { filters, setFilterDebounce, setFilterValue, removeFilter, resetFilters } =
     filterOptions
 
   const isFilterApplied = !!Object.keys(cleanObj(filters)).length
@@ -48,6 +55,21 @@ const EventsFilters: FC<EventsFiltersProps> = ({ setPage, filterOptions }) => {
           onChange={(event) => handleSearch(event.target.value)}
           className='h-8 w-[150px] lg:w-[250px]'
         />
+        <Select
+          value={(filters.status as string) ?? 'ALL'}
+          onValueChange={(value) =>
+            setFilterValue('status', value === 'ALL' ? null : value)
+          }
+        >
+          <SelectTrigger className='h-8 w-[150px]'>
+            <SelectValue placeholder='Status' />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='ALL'>All Statuses</SelectItem>
+            <SelectItem value='OPEN'>Opening</SelectItem>
+            <SelectItem value='CLOSE'>Close</SelectItem>
+          </SelectContent>
+        </Select>
         {isFilterApplied && (
           <Button
             variant='ghost'

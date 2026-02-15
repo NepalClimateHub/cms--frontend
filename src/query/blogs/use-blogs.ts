@@ -13,6 +13,7 @@ import {
 } from '../../api/@tanstack/react-query.gen'
 import { client as apiClient } from '../../api/client.gen'
 import { blogControllerUpdateBlogMutation } from './../../api/@tanstack/react-query.gen'
+import { Category } from '../categories/use-categories'
 
 // Mock blog types - these should be replaced with actual API types when available
 export interface BlogResponseDto {
@@ -33,7 +34,17 @@ export interface BlogResponseDto {
   bannerImageId?: string
   tags?: Array<string>
   createdAt: string
-  updatedAt: string
+  categoryId?: string
+  categoryData?: Category
+  authorUser?: {
+    id: string
+    fullName: string
+    email: string
+    linkedin?: string
+    currentRole?: string
+    bio?: string
+    profilePhotoUrl?: string
+  }
 }
 
 export interface CreateBlogDto {
@@ -48,6 +59,7 @@ export interface CreateBlogDto {
   isFeatured?: boolean
   bannerImageUrl?: string
   bannerImageId?: string
+  categoryId?: string
   tagIds?: Array<string>
 }
 

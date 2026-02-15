@@ -9,6 +9,8 @@ export type User = {
   isSuperAdmin: boolean
   organization: Organization | null
   bio?: string | null
+  linkedin?: string | null
+  currentRole?: string | null
   profilePhotoUrl?: string | null
   profilePhotoId?: string | null
   createdAt: string

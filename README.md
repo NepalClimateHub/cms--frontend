@@ -13,3 +13,7 @@ Production branch : main
 - **templates/layouts**: Page-level components that define the layout and structure of a page, using organisms.
 - **pages**: The highest level of components that represent complete pages, composed of templates and other components.
 - **shadcn**: all the downloaded shadcn components appear here.
+
+
+<!-- screenshot of CMS -->
+![CMS](https://github.com/sdsys/nepalclimatehub/blob/main/cms--frontend/public/cms_screenshot.png)

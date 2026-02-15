@@ -1,4 +1,4 @@
-import { IconHome, IconComponents, IconArticle } from '@tabler/icons-react'
+import { IconHome, IconArticle, IconSettings } from '@tabler/icons-react'
 import {
   Calendar,
   Home,
@@ -7,6 +7,8 @@ import {
   PartyPopper,
   User,
   MessageCircle,
+  Briefcase,
+  Library,
 } from 'lucide-react'
 import { NavGroup } from '../types'
 
@@ -39,6 +41,16 @@ export const superAdminSidebarData: NavGroup[] = [
         icon: PartyPopper,
       },
       {
+        title: 'Work/Projects',
+        url: '/projects',
+        icon: Briefcase,
+      },
+      {
+        title: 'Resources',
+        url: '/resources',
+        icon: Library,
+      },
+      {
         title: 'Blogs',
         url: '/blog/list',
         icon: Newspaper,
@@ -48,11 +60,7 @@ export const superAdminSidebarData: NavGroup[] = [
         url: '/users',
         icon: User,
       },
-      {
-        title: 'Tags',
-        url: '/tags',
-        icon: IconComponents,
-      },
+
       {
         title: 'Subscribed Emails',
         url: '/subscribed-emails',
@@ -62,6 +70,11 @@ export const superAdminSidebarData: NavGroup[] = [
         title: 'Ask AI',
         url: '/ask-ai',
         icon: MessageCircle,
+      },
+      {
+        title: 'Setup',
+        url: '/setup',
+        icon: IconSettings,
       },
     ],
   },
