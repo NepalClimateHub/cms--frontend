@@ -1,13 +1,20 @@
 import { FC } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
-import { BLOG_CATEGORY, BlogFormValues } from '@/schemas/blog'
+import { BlogFormValues } from '@/schemas/blog'
 import { DatePicker } from '@/ui/datepicker'
 import ImageUpload from '@/ui/image-upload'
 import { MinimalTiptapEditor } from '@/ui/minimal-tiptap'
 import { MultiSelect } from '@/ui/multi-select'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/ui/shadcn/tooltip'
+import { Info } from 'lucide-react'
 import {
   Form,
   FormControl,
@@ -28,6 +35,7 @@ import {
 import { Switch } from '@/ui/shadcn/switch'
 import { Textarea } from '@/ui/shadcn/textarea'
 import { useAuthStore } from '@/stores/authStore'
+import { useGetCategories, CategoryType, Category } from '@/query/categories/use-categories'
 
 type Props = {
   form: UseFormReturn<BlogFormValues>
@@ -52,6 +60,20 @@ const BlogForm: FC<Props> = ({
   const navigate = useNavigate()
   const { user } = useAuthStore()
   const isAdmin = user?.isSuperAdmin === true
+
+  const { data: categoriesData, isLoading: categoriesLoading } = useGetCategories({
+    type: CategoryType.BLOG,
+  })
+
+  const blogCategories = categoriesData?.data || []
+
+  const handleCategoryChange = (val: string) => {
+    form.setValue('categoryId', val)
+    const selected = blogCategories.find((cat: Category) => cat.id === val)
+    if (selected) {
+      form.setValue('category', selected.name)
+    }
+  }
 
   return (
     <Form {...form}>
@@ -123,7 +145,7 @@ const BlogForm: FC<Props> = ({
           <CardContent className='grid grid-cols-1 gap-6 md:grid-cols-2'>
             <FormField
               control={form.control}
-              name='category'
+              name='categoryId'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -133,18 +155,32 @@ const BlogForm: FC<Props> = ({
                     What category does this blog belong to?
                   </FormDescription>
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className='w-full'>
-                        <SelectValue placeholder='Select category' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {BLOG_CATEGORY.map(({ value, label }) => (
-                          <SelectItem key={value} value={value}>
-                            {label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <TooltipProvider>
+                      <Select onValueChange={handleCategoryChange} value={field.value}>
+                        <SelectTrigger className='w-full'>
+                          <SelectValue placeholder={categoriesLoading ? 'Loading categories...' : 'Select category'} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {blogCategories.map((category: Category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              <div className='flex w-full items-center justify-between'>
+                                <span>{category.name}</span>
+                                {category.description && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Info className='ml-2 h-4 w-4 text-muted-foreground transition-colors hover:text-primary' />
+                                    </TooltipTrigger>
+                                    <TooltipContent side='right' className='max-w-[200px]'>
+                                      <p>{category.description}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TooltipProvider>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

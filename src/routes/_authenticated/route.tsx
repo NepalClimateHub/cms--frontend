@@ -47,6 +47,9 @@ function RouteComponent() {
         profilePhotoId:
           (userData as { profilePhotoId?: string | null })?.profilePhotoId ||
           null,
+        linkedin: (userData as { linkedin?: string | null })?.linkedin || null,
+        currentRole:
+          (userData as { currentRole?: string | null })?.currentRole || null,
         createdAt: userData.createdAt,
         updatedAt: userData.updatedAt,
       }

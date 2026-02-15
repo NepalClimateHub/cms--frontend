@@ -36,6 +36,16 @@ const editProfileSchema = z.object({
     .max(500, 'Bio must be less than 500 characters')
     .optional()
     .or(z.literal('')),
+  linkedin: z
+    .string()
+    .url({ message: 'Please enter a valid URL.' })
+    .optional()
+    .or(z.literal('')),
+  currentRole: z
+    .string()
+    .max(100, 'Current Role must be less than 100 characters')
+    .optional()
+    .or(z.literal('')),
 })
 
 type EditProfileFormData = z.infer<typeof editProfileSchema>
@@ -61,6 +71,9 @@ export default function EditProfileDialog({
     defaultValues: {
       name: profileData?.fullName || user?.fullName || '',
       bio: (profileData as any)?.bio || (user as any)?.bio || '',
+      linkedin: (profileData as any)?.linkedin || (user as any)?.linkedin || '',
+      currentRole:
+        (profileData as any)?.currentRole || (user as any)?.currentRole || '',
     },
   })
 
@@ -81,11 +94,15 @@ export default function EditProfileDialog({
       form.reset({
         name: profileData.fullName || '',
         bio: (profileData as any)?.bio || '',
+        linkedin: (profileData as any)?.linkedin || '',
+        currentRole: (profileData as any)?.currentRole || '',
       })
     } else if (open && user) {
       form.reset({
         name: user.fullName || '',
         bio: (user as any)?.bio || '',
+        linkedin: (user as any)?.linkedin || '',
+        currentRole: (user as any)?.currentRole || '',
       })
     }
   }, [open, profileData, user, form])
@@ -105,6 +122,8 @@ export default function EditProfileDialog({
       const updatePayload: any = {
         name: data.name,
         bio: data.bio || undefined,
+        linkedin: data.linkedin || undefined,
+        currentRole: data.currentRole || undefined,
       }
 
       // Include profile photo if it was changed
@@ -130,6 +149,15 @@ export default function EditProfileDialog({
           bio:
             (profileData.data as { bio?: string | null })?.bio ||
             user?.bio ||
+            null,
+          linkedin:
+            (profileData.data as { linkedin?: string | null })?.linkedin ||
+            user?.linkedin ||
+            null,
+          currentRole:
+            (profileData.data as { currentRole?: string | null })
+              ?.currentRole ||
+            user?.currentRole ||
             null,
           profilePhotoUrl:
             (profileData.data as { profilePhotoUrl?: string | null })
@@ -175,11 +203,15 @@ export default function EditProfileDialog({
       form.reset({
         name: profileData.fullName || '',
         bio: (profileData as any)?.bio || '',
+        linkedin: (profileData as any)?.linkedin || '',
+        currentRole: (profileData as any)?.currentRole || '',
       })
     } else if (user) {
       form.reset({
         name: user.fullName || '',
         bio: (user as any)?.bio || '',
+        linkedin: (user as any)?.linkedin || '',
+        currentRole: (user as any)?.currentRole || '',
       })
     }
     onOpenChange(false)
@@ -187,74 +219,124 @@ export default function EditProfileDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='border-0 bg-white shadow-none sm:max-w-[425px]'>
-        <DialogHeader className='pb-2 text-center'>
-          <DialogTitle className='text-2xl font-bold text-gray-900 sm:text-3xl'>
+      <DialogContent className='border-0 bg-white shadow-none sm:max-w-2xl'>
+        <DialogHeader className='pb-4 border-b border-gray-100'>
+          <DialogTitle className='text-2xl font-bold text-gray-900'>
             Edit Profile
           </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
-                    Full Name
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6 pt-4'>
+            <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-sm font-medium text-gray-700'>
+                    Full Name <span className='text-red-500'>*</span>
                   </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='Enter your full name'
-                      className='h-10 w-full rounded-lg border-gray-300 bg-white px-3 py-2 text-sm transition-colors duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200'
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className='text-xs text-red-600' />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='bio'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
-                    Bio
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder='Tell us a little bit about yourself (optional)'
-                      className='min-h-[100px] w-full resize-none rounded-lg border-gray-300 bg-white px-3 py-2 text-sm transition-colors duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200'
-                      {...field}
-                      value={field.value || ''}
-                    />
-                  </FormControl>
-                  <FormMessage className='text-xs text-red-600' />
-                </FormItem>
-              )}
-            />
-
-            {/* Profile Photo Upload */}
-            <div className='space-y-2'>
-              <FormLabel className='text-sm font-medium text-gray-700'>
-                Profile Photo
-              </FormLabel>
-              <ImageUpload
-                label='Upload profile photo'
-                handleImage={(imageId, imageURL) => {
-                  setProfilePhotoId(imageId)
-                  setProfilePhotoUrl(imageURL)
-                }}
-                initialImageId={profilePhotoId}
-                initialImageUrl={profilePhotoUrl}
-                inputId='edit-profile-photo-upload'
+                    <FormControl>
+                      <Input
+                        placeholder='Enter your full name'
+                        className='h-10 w-full rounded-lg border-gray-300 bg-white px-3 py-2 text-sm transition-colors duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className='text-xs text-red-600' />
+                  </FormItem>
+                )}
               />
+
+              <FormField
+                control={form.control}
+                name='currentRole'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-sm font-medium text-gray-700'>
+                      Current Role/Position
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='e.g. Senior Software Engineer'
+                        className='h-10 w-full rounded-lg border-gray-300 bg-white px-3 py-2 text-sm transition-colors duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className='text-xs text-red-600' />
+                  </FormItem>
+                )}
+              />
+
+              <div className='col-span-1 md:col-span-2'>
+                <FormField
+                  control={form.control}
+                  name='linkedin'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-sm font-medium text-gray-700'>
+                        LinkedIn Profile URL
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='https://linkedin.com/in/username'
+                          className='h-10 w-full rounded-lg border-gray-300 bg-white px-3 py-2 text-sm transition-colors duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className='text-xs text-red-600' />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className='col-span-1 md:col-span-2'>
+                <FormField
+                  control={form.control}
+                  name='bio'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-sm font-medium text-gray-700'>
+                        Bio
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder='Tell us a little bit about yourself (optional)'
+                          className='min-h-[100px] w-full resize-none rounded-lg border-gray-300 bg-white px-3 py-2 text-sm transition-colors duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200'
+                          {...field}
+                          value={field.value || ''}
+                        />
+                      </FormControl>
+                      <FormMessage className='text-xs text-red-600' />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
-            <div className='flex justify-end space-x-3 pt-6'>
+            {/* Profile Photo Upload */}
+            <div className='rounded-lg border border-gray-100 bg-gray-50/50 p-4'>
+              <div className='space-y-2'>
+                <FormLabel className='text-sm font-medium text-gray-700'>
+                  Profile Photo
+                </FormLabel>
+                <div className='mt-2'>
+                   <ImageUpload
+                    label='Upload profile photo'
+                    handleImage={(imageId, imageURL) => {
+                      setProfilePhotoId(imageId)
+                      setProfilePhotoUrl(imageURL)
+                    }}
+                    initialImageId={profilePhotoId}
+                    initialImageUrl={profilePhotoUrl}
+                    inputId='edit-profile-photo-upload'
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className='flex justify-end space-x-3 pt-6 border-t border-gray-100'>
               <Button
                 type='button'
                 variant='outline'
