@@ -41,7 +41,7 @@ export function ChatHistoryMenu({ currentSessionId, onSelectSession, onNewChat }
     }
 
     sessions.forEach(session => {
-      const date = new Date(session.created_at) // Assuming created_at is available
+      const date = new Date(session.createdAt) // Assuming createdAt is available
       
       if (isToday(date)) {
         groups['Today'].push(session)
