@@ -14,10 +14,11 @@ import {
   FileText,
   Copy,
   Check,
+  History,
 } from 'lucide-react'
 import { useClimateChat, useChatSession } from '@/query/ask-ai/climate-api'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { ChatHistoryMenu } from '@/features/ask-ai/components/ChatHistoryMenu'
+import { ChatHistorySheet } from '@/features/ask-ai/components/ChatHistorySheet'
 import {
   Dialog,
   DialogContent,
@@ -102,6 +103,7 @@ function AskAI() {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
   const [conversationId, setConversationId] = useState<string>()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const chatMutation = useClimateChat()
@@ -185,18 +187,28 @@ function AskAI() {
   return (
     <Main className='flex flex-col bg-background' fixed>
 
-      <div className='mb-4'>
-        <h1 className='text-2xl font-bold tracking-tight'>Ask AI</h1>
-        <p className='text-muted-foreground'>Get AI-powered answers from Nepal's climate documents</p>
+      <div className='mb-4 flex items-center justify-between'>
+        <div>
+          <h1 className='text-2xl font-bold tracking-tight'>Ask AI</h1>
+          <p className='text-muted-foreground'>Get AI-powered answers from Nepal's climate documents</p>
+        </div>
+        <Button
+          variant='outline'
+          className='gap-2 h-9'
+          onClick={() => setSidebarOpen(true)}
+        >
+          <History className='h-4 w-4' />
+          <span>History</span>
+        </Button>
       </div>
 
-      <div className='flex-shrink-0 flex items-center justify-end gap-3 mb-1'>
-        <ChatHistoryMenu
-          onSelectSession={setConversationId}
-          currentSessionId={conversationId}
-          onNewChat={handleNewChat}
-        />
-      </div>
+      <ChatHistorySheet
+        open={sidebarOpen}
+        onOpenChange={setSidebarOpen}
+        onSelectSession={setConversationId}
+        currentSessionId={conversationId}
+        onNewChat={handleNewChat}
+      />
 
 
       <div className='flex flex-1 overflow-hidden'>

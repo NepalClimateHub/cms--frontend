@@ -83,7 +83,13 @@ export function ChatHistorySheet({
                     <div className="flex flex-col overflow-hidden">
                       <span className="truncate">{session.title || 'Untitled Chat'}</span>
                       <span className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(session.updatedAt), { addSuffix: true })}
+                        {(() => {
+                          const raw = session.updatedAt || (session as any).updated_at || session.createdAt || (session as any).created_at
+                          const d = raw ? new Date(raw) : null
+                          return d && !isNaN(d.getTime())
+                            ? formatDistanceToNow(d, { addSuffix: true })
+                            : ''
+                        })()}
                       </span>
                     </div>
                   </div>
