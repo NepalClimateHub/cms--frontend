@@ -174,3 +174,18 @@ export const useDeleteSession = () => {
   });
 };
 
+export const useRenameSession = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ sessionId, title }: { sessionId: string; title: string }) =>
+      cmsFetch<{ id: string; title: string }>(`/ai-assistant/sessions/${sessionId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ title }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chat-history'] });
+    },
+  });
+};
+
