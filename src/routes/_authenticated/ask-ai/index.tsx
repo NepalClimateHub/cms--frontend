@@ -16,7 +16,7 @@ import {
   Check,
   History,
 } from 'lucide-react'
-import { useClimateChat, useChatSession } from '@/query/ask-ai/climate-api'
+import { useClimateChat, useChatSession, usePromptUsage } from '@/query/ask-ai/climate-api'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { ChatHistorySheet } from '@/features/ask-ai/components/ChatHistorySheet'
 import {
@@ -45,6 +45,7 @@ interface Message {
   content: string
   sources?: Source[]
   timestamp: Date
+  isError?: boolean
 }
 
 
@@ -107,6 +108,8 @@ function AskAI() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const chatMutation = useClimateChat()
+  const { data: usage } = usePromptUsage()
+  const limitReached = usage ? usage.remaining <= 0 : false
 
   const { data: sessionData, isLoading: isSessionLoading } = useChatSession(conversationId)
 
@@ -131,6 +134,26 @@ function AskAI() {
 
   const handleSend = async () => {
     if (!input.trim() || chatMutation.isPending) return
+    if (limitReached) {
+      setMessages((p) => [
+        ...p,
+        {
+          id: crypto.randomUUID(),
+          role: 'user' as const,
+          content: input.trim(),
+          timestamp: new Date(),
+        },
+        {
+          id: crypto.randomUUID(),
+          role: 'assistant' as const,
+          content: `Daily prompt limit reached (${usage?.used}/${usage?.limit}). You've used all your prompts for today. Come back tomorrow!`,
+          timestamp: new Date(),
+          isError: true,
+        },
+      ])
+      setInput('')
+      return
+    }
     const userMsg: Message = {
       id: crypto.randomUUID(),
       role: 'user',
@@ -192,14 +215,26 @@ function AskAI() {
           <h1 className='text-2xl font-bold tracking-tight'>Ask AI</h1>
           <p className='text-muted-foreground'>Get AI-powered answers from Nepal's climate documents</p>
         </div>
-        <Button
-          variant='outline'
-          className='gap-2 h-9'
-          onClick={() => setSidebarOpen(true)}
-        >
-          <History className='h-4 w-4' />
-          <span>History</span>
-        </Button>
+        <div className='flex items-center gap-3'>
+          {usage && (
+            <span className={cn(
+              'text-xs font-medium px-2.5 py-1 rounded-full',
+              limitReached
+                ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+            )}>
+              {usage.used}/{usage.limit} prompts used today
+            </span>
+          )}
+          <Button
+            variant='outline'
+            className='gap-2 h-9'
+            onClick={() => setSidebarOpen(true)}
+          >
+            <History className='h-4 w-4' />
+            <span>History</span>
+          </Button>
+        </div>
       </div>
 
       <ChatHistorySheet
@@ -351,6 +386,24 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
 function ChatMessage({ message }: { message: Message }) {
   console.log('💬 ChatMessage received:', { role: message.role, sources: message.sources })
   const isUser = message.role === 'user'
+
+  // Error messages (e.g. rate limit) get a red banner style
+  if (message.isError) {
+    return (
+      <div className='flex flex-col gap-1 items-start'>
+        <div className='w-full max-w-[95%] flex items-center gap-3 rounded-2xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 px-5 py-4'>
+          <div className='flex items-center justify-center h-8 w-8 rounded-full bg-red-100 dark:bg-red-900/50 flex-shrink-0'>
+            <span className='text-lg'>⚠️</span>
+          </div>
+          <div>
+            <p className='text-sm font-medium text-red-700 dark:text-red-300'>Daily prompt limit reached</p>
+            <p className='text-xs text-red-600/70 dark:text-red-400/70 mt-0.5'>{message.content}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const { cleaned, sources } = isUser
     ? { cleaned: message.content, sources: [] as Source[] }
     : parseContentAndSources(message.content, message.sources)

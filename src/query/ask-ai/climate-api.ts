@@ -58,6 +58,12 @@ export interface HealthResponse {
   vector_store_loaded: boolean;
 }
 
+export interface UsageResponse {
+  used: number;
+  limit: number;
+  remaining: number;
+}
+
 // ============ API Client (CMS Backend) ============
 
 const cmsFetch = async <T>(
@@ -105,6 +111,8 @@ export const useClimateChat = () => {
     onSuccess: () => {
       // Invalidate chat history so list updates with new session/timestamp
       queryClient.invalidateQueries({ queryKey: ['chat-history'] });
+      // Invalidate prompt usage so counter updates
+      queryClient.invalidateQueries({ queryKey: ['prompt-usage'] });
     }
   });
 };
@@ -125,6 +133,18 @@ export const useClimateHealth = () => {
     queryFn: () => fetch(`${RAG_API_URL}/health`).then((res) => res.json()) as Promise<HealthResponse>,
     refetchInterval: 30000,
     staleTime: 10000,
+  });
+};
+
+export const usePromptUsage = () => {
+  const token = getAccessToken();
+
+  return useQuery({
+    queryKey: ['prompt-usage'],
+    queryFn: () => cmsFetch<UsageResponse>('/ai-assistant/usage'),
+    enabled: !!token,
+    refetchInterval: 60000,
+    staleTime: 15000,
   });
 };
 
