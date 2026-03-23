@@ -18,6 +18,9 @@ export type UserOutput = {
     };
     createdAt: string;
     updatedAt: string;
+    linkedin?: string | null;
+    currentRole?: string | null;
+    bio?: string | null;
 };
 
 export type ResponseMetadata = {
@@ -60,6 +63,9 @@ export type UpdateUserInput = {
     name?: string;
     password?: string;
     isAccountVerified?: boolean;
+    linkedin?: string;
+    currentRole?: string;
+    bio?: string;
 };
 
 export type LoginInput = {

@@ -21,8 +21,16 @@ import { Route as authVerifyEmailImport } from './routes/(auth)/verify-email'
 import { Route as authSignInImport } from './routes/(auth)/sign-in'
 import { Route as auth500Import } from './routes/(auth)/500'
 import { Route as PublicLoginIndexImport } from './routes/_public/login/index'
+import { Route as AuthenticatedUsersIndexImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedSubscribedEmailsIndexImport } from './routes/_authenticated/subscribed-emails/index'
+import { Route as AuthenticatedSetupIndexImport } from './routes/_authenticated/setup/index'
+import { Route as AuthenticatedResourcesIndexImport } from './routes/_authenticated/resources/index'
+import { Route as AuthenticatedProjectsIndexImport } from './routes/_authenticated/projects/index'
 import { Route as AuthenticatedAskAiIndexImport } from './routes/_authenticated/ask-ai/index'
+import { Route as AuthenticatedResourcesAddImport } from './routes/_authenticated/resources/add'
+import { Route as AuthenticatedResourcesIdImport } from './routes/_authenticated/resources/$id'
+import { Route as AuthenticatedProjectsAddImport } from './routes/_authenticated/projects/add'
+import { Route as AuthenticatedProjectsIdImport } from './routes/_authenticated/projects/$id'
 import { Route as AuthenticatedDashboardProfileImport } from './routes/_authenticated/dashboard/profile'
 import { Route as AuthenticatedBlogListImport } from './routes/_authenticated/blog/list'
 import { Route as AuthenticatedBlogAddImport } from './routes/_authenticated/blog/add'
@@ -38,6 +46,7 @@ import { Route as AuthenticatedNewsNewsIdIndexImport } from './routes/_authentic
 import { Route as AuthenticatedEventsListIndexImport } from './routes/_authenticated/events/list/index'
 import { Route as AuthenticatedEventsAddIndexImport } from './routes/_authenticated/events/add/index'
 import { Route as AuthenticatedEventsEventIdIndexImport } from './routes/_authenticated/events/$eventId/index'
+import { Route as AuthenticatedDatabaseExportIndexImport } from './routes/_authenticated/database/export/index'
 import { Route as AuthenticatedBlogsAddIndexImport } from './routes/_authenticated/blogs/add/index'
 import { Route as AuthenticatedBlogsBlogIdIndexImport } from './routes/_authenticated/blogs/$blogId/index'
 
@@ -55,14 +64,8 @@ const authForgotPasswordLazyImport = createFileRoute(
 const AuthenticatedSettingsRouteLazyImport = createFileRoute(
   '/_authenticated/settings',
 )()
-const AuthenticatedUsersIndexLazyImport = createFileRoute(
-  '/_authenticated/users/',
-)()
 const AuthenticatedTasksIndexLazyImport = createFileRoute(
   '/_authenticated/tasks/',
-)()
-const AuthenticatedTagsIndexLazyImport = createFileRoute(
-  '/_authenticated/tags/',
 )()
 const AuthenticatedSettingsIndexLazyImport = createFileRoute(
   '/_authenticated/settings/',
@@ -81,9 +84,6 @@ const AuthenticatedSettingsAppearanceLazyImport = createFileRoute(
 )()
 const AuthenticatedSettingsAccountLazyImport = createFileRoute(
   '/_authenticated/settings/account',
-)()
-const AuthenticatedTagsAddIndexLazyImport = createFileRoute(
-  '/_authenticated/tags/add/',
 )()
 
 // Create/Update Routes
@@ -195,15 +195,6 @@ const auth500Route = auth500Import.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthenticatedUsersIndexLazyRoute =
-  AuthenticatedUsersIndexLazyImport.update({
-    id: '/users/',
-    path: '/users/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/users/index.lazy').then((d) => d.Route),
-  )
-
 const AuthenticatedTasksIndexLazyRoute =
   AuthenticatedTasksIndexLazyImport.update({
     id: '/tasks/',
@@ -212,16 +203,6 @@ const AuthenticatedTasksIndexLazyRoute =
   } as any).lazy(() =>
     import('./routes/_authenticated/tasks/index.lazy').then((d) => d.Route),
   )
-
-const AuthenticatedTagsIndexLazyRoute = AuthenticatedTagsIndexLazyImport.update(
-  {
-    id: '/tags/',
-    path: '/tags/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any,
-).lazy(() =>
-  import('./routes/_authenticated/tags/index.lazy').then((d) => d.Route),
-)
 
 const AuthenticatedSettingsIndexLazyRoute =
   AuthenticatedSettingsIndexLazyImport.update({
@@ -249,12 +230,41 @@ const PublicLoginIndexRoute = PublicLoginIndexImport.update({
   getParentRoute: () => PublicRouteRoute,
 } as any)
 
+const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any).lazy(() =>
+  import('./routes/_authenticated/users/index.lazy').then((d) => d.Route),
+)
+
 const AuthenticatedSubscribedEmailsIndexRoute =
   AuthenticatedSubscribedEmailsIndexImport.update({
     id: '/subscribed-emails/',
     path: '/subscribed-emails/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+
+const AuthenticatedSetupIndexRoute = AuthenticatedSetupIndexImport.update({
+  id: '/setup/',
+  path: '/setup/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedResourcesIndexRoute =
+  AuthenticatedResourcesIndexImport.update({
+    id: '/resources/',
+    path: '/resources/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedProjectsIndexRoute = AuthenticatedProjectsIndexImport.update(
+  {
+    id: '/projects/',
+    path: '/projects/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any,
+)
 
 const AuthenticatedAskAiIndexRoute = AuthenticatedAskAiIndexImport.update({
   id: '/ask-ai/',
@@ -306,6 +316,30 @@ const AuthenticatedSettingsAccountLazyRoute =
     ),
   )
 
+const AuthenticatedResourcesAddRoute = AuthenticatedResourcesAddImport.update({
+  id: '/resources/add',
+  path: '/resources/add',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedResourcesIdRoute = AuthenticatedResourcesIdImport.update({
+  id: '/resources/$id',
+  path: '/resources/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedProjectsAddRoute = AuthenticatedProjectsAddImport.update({
+  id: '/projects/add',
+  path: '/projects/add',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdImport.update({
+  id: '/projects/$id',
+  path: '/projects/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
 const AuthenticatedDashboardProfileRoute =
   AuthenticatedDashboardProfileImport.update({
     id: '/dashboard/profile',
@@ -330,15 +364,6 @@ const AuthenticatedBlogIdRoute = AuthenticatedBlogIdImport.update({
   path: '/blog/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-
-const AuthenticatedTagsAddIndexLazyRoute =
-  AuthenticatedTagsAddIndexLazyImport.update({
-    id: '/tags/add/',
-    path: '/tags/add/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/tags/add/index.lazy').then((d) => d.Route),
-  )
 
 const AuthenticatedOrganizationsListIndexRoute =
   AuthenticatedOrganizationsListIndexImport.update({
@@ -414,6 +439,13 @@ const AuthenticatedEventsEventIdIndexRoute =
   AuthenticatedEventsEventIdIndexImport.update({
     id: '/events/$eventId/',
     path: '/events/$eventId/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedDatabaseExportIndexRoute =
+  AuthenticatedDatabaseExportIndexImport.update({
+    id: '/database/export/',
+    path: '/database/export/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -569,6 +601,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardProfileImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/projects/$id': {
+      id: '/_authenticated/projects/$id'
+      path: '/projects/$id'
+      fullPath: '/projects/$id'
+      preLoaderRoute: typeof AuthenticatedProjectsIdImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/projects/add': {
+      id: '/_authenticated/projects/add'
+      path: '/projects/add'
+      fullPath: '/projects/add'
+      preLoaderRoute: typeof AuthenticatedProjectsAddImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/resources/$id': {
+      id: '/_authenticated/resources/$id'
+      path: '/resources/$id'
+      fullPath: '/resources/$id'
+      preLoaderRoute: typeof AuthenticatedResourcesIdImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/resources/add': {
+      id: '/_authenticated/resources/add'
+      path: '/resources/add'
+      fullPath: '/resources/add'
+      preLoaderRoute: typeof AuthenticatedResourcesAddImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/settings/account': {
       id: '/_authenticated/settings/account'
       path: '/account'
@@ -604,11 +664,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAskAiIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/projects/': {
+      id: '/_authenticated/projects/'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof AuthenticatedProjectsIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/resources/': {
+      id: '/_authenticated/resources/'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof AuthenticatedResourcesIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/setup/': {
+      id: '/_authenticated/setup/'
+      path: '/setup'
+      fullPath: '/setup'
+      preLoaderRoute: typeof AuthenticatedSetupIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/subscribed-emails/': {
       id: '/_authenticated/subscribed-emails/'
       path: '/subscribed-emails'
       fullPath: '/subscribed-emails'
       preLoaderRoute: typeof AuthenticatedSubscribedEmailsIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/users/': {
+      id: '/_authenticated/users/'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthenticatedUsersIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_public/login/': {
@@ -632,25 +720,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsIndexLazyImport
       parentRoute: typeof AuthenticatedSettingsRouteLazyImport
     }
-    '/_authenticated/tags/': {
-      id: '/_authenticated/tags/'
-      path: '/tags'
-      fullPath: '/tags'
-      preLoaderRoute: typeof AuthenticatedTagsIndexLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
     '/_authenticated/tasks/': {
       id: '/_authenticated/tasks/'
       path: '/tasks'
       fullPath: '/tasks'
       preLoaderRoute: typeof AuthenticatedTasksIndexLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/users/': {
-      id: '/_authenticated/users/'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AuthenticatedUsersIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/blogs/$blogId/': {
@@ -665,6 +739,13 @@ declare module '@tanstack/react-router' {
       path: '/blogs/add'
       fullPath: '/blogs/add'
       preLoaderRoute: typeof AuthenticatedBlogsAddIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/database/export/': {
+      id: '/_authenticated/database/export/'
+      path: '/database/export'
+      fullPath: '/database/export'
+      preLoaderRoute: typeof AuthenticatedDatabaseExportIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/events/$eventId/': {
@@ -744,13 +825,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrganizationsListIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
-    '/_authenticated/tags/add/': {
-      id: '/_authenticated/tags/add/'
-      path: '/tags/add'
-      fullPath: '/tags/add'
-      preLoaderRoute: typeof AuthenticatedTagsAddIndexLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
   }
 }
 
@@ -790,14 +864,21 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBlogAddRoute: typeof AuthenticatedBlogAddRoute
   AuthenticatedBlogListRoute: typeof AuthenticatedBlogListRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
+  AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
+  AuthenticatedProjectsAddRoute: typeof AuthenticatedProjectsAddRoute
+  AuthenticatedResourcesIdRoute: typeof AuthenticatedResourcesIdRoute
+  AuthenticatedResourcesAddRoute: typeof AuthenticatedResourcesAddRoute
   AuthenticatedAskAiIndexRoute: typeof AuthenticatedAskAiIndexRoute
+  AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
+  AuthenticatedResourcesIndexRoute: typeof AuthenticatedResourcesIndexRoute
+  AuthenticatedSetupIndexRoute: typeof AuthenticatedSetupIndexRoute
   AuthenticatedSubscribedEmailsIndexRoute: typeof AuthenticatedSubscribedEmailsIndexRoute
+  AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
-  AuthenticatedTagsIndexLazyRoute: typeof AuthenticatedTagsIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
-  AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
   AuthenticatedBlogsBlogIdIndexRoute: typeof AuthenticatedBlogsBlogIdIndexRoute
   AuthenticatedBlogsAddIndexRoute: typeof AuthenticatedBlogsAddIndexRoute
+  AuthenticatedDatabaseExportIndexRoute: typeof AuthenticatedDatabaseExportIndexRoute
   AuthenticatedEventsEventIdIndexRoute: typeof AuthenticatedEventsEventIdIndexRoute
   AuthenticatedEventsAddIndexRoute: typeof AuthenticatedEventsAddIndexRoute
   AuthenticatedEventsListIndexRoute: typeof AuthenticatedEventsListIndexRoute
@@ -809,7 +890,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOpportunitiesListIndexRoute: typeof AuthenticatedOpportunitiesListIndexRoute
   AuthenticatedOrganizationsAddIndexRoute: typeof AuthenticatedOrganizationsAddIndexRoute
   AuthenticatedOrganizationsListIndexRoute: typeof AuthenticatedOrganizationsListIndexRoute
-  AuthenticatedTagsAddIndexLazyRoute: typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -821,15 +901,22 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBlogAddRoute: AuthenticatedBlogAddRoute,
   AuthenticatedBlogListRoute: AuthenticatedBlogListRoute,
   AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
+  AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
+  AuthenticatedProjectsAddRoute: AuthenticatedProjectsAddRoute,
+  AuthenticatedResourcesIdRoute: AuthenticatedResourcesIdRoute,
+  AuthenticatedResourcesAddRoute: AuthenticatedResourcesAddRoute,
   AuthenticatedAskAiIndexRoute: AuthenticatedAskAiIndexRoute,
+  AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
+  AuthenticatedResourcesIndexRoute: AuthenticatedResourcesIndexRoute,
+  AuthenticatedSetupIndexRoute: AuthenticatedSetupIndexRoute,
   AuthenticatedSubscribedEmailsIndexRoute:
     AuthenticatedSubscribedEmailsIndexRoute,
+  AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
-  AuthenticatedTagsIndexLazyRoute: AuthenticatedTagsIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
-  AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
   AuthenticatedBlogsBlogIdIndexRoute: AuthenticatedBlogsBlogIdIndexRoute,
   AuthenticatedBlogsAddIndexRoute: AuthenticatedBlogsAddIndexRoute,
+  AuthenticatedDatabaseExportIndexRoute: AuthenticatedDatabaseExportIndexRoute,
   AuthenticatedEventsEventIdIndexRoute: AuthenticatedEventsEventIdIndexRoute,
   AuthenticatedEventsAddIndexRoute: AuthenticatedEventsAddIndexRoute,
   AuthenticatedEventsListIndexRoute: AuthenticatedEventsListIndexRoute,
@@ -846,7 +933,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedOrganizationsAddIndexRoute,
   AuthenticatedOrganizationsListIndexRoute:
     AuthenticatedOrganizationsListIndexRoute,
-  AuthenticatedTagsAddIndexLazyRoute: AuthenticatedTagsAddIndexLazyRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -882,20 +968,27 @@ export interface FileRoutesByFullPath {
   '/blog/add': typeof AuthenticatedBlogAddRoute
   '/blog/list': typeof AuthenticatedBlogListRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/projects/add': typeof AuthenticatedProjectsAddRoute
+  '/resources/$id': typeof AuthenticatedResourcesIdRoute
+  '/resources/add': typeof AuthenticatedResourcesAddRoute
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
+  '/projects': typeof AuthenticatedProjectsIndexRoute
+  '/resources': typeof AuthenticatedResourcesIndexRoute
+  '/setup': typeof AuthenticatedSetupIndexRoute
   '/subscribed-emails': typeof AuthenticatedSubscribedEmailsIndexRoute
+  '/users': typeof AuthenticatedUsersIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
-  '/tags': typeof AuthenticatedTagsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
-  '/users': typeof AuthenticatedUsersIndexLazyRoute
   '/blogs/$blogId': typeof AuthenticatedBlogsBlogIdIndexRoute
   '/blogs/add': typeof AuthenticatedBlogsAddIndexRoute
+  '/database/export': typeof AuthenticatedDatabaseExportIndexRoute
   '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
   '/events/add': typeof AuthenticatedEventsAddIndexRoute
   '/events/list': typeof AuthenticatedEventsListIndexRoute
@@ -907,7 +1000,6 @@ export interface FileRoutesByFullPath {
   '/opportunities/list': typeof AuthenticatedOpportunitiesListIndexRoute
   '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
   '/organizations/list': typeof AuthenticatedOrganizationsListIndexRoute
-  '/tags/add': typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -927,20 +1019,27 @@ export interface FileRoutesByTo {
   '/blog/add': typeof AuthenticatedBlogAddRoute
   '/blog/list': typeof AuthenticatedBlogListRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/projects/add': typeof AuthenticatedProjectsAddRoute
+  '/resources/$id': typeof AuthenticatedResourcesIdRoute
+  '/resources/add': typeof AuthenticatedResourcesAddRoute
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
+  '/projects': typeof AuthenticatedProjectsIndexRoute
+  '/resources': typeof AuthenticatedResourcesIndexRoute
+  '/setup': typeof AuthenticatedSetupIndexRoute
   '/subscribed-emails': typeof AuthenticatedSubscribedEmailsIndexRoute
+  '/users': typeof AuthenticatedUsersIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
-  '/tags': typeof AuthenticatedTagsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
-  '/users': typeof AuthenticatedUsersIndexLazyRoute
   '/blogs/$blogId': typeof AuthenticatedBlogsBlogIdIndexRoute
   '/blogs/add': typeof AuthenticatedBlogsAddIndexRoute
+  '/database/export': typeof AuthenticatedDatabaseExportIndexRoute
   '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
   '/events/add': typeof AuthenticatedEventsAddIndexRoute
   '/events/list': typeof AuthenticatedEventsListIndexRoute
@@ -952,7 +1051,6 @@ export interface FileRoutesByTo {
   '/opportunities/list': typeof AuthenticatedOpportunitiesListIndexRoute
   '/organizations/add': typeof AuthenticatedOrganizationsAddIndexRoute
   '/organizations/list': typeof AuthenticatedOrganizationsListIndexRoute
-  '/tags/add': typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -976,20 +1074,27 @@ export interface FileRoutesById {
   '/_authenticated/blog/add': typeof AuthenticatedBlogAddRoute
   '/_authenticated/blog/list': typeof AuthenticatedBlogListRoute
   '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/_authenticated/projects/add': typeof AuthenticatedProjectsAddRoute
+  '/_authenticated/resources/$id': typeof AuthenticatedResourcesIdRoute
+  '/_authenticated/resources/add': typeof AuthenticatedResourcesAddRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/_authenticated/ask-ai/': typeof AuthenticatedAskAiIndexRoute
+  '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
+  '/_authenticated/resources/': typeof AuthenticatedResourcesIndexRoute
+  '/_authenticated/setup/': typeof AuthenticatedSetupIndexRoute
   '/_authenticated/subscribed-emails/': typeof AuthenticatedSubscribedEmailsIndexRoute
+  '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
-  '/_authenticated/tags/': typeof AuthenticatedTagsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
-  '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
   '/_authenticated/blogs/$blogId/': typeof AuthenticatedBlogsBlogIdIndexRoute
   '/_authenticated/blogs/add/': typeof AuthenticatedBlogsAddIndexRoute
+  '/_authenticated/database/export/': typeof AuthenticatedDatabaseExportIndexRoute
   '/_authenticated/events/$eventId/': typeof AuthenticatedEventsEventIdIndexRoute
   '/_authenticated/events/add/': typeof AuthenticatedEventsAddIndexRoute
   '/_authenticated/events/list/': typeof AuthenticatedEventsListIndexRoute
@@ -1001,7 +1106,6 @@ export interface FileRoutesById {
   '/_authenticated/opportunities/list/': typeof AuthenticatedOpportunitiesListIndexRoute
   '/_authenticated/organizations/add/': typeof AuthenticatedOrganizationsAddIndexRoute
   '/_authenticated/organizations/list/': typeof AuthenticatedOrganizationsListIndexRoute
-  '/_authenticated/tags/add/': typeof AuthenticatedTagsAddIndexLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -1024,20 +1128,27 @@ export interface FileRouteTypes {
     | '/blog/add'
     | '/blog/list'
     | '/dashboard/profile'
+    | '/projects/$id'
+    | '/projects/add'
+    | '/resources/$id'
+    | '/resources/add'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
     | '/ask-ai'
+    | '/projects'
+    | '/resources'
+    | '/setup'
     | '/subscribed-emails'
+    | '/users'
     | '/login'
     | '/help-center'
     | '/settings/'
-    | '/tags'
     | '/tasks'
-    | '/users'
     | '/blogs/$blogId'
     | '/blogs/add'
+    | '/database/export'
     | '/events/$eventId'
     | '/events/add'
     | '/events/list'
@@ -1049,7 +1160,6 @@ export interface FileRouteTypes {
     | '/opportunities/list'
     | '/organizations/add'
     | '/organizations/list'
-    | '/tags/add'
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
@@ -1068,20 +1178,27 @@ export interface FileRouteTypes {
     | '/blog/add'
     | '/blog/list'
     | '/dashboard/profile'
+    | '/projects/$id'
+    | '/projects/add'
+    | '/resources/$id'
+    | '/resources/add'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
     | '/ask-ai'
+    | '/projects'
+    | '/resources'
+    | '/setup'
     | '/subscribed-emails'
+    | '/users'
     | '/login'
     | '/help-center'
     | '/settings'
-    | '/tags'
     | '/tasks'
-    | '/users'
     | '/blogs/$blogId'
     | '/blogs/add'
+    | '/database/export'
     | '/events/$eventId'
     | '/events/add'
     | '/events/list'
@@ -1093,7 +1210,6 @@ export interface FileRouteTypes {
     | '/opportunities/list'
     | '/organizations/add'
     | '/organizations/list'
-    | '/tags/add'
   id:
     | '__root__'
     | '/_authenticated'
@@ -1115,20 +1231,27 @@ export interface FileRouteTypes {
     | '/_authenticated/blog/add'
     | '/_authenticated/blog/list'
     | '/_authenticated/dashboard/profile'
+    | '/_authenticated/projects/$id'
+    | '/_authenticated/projects/add'
+    | '/_authenticated/resources/$id'
+    | '/_authenticated/resources/add'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
     | '/_authenticated/ask-ai/'
+    | '/_authenticated/projects/'
+    | '/_authenticated/resources/'
+    | '/_authenticated/setup/'
     | '/_authenticated/subscribed-emails/'
+    | '/_authenticated/users/'
     | '/_public/login/'
     | '/_authenticated/help-center/'
     | '/_authenticated/settings/'
-    | '/_authenticated/tags/'
     | '/_authenticated/tasks/'
-    | '/_authenticated/users/'
     | '/_authenticated/blogs/$blogId/'
     | '/_authenticated/blogs/add/'
+    | '/_authenticated/database/export/'
     | '/_authenticated/events/$eventId/'
     | '/_authenticated/events/add/'
     | '/_authenticated/events/list/'
@@ -1140,7 +1263,6 @@ export interface FileRouteTypes {
     | '/_authenticated/opportunities/list/'
     | '/_authenticated/organizations/add/'
     | '/_authenticated/organizations/list/'
-    | '/_authenticated/tags/add/'
   fileRoutesById: FileRoutesById
 }
 
@@ -1208,14 +1330,21 @@ export const routeTree = rootRoute
         "/_authenticated/blog/add",
         "/_authenticated/blog/list",
         "/_authenticated/dashboard/profile",
+        "/_authenticated/projects/$id",
+        "/_authenticated/projects/add",
+        "/_authenticated/resources/$id",
+        "/_authenticated/resources/add",
         "/_authenticated/ask-ai/",
+        "/_authenticated/projects/",
+        "/_authenticated/resources/",
+        "/_authenticated/setup/",
         "/_authenticated/subscribed-emails/",
-        "/_authenticated/help-center/",
-        "/_authenticated/tags/",
-        "/_authenticated/tasks/",
         "/_authenticated/users/",
+        "/_authenticated/help-center/",
+        "/_authenticated/tasks/",
         "/_authenticated/blogs/$blogId/",
         "/_authenticated/blogs/add/",
+        "/_authenticated/database/export/",
         "/_authenticated/events/$eventId/",
         "/_authenticated/events/add/",
         "/_authenticated/events/list/",
@@ -1226,8 +1355,7 @@ export const routeTree = rootRoute
         "/_authenticated/opportunities/add/",
         "/_authenticated/opportunities/list/",
         "/_authenticated/organizations/add/",
-        "/_authenticated/organizations/list/",
-        "/_authenticated/tags/add/"
+        "/_authenticated/organizations/list/"
       ]
     },
     "/_public": {
@@ -1301,6 +1429,22 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/dashboard/profile.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/projects/$id": {
+      "filePath": "_authenticated/projects/$id.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/projects/add": {
+      "filePath": "_authenticated/projects/add.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/resources/$id": {
+      "filePath": "_authenticated/resources/$id.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/resources/add": {
+      "filePath": "_authenticated/resources/add.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/settings/account": {
       "filePath": "_authenticated/settings/account.lazy.tsx",
       "parent": "/_authenticated/settings"
@@ -1321,8 +1465,24 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/ask-ai/index.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/projects/": {
+      "filePath": "_authenticated/projects/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/resources/": {
+      "filePath": "_authenticated/resources/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/setup/": {
+      "filePath": "_authenticated/setup/index.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/subscribed-emails/": {
       "filePath": "_authenticated/subscribed-emails/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/users/": {
+      "filePath": "_authenticated/users/index.tsx",
       "parent": "/_authenticated"
     },
     "/_public/login/": {
@@ -1337,16 +1497,8 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/settings/index.lazy.tsx",
       "parent": "/_authenticated/settings"
     },
-    "/_authenticated/tags/": {
-      "filePath": "_authenticated/tags/index.lazy.tsx",
-      "parent": "/_authenticated"
-    },
     "/_authenticated/tasks/": {
       "filePath": "_authenticated/tasks/index.lazy.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/users/": {
-      "filePath": "_authenticated/users/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/blogs/$blogId/": {
@@ -1355,6 +1507,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/blogs/add/": {
       "filePath": "_authenticated/blogs/add/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/database/export/": {
+      "filePath": "_authenticated/database/export/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/events/$eventId/": {
@@ -1399,10 +1555,6 @@ export const routeTree = rootRoute
     },
     "/_authenticated/organizations/list/": {
       "filePath": "_authenticated/organizations/list/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/tags/add/": {
-      "filePath": "_authenticated/tags/add/index.lazy.tsx",
       "parent": "/_authenticated"
     }
   }

@@ -3,6 +3,7 @@ import { BlogResponseDto } from '@/query/blogs/use-blogs'
 import { Badge } from '@/ui/shadcn/badge'
 import { DataTableColumnHeader } from '../../../../ui/data-table/data-table-column-header'
 import BlogRowAction from '../components/blog-row-actions'
+import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 
 export const useBlogsColumns = () => {
   const columns: ColumnDef<BlogResponseDto>[] = [
@@ -14,13 +15,19 @@ export const useBlogsColumns = () => {
         const imageUrl = bannerImageUrl || 'images/logo.png'
 
         return (
-          <div className='flex items-center justify-center'>
-            <img
-              src={imageUrl}
-              alt={title}
-              className='h-[80px] w-[80px] rounded object-cover'
-            />
-          </div>
+          <ImagePreviewDialog
+            src={imageUrl}
+            alt={title}
+            trigger={
+              <div className='flex cursor-pointer items-center justify-center transition-opacity hover:opacity-80'>
+                <img
+                  src={imageUrl}
+                  alt={title}
+                  className='h-[80px] w-[80px] rounded object-cover'
+                />
+              </div>
+            }
+          />
         )
       },
       enableSorting: false,

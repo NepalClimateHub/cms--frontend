@@ -21,7 +21,7 @@ import { TagsListActionButtons } from './components/tags-list-action-buttons'
 import { useTagsColumns } from './hooks/use-tags-columns'
 import { tagsFilterOptions } from './tags-filter-options'
 
-export default function Tags() {
+export default function Tags({ embedded = false }: { embedded?: boolean }) {
   const [addDialogOpen, setAddDialogOpen] = useState(false)
 
   const tagColumns = useTagsColumns()
@@ -54,34 +54,25 @@ export default function Tags() {
     return <BoxLoader />
   }
 
-  return (
+  const content = (
     <>
-      <Main>
-        <PageHeader
-          title='Tags'
-          description='Manage tags for your resources!'
-          actions={
-            <TagsListActionButtons setAddDialogOpen={setAddDialogOpen} />
+      <div className='mb-2 mt-4'>
+        <DataTableToolbar
+          table={table}
+          filterComponent={
+            <TagsFilters filterOptions={filterOptions} setPage={setPage} />
           }
         />
-        <div className='mb-2 mt-4'>
-          <DataTableToolbar
-            table={table}
-            filterComponent={
-              <TagsFilters filterOptions={filterOptions} setPage={setPage} />
-            }
-          />
-        </div>
-        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <DataTable loading={isLoading} table={table} />
-        </div>
-        <div className='mt-4'>
-          <DataTablePagination
-            totalCount={(tagsMeta.count ?? 0) as number}
-            paginationOptions={paginationOptions}
-          />
-        </div>
-      </Main>
+      </div>
+      <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+        <DataTable loading={isLoading} table={table} />
+      </div>
+      <div className='mt-4'>
+        <DataTablePagination
+          totalCount={(tagsMeta.count ?? 0) as number}
+          paginationOptions={paginationOptions}
+        />
+      </div>
       <AddTagDialog
         open={addDialogOpen}
         onClose={() => {
@@ -89,5 +80,35 @@ export default function Tags() {
         }}
       />
     </>
+  )
+
+  if (embedded) {
+    return (
+      <div className='px-4'>
+        <div className='flex items-center justify-between'>
+          <div>
+            <h2 className='text-2xl font-bold tracking-tight'>Tags</h2>
+            <p className='text-muted-foreground'>
+              Manage tags for your resources!
+            </p>
+          </div>
+          <TagsListActionButtons setAddDialogOpen={setAddDialogOpen} />
+        </div>
+        {content}
+      </div>
+    )
+  }
+
+  return (
+    <Main>
+      <PageHeader
+        title='Tags'
+        description='Manage tags for your resources!'
+        actions={
+          <TagsListActionButtons setAddDialogOpen={setAddDialogOpen} />
+        }
+      />
+      {content}
+    </Main>
   )
 }

@@ -6,7 +6,6 @@ import {
   Users,
   Briefcase,
   BarChart3,
-  Tags,
   Newspaper,
   Settings,
 } from 'lucide-react'
@@ -48,11 +47,6 @@ export const adminNavItems = [
     icon: Newspaper,
   },
   {
-    title: 'Tags',
-    href: '/tags/list',
-    icon: Tags,
-  },
-  {
     title: 'Analytics',
     href: '/analytics',
     icon: BarChart3,
@@ -60,6 +54,11 @@ export const adminNavItems = [
   {
     title: 'Settings',
     href: '/settings',
+    icon: Settings,
+  },
+  {
+    title: 'Setup',
+    href: '/setup',
     icon: Settings,
   },
 ]

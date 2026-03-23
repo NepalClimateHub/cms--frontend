@@ -6,6 +6,7 @@ const TAG_EVENT = 'isEventTag'
 const TAG_OPPORTUNITY = 'isOpportunityTag'
 const TAG_NEWS = 'isNewsTag'
 const TAG_BLOG = 'isBlogTag'
+const TAG_PROJECT = 'isProjectTag'
 
 export const TAG_TYPES = [
   { name: TAG_USER, label: 'User Tag' },
@@ -14,6 +15,8 @@ export const TAG_TYPES = [
   { name: TAG_NEWS, label: 'News Tag' },
   { name: TAG_OPPORTUNITY, label: 'Opportunity Tag' },
   { name: TAG_BLOG, label: 'Blog Tag' },
+  { name: TAG_PROJECT, label: 'Project Tag' },
+  { name: 'isResourceTag', label: 'Resource Tag' },
 ]
 
 export const tagFormSchema = z.object({
@@ -26,7 +29,7 @@ export const tagFormSchema = z.object({
       message: 'Tag name must not be longer than 30 characters.',
     }),
   tagType: z.enum(
-    [TAG_USER, TAG_EVENT, TAG_NEWS, TAG_OPPORTUNITY, TAG_ORG, TAG_BLOG],
+    [TAG_USER, TAG_EVENT, TAG_NEWS, TAG_OPPORTUNITY, TAG_ORG, TAG_BLOG, TAG_PROJECT, 'isResourceTag'],
     {
       required_error: 'Tag type is required.',
       invalid_type_error: 'Tag type must be one of the predefined types.',
@@ -44,6 +47,8 @@ export default interface Tags {
   isEventTag: boolean
   isNewsTag: boolean
   isOpportunityTag: boolean
+  isProjectTag: boolean
+  isResourceTag: boolean
 }
 
 export interface TagsInitializer {
@@ -53,6 +58,8 @@ export interface TagsInitializer {
   isEventTag?: boolean
   isNewsTag?: boolean
   isOpportunityTag?: boolean
+  isProjectTag?: boolean
+  isResourceTag?: boolean
 }
 
 export type TagsType =
@@ -62,3 +69,5 @@ export type TagsType =
   | 'NEWS'
   | 'BLOG'
   | 'OPPORTUNITY'
+  | 'PROJECT'
+  | 'RESOURCE'

@@ -1,5 +1,5 @@
 import React, { Suspense, useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import {
   emailSubscriptionControllerFindAll,
   emailSubscriptionControllerRemove,
@@ -10,8 +10,17 @@ import { cn } from '@/ui/shadcn/lib/utils'
 import { X } from 'lucide-react'
 import { handleServerError } from '@/utils/handle-server-error'
 import { useToast } from '@/hooks/use-toast'
+import { getRoleFromToken } from '@/utils/jwt.util'
 
 export const Route = createFileRoute('/_authenticated/subscribed-emails/')({
+  beforeLoad: () => {
+    const role = getRoleFromToken()
+    if (role !== 'ADMIN') {
+      throw redirect({
+        to: '/',
+      })
+    }
+  },
   component: SubscribedEmailsPage,
 })
 
