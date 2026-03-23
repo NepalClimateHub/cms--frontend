@@ -31,10 +31,8 @@ const queryClient = new QueryClient({
         if (failureCount > 3 && import.meta.env.MODE === 'production')
           return false
 
-        return !(
-          error instanceof AxiosError &&
-          [401, 403].includes(error.response?.status ?? 0)
-        )
+        const status = (error as any)?.response?.status || (error as any)?.status || (error as any)?.error?.status;
+        return ![401, 403].includes(status ?? 0)
       },
       refetchOnWindowFocus: false,
       staleTime: 10 * 1000, // 10s
@@ -55,27 +53,34 @@ const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
-    onError: (error) => {
-      if (error instanceof AxiosError) {
-        if (error.response?.status === 401) {
-          toast({
-            variant: 'destructive',
-            title: 'Session expired!',
-          })
-          resetAuth()
-          const redirect = `${router.history.location.href}`
+    onError: (error: any) => {
+      // Handle 401 (Unauthorized) from both Axios and fetch client
+      const status = error.response?.status || error.status || error.error?.status;
+      
+      if (status === 401) {
+        toast({
+          variant: 'destructive',
+          title: 'Session expired!',
+        })
+        
+        // Correctly reset the auth store
+        resetAuth()
+        
+        // Redirect to login with the current path as redirect search param
+        const redirect = `${router.history.location.href}`
+        
+        // Small delay to ensure state updates and router readiness
+        setTimeout(() => {
           router.navigate({ to: '/login', search: { redirect } })
-        }
-        if (error.response?.status === 500) {
-          toast({
-            variant: 'destructive',
-            title: 'Internal Server Error!',
-          })
-          router.navigate({ to: '/500' })
-        }
-        if (error.response?.status === 403) {
-          // router.navigate("/forbidden", { replace: true });
-        }
+        }, 100)
+      }
+      
+      if (status === 500) {
+        toast({
+          variant: 'destructive',
+          title: 'Internal Server Error!',
+        })
+        router.navigate({ to: '/500' })
       }
     },
   }),
