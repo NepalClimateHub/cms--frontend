@@ -9,6 +9,7 @@ import {
   MessageCircle,
   Briefcase,
   Library,
+  Database,
 } from 'lucide-react'
 import { NavGroup } from '../types'
 
@@ -75,6 +76,11 @@ export const superAdminSidebarData: NavGroup[] = [
         title: 'Setup',
         url: '/setup',
         icon: IconSettings,
+      },
+      {
+        title: 'Database Export',
+        url: '/database/export',
+        icon: Database,
       },
     ],
   },
