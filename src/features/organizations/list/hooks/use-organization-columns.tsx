@@ -22,8 +22,6 @@ export const useOrganizationColumns = () => {
       cell: ({ row }) => {
         const { description } = row.original
 
-        console.log(row.original)
-
         return (
           <div className='flex space-x-2'>
             <div>{description}</div>
@@ -38,7 +36,9 @@ export const useOrganizationColumns = () => {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Email' />
       ),
-      cell: ({ row }) => <div>{row.getValue('email')}</div>,
+      cell: ({ row }) => (
+        <div>{row.original.email ?? '—'}</div>
+      ),
       enableSorting: false,
       enableHiding: false,
     },
@@ -47,7 +47,12 @@ export const useOrganizationColumns = () => {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Phone' />
       ),
-      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+      cell: ({ row }) => {
+        const { phoneCountryCode, phoneNumber } = row.original
+        const phone =
+          [phoneCountryCode, phoneNumber].filter(Boolean).join(' ') || '—'
+        return <div>{phone}</div>
+      },
     },
     {
       id: 'address',

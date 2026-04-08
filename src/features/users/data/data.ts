@@ -27,12 +27,37 @@ export const userTypes = [
     value: 'admin',
     icon: IconUserShield,
   },
+  {
+    label: 'Content Admin',
+    value: 'content_admin',
+    icon: IconUserShield,
+  },
+  {
+    label: 'Individual',
+    value: 'individual',
+    icon: IconCash,
+  },
+  {
+    label: 'Organization',
+    value: 'organization',
+    icon: IconUsersGroup,
+  },
 ] as const
 
 export const userTypeOptions = [
   {
+    label: 'Super Admin',
+    value: 'SUPER_ADMIN',
+    icon: IconShield,
+  },
+  {
     label: 'Admin',
     value: 'ADMIN',
+    icon: IconUserShield,
+  },
+  {
+    label: 'Content Admin',
+    value: 'CONTENT_ADMIN',
     icon: IconUserShield,
   },
   {

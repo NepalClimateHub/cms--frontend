@@ -1,12 +1,15 @@
-
+import { useState } from 'react'
+import { format } from 'date-fns'
+import { useNavigate } from '@tanstack/react-router'
 import { ColumnDef } from '@tanstack/react-table'
-import { ResourceResponseDto, useDeleteResource } from '@/query/resources/use-resources'
+import {
+  ResourceResponseDto,
+  useDeleteResource,
+} from '@/query/resources/use-resources'
+import { ConfirmDialog } from '@/ui/confirm-dialog'
+import { ContentModerationActions } from '@/ui/content-moderation-actions'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
-import { Eye, Edit, Trash2 } from 'lucide-react'
-import { useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import { ConfirmDialog } from '@/ui/confirm-dialog'
 import {
   Dialog,
   DialogContent,
@@ -16,7 +19,7 @@ import {
   DialogTrigger,
 } from '@/ui/shadcn/dialog'
 import { Separator } from '@/ui/shadcn/separator'
-import { format } from 'date-fns'
+import { Eye, Edit, Trash2 } from 'lucide-react'
 
 export const useResourceColumns = (): ColumnDef<ResourceResponseDto>[] => {
   const navigate = useNavigate()
@@ -35,18 +38,31 @@ export const useResourceColumns = (): ColumnDef<ResourceResponseDto>[] => {
     {
       accessorKey: 'type',
       header: 'Type',
-      cell: ({ row }) => <Badge variant="outline">{row.original.type.replace(/_/g, ' ')}</Badge>
+      cell: ({ row }) => (
+        <Badge variant='outline'>{row.original.type.replace(/_/g, ' ')}</Badge>
+      ),
     },
     {
       accessorKey: 'level',
       header: 'Level',
-      cell: ({ row }) => row.original.level ? <Badge variant="secondary">{row.original.level}</Badge> : '-'
+      cell: ({ row }) =>
+        row.original.level ? (
+          <Badge variant='secondary'>{row.original.level}</Badge>
+        ) : (
+          '-'
+        ),
     },
     {
       accessorKey: 'isDraft',
       header: 'Status',
       cell: ({ row }) => (
-        <Badge className={row.original.isDraft ? 'bg-yellow-500' : 'bg-green-500 hover:bg-green-600'}>
+        <Badge
+          className={
+            row.original.isDraft
+              ? 'bg-yellow-500'
+              : 'bg-green-500 hover:bg-green-600'
+          }
+        >
           {row.original.isDraft ? 'Draft' : 'Published'}
         </Badge>
       ),
@@ -64,7 +80,7 @@ export const useResourceColumns = (): ColumnDef<ResourceResponseDto>[] => {
             },
           })
         }
- 
+
         return (
           <>
             <ConfirmDialog
@@ -117,7 +133,13 @@ export const useResourceColumns = (): ColumnDef<ResourceResponseDto>[] => {
                               {resource.level}
                             </Badge>
                           )}
-                          <Badge className={resource.isDraft ? 'bg-yellow-100' : 'bg-green-100'}>
+                          <Badge
+                            className={
+                              resource.isDraft
+                                ? 'bg-yellow-100'
+                                : 'bg-green-100'
+                            }
+                          >
                             {resource.isDraft ? 'Draft' : 'Published'}
                           </Badge>
                         </div>
@@ -144,7 +166,12 @@ export const useResourceColumns = (): ColumnDef<ResourceResponseDto>[] => {
                           <h3 className='text-sm font-semibold text-muted-foreground'>
                             Link
                           </h3>
-                          <a href={resource.link} target='_blank' rel='noopener noreferrer' className='text-base text-blue-500 hover:underline'>
+                          <a
+                            href={resource.link}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='text-base text-blue-500 hover:underline'
+                          >
                             {resource.link}
                           </a>
                         </div>
@@ -186,29 +213,39 @@ export const useResourceColumns = (): ColumnDef<ResourceResponseDto>[] => {
                           <h3 className='text-sm font-semibold text-muted-foreground'>
                             Publication Year
                           </h3>
-                          <p className='text-base'>{resource.publicationYear}</p>
+                          <p className='text-base'>
+                            {resource.publicationYear}
+                          </p>
                         </div>
                       )}
                     </div>
 
                     {/* Tags Section */}
-                    {resource.tags && Array.isArray(resource.tags) && resource.tags.length > 0 && (
-                      <>
-                        <Separator />
-                        <div>
-                          <h3 className='mb-2 text-sm font-semibold text-muted-foreground'>
-                            Tags
-                          </h3>
-                          <div className='flex flex-wrap gap-2'>
-                            {resource.tags.map((tag: { id: string; tag: string }) => (
-                              <Badge key={tag.id} variant='outline' className='text-sm'>
-                                {tag.tag}
-                              </Badge>
-                            ))}
+                    {resource.tags &&
+                      Array.isArray(resource.tags) &&
+                      resource.tags.length > 0 && (
+                        <>
+                          <Separator />
+                          <div>
+                            <h3 className='mb-2 text-sm font-semibold text-muted-foreground'>
+                              Tags
+                            </h3>
+                            <div className='flex flex-wrap gap-2'>
+                              {resource.tags.map(
+                                (tag: { id: string; tag: string }) => (
+                                  <Badge
+                                    key={tag.id}
+                                    variant='outline'
+                                    className='text-sm'
+                                  >
+                                    {tag.tag}
+                                  </Badge>
+                                )
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </>
-                    )}
+                        </>
+                      )}
 
                     {/* Timestamps */}
                     <Separator />
@@ -219,6 +256,10 @@ export const useResourceColumns = (): ColumnDef<ResourceResponseDto>[] => {
                   </DialogDescription>
                 </DialogContent>
               </Dialog>
+              <ContentModerationActions
+                entityId={resource.id}
+                entityType='resource'
+              />
 
               <Button
                 size='sm'

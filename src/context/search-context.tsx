@@ -6,7 +6,14 @@ interface SearchContextType {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const SearchContext = React.createContext<SearchContextType | null>(null)
+const fallbackSearchContext: SearchContextType = {
+  open: false,
+  setOpen: () => undefined,
+}
+
+const SearchContext = React.createContext<SearchContextType>(
+  fallbackSearchContext
+)
 
 interface Props {
   children: React.ReactNode
@@ -36,11 +43,5 @@ export function SearchProvider({ children }: Props) {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useSearch = () => {
-  const searchContext = React.useContext(SearchContext)
-
-  if (!searchContext) {
-    throw new Error('useSearch has to be used within <SearchContext.Provider>')
-  }
-
-  return searchContext
+  return React.useContext(SearchContext)
 }

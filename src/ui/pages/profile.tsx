@@ -81,7 +81,7 @@ export default function ProfilePage() {
                     <Badge variant={user.isActive ? 'default' : 'secondary'}>
                       {user.isActive ? 'Active' : 'Inactive'}
                     </Badge>
-                    {user.isSuperAdmin && (
+                    {user.userType === 'SUPER_ADMIN' && (
                       <Badge variant='destructive'>
                         <Shield className='mr-1 h-3 w-3' />
                         Super Admin
@@ -141,7 +141,7 @@ export default function ProfilePage() {
                 <div className='flex items-center justify-between'>
                   <span className='text-sm font-medium'>Account Type</span>
                   <Badge variant='outline'>
-                    {user.isSuperAdmin ? 'Super Admin' : 'Standard User'}
+                    {user.userType === 'SUPER_ADMIN' ? 'Super Admin' : 'Standard User'}
                   </Badge>
                 </div>
                 <div className='flex items-center justify-between'>

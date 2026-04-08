@@ -76,10 +76,10 @@ export const columns: ColumnDef<User>[] = [
       <DataTableColumnHeader column={column} title='User Type' />
     ),
     cell: ({ row }) => {
-      const { userType, isSuperAdmin } = row.original
+      const { userType } = row.original
 
       // Show Superadmin if user is super admin
-      if (isSuperAdmin) {
+      if (userType === 'SUPER_ADMIN') {
         const superAdminType = userTypes.find(
           ({ value }) => value === 'superadmin'
         )
@@ -116,9 +116,9 @@ export const columns: ColumnDef<User>[] = [
       )
     },
     filterFn: (row, _id, value) => {
-      const { userType, isSuperAdmin } = row.original
+      const { userType } = row.original
       // Include superadmin in filter if checking for admin
-      if (isSuperAdmin && value.includes('ADMIN')) {
+      if (userType === 'SUPER_ADMIN' && value.includes('ADMIN')) {
         return true
       }
       return value.includes(userType)

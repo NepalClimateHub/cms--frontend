@@ -39,17 +39,12 @@ function RouteComponent() {
         fullName: userData.fullName,
         permissions: [], // Permissions not in UserOutput, will be empty
         isActive: userData.isAccountVerified,
-        isSuperAdmin: userData.isSuperAdmin,
-        organization: null, // Organization not in UserOutput
-        profilePhotoUrl:
-          (userData as { profilePhotoUrl?: string | null })?.profilePhotoUrl ||
-          null,
-        profilePhotoId:
-          (userData as { profilePhotoId?: string | null })?.profilePhotoId ||
-          null,
-        linkedin: (userData as { linkedin?: string | null })?.linkedin || null,
-        currentRole:
-          (userData as { currentRole?: string | null })?.currentRole || null,
+        userType: userData.userType,
+        organization: userData.organization ?? null,
+        profilePhotoUrl: userData.profilePhotoUrl ?? null,
+        profilePhotoId: userData.profilePhotoId ?? null,
+        linkedin: userData.linkedin ?? null,
+        currentRole: userData.currentRole ?? null,
         createdAt: userData.createdAt,
         updatedAt: userData.updatedAt,
       }

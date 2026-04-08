@@ -60,12 +60,17 @@ const mapUserOutputToUser = (user: UserOutput): User => {
   // Map status based on isAccountVerified
   const status = user.isAccountVerified ? 'active' : 'inactive'
 
-  // Map role based on isSuperAdmin and userType (keep for backward compatibility)
-  let role: 'superadmin' | 'admin' = 'admin'
-  if (user.isSuperAdmin) {
+  let role: User['role']
+  if (user.userType === 'SUPER_ADMIN') {
     role = 'superadmin'
-  } else {
+  } else if (user.userType === 'CONTENT_ADMIN') {
+    role = 'content_admin'
+  } else if (user.userType === 'ADMIN') {
     role = 'admin'
+  } else if (user.userType === 'ORGANIZATION') {
+    role = 'organization'
+  } else {
+    role = 'individual'
   }
 
   return {
@@ -78,7 +83,7 @@ const mapUserOutputToUser = (user: UserOutput): User => {
     status: status as 'active' | 'inactive' | 'invited' | 'suspended',
     role,
     userType: user.userType,
-    isSuperAdmin: user.isSuperAdmin,
+    isVerifiedByAdmin: (user as any)?.isVerifiedByAdmin || false,
     profilePhotoUrl: (user as any)?.profilePhotoUrl || null,
     createdAt: new Date(user.createdAt),
     updatedAt: new Date(user.updatedAt),

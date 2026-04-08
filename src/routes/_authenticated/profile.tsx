@@ -1,10 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
-import ProfilePage from '@/ui/pages/profile'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_authenticated/profile')({
-  component: RouteComponent,
+  beforeLoad: () => {
+    throw redirect({
+      to: '/dashboard/profile',
+      replace: true,
+    })
+  },
+  component: () => null,
 })
-
-function RouteComponent() {
-  return <ProfilePage />
-}

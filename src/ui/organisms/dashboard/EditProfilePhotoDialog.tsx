@@ -87,7 +87,11 @@ export default function EditProfilePhotoDialog({
               permissions: user?.permissions || [],
               isActive: profileData.data.isAccountVerified,
               isSuperAdmin: profileData.data.isSuperAdmin,
-              organization: user?.organization || null,
+              userType: profileData.data.userType,
+              organization:
+                profileData.data.organization ??
+                user?.organization ??
+                null,
               profilePhotoUrl:
                 (profileData.data as { profilePhotoUrl?: string | null })
                   ?.profilePhotoUrl || null,

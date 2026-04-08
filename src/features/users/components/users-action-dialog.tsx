@@ -25,15 +25,35 @@ import { ScrollArea } from '@/ui/shadcn/scroll-area'
 import { toast } from '@/hooks/use-toast'
 import { PasswordInput } from '@/ui/password-input'
 import { SelectDropdown } from '@/ui/select-dropdown'
+import { useAuthStore } from '@/stores/authStore'
+import { useUpdateUserByAdmin } from '@/query/users/use-users'
 import { userTypes } from '../data/data'
 import { User } from '../data/schema'
+
+function formRoleToApiPayload(role: User['role']) {
+  switch (role) {
+    case 'superadmin':
+      return { userType: 'SUPER_ADMIN' as const }
+    case 'admin':
+      return { userType: 'ADMIN' as const }
+    case 'content_admin':
+      return { userType: 'CONTENT_ADMIN' as const }
+    case 'organization':
+      return { userType: 'ORGANIZATION' as const }
+    case 'individual':
+    default:
+      return { userType: 'INDIVIDUAL' as const }
+  }
+}
 
 const formSchema = z
   .object({
     firstName: z.string().min(1, { message: 'First Name is required.' }),
     lastName: z.string().min(1, { message: 'Last Name is required.' }),
     username: z.string().min(1, { message: 'Username is required.' }),
-    phoneNumber: z.string().min(1, { message: 'Phone number is required.' }),
+    phoneNumber: z
+      .string()
+      .max(40, { message: 'Phone number must be at most 40 characters.' }),
     email: z
       .string()
       .min(1, { message: 'Email is required.' })
@@ -96,6 +116,10 @@ interface Props {
 
 export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
   const isEdit = !!currentRow
+  const updateUserMutation = useUpdateUserByAdmin()
+  /** Only DB-flagged super admins may change roles (not JWT role alone). */
+  const canEditRoles = useAuthStore((s) => s.user?.userType === 'SUPER_ADMIN')
+
   const form = useForm<UserForm>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
@@ -110,7 +134,7 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
           lastName: '',
           username: '',
           email: '',
-          role: '',
+          role: 'individual',
           phoneNumber: '',
           password: '',
           confirmPassword: '',
@@ -118,17 +142,71 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
         },
   })
 
-  const onSubmit = (values: UserForm) => {
-    form.reset()
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      ),
-    })
-    onOpenChange(false)
+  const onSubmit = async (values: UserForm) => {
+    if (!isEdit || !currentRow) {
+      toast({
+        title: 'Not available',
+        description:
+          'Creating users from this dialog is not supported. Use registration instead.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    const name = `${values.firstName} ${values.lastName}`.trim()
+    const body: {
+      name: string
+      password?: string
+      userType?: string
+      phoneNumber?: string | null
+    } = {
+      name,
+      phoneNumber: values.phoneNumber.trim() ? values.phoneNumber.trim() : null,
+    }
+    if (values.password.trim()) {
+      body.password = values.password
+    }
+    const isSuperAdminActor =
+      useAuthStore.getState().user?.userType === 'SUPER_ADMIN'
+    if (isSuperAdminActor) {
+      const rp = formRoleToApiPayload(values.role as User['role'])
+      body.userType = rp.userType
+    }
+
+    try {
+      await updateUserMutation.mutateAsync({ id: currentRow.id, body })
+      toast({
+        title: 'User updated',
+        description: 'Changes were saved successfully.',
+      })
+      form.reset()
+      onOpenChange(false)
+    } catch (e: unknown) {
+      const msg =
+        e &&
+        typeof e === 'object' &&
+        'response' in e &&
+        e.response &&
+        typeof e.response === 'object' &&
+        'data' in e.response
+          ? (() => {
+              const data = e.response.data as {
+                error?: { message?: string }
+                message?: string
+              }
+              return (
+                data?.error?.message ??
+                data?.message ??
+                'Could not update user.'
+              )
+            })()
+          : 'Could not update user.'
+      toast({
+        title: 'Update failed',
+        description: String(msg),
+        variant: 'destructive',
+      })
+    }
   }
 
   const isPasswordTouched = !!form.formState.dirtyFields.password
@@ -240,7 +318,10 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center gap-x-4 gap-y-1 space-y-0'>
                     <FormLabel className='col-span-2 text-right'>
-                      Phone Number
+                      Phone Number{' '}
+                      <span className='font-normal text-muted-foreground'>
+                        (optional)
+                      </span>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -266,6 +347,7 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                       onValueChange={field.onChange}
                       placeholder='Select a role'
                       className='col-span-4'
+                      disabled={isEdit && !canEditRoles}
                       items={userTypes.map(({ label, value }) => ({
                         label,
                         value,
@@ -318,8 +400,12 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
           </Form>
         </ScrollArea>
         <DialogFooter>
-          <Button type='submit' form='user-form'>
-            Save changes
+          <Button
+            type='submit'
+            form='user-form'
+            disabled={updateUserMutation.isPending}
+          >
+            {updateUserMutation.isPending ? 'Saving…' : 'Save changes'}
           </Button>
         </DialogFooter>
       </DialogContent>

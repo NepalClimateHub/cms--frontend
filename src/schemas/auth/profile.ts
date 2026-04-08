@@ -1,4 +1,4 @@
-import { OrganizationFormValues as Organization } from '@/schemas/organization/organization'
+import type { OrganizationProfile } from '@/schemas/auth/organization-profile'
 
 export type User = {
   id: string
@@ -6,8 +6,8 @@ export type User = {
   fullName: string
   permissions: string[]
   isActive: boolean
-  isSuperAdmin: boolean
-  organization: Organization | null
+  userType?: 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_ADMIN' | 'ORGANIZATION' | 'INDIVIDUAL'
+  organization: OrganizationProfile | null
   bio?: string | null
   linkedin?: string | null
   currentRole?: string | null

@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { Row } from '@tanstack/react-table'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
+import { IconEdit, IconTrash, IconCheck } from '@tabler/icons-react'
 import { Button } from '@/ui/shadcn/button'
 import {
   DropdownMenu,
@@ -12,6 +12,8 @@ import {
 } from '@/ui/shadcn/dropdown-menu'
 import { useUsers } from '../context/users-context'
 import { User } from '../data/schema'
+import { getRoleFromToken } from '@/utils/jwt.util'
+import { isVerificationAdmin } from '@/utils/role-check.util'
 
 interface DataTableRowActionsProps {
   row: Row<User>
@@ -19,6 +21,9 @@ interface DataTableRowActionsProps {
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useUsers()
+  const role = getRoleFromToken()
+  const canVerify = isVerificationAdmin(role)
+
   return (
     <>
       <DropdownMenu modal={false}>
@@ -43,6 +48,21 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
               <IconEdit size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
+
+          {canVerify && !row.original.isVerifiedByAdmin && (
+            <DropdownMenuItem
+              onClick={() => {
+                setCurrentRow(row.original)
+                setOpen('verify')
+              }}
+            >
+              Verify User
+              <DropdownMenuShortcut>
+                <IconCheck size={16} />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          )}
+
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {

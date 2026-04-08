@@ -59,7 +59,7 @@ const BlogForm: FC<Props> = ({
 }) => {
   const navigate = useNavigate()
   const { user } = useAuthStore()
-  const isAdmin = user?.isSuperAdmin === true
+  const isAdmin = user?.userType === 'SUPER_ADMIN' || user?.userType === 'ADMIN' || user?.userType === 'CONTENT_ADMIN'
 
   const { data: categoriesData, isLoading: categoriesLoading } = useGetCategories({
     type: CategoryType.BLOG,

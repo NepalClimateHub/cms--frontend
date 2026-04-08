@@ -3,6 +3,7 @@ import { useGetProfile } from '@/query/auth/use-auth'
 import ChangePasswordDialog from '@/ui/organisms/dashboard/ChangePasswordDialog'
 import EditProfileDialog from '@/ui/organisms/dashboard/EditProfileDialog'
 import EditProfilePhotoDialog from '@/ui/organisms/dashboard/EditProfilePhotoDialog'
+import OrganizationProfilePage from '@/ui/pages/dashboard/organization-profile'
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
@@ -28,6 +29,38 @@ import {
   Linkedin,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
+import type { UserOutput } from '@/api/types.gen'
+import type { User as AuthStoreUser } from '@/schemas/auth/profile'
+
+function authStoreUserToUserOutput(u: AuthStoreUser): UserOutput {
+  return {
+    id: u.id,
+    email: u.email,
+    fullName: u.fullName,
+    isAccountVerified: u.isActive,
+    userType: (u.userType ?? 'INDIVIDUAL') as UserOutput['userType'],
+    gender: {},
+    phoneCountryCode: {},
+    phoneNumber: {},
+    profilePhotoUrl: u.profilePhotoUrl ?? null,
+    profilePhotoId: u.profilePhotoId ?? null,
+    bio: u.bio ?? null,
+    linkedin: u.linkedin ?? null,
+    currentRole: u.currentRole ?? null,
+    createdAt: u.createdAt,
+    updatedAt: u.updatedAt,
+    organization: (u.organization ?? null) as UserOutput['organization'],
+  }
+}
+
+function shouldShowOrganizationProfile(
+  userType: string | undefined,
+  organization: UserOutput['organization'] | null | undefined
+): boolean {
+  const t = userType?.toString().trim().toUpperCase()
+  if (t === 'ORGANIZATION') return true
+  return Boolean(organization)
+}
 
 export default function UserProfilePage() {
   const { user: authUser } = useAuthStore()
@@ -68,6 +101,37 @@ export default function UserProfilePage() {
           </p>
         </div>
       </div>
+    )
+  }
+
+  const resolvedUserType = profileData?.userType ?? authUser?.userType
+  const resolvedOrganization =
+    profileData?.organization ?? authUser?.organization ?? null
+
+  const showOrganizationProfile = shouldShowOrganizationProfile(
+    resolvedUserType,
+    resolvedOrganization as UserOutput['organization'] | null | undefined
+  )
+
+  if (showOrganizationProfile) {
+    const userForOrgPage: UserOutput =
+      profileData != null
+        ? {
+            ...profileData,
+            userType: (resolvedUserType ??
+              profileData.userType) as UserOutput['userType'],
+            organization:
+              (resolvedOrganization as UserOutput['organization']) ??
+              profileData.organization ??
+              null,
+          }
+        : authStoreUserToUserOutput(authUser!)
+
+    return (
+      <OrganizationProfilePage
+        user={userForOrgPage}
+        onUserUpdated={() => refetch()}
+      />
     )
   }
 
@@ -144,7 +208,7 @@ export default function UserProfilePage() {
                 <div className='space-y-2'>
                   <h3 className='text-2xl font-semibold'>{user.fullName}</h3>
                   <div className='flex items-center gap-2'>
-                    {user.isSuperAdmin && (
+                    {user.userType === 'SUPER_ADMIN' && (
                       <Badge variant='destructive'>
                         <Shield className='mr-1 h-3 w-3' />
                         Super Admin

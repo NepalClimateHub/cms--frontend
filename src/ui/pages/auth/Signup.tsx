@@ -115,6 +115,10 @@ export default function SignUp() {
         password: data.password,
         email: data.orgEmail,
         userType: 'ORGANIZATION' as const,
+        orgName: data.orgName,
+        orgType: data.orgType + (data.orgTypeOther ? `: ${data.orgTypeOther}` : ''),
+        province: data.province,
+        district: data.district,
       },
     })
   }

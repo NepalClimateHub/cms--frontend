@@ -10,16 +10,20 @@ export const Route = createFileRoute('/_authenticated/')({
 
     // Get role from router state (set during login navigation)
     const routerState = useRouterState({
-      select: (s) => s.location.state as unknown as { role: 'ADMIN' | 'USER' },
+      select: (s) => s.location.state as unknown as { role: string },
     })
 
     // Use role from router state first, fallback to token if not available
     const role = routerState?.role || getRoleFromToken()
 
-    // Check if user is admin: role is 'ADMIN' OR user is super admin
-    const isAdmin = role === 'ADMIN' || user?.isSuperAdmin === true
+    // Check if user is admin-level: SUPER_ADMIN, ADMIN, CONTENT_ADMIN or legacy super admin flag
+    const isAdminLevel =
+      role === 'SUPER_ADMIN' ||
+      role === 'ADMIN' ||
+      role === 'CONTENT_ADMIN' ||
+      user?.isSuperAdmin === true
 
-    if (isAdmin) {
+    if (isAdminLevel) {
       return <AdminDashboardHomePage />
     } else if (role === 'USER') {
       return <DashboardHomepage />

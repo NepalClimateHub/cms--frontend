@@ -145,7 +145,11 @@ export default function EditProfileDialog({
           permissions: user?.permissions || [],
           isActive: profileData.data.isAccountVerified,
           isSuperAdmin: profileData.data.isSuperAdmin,
-          organization: user?.organization || null,
+          userType: profileData.data.userType,
+          organization:
+            profileData.data.organization ??
+            user?.organization ??
+            null,
           bio:
             (profileData.data as { bio?: string | null })?.bio ||
             user?.bio ||

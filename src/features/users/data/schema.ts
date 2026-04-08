@@ -9,7 +9,9 @@ const userStatusSchema = z.union([
 export type UserStatus = z.infer<typeof userStatusSchema>
 
 const userTypeSchema = z.union([
+  z.literal('SUPER_ADMIN'),
   z.literal('ADMIN'),
+  z.literal('CONTENT_ADMIN'),
   z.literal('ORGANIZATION'),
   z.literal('INDIVIDUAL'),
 ])
@@ -17,6 +19,9 @@ const userTypeSchema = z.union([
 const userRoleSchema = z.union([
   z.literal('superadmin'),
   z.literal('admin'),
+  z.literal('content_admin'),
+  z.literal('individual'),
+  z.literal('organization'),
 ])
 
 const userSchema = z.object({
@@ -29,7 +34,7 @@ const userSchema = z.object({
   status: userStatusSchema,
   role: userRoleSchema,
   userType: userTypeSchema,
-  isSuperAdmin: z.boolean(),
+  isVerifiedByAdmin: z.boolean().optional(),
   profilePhotoUrl: z.string().nullable().optional(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),

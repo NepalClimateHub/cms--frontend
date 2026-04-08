@@ -38,7 +38,9 @@ export function ProfileCard() {
           <div className='flex flex-1 items-center gap-2 overflow-hidden'>
             <div className='grid flex-1 text-left text-sm leading-tight'>
               <span className='truncate font-semibold'>
-                {user?.isSuperAdmin ? 'Super Admin' : user?.organization?.name}
+                {user?.userType === 'SUPER_ADMIN'
+                  ? 'Super Admin'
+                  : user?.organization?.name ?? user?.fullName}
               </span>
               <span className='truncate text-xs text-muted-foreground group-hover/profile-card:hidden'>
                 {user?.email}

@@ -18,6 +18,7 @@ import {
 import { Separator } from '@/ui/shadcn/separator'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
+import { ContentModerationActions } from '@/ui/content-moderation-actions'
 
 const OpportunitiesRowAction = ({ row }: { row: any }) => {
   const { mutate: deleteOpportunityMutation } = useDeleteOpportunity()
@@ -246,6 +247,10 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
           </DialogHeader>
         </DialogContent>
       </Dialog>
+      <ContentModerationActions
+        entityId={row.original.id}
+        entityType='opportunity'
+      />
 
       {/* Status Toggle Button */}
       <Button

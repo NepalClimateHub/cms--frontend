@@ -23,6 +23,7 @@ import {
   Newspaper,
 } from 'lucide-react'
 import { NewsResponseDto } from '@/api/types.gen'
+import { ContentModerationActions } from '@/ui/content-moderation-actions'
 
 type NewsRowActionProps = {
   row: Row<NewsResponseDto>
@@ -148,6 +149,7 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
           </div>
         </DialogContent>
       </Dialog>
+      <ContentModerationActions entityId={row.original.id} entityType='news' />
 
       {/* status trigger */}
       <Button

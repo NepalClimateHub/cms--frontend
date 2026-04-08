@@ -18,9 +18,20 @@ import { auth } from '../shared/routes'
 
 // Auth service functions
 export const getProfile = async (): Promise<UserOutput> => {
-  // Use the apiClient with the interceptor to ensure token is included
   const response = await apiClient.get(auth.profile.path)
-  return response?.data?.data as UserOutput
+  const body = response?.data as
+    | { data?: UserOutput; meta?: unknown }
+    | UserOutput
+    | undefined
+
+  if (body && typeof body === 'object' && 'data' in body && body.data) {
+    return body.data as UserOutput
+  }
+  if (body && typeof body === 'object' && 'id' in body && 'email' in body) {
+    return body as UserOutput
+  }
+
+  throw new Error('Invalid profile response')
 }
 
 export const login = async (
@@ -83,9 +94,11 @@ export const useLogin = () => {
           role: string
         }
 
+        const validRoles = ['SUPER_ADMIN', 'ADMIN', 'CONTENT_ADMIN', 'USER']
+
         if (
           !decoded?.role ||
-          (decoded?.role !== 'ADMIN' && decoded?.role !== 'USER')
+          !validRoles.includes(decoded?.role)
         ) {
           toast({
             title: 'Invalid Login',
@@ -97,7 +110,7 @@ export const useLogin = () => {
             to: '/',
             replace: true,
             // @ts-ignore
-            state: { role: decoded?.role as 'ADMIN' | 'USER' },
+            state: { role: decoded?.role },
           })
         }
       } else {
