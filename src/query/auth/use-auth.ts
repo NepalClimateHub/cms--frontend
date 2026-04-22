@@ -18,9 +18,20 @@ import { auth } from '../shared/routes'
 
 // Auth service functions
 export const getProfile = async (): Promise<UserOutput> => {
-  // Use the apiClient with the interceptor to ensure token is included
   const response = await apiClient.get(auth.profile.path)
-  return response?.data?.data as UserOutput
+  const body = response?.data as
+    | { data?: UserOutput; meta?: unknown }
+    | UserOutput
+    | undefined
+
+  if (body && typeof body === 'object' && 'data' in body && body.data) {
+    return body.data as UserOutput
+  }
+  if (body && typeof body === 'object' && 'id' in body && 'email' in body) {
+    return body as UserOutput
+  }
+
+  throw new Error('Invalid profile response')
 }
 
 export const login = async (
@@ -55,7 +66,9 @@ export const useLogin = () => {
     onError: (err: unknown) => {
       // Check if it's an unverified account error
       if (err && typeof err === 'object' && 'error' in err) {
-        const errorObj = err as any
+        const errorObj = err as unknown as {
+          error?: { message?: string; details?: { email?: string } }
+        }
         if (errorObj.error?.message === 'This account is not verified!') {
           // Redirect to OTP verification page with email
           const email = errorObj.error?.details?.email || ''
@@ -71,7 +84,7 @@ export const useLogin = () => {
     },
     onSuccess: (res) => {
       const { accessToken } = res.data
-      console.log('accessToken', accessToken)
+      // accessToken received
       if (accessToken) {
         setAccessToken(accessToken)
         // Update API client config with new token
@@ -80,13 +93,20 @@ export const useLogin = () => {
         const decoded = JSON.parse(
           atob(accessToken.split('.')[1])
         ) as unknown as {
-          role: string
+          role?: string
+          userType?: string
         }
 
-        if (
-          !decoded?.role ||
-          (decoded?.role !== 'ADMIN' && decoded?.role !== 'USER')
-        ) {
+        const validRoles = [
+          'SUPER_ADMIN',
+          'ADMIN',
+          'CONTENT_ADMIN',
+          'ORGANIZATION',
+          'INDIVIDUAL',
+        ]
+
+        const role = decoded?.role ?? decoded?.userType
+        if (!role || !validRoles.includes(role)) {
           toast({
             title: 'Invalid Login',
             variant: 'destructive',
@@ -96,8 +116,8 @@ export const useLogin = () => {
           navigate({
             to: '/',
             replace: true,
-            // @ts-ignore
-            state: { role: decoded?.role as 'ADMIN' | 'USER' },
+            // @ts-expect-error: fix later
+            state: { role },
           })
         }
       } else {
@@ -154,8 +174,9 @@ export const useResendVerification = () => {
     onError: (error: unknown) => {
       handleServerError(error)
     },
-    onSuccess: (res: any) => {
-      return res.data.data.message
+    onSuccess: (res: unknown) => {
+      const resObj = res as { data?: { data?: { message?: string } } }
+      void resObj?.data?.data?.message
     },
   })
 }
@@ -166,9 +187,9 @@ export const useChangePassword = () => {
     onError: (error: unknown) => {
       handleServerError(error)
     },
-    onSuccess: (res: any) => {
-      console.log('Change password response:', res)
-      const message = res?.data?.message || 'Password changed successfully!'
+    onSuccess: (res: unknown) => {
+      const resObj = res as { data?: { message?: string } }
+      const message = resObj?.data?.message || 'Password changed successfully!'
       toast({
         title: message,
         variant: 'default',

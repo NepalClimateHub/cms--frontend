@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { cleanObj } from '@/utils/obj-utils'
-import { toast, useToast } from '@/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import {
   blogControllerCreateBlogMutation,
   blogControllerGetPublishedBlogsOptions,
@@ -32,8 +32,10 @@ export interface BlogResponseDto {
   status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED'
   bannerImageUrl?: string
   bannerImageId?: string
-  tags?: Array<string>
+  tags?: Array<string | Record<string, unknown>>
   createdAt: string
+  updatedAt?: string
+  deletedAt?: string
   categoryId?: string
   categoryData?: Category
   authorUser?: {
@@ -110,9 +112,10 @@ export const useAddBlog = () => {
       navigate({ to: '/blog/list' })
     },
 
-    onError: (error: any) => {
+    onError: (error) => {
+      const errMsg = error instanceof Error ? error.message : 'Failed to add blog'
       toast({
-        title: (error as any)?.message ?? 'Failed to add blog',
+        title: errMsg,
         variant: 'destructive',
       })
     },
@@ -131,18 +134,29 @@ export const useGetBlogById = (_blogId: string) => {
 }
 
 export const useUpdateBlog = () => {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+
   return useMutation({
-    // @ts-ignore
-    ...blogControllerUpdateBlogMutation({}),
-    onSuccess: () => {
+    ...blogControllerUpdateBlogMutation(),
+    onSuccess: (_data, variables) => {
+      void queryClient.invalidateQueries(blogControllerFindAllBlogsOptions())
+      void queryClient.invalidateQueries(blogControllerGetPublishedBlogsOptions())
+      const id = variables.path?.id
+      if (id) {
+        void queryClient.invalidateQueries(
+          blogControllerFindBlogByIdOptions({ path: { id } })
+        )
+      }
       toast({
         title: 'Blog updated',
         variant: 'default',
       })
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const errMsg = error instanceof Error ? error.message : 'Failed to update blog'
       toast({
-        title: (error as any)?.message ?? 'Failed to update blog',
+        title: errMsg,
         variant: 'destructive',
       })
     },
@@ -163,9 +177,10 @@ export const useDeleteBlog = () => {
         variant: 'default',
       })
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const errMsg = error instanceof Error ? error.message : 'Failed to delete blog'
       toast({
-        title: (error as any)?.message ?? 'Failed to delete blog',
+        title: errMsg,
         variant: 'destructive',
       })
     },
@@ -192,9 +207,10 @@ export const useApproveBlog = () => {
         variant: 'default',
       })
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const errMsg = error instanceof Error ? error.message : 'Failed to approve blog'
       toast({
-        title: (error as any)?.message ?? 'Failed to approve blog',
+        title: errMsg,
         variant: 'destructive',
       })
     },
@@ -221,9 +237,10 @@ export const useRejectBlog = () => {
         variant: 'default',
       })
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const errMsg = error instanceof Error ? error.message : 'Failed to reject blog'
       toast({
-        title: (error as any)?.message ?? 'Failed to reject blog',
+        title: errMsg,
         variant: 'destructive',
       })
     },

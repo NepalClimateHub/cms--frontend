@@ -8,8 +8,10 @@ const userStatusSchema = z.union([
 ])
 export type UserStatus = z.infer<typeof userStatusSchema>
 
-const userTypeSchema = z.union([
+const roleEnumSchema = z.union([
+  z.literal('SUPER_ADMIN'),
   z.literal('ADMIN'),
+  z.literal('CONTENT_ADMIN'),
   z.literal('ORGANIZATION'),
   z.literal('INDIVIDUAL'),
 ])
@@ -17,7 +19,24 @@ const userTypeSchema = z.union([
 const userRoleSchema = z.union([
   z.literal('superadmin'),
   z.literal('admin'),
+  z.literal('content_admin'),
+  z.literal('individual'),
+  z.literal('organization'),
 ])
+
+const organizationListSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    logoImageUrl: z.string().optional().nullable(),
+    logoImageId: z.string().optional().nullable(),
+    verificationDocumentUrl: z.string().optional().nullable(),
+    verificationDocumentId: z.string().optional().nullable(),
+    verificationRequestRemarks: z.string().optional().nullable(),
+    verificationRequestedAt: z.string().optional().nullable(),
+  })
+  .nullable()
+  .optional()
 
 const userSchema = z.object({
   id: z.string(),
@@ -28,11 +47,14 @@ const userSchema = z.object({
   phoneNumber: z.string(),
   status: userStatusSchema,
   role: userRoleSchema,
-  userType: userTypeSchema,
-  isSuperAdmin: z.boolean(),
+  /** API `UserOutput.role` */
+  serverRole: roleEnumSchema,
+  isVerifiedByAdmin: z.boolean(),
   profilePhotoUrl: z.string().nullable().optional(),
+  bannerImageUrl: z.string().nullable().optional(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
+  organization: organizationListSchema,
 })
 export type User = z.infer<typeof userSchema>
 

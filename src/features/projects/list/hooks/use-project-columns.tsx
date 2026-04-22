@@ -3,7 +3,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import { ProjectResponseDto } from '@/query/projects/use-projects'
 
 import ProjectRowActions from '../components/project-row-actions'
-import { DataTableColumnHeader } from '@/ui/data-table/data-table-column-header'
+import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import { Badge } from '@/ui/shadcn/badge'
 import { format } from 'date-fns'
 

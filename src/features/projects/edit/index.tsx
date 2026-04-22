@@ -20,7 +20,7 @@ export default function EditProject() {
   const { data: project, isLoading: isProjectLoading } = useGetProject(id)
   const updateProjectMutation = useUpdateProject()
 
-  const { data: tagsData } = useGetTags({ limit: 100 })
+  const { data: tagsData } = useGetTags({ query: { limit: 100 } })
   const tagsOptions = ((tagsData?.data as unknown as Tag[]) || [])
      .filter((tag: Tag) => tag.isProjectTag)
     .map((tag: Tag) => ({
@@ -74,10 +74,13 @@ export default function EditProject() {
           })
           navigate({ to: '/projects' })
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
           toast({
             title: 'Failed to update project',
-            description: error?.message || 'Something went wrong while updating the project.',
+            description:
+              error instanceof Error
+                ? error.message
+                : 'Something went wrong while updating the project.',
             variant: 'destructive',
           })
         },

@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { EventFormValues } from '@/schemas/event'
 import { Badge } from '@/ui/shadcn/badge'
-import { DataTableColumnHeader } from '../../../../ui/data-table/data-table-column-header'
+import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import EventRowAction from '../components/event-row-actions'
 import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 
@@ -16,7 +16,7 @@ export const useEventsColumns = () => {
       id: 'image',
       header: () => <span>Image</span>,
       cell: ({ row }) => {
-        const { bannerImageUrl, title } = row.original as any
+        const { bannerImageUrl, title } = row.original
         const imageUrl = bannerImageUrl || 'images/logo.png'
 
         return (
@@ -107,7 +107,7 @@ export const useEventsColumns = () => {
     },
     {
       id: 'actions',
-      // @ts-ignore
+      // @ts-expect-error: fix later
       cell: ({ row }) => <EventRowAction row={row} />,
     },
   ]

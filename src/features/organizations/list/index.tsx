@@ -7,19 +7,19 @@ import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
 import { OrganizationResponseDto } from '@/api/types.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
-import { DataTable } from '@/ui/data-table/data-table'
-import { DataTablePagination } from '@/ui/data-table/data-table-pagination'
-import { DataTableToolbar } from '@/ui/data-table/data-table-toolbar'
+import { DataTable } from '@/ui/molecules/data-table/data-table'
+import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination'
+import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
 import { BoxLoader } from '@/ui/loader'
 import PageHeader from '@/ui/page-header'
 import OrganizationFilters from './components/organization-filters'
 import { useOrganizationColumns } from './hooks/use-organization-columns'
+import { organizationFilterOptions } from './organization-filter-options'
 
 const ListOrganizations = () => {
   const roleColumns = useOrganizationColumns()
   const paginationOptions = usePagination()
-  // @ts-expect-error - TODO: check type
-  const filterOptions = useFilters(OrganizationFilters)
+  const filterOptions = useFilters(organizationFilterOptions)
 
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
@@ -38,7 +38,6 @@ const ListOrganizations = () => {
 
   const table = useReactTable({
     data: roleData,
-    // @ts-expect-error - TODO: check type
     columns: roleColumns,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),

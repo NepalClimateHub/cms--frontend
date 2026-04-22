@@ -18,7 +18,7 @@ export default function AddProject() {
   const navigate = useNavigate()
   
   // Fetch tags for selection
-  const { data: tagsData } = useGetTags({ limit: 100 })
+  const { data: tagsData } = useGetTags({ query: { limit: 100 } })
   const tagsOptions = ((tagsData?.data as unknown as Tag[]) || [])
     .filter((tag: Tag) => tag.isProjectTag) // Filter for project tags if applicable, or use all
     .map((tag: Tag) => ({
@@ -51,10 +51,13 @@ export default function AddProject() {
         })
         navigate({ to: '/projects' })
       },
-      onError: (error: any) => {
+      onError: (error: unknown) => {
         toast({
           title: 'Failed to create project',
-          description: error?.message || 'Something went wrong while creating the project.',
+          description:
+            error instanceof Error
+              ? error.message
+              : 'Something went wrong while creating the project.',
           variant: 'destructive',
         })
       },

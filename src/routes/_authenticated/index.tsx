@@ -1,31 +1,38 @@
 import { createFileRoute, useRouterState } from '@tanstack/react-router'
 import AdminDashboardHomePage from '@/ui/pages/admin-dashboard'
+import IndividualDashboardHome from '@/ui/pages/dashboard/individual-dashboard-home'
+import OrganizationDashboardHome from '@/ui/pages/dashboard/organization-dashboard-home'
 import { useAuthStore } from '@/stores/authStore'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import DashboardHomepage from '../../ui/pages/dashboard'
 
+function AuthenticatedIndex() {
+  const { user } = useAuthStore()
+
+  const routerState = useRouterState({
+    select: (s) => s.location.state as unknown as { role: string },
+  })
+
+  const role = routerState?.role || getRoleFromToken()
+
+  const isAdminLevel =
+    role === 'SUPER_ADMIN' ||
+    role === 'ADMIN' ||
+    role === 'CONTENT_ADMIN' ||
+    user?.isSuperAdmin === true
+
+  if (isAdminLevel) {
+    return <AdminDashboardHomePage />
+  }
+  if (role === 'ORGANIZATION') {
+    return <OrganizationDashboardHome />
+  }
+  if (role === 'INDIVIDUAL') {
+    return <IndividualDashboardHome />
+  }
+  return <DashboardHomepage />
+}
+
 export const Route = createFileRoute('/_authenticated/')({
-  component: () => {
-    const { user } = useAuthStore()
-
-    // Get role from router state (set during login navigation)
-    const routerState = useRouterState({
-      select: (s) => s.location.state as unknown as { role: 'ADMIN' | 'USER' },
-    })
-
-    // Use role from router state first, fallback to token if not available
-    const role = routerState?.role || getRoleFromToken()
-
-    // Check if user is admin: role is 'ADMIN' OR user is super admin
-    const isAdmin = role === 'ADMIN' || user?.isSuperAdmin === true
-
-    if (isAdmin) {
-      return <AdminDashboardHomePage />
-    } else if (role === 'USER') {
-      return <DashboardHomepage />
-    }
-
-    // This should not happen due to beforeLoad, but handle gracefully
-    return null
-  },
+  component: AuthenticatedIndex,
 })

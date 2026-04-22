@@ -2,6 +2,8 @@ import { useUsers } from '../context/users-context'
 import { UsersActionDialog } from './users-action-dialog'
 import { UsersDeleteDialog } from './users-delete-dialog'
 import { UsersInviteDialog } from './users-invite-dialog'
+import { UsersOrgVerificationDialog } from './users-org-verification-dialog'
+import { UsersViewDialog } from './users-view-dialog'
 
 export function UsersDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useUsers()
@@ -21,6 +23,18 @@ export function UsersDialogs() {
 
       {currentRow && (
         <>
+          <UsersViewDialog
+            key={`user-view-${currentRow.id}`}
+            user={currentRow}
+            open={open === 'view'}
+            onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                setOpen(null)
+                setTimeout(() => setCurrentRow(null), 200)
+              }
+            }}
+          />
+
           <UsersActionDialog
             key={`user-edit-${currentRow.id}`}
             open={open === 'edit'}
@@ -43,6 +57,20 @@ export function UsersDialogs() {
               }, 500)
             }}
             currentRow={currentRow}
+          />
+
+          <UsersOrgVerificationDialog
+            key={`user-org-verification-${currentRow.id}`}
+            user={currentRow}
+            open={open === 'viewOrgVerification'}
+            onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 200)
+              }
+            }}
           />
         </>
       )}

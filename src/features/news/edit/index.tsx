@@ -41,7 +41,7 @@ const NewsEdit = () => {
         publishedDate: newsData?.publishedDate
           ? new Date(newsData?.publishedDate)
           : new Date(),
-        // @ts-expect-error - tags mapping type mismatch
+        // @ts-expect-error: fix later - tags mapping type mismatch
         tagIds: newsData?.tags?.map((tag: { id: string }) => tag?.id) || [],
       })
       hasReset.current = true
@@ -57,7 +57,7 @@ const NewsEdit = () => {
         path: {
           id: newsId,
         },
-        // @ts-expect-error - body type mismatch
+        // @ts-expect-error: fix later - body type mismatch
         body: values,
       },
       {

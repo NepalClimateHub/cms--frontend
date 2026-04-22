@@ -10,7 +10,7 @@ export const useGetOrganizations = (
 
   return useQuery({
     ...organizationControllerGetOneOrganizationOptions({
-      // @ts-expect-error - TODO: check type
+      // @ts-expect-error: fix later - TODO: check type
       query: {
         ...cleanQuery,
       },

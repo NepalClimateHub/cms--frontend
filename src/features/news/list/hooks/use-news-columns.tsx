@@ -2,7 +2,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/ui/shadcn/badge'
 import { ExternalLink } from 'lucide-react'
 import { NewsResponseDto } from '@/api/types.gen'
-import { DataTableColumnHeader } from '../../../../ui/data-table/data-table-column-header'
+import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import NewsRowAction from '../components/news-row-actions'
 
 export const useNewsColumns = () => {

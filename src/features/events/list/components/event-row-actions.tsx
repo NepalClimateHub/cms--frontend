@@ -4,6 +4,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
 import { useDeleteEvent, useUpdateEventStatus } from '@/query/events/use-events'
 import { EventFormValues } from '@/schemas/event'
+import { ContentModerationActions } from '@/ui/content-moderation-actions'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
@@ -252,6 +253,10 @@ const EventRowAction: FC<EventRowActionProps> = ({ row }) => {
           </div>
         </DialogContent>
       </Dialog>
+      <ContentModerationActions
+        entityId={row.original.id}
+        entityType='events'
+      />
 
       {/* status trigger */}
       <Button
