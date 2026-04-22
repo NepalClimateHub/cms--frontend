@@ -3,7 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/ui/shadcn/dialog'
@@ -90,7 +89,9 @@ export function UsersViewDialog({ user, open, onOpenChange }: Props) {
             </Avatar>
           </div>
           <div className='space-y-3 px-5 pb-5 pt-3 text-left'>
-            <DialogHeader className='space-y-1 text-left'></DialogHeader>
+            <DialogHeader className='space-y-1 text-left'>
+              <DialogTitle className='sr-only'>User profile</DialogTitle>
+            </DialogHeader>
             <div className='space-y-3'>
               <DetailRow label='Name' value={fullName} />
               <DetailRow label='Username' value={user.username} />

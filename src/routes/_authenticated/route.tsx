@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import Cookies from 'js-cookie'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { useGetProfile } from '@/query/auth/use-auth'
-import { User } from '@/schemas/auth/profile'
+import { mapUserOutputToAuthUser } from '@/utils/map-user-output'
 import { AppSidebar } from '@/ui/layouts/app-sidebar'
 import { BoxLoader } from '@/ui/loader'
 import { cn } from '@/ui/shadcn/lib/utils'
@@ -32,27 +32,11 @@ function RouteComponent() {
 
   useEffect(() => {
     if (userData) {
-      // Map UserOutput to User type
-      const mappedUser: User = {
-        id: userData.id,
-        email: userData.email,
-        fullName: userData.fullName,
-        permissions: [], // Permissions not in UserOutput, will be empty
-        isActive: userData.isEmailVerified,
-        isVerifiedByAdmin: userData.isVerifiedByAdmin,
-        isSuperAdmin: userData.isSuperAdmin,
-        role: userData.role,
-        organization: userData.organization ?? null,
-        profilePhotoUrl: userData.profilePhotoUrl ?? null,
-        profilePhotoId: userData.profilePhotoId ?? null,
-        linkedin: userData.linkedin ?? null,
-        currentRole: userData.currentRole ?? null,
-        createdAt: userData.createdAt,
-        updatedAt: userData.updatedAt,
-      }
-      setUser(mappedUser)
+      setUser(
+        mapUserOutputToAuthUser(userData, authUser?.organization ?? null)
+      )
     }
-  }, [userData, setUser])
+  }, [userData, setUser, authUser?.organization])
 
   // Show loader if profile is loading OR if user data doesn't match auth store user
   // This prevents showing the wrong menu when switching users

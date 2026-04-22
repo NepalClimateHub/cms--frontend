@@ -25,6 +25,10 @@ import { Textarea } from '@/ui/shadcn/textarea'
 import { Loader2 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { toast } from '@/hooks/use-toast'
+import {
+  mapUserOutputToAuthUser,
+  nullableString,
+} from '@/utils/map-user-output'
 
 const editProfileSchema = z.object({
   name: z
@@ -70,21 +74,29 @@ export default function EditProfileDialog({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
       name: profileData?.fullName || user?.fullName || '',
-      bio: String((profileData as unknown as Record<string, unknown>)?.bio || (user as unknown as Record<string, unknown>)?.bio || ''),
-      linkedin: String((profileData as unknown as Record<string, unknown>)?.linkedin || (user as unknown as Record<string, unknown>)?.linkedin || ''),
+      bio:
+        nullableString(profileData?.bio) ??
+        nullableString(user?.bio) ??
+        '',
+      linkedin:
+        nullableString(profileData?.linkedin) ??
+        nullableString(user?.linkedin) ??
+        '',
       currentRole:
-        String((profileData as unknown as Record<string, unknown>)?.currentRole || (user as unknown as Record<string, unknown>)?.currentRole || ''),
+        nullableString(profileData?.currentRole) ??
+        nullableString(user?.currentRole) ??
+        '',
     },
   })
 
   // Reset profile photo when dialog opens
   useEffect(() => {
     if (open && profileData) {
-      setProfilePhotoUrl(String((profileData as unknown as Record<string, unknown>)?.profilePhotoUrl || '') || null)
-      setProfilePhotoId(String((profileData as unknown as Record<string, unknown>)?.profilePhotoId || '') || null)
+      setProfilePhotoUrl(nullableString(profileData.profilePhotoUrl))
+      setProfilePhotoId(nullableString(profileData.profilePhotoId))
     } else if (open && user) {
-      setProfilePhotoUrl(String((user as unknown as Record<string, unknown>)?.profilePhotoUrl || '') || null)
-      setProfilePhotoId(String((user as unknown as Record<string, unknown>)?.profilePhotoId || '') || null)
+      setProfilePhotoUrl(user.profilePhotoUrl ?? null)
+      setProfilePhotoId(user.profilePhotoId ?? null)
     }
   }, [open, profileData, user])
 
@@ -93,16 +105,16 @@ export default function EditProfileDialog({
     if (open && profileData) {
       form.reset({
         name: profileData.fullName || '',
-        bio: String((profileData as unknown as Record<string, unknown>)?.bio || ''),
-        linkedin: String((profileData as unknown as Record<string, unknown>)?.linkedin || ''),
-        currentRole: String((profileData as unknown as Record<string, unknown>)?.currentRole || ''),
+        bio: nullableString(profileData.bio) ?? '',
+        linkedin: nullableString(profileData.linkedin) ?? '',
+        currentRole: nullableString(profileData.currentRole) ?? '',
       })
     } else if (open && user) {
       form.reset({
         name: user.fullName || '',
-        bio: String((user as unknown as Record<string, unknown>)?.bio || ''),
-        linkedin: String((user as unknown as Record<string, unknown>)?.linkedin || ''),
-        currentRole: String((user as unknown as Record<string, unknown>)?.currentRole || ''),
+        bio: user.bio ?? '',
+        linkedin: user.linkedin ?? '',
+        currentRole: user.currentRole ?? '',
       })
     }
   }, [open, profileData, user, form])
@@ -135,49 +147,11 @@ export default function EditProfileDialog({
       // Use PATCH /me endpoint to update current user's profile
       await apiClient.patch('/api/v1/users/me', updatePayload)
       // Refetch profile to get updated user data
-      const profileData = await refetchProfile()
-      if (profileData.data) {
-        // Map UserOutput to User type for auth store
-        const updatedUser = {
-          id: profileData.data.id,
-          email: profileData.data.email,
-          fullName: profileData.data.fullName,
-          permissions: user?.permissions || [],
-          isActive: profileData.data.isEmailVerified,
-          isVerifiedByAdmin: profileData.data.isVerifiedByAdmin,
-          isSuperAdmin: profileData.data.isSuperAdmin,
-          role: profileData.data.role,
-          organization:
-            profileData.data.organization ??
-            user?.organization ??
-            null,
-          bio:
-            (profileData.data as { bio?: string | null })?.bio ||
-            user?.bio ||
-            null,
-          linkedin:
-            (profileData.data as { linkedin?: string | null })?.linkedin ||
-            user?.linkedin ||
-            null,
-          currentRole:
-            (profileData.data as { currentRole?: string | null })
-              ?.currentRole ||
-            user?.currentRole ||
-            null,
-          profilePhotoUrl:
-            (profileData.data as { profilePhotoUrl?: string | null })
-              ?.profilePhotoUrl ||
-            user?.profilePhotoUrl ||
-            null,
-          profilePhotoId:
-            (profileData.data as { profilePhotoId?: string | null })
-              ?.profilePhotoId ||
-            user?.profilePhotoId ||
-            null,
-          createdAt: profileData.data.createdAt,
-          updatedAt: profileData.data.updatedAt,
-        }
-        setUser(updatedUser)
+      const profileRes = await refetchProfile()
+      if (profileRes.data) {
+        setUser(
+          mapUserOutputToAuthUser(profileRes.data, user?.organization ?? null)
+        )
       }
       form.reset()
       onOpenChange(false)

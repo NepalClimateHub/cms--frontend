@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query'
 import {
   userControllerGetUsersOptions,
-  userControllerUpdateUserMutation,
+  userControllerUpdateMyProfileMutation,
 } from '@/api/@tanstack/react-query.gen'
 import apiClient from '../apiClient'
 
@@ -43,9 +43,8 @@ export const useUpdateProfile = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    ...userControllerUpdateUserMutation(),
+    ...userControllerUpdateMyProfileMutation(),
     onSuccess: () => {
-      // Invalidate user profile query to refetch updated data
       queryClient.invalidateQueries({
         queryKey: ['userControllerGetMyProfile'],
       })

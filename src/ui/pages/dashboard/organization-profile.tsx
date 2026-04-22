@@ -58,6 +58,10 @@ import {
 } from 'lucide-react'
 import type { UserOutput } from '@/api/types.gen'
 import { toast } from '@/hooks/use-toast'
+import {
+  mapOrganizationProfileDto,
+  nullableString,
+} from '@/utils/map-user-output'
 
 const orgDetailsFormSchema = z.object({
   name: z.string().min(1, 'Name is required').max(300),
@@ -75,7 +79,13 @@ const orgDetailsFormSchema = z.object({
 
 type OrgDetailsForm = z.infer<typeof orgDetailsFormSchema>
 
-function formatSocialsFromUser(raw: UserOutput['socials']): SocialType {
+type NormalizedOrgSocials = {
+  facebook: string
+  instagram: string
+  linkedin: string
+}
+
+function formatSocialsFromUser(raw: UserOutput['socials']): NormalizedOrgSocials {
   if (!raw || typeof raw !== 'object') {
     return { facebook: '', instagram: '', linkedin: '' }
   }
@@ -140,15 +150,15 @@ export default function OrganizationProfilePage({
 
   const patchOrg = usePatchMyOrganization()
   const [bannerUrl, setBannerUrl] = useState<string | null>(
-    user.bannerImageUrl ?? null
+    nullableString(user.bannerImageUrl)
   )
   const [bannerId, setBannerId] = useState<string | null>(
-    user.bannerImageId ?? null
+    nullableString(user.bannerImageId)
   )
 
   useEffect(() => {
-    setBannerUrl(user.bannerImageUrl ?? null)
-    setBannerId(user.bannerImageId ?? null)
+    setBannerUrl(nullableString(user.bannerImageUrl))
+    setBannerId(nullableString(user.bannerImageId))
   }, [user.bannerImageUrl, user.bannerImageId])
 
   const handleSaveCover = () => {
@@ -378,7 +388,7 @@ export default function OrganizationProfilePage({
               <div className='group relative h-[104px] w-[104px] shrink-0 sm:h-[120px] sm:w-[120px]'>
                 <Avatar className='h-full w-full border-4 border-background bg-background text-2xl shadow-md ring-1 ring-border'>
                   <AvatarImage
-                    src={user.profilePhotoUrl || undefined}
+                    src={nullableString(user.profilePhotoUrl) ?? undefined}
                     alt={user.fullName}
                     className='object-cover'
                   />
@@ -765,13 +775,13 @@ export default function OrganizationProfilePage({
       <OrganizationVerifyDialog
         open={isVerifyDialogOpen}
         onOpenChange={setIsVerifyDialogOpen}
-        organization={org}
+        organization={mapOrganizationProfileDto(org)!}
         onSubmitted={() => onUserUpdated()}
       />
       <OrganizationVerificationViewDialog
         open={isViewApplicationOpen}
         onOpenChange={setIsViewApplicationOpen}
-        organization={org}
+        organization={mapOrganizationProfileDto(org)!}
       />
     </div>
   )

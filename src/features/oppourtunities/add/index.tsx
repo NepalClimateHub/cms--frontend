@@ -11,6 +11,11 @@ import {
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
 import { toast } from '@/hooks/use-toast'
+import type {
+  CreateOpportunityDto,
+  OpportunityApiResponse,
+  UpdateOpportunityDto,
+} from '@/api/types.gen'
 import OpportunityForm from '../shared/OpportunityForm'
 
 const AddOpportunity: FC = () => {
@@ -104,15 +109,15 @@ const AddOpportunity: FC = () => {
         tagIds: values.tagIds ?? undefined,
       }
 
+      const { contributedBy: _unused, ...createBody } = formattedValues
+
       addOpportunity(
         {
-          body: formattedValues as any,
+          body: createBody as CreateOpportunityDto,
         },
         {
-          onSuccess: (response: any) => {
-            // If socials were provided, immediately update the opportunity
-            // This is a workaround for backend CREATE endpoint not persisting socials
-            const opportunityId = response?.data?.id || response?.data?.data?.id
+          onSuccess: (response: OpportunityApiResponse) => {
+            const opportunityId = response?.data?.id
             if (socialsToUpdate && opportunityId) {
               updateOpportunity(
                 {
@@ -122,7 +127,7 @@ const AddOpportunity: FC = () => {
                   body: {
                     ...formattedValues,
                     socials: socialsToUpdate,
-                  } as any,
+                  } as UpdateOpportunityDto,
                 },
                 {
                   onSuccess: () => {
@@ -148,9 +153,13 @@ const AddOpportunity: FC = () => {
               navigate({ to: '/opportunities/list' })
             }
           },
-          onError: (error: any) => {
+          onError: (error: unknown) => {
+            const message =
+              error instanceof Error
+                ? error.message
+                : 'Failed to add opportunity'
             toast({
-              title: (error as any)?.message ?? 'Failed to add opportunity',
+              title: message,
               variant: 'destructive',
             })
           },
@@ -171,7 +180,6 @@ const AddOpportunity: FC = () => {
       <div className='mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
         <div className='w-full'>
           <OpportunityForm
-            // @ts-expect-error: fix later
             form={form}
             handleImageUpload={handleImageUpload}
             handleFormSubmit={handleFormSubmit}

@@ -7,6 +7,7 @@ import { Search } from '@/ui/search'
 import { TooltipProvider } from '@/ui/shadcn/tooltip'
 import { ThemeSwitch } from '@/ui/theme-switch'
 import { UserOutput } from '@/api/types.gen'
+import { nullableString } from '@/utils/map-user-output'
 import { columns } from './components/users-columns'
 import { UsersDialogs } from './components/users-dialogs'
 import { UsersTable } from './components/users-table'
@@ -121,8 +122,8 @@ const mapUserOutputToUser = (user: UserOutput): User => {
     role,
     serverRole: user.role,
     isVerifiedByAdmin: user.isVerifiedByAdmin,
-    profilePhotoUrl: user.profilePhotoUrl ?? null,
-    bannerImageUrl: user.bannerImageUrl ?? null,
+    profilePhotoUrl: nullableString(user.profilePhotoUrl),
+    bannerImageUrl: nullableString(user.bannerImageUrl),
     createdAt: new Date(user.createdAt),
     updatedAt: new Date(user.updatedAt),
     organization,

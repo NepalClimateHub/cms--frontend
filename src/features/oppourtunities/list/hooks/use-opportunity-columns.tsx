@@ -76,16 +76,21 @@ export const useOpportunitiesColumns = () => {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Opportunity Status' />
       ),
-      cell: ({ row }) => (
-        <div className='flex items-center gap-2'>
-          <Badge
-            variant={row.original.status === 'open' ? 'default' : 'secondary'}
-            className='text-sm'
-          >
-            {row.original.status}
-          </Badge>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const { status, isDraft } = row.original
+        const publishedLike =
+          status === 'PUBLISHED' || (status == null && isDraft === false)
+        return (
+          <div className='flex items-center gap-2'>
+            <Badge
+              variant={publishedLike ? 'default' : 'secondary'}
+              className='text-sm'
+            >
+              {status ?? '—'}
+            </Badge>
+          </div>
+        )
+      },
       enableSorting: false,
       enableHiding: false,
     },
