@@ -70,21 +70,21 @@ export default function EditProfileDialog({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
       name: profileData?.fullName || user?.fullName || '',
-      bio: (profileData as any)?.bio || (user as any)?.bio || '',
-      linkedin: (profileData as any)?.linkedin || (user as any)?.linkedin || '',
+      bio: String((profileData as unknown as Record<string, unknown>)?.bio || (user as unknown as Record<string, unknown>)?.bio || ''),
+      linkedin: String((profileData as unknown as Record<string, unknown>)?.linkedin || (user as unknown as Record<string, unknown>)?.linkedin || ''),
       currentRole:
-        (profileData as any)?.currentRole || (user as any)?.currentRole || '',
+        String((profileData as unknown as Record<string, unknown>)?.currentRole || (user as unknown as Record<string, unknown>)?.currentRole || ''),
     },
   })
 
   // Reset profile photo when dialog opens
   useEffect(() => {
     if (open && profileData) {
-      setProfilePhotoUrl((profileData as any)?.profilePhotoUrl || null)
-      setProfilePhotoId((profileData as any)?.profilePhotoId || null)
+      setProfilePhotoUrl(String((profileData as unknown as Record<string, unknown>)?.profilePhotoUrl || '') || null)
+      setProfilePhotoId(String((profileData as unknown as Record<string, unknown>)?.profilePhotoId || '') || null)
     } else if (open && user) {
-      setProfilePhotoUrl(user?.profilePhotoUrl || null)
-      setProfilePhotoId(user?.profilePhotoId || null)
+      setProfilePhotoUrl(String((user as unknown as Record<string, unknown>)?.profilePhotoUrl || '') || null)
+      setProfilePhotoId(String((user as unknown as Record<string, unknown>)?.profilePhotoId || '') || null)
     }
   }, [open, profileData, user])
 
@@ -93,16 +93,16 @@ export default function EditProfileDialog({
     if (open && profileData) {
       form.reset({
         name: profileData.fullName || '',
-        bio: (profileData as any)?.bio || '',
-        linkedin: (profileData as any)?.linkedin || '',
-        currentRole: (profileData as any)?.currentRole || '',
+        bio: String((profileData as unknown as Record<string, unknown>)?.bio || ''),
+        linkedin: String((profileData as unknown as Record<string, unknown>)?.linkedin || ''),
+        currentRole: String((profileData as unknown as Record<string, unknown>)?.currentRole || ''),
       })
     } else if (open && user) {
       form.reset({
         name: user.fullName || '',
-        bio: (user as any)?.bio || '',
-        linkedin: (user as any)?.linkedin || '',
-        currentRole: (user as any)?.currentRole || '',
+        bio: String((user as unknown as Record<string, unknown>)?.bio || ''),
+        linkedin: String((user as unknown as Record<string, unknown>)?.linkedin || ''),
+        currentRole: String((user as unknown as Record<string, unknown>)?.currentRole || ''),
       })
     }
   }, [open, profileData, user, form])
@@ -119,7 +119,7 @@ export default function EditProfileDialog({
 
     try {
       // Prepare update payload
-      const updatePayload: any = {
+      const updatePayload: Record<string, unknown> = {
         name: data.name,
         bio: data.bio || undefined,
         linkedin: data.linkedin || undefined,
@@ -143,9 +143,10 @@ export default function EditProfileDialog({
           email: profileData.data.email,
           fullName: profileData.data.fullName,
           permissions: user?.permissions || [],
-          isActive: profileData.data.isAccountVerified,
+          isActive: profileData.data.isEmailVerified,
+          isVerifiedByAdmin: profileData.data.isVerifiedByAdmin,
           isSuperAdmin: profileData.data.isSuperAdmin,
-          userType: profileData.data.userType,
+          role: profileData.data.role,
           organization:
             profileData.data.organization ??
             user?.organization ??
@@ -190,7 +191,6 @@ export default function EditProfileDialog({
         variant: 'default',
       })
     } catch (error) {
-      console.error('Profile update error:', error)
       toast({
         title: 'Error',
         description:
@@ -206,16 +206,16 @@ export default function EditProfileDialog({
     if (profileData) {
       form.reset({
         name: profileData.fullName || '',
-        bio: (profileData as any)?.bio || '',
-        linkedin: (profileData as any)?.linkedin || '',
-        currentRole: (profileData as any)?.currentRole || '',
+        bio: String((profileData as unknown as Record<string, unknown>)?.bio || ''),
+        linkedin: String((profileData as unknown as Record<string, unknown>)?.linkedin || ''),
+        currentRole: String((profileData as unknown as Record<string, unknown>)?.currentRole || ''),
       })
     } else if (user) {
       form.reset({
         name: user.fullName || '',
-        bio: (user as any)?.bio || '',
-        linkedin: (user as any)?.linkedin || '',
-        currentRole: (user as any)?.currentRole || '',
+        bio: String((user as unknown as Record<string, unknown>)?.bio || ''),
+        linkedin: String((user as unknown as Record<string, unknown>)?.linkedin || ''),
+        currentRole: String((user as unknown as Record<string, unknown>)?.currentRole || ''),
       })
     }
     onOpenChange(false)

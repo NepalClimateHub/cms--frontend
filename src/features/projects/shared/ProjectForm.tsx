@@ -1,10 +1,9 @@
-
 import { FC } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
 import { ProjectFormValues, PROJECT_STATUS } from '@/schemas/project'
 import ImageUpload from '@/ui/image-upload'
-import { MinimalTiptapEditor } from '@/ui/minimal-tiptap'
+import { MinimalTiptapEditor } from '@/ui/molecules/minimal-tiptap'
 import { MultiSelect } from '@/ui/multi-select'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
@@ -88,7 +87,7 @@ const ProjectForm: FC<Props> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Duration</FormLabel>
-                 
+
                   <FormControl>
                     <Input
                       placeholder='e.g. Oct 2025 - Present'
@@ -213,7 +212,7 @@ const ProjectForm: FC<Props> = ({
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name='bannerImageId'
@@ -233,27 +232,27 @@ const ProjectForm: FC<Props> = ({
                 </FormItem>
               )}
             />
-            
-             <FormField
-                control={form.control}
-                name='isDraft'
-                render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                    <div className='space-y-0.5'>
-                      <FormLabel className='text-base'>Draft Status</FormLabel>
-                      <FormDescription>
-                        Save as draft or publish immediately
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+
+            <FormField
+              control={form.control}
+              name='isDraft'
+              render={({ field }) => (
+                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+                  <div className='space-y-0.5'>
+                    <FormLabel className='text-base'>Draft Status</FormLabel>
+                    <FormDescription>
+                      Save as draft or publish immediately
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           </CardContent>
         </Card>
 
@@ -266,7 +265,11 @@ const ProjectForm: FC<Props> = ({
             Cancel
           </Button>
           <Button type='submit' disabled={isLoading}>
-            {isLoading ? 'Saving...' : isEdit ? 'Update Project' : 'Create Project'}
+            {isLoading
+              ? 'Saving...'
+              : isEdit
+                ? 'Update Project'
+                : 'Create Project'}
           </Button>
         </div>
       </form>

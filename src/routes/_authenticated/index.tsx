@@ -1,5 +1,7 @@
 import { createFileRoute, useRouterState } from '@tanstack/react-router'
 import AdminDashboardHomePage from '@/ui/pages/admin-dashboard'
+import IndividualDashboardHome from '@/ui/pages/dashboard/individual-dashboard-home'
+import OrganizationDashboardHome from '@/ui/pages/dashboard/organization-dashboard-home'
 import { useAuthStore } from '@/stores/authStore'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import DashboardHomepage from '../../ui/pages/dashboard'
@@ -25,11 +27,13 @@ export const Route = createFileRoute('/_authenticated/')({
 
     if (isAdminLevel) {
       return <AdminDashboardHomePage />
-    } else if (role === 'USER') {
-      return <DashboardHomepage />
     }
-
-    // This should not happen due to beforeLoad, but handle gracefully
-    return null
+    if (role === 'ORGANIZATION') {
+      return <OrganizationDashboardHome />
+    }
+    if (role === 'INDIVIDUAL') {
+      return <IndividualDashboardHome />
+    }
+    return <DashboardHomepage />
   },
 })

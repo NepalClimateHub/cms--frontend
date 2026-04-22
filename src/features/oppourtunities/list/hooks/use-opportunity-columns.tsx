@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/ui/shadcn/badge'
 import { OpportunityResponseDto } from '@/api/types.gen'
-import { DataTableColumnHeader } from '../../../../ui/data-table/data-table-column-header'
+import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import OpportunitiesRowAction from '../components/opportunity-row-actions'
 import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 

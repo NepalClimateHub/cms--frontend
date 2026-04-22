@@ -34,7 +34,7 @@ export function useOpportunityAPI() {
           title: 'Opportunity added successfully.',
         })
         queryClient.invalidateQueries(
-          // @ts-expect-error - TODO: check type
+          // @ts-expect-error: fix later - TODO: check type
           opportunityControllerGetOpportunitiesOptions()
         )
       },
@@ -47,7 +47,7 @@ export function useOpportunityAPI() {
           title: 'Opportunity updated successfully.',
         })
         queryClient.invalidateQueries(
-          // @ts-expect-error - TODO: check type
+          // @ts-expect-error: fix later - TODO: check type
           opportunityControllerGetOpportunitiesOptions()
         )
       },
@@ -86,7 +86,7 @@ export const useDeleteOpportunity = () => {
 
       queryClient.invalidateQueries(
         opportunityControllerGetOpportunitiesOptions({
-          // @ts-expect-error - TODO: check type
+          // @ts-expect-error: fix later - TODO: check type
           query: {
             ...pagination,
             ...filters,

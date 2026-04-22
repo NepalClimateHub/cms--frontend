@@ -6,7 +6,15 @@ export type User = {
   fullName: string
   permissions: string[]
   isActive: boolean
-  userType?: 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_ADMIN' | 'ORGANIZATION' | 'INDIVIDUAL'
+  /** Platform admin verified the organization account (role ORGANIZATION) */
+  isVerifiedByAdmin?: boolean
+  isSuperAdmin?: boolean
+  role?:
+    | 'SUPER_ADMIN'
+    | 'ADMIN'
+    | 'CONTENT_ADMIN'
+    | 'ORGANIZATION'
+    | 'INDIVIDUAL'
   organization: OrganizationProfile | null
   bio?: string | null
   linkedin?: string | null

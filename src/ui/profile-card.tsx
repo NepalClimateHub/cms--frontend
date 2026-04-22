@@ -38,7 +38,7 @@ export function ProfileCard() {
           <div className='flex flex-1 items-center gap-2 overflow-hidden'>
             <div className='grid flex-1 text-left text-sm leading-tight'>
               <span className='truncate font-semibold'>
-                {user?.userType === 'SUPER_ADMIN'
+                {user?.role === 'SUPER_ADMIN'
                   ? 'Super Admin'
                   : user?.organization?.name ?? user?.fullName}
               </span>

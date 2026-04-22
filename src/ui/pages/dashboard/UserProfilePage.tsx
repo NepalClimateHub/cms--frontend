@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useGetProfile } from '@/query/auth/use-auth'
+import type { User as AuthStoreUser } from '@/schemas/auth/profile'
 import ChangePasswordDialog from '@/ui/organisms/dashboard/ChangePasswordDialog'
 import EditProfileDialog from '@/ui/organisms/dashboard/EditProfileDialog'
 import EditProfilePhotoDialog from '@/ui/organisms/dashboard/EditProfilePhotoDialog'
@@ -28,25 +29,29 @@ import {
   Briefcase,
   Linkedin,
 } from 'lucide-react'
-import { useAuthStore } from '@/stores/authStore'
 import type { UserOutput } from '@/api/types.gen'
-import type { User as AuthStoreUser } from '@/schemas/auth/profile'
+import { useAuthStore } from '@/stores/authStore'
 
 function authStoreUserToUserOutput(u: AuthStoreUser): UserOutput {
   return {
     id: u.id,
     email: u.email,
     fullName: u.fullName,
-    isAccountVerified: u.isActive,
-    userType: (u.userType ?? 'INDIVIDUAL') as UserOutput['userType'],
-    gender: {},
-    phoneCountryCode: {},
-    phoneNumber: {},
-    profilePhotoUrl: u.profilePhotoUrl ?? null,
-    profilePhotoId: u.profilePhotoId ?? null,
-    bio: u.bio ?? null,
-    linkedin: u.linkedin ?? null,
-    currentRole: u.currentRole ?? null,
+    isEmailVerified: u.isActive,
+    isVerifiedByAdmin: u.isVerifiedByAdmin ?? false,
+    isSuperAdmin: u.role === 'SUPER_ADMIN',
+    role: (u.role ?? 'INDIVIDUAL') as UserOutput['role'],
+    gender: {} as UserOutput['gender'],
+    phoneCountryCode: {} as UserOutput['phoneCountryCode'],
+    phoneNumber: {} as UserOutput['phoneNumber'],
+    profilePhotoUrl: (u.profilePhotoUrl ??
+      null) as unknown as UserOutput['profilePhotoUrl'],
+    profilePhotoId: (u.profilePhotoId ??
+      null) as unknown as UserOutput['profilePhotoId'],
+    bio: (u.bio ?? null) as unknown as UserOutput['bio'],
+    linkedin: (u.linkedin ?? null) as unknown as UserOutput['linkedin'],
+    currentRole: (u.currentRole ??
+      null) as unknown as UserOutput['currentRole'],
     createdAt: u.createdAt,
     updatedAt: u.updatedAt,
     organization: (u.organization ?? null) as UserOutput['organization'],
@@ -54,10 +59,10 @@ function authStoreUserToUserOutput(u: AuthStoreUser): UserOutput {
 }
 
 function shouldShowOrganizationProfile(
-  userType: string | undefined,
+  accountRole: string | undefined,
   organization: UserOutput['organization'] | null | undefined
 ): boolean {
-  const t = userType?.toString().trim().toUpperCase()
+  const t = accountRole?.toString().trim().toUpperCase()
   if (t === 'ORGANIZATION') return true
   return Boolean(organization)
 }
@@ -104,12 +109,12 @@ export default function UserProfilePage() {
     )
   }
 
-  const resolvedUserType = profileData?.userType ?? authUser?.userType
+  const resolvedRole = profileData?.role ?? authUser?.role
   const resolvedOrganization =
     profileData?.organization ?? authUser?.organization ?? null
 
   const showOrganizationProfile = shouldShowOrganizationProfile(
-    resolvedUserType,
+    resolvedRole,
     resolvedOrganization as UserOutput['organization'] | null | undefined
   )
 
@@ -118,8 +123,7 @@ export default function UserProfilePage() {
       profileData != null
         ? {
             ...profileData,
-            userType: (resolvedUserType ??
-              profileData.userType) as UserOutput['userType'],
+            role: (resolvedRole ?? profileData.role) as UserOutput['role'],
             organization:
               (resolvedOrganization as UserOutput['organization']) ??
               profileData.organization ??
@@ -183,7 +187,7 @@ export default function UserProfilePage() {
               <div className='group relative'>
                 <Avatar className='h-20 w-20'>
                   <AvatarImage
-                    src={(user as any)?.profilePhotoUrl || undefined}
+                    src={String(user.profilePhotoUrl || '') || undefined}
                     alt={user.fullName}
                   />
                   <AvatarFallback className='text-lg'>
@@ -208,7 +212,7 @@ export default function UserProfilePage() {
                 <div className='space-y-2'>
                   <h3 className='text-2xl font-semibold'>{user.fullName}</h3>
                   <div className='flex items-center gap-2'>
-                    {user.userType === 'SUPER_ADMIN' && (
+                    {user.role === 'SUPER_ADMIN' && (
                       <Badge variant='destructive'>
                         <Shield className='mr-1 h-3 w-3' />
                         Super Admin
@@ -217,9 +221,9 @@ export default function UserProfilePage() {
                   </div>
                 </div>
                 {/* Bio below name */}
-                {(profileData as any)?.bio ? (
+                {String(profileData?.bio || '') ? (
                   <p className='whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground'>
-                    {(profileData as any).bio}
+                    {String(profileData?.bio)}
                   </p>
                 ) : null}
               </div>
@@ -247,7 +251,7 @@ export default function UserProfilePage() {
                     <Briefcase className='h-4 w-4 text-muted-foreground' />
                     <span className='font-medium'>Role:</span>
                     <span className='text-muted-foreground'>
-                      {user.currentRole}
+                      {String(user.currentRole)}
                     </span>
                   </div>
                 )}
@@ -256,12 +260,12 @@ export default function UserProfilePage() {
                     <Linkedin className='h-4 w-4 text-muted-foreground' />
                     <span className='font-medium'>LinkedIn:</span>
                     <a
-                      href={user.linkedin}
+                      href={String(user.linkedin)}
                       target='_blank'
                       rel='noopener noreferrer'
                       className='text-blue-600 hover:underline'
                     >
-                      {user.linkedin}
+                      {String(user.linkedin)}
                     </a>
                   </div>
                 )}

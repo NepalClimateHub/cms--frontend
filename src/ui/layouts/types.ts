@@ -1,7 +1,10 @@
 import { LinkProps } from '@tanstack/react-router'
+import type { AppRole } from '@/utils/jwt.util'
 
 interface BaseNavItem {
   title: string
+  /** Roles that may see this entry in the sidebar (and intended route access). */
+  roles: AppRole[]
   badge?: string
   icon?: React.ElementType
 }

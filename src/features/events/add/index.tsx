@@ -17,7 +17,7 @@ const AddEvent = () => {
   const tagsOptions = data?.data?.map((tag) => ({
     value: tag.id,
     label: tag.tag,
-  }))!
+  })) ?? []
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventFormSchema),

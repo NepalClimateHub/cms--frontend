@@ -1,20 +1,37 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { BlogFormValues, blogSchema } from '@/schemas/blog'
+import { useAuthStore } from '@/stores/authStore'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
-import { useAuthStore } from '@/stores/authStore'
 import { useAddBlog } from '../../../query/blogs/use-blogs'
 import BlogForm from '../shared/BlogForm'
 
 const AddBlog: FC = () => {
-  // @ts-ignore
+  const { user } = useAuthStore()
   const { data: tags, isLoading: isLoadingTags } = useGetTagsByType('BLOG')
   const { mutate: addBlog, isPending } = useAddBlog()
-  const { user } = useAuthStore()
-  const isAdmin = user?.isSuperAdmin === true
+
+  /** Same as BlogForm: only staff roles get the author field; others need a default for schema + API. */
+  const isStaffContentRole = useMemo(
+    () =>
+      user?.role === 'SUPER_ADMIN' ||
+      user?.role === 'ADMIN' ||
+      user?.role === 'CONTENT_ADMIN',
+    [user?.role]
+  )
+
+  const defaultAuthorForNonStaff = useMemo(() => {
+    if (isStaffContentRole || !user) return ''
+    return (
+      user.organization?.name?.trim() ||
+      user.fullName?.trim() ||
+      user.email ||
+      ''
+    )
+  }, [isStaffContentRole, user])
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -27,7 +44,7 @@ const AddBlog: FC = () => {
       title: '',
       content: '',
       excerpt: '',
-      author: isAdmin ? '' : user?.fullName || '',
+      author: isStaffContentRole ? '' : defaultAuthorForNonStaff,
       category: '',
       publishedDate: undefined,
       isDraft: false,
@@ -38,6 +55,18 @@ const AddBlog: FC = () => {
       tagIds: [],
     },
   })
+
+  useEffect(() => {
+    if (isStaffContentRole || !user) return
+    const a =
+      user.organization?.name?.trim() ||
+      user.fullName?.trim() ||
+      user.email ||
+      ''
+    if (a) {
+      form.setValue('author', a)
+    }
+  }, [form, isStaffContentRole, user])
 
   const handleImageUpload = (
     assetId: string | null,
@@ -68,7 +97,7 @@ const AddBlog: FC = () => {
       }
 
       addBlog({
-        body: formattedValues as any,
+        body: formattedValues as unknown as Parameters<typeof addBlog>[0]['body'],
       })
     } catch (_error) {
       // Error handling is done by the mutation

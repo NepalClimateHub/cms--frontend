@@ -38,8 +38,10 @@ function RouteComponent() {
         email: userData.email,
         fullName: userData.fullName,
         permissions: [], // Permissions not in UserOutput, will be empty
-        isActive: userData.isAccountVerified,
-        userType: userData.userType,
+        isActive: userData.isEmailVerified,
+        isVerifiedByAdmin: userData.isVerifiedByAdmin,
+        isSuperAdmin: userData.isSuperAdmin,
+        role: userData.role,
         organization: userData.organization ?? null,
         profilePhotoUrl: userData.profilePhotoUrl ?? null,
         profilePhotoId: userData.profilePhotoId ?? null,

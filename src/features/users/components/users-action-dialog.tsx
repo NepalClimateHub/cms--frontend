@@ -33,16 +33,16 @@ import { User } from '../data/schema'
 function formRoleToApiPayload(role: User['role']) {
   switch (role) {
     case 'superadmin':
-      return { userType: 'SUPER_ADMIN' as const }
+      return { role: 'SUPER_ADMIN' as const }
     case 'admin':
-      return { userType: 'ADMIN' as const }
+      return { role: 'ADMIN' as const }
     case 'content_admin':
-      return { userType: 'CONTENT_ADMIN' as const }
+      return { role: 'CONTENT_ADMIN' as const }
     case 'organization':
-      return { userType: 'ORGANIZATION' as const }
+      return { role: 'ORGANIZATION' as const }
     case 'individual':
     default:
-      return { userType: 'INDIVIDUAL' as const }
+      return { role: 'INDIVIDUAL' as const }
   }
 }
 
@@ -118,7 +118,7 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
   const isEdit = !!currentRow
   const updateUserMutation = useUpdateUserByAdmin()
   /** Only DB-flagged super admins may change roles (not JWT role alone). */
-  const canEditRoles = useAuthStore((s) => s.user?.userType === 'SUPER_ADMIN')
+  const canEditRoles = useAuthStore((s) => s.user?.role === 'SUPER_ADMIN')
 
   const form = useForm<UserForm>({
     resolver: zodResolver(formSchema),
@@ -157,7 +157,7 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
     const body: {
       name: string
       password?: string
-      userType?: string
+      role?: string
       phoneNumber?: string | null
     } = {
       name,
@@ -167,10 +167,10 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
       body.password = values.password
     }
     const isSuperAdminActor =
-      useAuthStore.getState().user?.userType === 'SUPER_ADMIN'
+      useAuthStore.getState().user?.role === 'SUPER_ADMIN'
     if (isSuperAdminActor) {
       const rp = formRoleToApiPayload(values.role as User['role'])
-      body.userType = rp.userType
+      body.role = rp.role
     }
 
     try {

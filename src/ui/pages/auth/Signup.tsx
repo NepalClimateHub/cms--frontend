@@ -114,7 +114,7 @@ export default function SignUp() {
         username: data.orgEmail,
         password: data.password,
         email: data.orgEmail,
-        userType: 'ORGANIZATION' as const,
+        role: 'ORGANIZATION' as const,
         orgName: data.orgName,
         orgType: data.orgType + (data.orgTypeOther ? `: ${data.orgTypeOther}` : ''),
         province: data.province,
@@ -130,7 +130,7 @@ export default function SignUp() {
         username: data.email,
         password: data.password,
         email: data.email,
-        userType: 'INDIVIDUAL' as const,
+        role: 'INDIVIDUAL' as const,
       },
     })
   }

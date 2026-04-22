@@ -23,15 +23,17 @@ const queryClient = new QueryClient({
     queries: {
       retry: (failureCount, error) => {
          
-        if (import.meta.env.MODE === 'development')
-          console.log({ failureCount, error })
+        void failureCount
 
         if (failureCount >= 0 && import.meta.env.MODE === 'development')
           return false
         if (failureCount > 3 && import.meta.env.MODE === 'production')
           return false
 
-        const status = (error as any)?.response?.status || (error as any)?.status || (error as any)?.error?.status;
+        const err = error as unknown as Record<string, unknown>
+        const resp = err?.response as Record<string, unknown> | undefined
+        const errObj = err?.error as Record<string, unknown> | undefined
+        const status = (resp?.status as number) || (err?.status as number) || (errObj?.status as number);
         return ![401, 403].includes(status ?? 0)
       },
       refetchOnWindowFocus: false,
@@ -53,9 +55,12 @@ const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       // Handle 401 (Unauthorized) from both Axios and fetch client
-      const status = error.response?.status || error.status || error.error?.status;
+      const err = error as Record<string, unknown>
+      const resp = err?.response as Record<string, unknown> | undefined
+      const errObj = err?.error as Record<string, unknown> | undefined
+      const status = (resp?.status as number) || (err?.status as number) || (errObj?.status as number);
       
       if (status === 401) {
         toast({

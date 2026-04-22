@@ -46,7 +46,7 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
       path: {
         id: newsId,
       },
-      // @ts-ignore
+      // @ts-expect-error: fix later
       body: {
         isDraft: isDraft ? true : false,
       },
@@ -97,7 +97,7 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
             {/* Tags */}
             {row.original.tags && row.original.tags.length > 0 && (
               <div className='flex flex-wrap gap-2'>
-                {/* @ts-ignore */}
+                {/* @ts-expect-error: fix later */}
                 {row.original?.tags?.map((t: { tag: string }) => (
                   <span
                     key={t.tag}

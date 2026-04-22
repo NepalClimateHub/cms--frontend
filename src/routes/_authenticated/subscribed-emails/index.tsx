@@ -11,12 +11,12 @@ import { X } from 'lucide-react'
 import { handleServerError } from '@/utils/handle-server-error'
 import { useToast } from '@/hooks/use-toast'
 import { getRoleFromToken } from '@/utils/jwt.util'
-import { isAdminLevel } from '@/utils/role-check.util'
+import { canAccessOrganizationContentRoutes } from '@/utils/role-check.util'
 
 export const Route = createFileRoute('/_authenticated/subscribed-emails/')({
   beforeLoad: () => {
     const role = getRoleFromToken()
-    if (!isAdminLevel(role)) {
+    if (!canAccessOrganizationContentRoutes(role)) {
       throw redirect({
         to: '/',
       })

@@ -53,26 +53,10 @@ export const useUpdateProfile = () => {
   })
 }
 
-export const useVerifyUserByAdmin = () => {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (payload: { id: string; isVerified: boolean }) => {
-      const res = await apiClient.patch(`/api/v1/users/${payload.id}/verify`, {
-        isVerified: payload.isVerified,
-      })
-      return res.data
-    },
-    onSuccess: () => {
-      void invalidateUsersListQueries(queryClient)
-    },
-  })
-}
-
 export type AdminUpdateUserBody = {
   name?: string
   password?: string
-  userType?: string
+  role?: string
   isSuperAdmin?: boolean
   phoneNumber?: string | null
 }

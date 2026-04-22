@@ -16,11 +16,14 @@ import { toast } from '@/hooks/use-toast'
 interface EditProfilePhotoDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  /** Called after a successful save (e.g. to refetch user in a parent view). */
+  onPhotoUpdated?: () => void
 }
 
 export default function EditProfilePhotoDialog({
   open,
   onOpenChange,
+  onPhotoUpdated,
 }: EditProfilePhotoDialogProps) {
   const { user, setUser } = useAuthStore()
   const updateProfileMutation = useUpdateProfile()
@@ -66,10 +69,10 @@ export default function EditProfilePhotoDialog({
 
     updateProfileMutation.mutate(
       {
-        // @ts-expect-error - path type mismatch in generated types
+        // @ts-expect-error: fix later - path type mismatch in generated types
         path: { id: user.id },
         body: {
-          // @ts-ignore
+          // @ts-expect-error: fix later
           profilePhotoUrl,
           profilePhotoId,
         },
@@ -85,9 +88,10 @@ export default function EditProfilePhotoDialog({
               email: profileData.data.email,
               fullName: profileData.data.fullName,
               permissions: user?.permissions || [],
-              isActive: profileData.data.isAccountVerified,
+              isActive: profileData.data.isEmailVerified,
+              isVerifiedByAdmin: profileData.data.isVerifiedByAdmin,
               isSuperAdmin: profileData.data.isSuperAdmin,
-              userType: profileData.data.userType,
+              role: profileData.data.role,
               organization:
                 profileData.data.organization ??
                 user?.organization ??
@@ -104,6 +108,7 @@ export default function EditProfilePhotoDialog({
             setUser(updatedUser)
           }
           onOpenChange(false)
+          onPhotoUpdated?.()
           toast({
             title: 'Success',
             description: 'Profile photo updated successfully',

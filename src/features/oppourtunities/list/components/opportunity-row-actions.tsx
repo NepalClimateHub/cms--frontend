@@ -34,7 +34,7 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
         id: opportunityId,
       },
 
-      // @ts-ignore
+      // @ts-expect-error: fix later
       body: {
         isDraft: isDraft ? true : false,
       },
@@ -185,7 +185,7 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
                     Website
                   </h3>
                   <p className='text-base'>
-                    {/* @ts-ignore */}
+                    {/* @ts-expect-error: fix later */}
                     {row.original?.websiteUrl || 'Not specified'}
                   </p>
                 </div>
@@ -238,9 +238,9 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
               {/* Timestamps */}
               <Separator />
               <div className='flex justify-between text-sm text-muted-foreground'>
-                {/* @ts-ignore */}
+                {/* @ts-expect-error: fix later */}
                 <span>Created: {formatDate(row.original.createdAt)}</span>
-                {/* @ts-ignore */}
+                {/* @ts-expect-error: fix later */}
                 <span>Updated: {formatDate(row.original.updatedAt)}</span>
               </div>
             </DialogDescription>
