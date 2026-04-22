@@ -4,8 +4,8 @@ import { useGetIkAuthParams } from '@/query/imagekit/use-ik'
 import { imagekit } from '@/query/shared/routes'
 import { XCircle } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
-import IKContext from './image-kit/IKContext'
-import IKUpload from './image-kit/IKUpload'
+import IKContext from '@/ui/molecules/image-kit/IKContext'
+import IKUpload from '@/ui/molecules/image-kit/IKUpload'
 import { MiniLoader } from './loader'
 
 const ALLOWED_IMAGE_TYPES = [
@@ -63,16 +63,16 @@ const ImageUpload: FC<ImageUploadProps> = ({
     })
   }
 
-  const handleUploadSuccess = (data: any) => {
+  const handleUploadSuccess = (data: { url?: string; fileId?: string }) => {
     queryClient.invalidateQueries({
       queryKey: [imagekit.getauthparams.key],
       exact: false,
     })
     setIsUploading(false)
     setIsError(false)
-    setImageURL(data?.url)
-    setImageId(data?.fileId)
-    handleImage(data?.fileId, data?.url)
+    setImageURL(data?.url ?? null)
+    setImageId(data?.fileId ?? null)
+    handleImage(data?.fileId ?? null, data?.url ?? null)
     toast({
       variant: 'default',
       title: 'Uploaded successfully!',

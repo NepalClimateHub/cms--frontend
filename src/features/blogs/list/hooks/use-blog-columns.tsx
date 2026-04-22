@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { BlogResponseDto } from '@/query/blogs/use-blogs'
 import { Badge } from '@/ui/shadcn/badge'
-import { DataTableColumnHeader } from '../../../../ui/data-table/data-table-column-header'
+import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import BlogRowAction from '../components/blog-row-actions'
 import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 
@@ -92,7 +92,7 @@ export const useBlogsColumns = () => {
         <DataTableColumnHeader column={column} title='Status' />
       ),
       cell: ({ row }) => {
-        const status = (row.original as any).status || 'DRAFT'
+        const status = (row.original as unknown as Record<string, unknown>).status as string || 'DRAFT'
         const statusConfig: Record<
           string,
           { label: string; className: string }

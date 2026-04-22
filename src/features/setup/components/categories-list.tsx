@@ -6,9 +6,9 @@ import {
 } from '@tanstack/react-table';
 import { usePagination } from '@/hooks/use-pagination';
 import { useFilters } from '@/hooks/use-filters';
-import { DataTable } from '@/ui/data-table/data-table';
-import { DataTablePagination } from '@/ui/data-table/data-table-pagination';
-import { DataTableToolbar } from '@/ui/data-table/data-table-toolbar';
+import { DataTable } from '@/ui/molecules/data-table/data-table';
+import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination';
+import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar';
 import { BoxLoader } from '@/ui/loader';
 import { Button } from '@/ui/shadcn/button';
 import { Plus } from 'lucide-react';

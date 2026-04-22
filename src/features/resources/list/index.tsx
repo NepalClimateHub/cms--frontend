@@ -5,9 +5,9 @@ import { PlusIcon } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 import { usePagination } from '@/hooks/use-pagination'
 import { useGetResources, ResourceType } from '@/query/resources/use-resources'
-import { DataTable } from '@/ui/data-table/data-table'
+import { DataTable } from '@/ui/molecules/data-table/data-table'
 import { useResourceColumns } from './components/columns'
-import { DataTableToolbar } from '@/ui/data-table/data-table-toolbar'
+import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
 import {
   getCoreRowModel,
   useReactTable,

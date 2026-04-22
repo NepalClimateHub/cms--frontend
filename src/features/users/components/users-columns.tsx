@@ -1,13 +1,14 @@
 import { ColumnDef } from '@tanstack/react-table'
+import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 import LongText from '@/ui/long-text'
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
+import { Badge } from '@/ui/shadcn/badge'
 import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { userTypes, userTypeOptions } from '../data/data'
 import { User } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTableRowActions } from './data-table-row-actions'
-import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -71,15 +72,15 @@ export const columns: ColumnDef<User>[] = [
     ),
   },
   {
-    accessorKey: 'userType',
+    accessorKey: 'serverRole',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='User Type' />
     ),
     cell: ({ row }) => {
-      const { userType, isSuperAdmin } = row.original
+      const { serverRole } = row.original
 
       // Show Superadmin if user is super admin
-      if (isSuperAdmin) {
+      if (serverRole === 'SUPER_ADMIN') {
         const superAdminType = userTypes.find(
           ({ value }) => value === 'superadmin'
         )
@@ -99,11 +100,11 @@ export const columns: ColumnDef<User>[] = [
       }
 
       const userTypeOption = userTypeOptions.find(
-        ({ value }) => value === userType
+        ({ value }) => value === serverRole
       )
 
       if (!userTypeOption) {
-        return <span className='text-sm'>{userType}</span>
+        return <span className='text-sm'>{serverRole}</span>
       }
 
       return (
@@ -116,18 +117,55 @@ export const columns: ColumnDef<User>[] = [
       )
     },
     filterFn: (row, _id, value) => {
-      const { userType, isSuperAdmin } = row.original
+      const { serverRole } = row.original
       // Include superadmin in filter if checking for admin
-      if (isSuperAdmin && value.includes('ADMIN')) {
+      if (serverRole === 'SUPER_ADMIN' && value.includes('ADMIN')) {
         return true
       }
-      return value.includes(userType)
+      return value.includes(serverRole)
     },
     enableSorting: false,
     enableHiding: false,
   },
   {
+    id: 'adminVerified',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Admin verified' />
+    ),
+    cell: ({ row }) => {
+      const { serverRole, organization } = row.original
+      if (serverRole !== 'ORGANIZATION' || !organization) {
+        return (
+          <span
+            className='text-sm text-muted-foreground'
+            title='Not an organization account'
+          >
+            —
+          </span>
+        )
+      }
+      return row.original.isVerifiedByAdmin ? (
+        <Badge
+          variant='default'
+          className='shrink-0 bg-emerald-600 font-medium hover:bg-emerald-600'
+        >
+          Yes
+        </Badge>
+      ) : (
+        <Badge variant='secondary' className='font-medium'>
+          No
+        </Badge>
+      )
+    },
+    enableSorting: false,
+    meta: { className: 'w-32' },
+  },
+  {
     id: 'actions',
+    header: () => <span className='sr-only'>Actions</span>,
     cell: DataTableRowActions,
+    enableHiding: false,
+    enableSorting: false,
+    meta: { className: 'w-0 pr-1 text-right' },
   },
 ]

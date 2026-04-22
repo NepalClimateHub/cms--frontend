@@ -50,8 +50,7 @@ export default function DatabaseExport() {
         title: 'Success',
         description: 'Database backup downloaded successfully.',
       })
-    } catch (error) {
-      console.error('Export error:', error)
+    } catch {
       toast({
         variant: 'destructive',
         title: 'Error',

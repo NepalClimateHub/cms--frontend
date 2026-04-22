@@ -48,7 +48,6 @@ interface Message {
 
 
 function parseContentAndSources(content: string, existing?: Source[]) {
-  console.log('parseContentAndSources input:', { content: content.substring(0, 100), existing })
   // Strip any trailing "Sources:" section the LLM appends to the answer text
   const re = /\n*(?:\*{0,2}Sources:?\*{0,2})\s*\n([\s\S]*?)$/i
   const m = content.match(re)
@@ -92,7 +91,7 @@ function parseContentAndSources(content: string, existing?: Source[]) {
     }
   }
   
-  console.log('📤 parseContentAndSources output:', { cleaned: cleaned.substring(0, 50), sources })
+
   return { cleaned, sources }
 }
 
@@ -143,7 +142,7 @@ function AskAI() {
         query: userMsg.content,
         conversation_id: conversationId,
       })
-      console.log('🔍 API Response:', { response: res.response?.substring(0, 50), sources: res.sources })
+
       setMessages((p) => [
         ...p,
         {
@@ -337,7 +336,6 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
 
 
 function ChatMessage({ message }: { message: Message }) {
-  console.log('💬 ChatMessage received:', { role: message.role, sources: message.sources })
   const isUser = message.role === 'user'
   const { cleaned, sources } = isUser
     ? { cleaned: message.content, sources: [] as Source[] }

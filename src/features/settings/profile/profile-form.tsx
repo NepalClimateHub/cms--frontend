@@ -87,10 +87,20 @@ export default function ProfileForm() {
             description: 'Your profile has been updated successfully.',
           })
         },
-        onError: (error) => {
+        onError: (error: unknown) => {
+          const message =
+            error &&
+            typeof error === 'object' &&
+            'error' in error &&
+            error.error &&
+            typeof error.error === 'object' &&
+            'message' in error.error &&
+            typeof (error.error as { message: unknown }).message === 'string'
+              ? (error.error as { message: string }).message
+              : 'Failed to update profile.'
           toast({
             title: 'Error',
-            description: (error as any).error?.message || 'Failed to update profile.',
+            description: message,
             variant: 'destructive',
           })
         },

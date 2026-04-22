@@ -3,14 +3,16 @@ import { useQueries, useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { IconArticle } from '@tabler/icons-react'
 import { emailSubscriptionControllerFindAll } from '@/api'
+import type { AdminAnalyticsOutput } from '@/api/types.gen'
 import { climateQuotes } from '@/data/climate-quotes'
 import { useAnalyticsAPI } from '@/query/analytics/use-analytics'
 import apiClient from '@/query/apiClient'
 import { Main } from '@/ui/layouts/main'
 import { MultiSelect } from '@/ui/multi-select'
-import { Button } from '@/ui/shadcn/button'
 import { Card, CardTitle } from '@/ui/shadcn/card'
 import { cn } from '@/ui/shadcn/lib/utils'
+import { getRoleFromToken } from '@/utils/jwt.util'
+import { canAccessUserDirectoryAndDatabaseExport } from '@/utils/role-check.util'
 import {
   Calendar,
   Users,
@@ -21,6 +23,7 @@ import {
   Plus,
   FileText,
   Building2,
+  ArrowRight,
 } from 'lucide-react'
 import {
   BarChart,
@@ -33,6 +36,10 @@ import {
 } from 'recharts'
 
 export default function AdminDashboardHomePage() {
+  const canViewAllUsers = canAccessUserDirectoryAndDatabaseExport(
+    getRoleFromToken()
+  )
+
   const { data: analyticsData, isLoading } =
     useAnalyticsAPI().getAnalyticsForAdmin
 
@@ -219,6 +226,8 @@ export default function AdminDashboardHomePage() {
     )
   }
 
+  const adminStats: AdminAnalyticsOutput = analyticsData.data
+
   return (
     <Main>
       <div className='mb-2 flex flex-col items-start justify-start space-y-10 p-5'>
@@ -227,10 +236,18 @@ export default function AdminDashboardHomePage() {
         <div className='space-y-8'>
           {/* Analytics Cards */}
           <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5'>
-            {Object.entries(analyticsData.data)
-              .filter(([key]) => key !== 'userCount' && !key.endsWith('Count') || !['adminCount', 'organizationCount', 'individualCount'].includes(key) && key !== 'userCount')
+            {Object.entries(adminStats)
+              .filter(
+                ([key]) =>
+                  (key !== 'userCount' && !key.endsWith('Count')) ||
+                  (!['adminCount', 'organizationCount', 'individualCount'].includes(
+                    key
+                  ) &&
+                    key !== 'userCount')
+              )
               .map(([key, value]) => {
-                if (['adminCount', 'organizationCount', 'individualCount'].includes(key) || key === 'userCount') return null;
+                if (key === 'pendingOrganizationVerificationCount') return null
+                if (['adminCount', 'organizationCount', 'individualCount'].includes(key) || key === 'userCount') return null
                 return (
                   <Link
                     key={key}
@@ -282,27 +299,42 @@ export default function AdminDashboardHomePage() {
 
           {/* Detailed User Card */}
           <Card className='overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
-            <div className='flex flex-col gap-6 md:flex-row md:items-center md:justify-between'>
-              <div className='flex items-center gap-4'>
-                <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600'>
-                  <Users className='h-6 w-6' />
+            <div className='flex flex-col gap-6'>
+              <div className='flex items-start justify-between gap-4'>
+                <div className='flex items-center gap-4'>
+                  <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600'>
+                    <Users className='h-6 w-6' />
+                  </div>
+                  <div>
+                    <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>
+                      Total Platform Users
+                    </h2>
+                    <p className='text-3xl font-bold text-gray-900'>
+                      {Number(adminStats.userCount).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>Total Platform Users</h2>
-                  <p className='text-3xl font-bold text-gray-900'>
-                    {(analyticsData.data as any).userCount.toLocaleString()}
-                  </p>
-                </div>
+                {canViewAllUsers ? (
+                  <Link
+                    to='/users'
+                    className='text-muted-foreground hover:text-foreground group inline-flex shrink-0 items-center gap-1 text-sm font-medium no-underline transition-colors hover:underline'
+                  >
+                    <span>View all users</span>
+                    <ArrowRight className='h-4 w-4 transition-transform group-hover:translate-x-0.5' />
+                  </Link>
+                ) : null}
               </div>
-              
-              <div className='grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3'>
+
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
                 <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3 transition-colors hover:bg-gray-50'>
                   <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600'>
                     <Users className='h-4 w-4' />
                   </div>
                   <div>
-                    <p className='text-xs font-medium text-gray-500 uppercase tracking-tight'>Admins</p>
-                    <p className='text-lg font-semibold text-gray-900'>{(analyticsData.data as any).adminCount?.toLocaleString() ?? 0}</p>
+                    <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>Admins</p>
+                    <p className='text-lg font-semibold text-gray-900'>
+                      {adminStats.adminCount.toLocaleString()}
+                    </p>
                   </div>
                 </div>
                 <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3 transition-colors hover:bg-gray-50'>
@@ -310,8 +342,10 @@ export default function AdminDashboardHomePage() {
                     <Building2 className='h-4 w-4' />
                   </div>
                   <div>
-                    <p className='text-xs font-medium text-gray-500 uppercase tracking-tight'>Organizations</p>
-                    <p className='text-lg font-semibold text-gray-900'>{(analyticsData.data as any).organizationCount?.toLocaleString() ?? 0}</p>
+                    <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>Organizations</p>
+                    <p className='text-lg font-semibold text-gray-900'>
+                      {adminStats.organizationCount.toLocaleString()}
+                    </p>
                   </div>
                 </div>
                 <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3 transition-colors hover:bg-gray-50'>
@@ -319,17 +353,13 @@ export default function AdminDashboardHomePage() {
                     <Users className='h-4 w-4' />
                   </div>
                   <div>
-                    <p className='text-xs font-medium text-gray-500 uppercase tracking-tight'>Individuals</p>
-                    <p className='text-lg font-semibold text-gray-900'>{(analyticsData.data as any).individualCount?.toLocaleString() ?? 0}</p>
+                    <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>Individuals</p>
+                    <p className='text-lg font-semibold text-gray-900'>
+                      {adminStats.individualCount.toLocaleString()}
+                    </p>
                   </div>
                 </div>
               </div>
-              
-              <Link to='/users'>
-                <Button variant='outline' size='sm' className='w-full md:w-auto'>
-                  View All Users
-                </Button>
-              </Link>
             </div>
           </Card>
 

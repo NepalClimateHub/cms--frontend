@@ -1,19 +1,36 @@
-import { getAccessToken } from "../stores/authStore"
+import { getAccessToken } from '../stores/authStore'
+
+export type AppRole =
+  | 'SUPER_ADMIN'
+  | 'ADMIN'
+  | 'CONTENT_ADMIN'
+  | 'ORGANIZATION'
+  | 'INDIVIDUAL'
+
+const VALID_ROLES: AppRole[] = [
+  'SUPER_ADMIN',
+  'ADMIN',
+  'CONTENT_ADMIN',
+  'ORGANIZATION',
+  'INDIVIDUAL',
+]
 
 // Helper to get role from JWT token
-export const getRoleFromToken = (): 'ADMIN' | 'USER' | null => {
-    const accessToken = getAccessToken()
-    if (!accessToken) return null
-  
-    try {
-      const decoded = JSON.parse(atob(accessToken.split('.')[1])) as unknown as {
-        role: string
-      }
-      if (decoded?.role === 'ADMIN' || decoded?.role === 'USER') {
-        return decoded.role as 'ADMIN' | 'USER'
-      }
-    } catch (error) {
-      console.error('Failed to decode token:', error)
+export const getRoleFromToken = (): AppRole | null => {
+  const accessToken = getAccessToken()
+  if (!accessToken) return null
+
+  try {
+    const decoded = JSON.parse(atob(accessToken.split('.')[1])) as unknown as {
+      role?: string
+      userType?: string
     }
-    return null
+    const role = decoded?.role ?? decoded?.userType
+    if (role && VALID_ROLES.includes(role as AppRole)) {
+      return role as AppRole
+    }
+  } catch (_error) {
+    // Token decode failed – return null below
   }
+  return null
+}

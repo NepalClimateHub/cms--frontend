@@ -21,41 +21,46 @@ import {
 import { Separator } from '@/ui/shadcn/separator'
 // import { useDeleteBlog, useBlogAPI } from '@/query/blogs/use-blogs'
 import { LucideEye, Pencil, Trash, CheckCircle, XCircle } from 'lucide-react'
-import { useAuthStore } from '@/stores/authStore'
+
+import { BlogResponseDto } from '@/query/blogs/use-blogs'
+import { getRoleFromToken } from '@/utils/jwt.util'
+import { isAdminLevel } from '@/utils/role-check.util'
 
 interface BlogRowActionProps {
-  row: Row<any>
+  row: Row<BlogResponseDto>
 }
 
 const BlogRowAction = ({ row }: BlogRowActionProps) => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { user } = useAuthStore()
-  const isAdmin = user?.isSuperAdmin === true
+
+  const role = getRoleFromToken()
 
   const blogDeleteMutation = useDeleteBlog()
   const approveBlogMutation = useApproveBlog()
   const rejectBlogMutation = useRejectBlog()
 
-  const blogStatus = (row.original as any).status || 'DRAFT'
+  const blogStatus = row.original.status || 'DRAFT'
 
-  const handleStatusToggle = (blogId: string, isDraft: boolean) => {
-    // @ts-ignore
-    updateBlogMutation({
-      path: {
-        id: blogId,
-      },
-      // @ts-ignore
-      body: {
-        isDraft: isDraft ? true : false,
-      },
-    })
+  const handleStatusToggle = (_blogId: string, _isDraft: boolean) => {
+    // TODO: Wire up updateBlogMutation when available
   }
 
-  const formatDate = (date: string | undefined) => {
-    if (!date) return 'Not specified'
-    return format(new Date(date), 'PPP')
+  const formatDateShort = (date: string | undefined | Date) => {
+    if (date == null || date === '') return ''
+    try {
+      return format(new Date(date), 'PPP')
+    } catch {
+      return String(date)
+    }
+  }
+
+  const tagLabel = (tag: unknown): string => {
+    if (tag && typeof tag === 'object' && 'tag' in tag) {
+      return String((tag as { tag: unknown }).tag)
+    }
+    return ''
   }
 
   const handleEditBlog = (blogId: string) => {
@@ -99,187 +104,118 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
               {row.original.title}
             </DialogTitle>
           </DialogHeader>
-          <DialogDescription className='min-h-0 flex-1 space-y-6 overflow-y-auto pr-2'>
-            {/* Banner Image with Category, Status, and Author */}
-            <div className='flex items-center gap-4'>
-              {/* Banner Image (Cover Image) */}
-              {row.original.bannerImageUrl && (
-                <div className='relative h-[50px] w-[50px] flex-shrink-0 overflow-hidden rounded-lg'>
-                  <img
-                    src={row.original.bannerImageUrl}
-                    alt={`${row.original.title} banner`}
-                    className='h-full w-full object-cover'
-                  />
-                </div>
-              )}
+          <DialogDescription className='min-h-0 flex-1 space-y-4 overflow-y-auto pr-2 text-foreground'>
+            {row.original.bannerImageUrl ? (
+              <div className='overflow-hidden rounded-lg border'>
+                <img
+                  src={row.original.bannerImageUrl}
+                  alt=''
+                  className='max-h-40 w-full object-cover'
+                />
+              </div>
+            ) : null}
 
-              {/* Category, Status, and Author */}
-              <div className='flex flex-1 flex-row items-center justify-between gap-2'>
-                <div className='flex items-center gap-2'>
-                  <Badge variant='outline' className='text-sm'>
-                    {row.original.category}
+            <div className='flex flex-wrap items-center gap-2'>
+              <Badge variant='outline'>{row.original.category}</Badge>
+              {(() => {
+                const status = row.original.status || 'DRAFT'
+                const statusConfig: Record<
+                  string,
+                  {
+                    label: string
+                    variant: 'default' | 'secondary' | 'outline'
+                    className: string
+                  }
+                > = {
+                  DRAFT: {
+                    label: 'Draft',
+                    variant: 'secondary',
+                    className: 'bg-yellow-100',
+                  },
+                  UNDER_REVIEW: {
+                    label: 'Under Review',
+                    variant: 'outline',
+                    className: 'bg-blue-100',
+                  },
+                  PUBLISHED: {
+                    label: 'Published',
+                    variant: 'default',
+                    className: 'bg-green-100',
+                  },
+                  REJECTED: {
+                    label: 'Rejected',
+                    variant: 'outline',
+                    className: 'bg-red-100',
+                  },
+                }
+                const config = statusConfig[status] || statusConfig.DRAFT
+                return (
+                  <Badge
+                    variant={config.variant}
+                    className={config.className}
+                  >
+                    {config.label}
                   </Badge>
-                  {(() => {
-                    const status = (row.original as any).status || 'DRAFT'
-                    const statusConfig: Record<
-                      string,
-                      {
-                        label: string
-                        variant: 'default' | 'secondary' | 'outline'
-                        className: string
-                      }
-                    > = {
-                      DRAFT: {
-                        label: 'Draft',
-                        variant: 'secondary',
-                        className: 'bg-yellow-100',
-                      },
-                      UNDER_REVIEW: {
-                        label: 'Under Review',
-                        variant: 'outline',
-                        className: 'bg-blue-100',
-                      },
-                      PUBLISHED: {
-                        label: 'Published',
-                        variant: 'default',
-                        className: 'bg-green-100',
-                      },
-                      REJECTED: {
-                        label: 'Rejected',
-                        variant: 'outline',
-                        className: 'bg-red-100',
-                      },
-                    }
-                    const config = statusConfig[status] || statusConfig.DRAFT
-                    return (
-                      <Badge
-                        variant={config.variant}
-                        className={`${config.className} text-sm`}
-                      >
-                        {config.label}
-                      </Badge>
-                    )
-                  })()}
-                </div>
-                <div className='text-right'>
-                  <h3 className='text-start text-sm font-semibold text-muted-foreground'>
-                    Author
-                  </h3>
-                  <p className='text-base'>{row.original.author}</p>
-                </div>
-              </div>
+                )
+              })()}
+              {row.original.isFeatured ? (
+                <Badge variant='secondary'>Featured</Badge>
+              ) : null}
+              {row.original.isTopRead ? (
+                <Badge variant='secondary'>Top read</Badge>
+              ) : null}
             </div>
 
-            <hr />
-            {/* Content Section */}
-            <div>
-              <h3 className='text-sm font-semibold text-muted-foreground'>
-                Content
-              </h3>
-              <div
-                className='prose prose-sm mt-2 max-w-none text-base'
-                dangerouslySetInnerHTML={{ __html: row.original.content }}
-              />
-            </div>
+            <p className='text-sm text-muted-foreground'>
+              <span>By {row.original.author}</span>
+              {row.original.readingTime ? (
+                <span> · {row.original.readingTime}</span>
+              ) : null}
+              {row.original.publishedDate ? (
+                <span> · {formatDateShort(row.original.publishedDate)}</span>
+              ) : null}
+            </p>
+
+            {row.original.excerpt?.trim() ? (
+              <p className='text-sm leading-relaxed text-muted-foreground'>
+                {row.original.excerpt}
+              </p>
+            ) : null}
 
             <Separator />
 
-            {/* Details Grid */}
-            <div className='grid grid-cols-2 gap-4'>
-              <div>
-                <h3 className='text-sm font-semibold text-muted-foreground'>
-                  Category
-                </h3>
-                <p className='text-base'>{row.original.category}</p>
-              </div>
-              <div>
-                <h3 className='text-sm font-semibold text-muted-foreground'>
-                  Reading Time
-                </h3>
-                <p className='text-base'>
-                  {row.original.readingTime || 'Not specified'}
-                </p>
-              </div>
-              <div>
-                <h3 className='text-sm font-semibold text-muted-foreground'>
-                  Published Date
-                </h3>
-                <p className='text-base'>
-                  {formatDate(row.original.publishedDate)}
-                </p>
-              </div>
-              <div>
-                <h3 className='text-sm font-semibold text-muted-foreground'>
-                  Featured
-                </h3>
-                <p className='text-base'>
-                  {row.original.isFeatured ? 'Yes' : 'No'}
-                </p>
-              </div>
-              {row.original.isTopRead && (
-                <div>
-                  <h3 className='text-sm font-semibold text-muted-foreground'>
-                    Top Read
-                  </h3>
-                  <p className='text-base'>
-                    {row.original.isTopRead ? 'Yes' : 'No'}
-                  </p>
-                </div>
-              )}
-            </div>
+            <div
+              className='prose prose-sm max-w-none dark:prose-invert'
+              dangerouslySetInnerHTML={{ __html: row.original.content }}
+            />
 
-            {/* Tags Section */}
             {row.original.tags &&
-              Array.isArray(row.original.tags) &&
-              row.original.tags.length > 0 && (
-                <>
-                  <Separator />
-                  <div>
-                    <h3 className='mb-2 text-sm font-semibold text-muted-foreground'>
-                      Tags
-                    </h3>
-                    <div className='flex flex-wrap gap-2'>
-                      {row.original.tags.map(
-                        (tag: { id: string; tag: string }) => (
-                          <Badge
-                            key={tag.id}
-                            variant='outline'
-                            className='text-sm'
-                          >
-                            {tag.tag}
-                          </Badge>
-                        )
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
-
-            {/* Excerpt Section */}
-            {row.original.excerpt && (
-              <>
-                <Separator />
-                <div>
-                  <h3 className='text-sm font-semibold text-muted-foreground'>
-                    Excerpt
-                  </h3>
-                  <p className='mt-2 text-base'>{row.original.excerpt}</p>
-                </div>
-              </>
-            )}
-
-            {/* Timestamps */}
-            <Separator />
-            <div className='flex justify-between text-sm text-muted-foreground'>
-              <span>Created: {formatDate(row.original.createdAt)}</span>
-              <span>Updated: {formatDate(row.original.updatedAt)}</span>
-            </div>
+            Array.isArray(row.original.tags) &&
+            row.original.tags.length > 0 ? (
+              <div className='flex flex-wrap gap-1.5 pt-1'>
+                {row.original.tags.map((tag, idx) => {
+                  const label = tagLabel(tag)
+                  const id =
+                    tag &&
+                    typeof tag === 'object' &&
+                    'id' in tag &&
+                    (tag as { id: unknown }).id != null
+                      ? String((tag as { id: unknown }).id)
+                      : `tag-${idx}`
+                  return (
+                    <Badge key={id} variant='outline' className='text-xs'>
+                      {label || JSON.stringify(tag)}
+                    </Badge>
+                  )
+                })}
+              </div>
+            ) : null}
           </DialogDescription>
         </DialogContent>
       </Dialog>
 
-      {/* Approve/Reject Buttons - Only show for blogs under review and admin users */}
-      {blogStatus === 'UNDER_REVIEW' && isAdmin && (
+      {/* Approve/Reject: staff (incl. content admin) for blogs under review */}
+      {blogStatus === 'UNDER_REVIEW' && isAdminLevel(role) && (
         <>
           <Button
             onClick={() => approveBlogMutation.mutate({ id: row.original.id })}
@@ -302,16 +238,18 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
         </>
       )}
 
-      {/* Status Toggle Button */}
-      <Button
-        onClick={() =>
-          handleStatusToggle(row.original.id, !row.original.isDraft)
-        }
-        size={'sm'}
-        className='h-6 bg-blue-500 px-2 hover:bg-blue-600'
-      >
-        {row.original.isDraft ? 'Publish' : 'Conceal'}
-      </Button>
+      {/* Publish/Conceal: staff only; not for INDIVIDUAL or ORGANIZATION */}
+      {isAdminLevel(role) && (
+        <Button
+          onClick={() =>
+            handleStatusToggle(row.original.id, !row.original.isDraft)
+          }
+          size={'sm'}
+          className='h-6 bg-blue-500 px-2 hover:bg-blue-600'
+        >
+          {row.original.isDraft ? 'Publish' : 'Conceal'}
+        </Button>
+      )}
 
       <Button
         onClick={() => handleEditBlog(row.original.id)}

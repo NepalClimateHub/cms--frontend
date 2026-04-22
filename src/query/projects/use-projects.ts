@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { client } from '@/api/client.gen'
 import { ProjectFormValues } from '@/schemas/project'
+import { Meta } from '@/schemas/shared'
 
 export interface ProjectResponseDto {
   id: string
@@ -25,13 +26,16 @@ export interface Tag {
   isProjectTag: boolean
 }
 
-export const useGetProjects = (params: any) => {
+export const useGetProjects = (params: Record<string, unknown>) => {
   return useQuery({
     queryKey: ['projects', params],
     queryFn: async () => {
       const response = await client.get({ url: '/api/v1/projects', query: params })
       
-      return response.data as { data: ProjectResponseDto[]; meta: any }
+      return response.data as {
+        data: ProjectResponseDto[]
+        meta: Meta
+      }
     },
   })
 }
@@ -59,8 +63,10 @@ export const useCreateProject = () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
       toast.success('Project created successfully')
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to create project')
+    onError: (error: unknown) => {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to create project'
+      )
     },
   })
 }
@@ -78,8 +84,10 @@ export const useUpdateProject = () => {
       queryClient.invalidateQueries({ queryKey: ['project', id] })
       toast.success('Project updated successfully')
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to update project')
+    onError: (error: unknown) => {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to update project'
+      )
     },
   })
 }
@@ -95,8 +103,10 @@ export const useDeleteProject = () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
       toast.success('Project deleted successfully')
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to delete project')
+    onError: (error: unknown) => {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to delete project'
+      )
     },
   })
 }
