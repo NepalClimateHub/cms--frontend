@@ -9,6 +9,7 @@ import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import { toast } from '@/hooks/use-toast'
 import { opportunitiesFilterOptions } from '@/features/oppourtunities/list/opportunities-filter-options'
+import type { OpportunityControllerGetOpportunitiesData } from '@/api/types.gen'
 import { opportunityControllerAddOpportutnityMutation } from '../../api/@tanstack/react-query.gen'
 
 export const useGetOpportunityById = (id: string) => {
@@ -55,13 +56,16 @@ export function useOpportunityAPI() {
   }
 }
 
-export const useGetOpportunity = (pagination: any, filters: any) => {
+export const useGetOpportunity = (
+  pagination: Record<string, unknown>,
+  filters: Record<string, unknown>
+) => {
   return useQuery({
     ...opportunityControllerGetOpportunitiesOptions({
       query: {
         ...pagination,
         ...filters,
-      },
+      } as OpportunityControllerGetOpportunitiesData['query'],
     }),
   })
 }

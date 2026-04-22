@@ -20,7 +20,7 @@ export default function EditProject() {
   const { data: project, isLoading: isProjectLoading } = useGetProject(id)
   const updateProjectMutation = useUpdateProject()
 
-  const { data: tagsData } = useGetTags({ limit: 100 })
+  const { data: tagsData } = useGetTags({ query: { limit: 100 } })
   const tagsOptions = ((tagsData?.data as unknown as Tag[]) || [])
      .filter((tag: Tag) => tag.isProjectTag)
     .map((tag: Tag) => ({

@@ -30,6 +30,11 @@ export interface CategorySearchParams {
   [key: string]: unknown;
 }
 
+export type CategoriesListApiResult = {
+  data: Category[]
+  meta?: { total?: number }
+}
+
 export interface CreateCategoryDto {
   name: string;
   description?: string;
@@ -46,7 +51,7 @@ export const useGetCategories = (params: CategorySearchParams) => {
         url: '/api/v1/categories',
         query: params,
       });
-      return data as unknown;
+      return data as CategoriesListApiResult;
     },
   });
 };
@@ -54,11 +59,11 @@ export const useGetCategories = (params: CategorySearchParams) => {
 export const useGetCategory = (id: string) => {
   return useQuery({
     queryKey: ['categories', id],
-    queryFn: async () => {
+    queryFn: async (): Promise<Category> => {
       const { data } = await client.get({
         url: `/api/v1/categories/${id}`,
       });
-      return (data as { data: unknown }).data;
+      return (data as { data: Category }).data;
     },
     enabled: !!id,
   });

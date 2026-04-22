@@ -3,6 +3,7 @@ import { useQueries, useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { IconArticle } from '@tabler/icons-react'
 import { emailSubscriptionControllerFindAll } from '@/api'
+import type { AdminAnalyticsOutput } from '@/api/types.gen'
 import { climateQuotes } from '@/data/climate-quotes'
 import { useAnalyticsAPI } from '@/query/analytics/use-analytics'
 import apiClient from '@/query/apiClient'
@@ -225,6 +226,8 @@ export default function AdminDashboardHomePage() {
     )
   }
 
+  const adminStats: AdminAnalyticsOutput = analyticsData.data
+
   return (
     <Main>
       <div className='mb-2 flex flex-col items-start justify-start space-y-10 p-5'>
@@ -233,7 +236,7 @@ export default function AdminDashboardHomePage() {
         <div className='space-y-8'>
           {/* Analytics Cards */}
           <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5'>
-            {Object.entries(analyticsData.data)
+            {Object.entries(adminStats)
               .filter(
                 ([key]) =>
                   (key !== 'userCount' && !key.endsWith('Count')) ||
@@ -307,7 +310,7 @@ export default function AdminDashboardHomePage() {
                       Total Platform Users
                     </h2>
                     <p className='text-3xl font-bold text-gray-900'>
-                      {(analyticsData.data as any).userCount.toLocaleString()}
+                      {Number(adminStats.userCount).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -329,7 +332,9 @@ export default function AdminDashboardHomePage() {
                   </div>
                   <div>
                     <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>Admins</p>
-                    <p className='text-lg font-semibold text-gray-900'>{(analyticsData.data as any).adminCount?.toLocaleString() ?? 0}</p>
+                    <p className='text-lg font-semibold text-gray-900'>
+                      {adminStats.adminCount.toLocaleString()}
+                    </p>
                   </div>
                 </div>
                 <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3 transition-colors hover:bg-gray-50'>
@@ -338,7 +343,9 @@ export default function AdminDashboardHomePage() {
                   </div>
                   <div>
                     <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>Organizations</p>
-                    <p className='text-lg font-semibold text-gray-900'>{(analyticsData.data as any).organizationCount?.toLocaleString() ?? 0}</p>
+                    <p className='text-lg font-semibold text-gray-900'>
+                      {adminStats.organizationCount.toLocaleString()}
+                    </p>
                   </div>
                 </div>
                 <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3 transition-colors hover:bg-gray-50'>
@@ -347,7 +354,9 @@ export default function AdminDashboardHomePage() {
                   </div>
                   <div>
                     <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>Individuals</p>
-                    <p className='text-lg font-semibold text-gray-900'>{(analyticsData.data as any).individualCount?.toLocaleString() ?? 0}</p>
+                    <p className='text-lg font-semibold text-gray-900'>
+                      {adminStats.individualCount.toLocaleString()}
+                    </p>
                   </div>
                 </div>
               </div>

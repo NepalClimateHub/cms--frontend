@@ -43,7 +43,7 @@ declare module '@tiptap/react' {
       setImages: (attrs: { src: string | File; alt?: string; title?: string; caption?: string }[]) => ReturnType
     }
     setImage: {
-      setImage: (attrs: { src?: string; alt?: string; title?: string; caption?: string | null; width?: number; height?: number; [key: string]: any }) => ReturnType
+      setImage: (attrs: { src?: string; alt?: string; title?: string; caption?: string | null; width?: number; height?: number; [key: string]: unknown }) => ReturnType
     }
     downloadImage: {
       downloadImage: (attrs: DownloadImageCommandProps) => ReturnType

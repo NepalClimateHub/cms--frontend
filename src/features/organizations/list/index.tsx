@@ -14,12 +14,12 @@ import { BoxLoader } from '@/ui/loader'
 import PageHeader from '@/ui/page-header'
 import OrganizationFilters from './components/organization-filters'
 import { useOrganizationColumns } from './hooks/use-organization-columns'
+import { organizationFilterOptions } from './organization-filter-options'
 
 const ListOrganizations = () => {
   const roleColumns = useOrganizationColumns()
   const paginationOptions = usePagination()
-  // @ts-expect-error: fix later - TODO: check type
-  const filterOptions = useFilters(OrganizationFilters)
+  const filterOptions = useFilters(organizationFilterOptions)
 
   const { pagination, setPage } = paginationOptions
   const { filters } = filterOptions
@@ -38,7 +38,6 @@ const ListOrganizations = () => {
 
   const table = useReactTable({
     data: roleData,
-    // @ts-expect-error: fix later - TODO: check type
     columns: roleColumns,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),

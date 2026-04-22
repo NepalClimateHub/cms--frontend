@@ -198,7 +198,7 @@ const IKUpload = forwardRef<
         params['token'] = token
         ikClient.upload(
           params,
-          (err: Error | null, result: any | null) => {
+          (err: Error | null, result: unknown | null) => {
             if (err) {
               if (onError && typeof onError === 'function') {
                 onError(err)

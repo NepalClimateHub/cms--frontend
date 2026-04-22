@@ -33,7 +33,7 @@ export const useGetTags = (
 ) => {
   const cleanQuery = cleanObj(query)
   return useQuery({
-    queryKey: [tags.getall.key, query],
+    queryKey: [tags.getall.key, cleanQuery],
     queryFn: () => getTags(cleanQuery),
     enabled,
   })

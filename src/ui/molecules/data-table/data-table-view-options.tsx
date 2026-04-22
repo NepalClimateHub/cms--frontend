@@ -1,6 +1,7 @@
+import { isValidElement, type ReactNode } from 'react'
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
-import { Table } from '@tanstack/react-table'
+import type { HeaderContext, Table } from '@tanstack/react-table'
 import { Button } from '@/ui/shadcn/button'
 import {
   DropdownMenu,
@@ -12,6 +13,32 @@ import {
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>
+}
+
+function columnHeaderLabel<TData>(
+  table: Table<TData>,
+  column: ReturnType<Table<TData>['getAllColumns']>[number]
+): ReactNode {
+  const header = column.columnDef.header
+  if (typeof header !== 'function') {
+    return header ?? column.id
+  }
+  const ctx = {
+    column,
+    header: column.columnDef,
+    table,
+  } as HeaderContext<TData, unknown>
+  const node = header(ctx)
+  if (
+    isValidElement(node) &&
+    node.props &&
+    typeof node.props === 'object' &&
+    node.props !== null &&
+    'title' in node.props
+  ) {
+    return (node.props as { title: ReactNode }).title
+  }
+  return column.id
 }
 
 export function DataTableViewOptions<TData>({
@@ -46,9 +73,7 @@ export function DataTableViewOptions<TData>({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {typeof column.columnDef.header === 'function'
-                  ? column.columnDef.header({ column } as any)?.props.title
-                  : column.columnDef.header}
+                {columnHeaderLabel(table, column)}
               </DropdownMenuCheckboxItem>
             )
           })}
