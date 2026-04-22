@@ -74,10 +74,13 @@ export default function EditProject() {
           })
           navigate({ to: '/projects' })
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
           toast({
             title: 'Failed to update project',
-            description: error?.message || 'Something went wrong while updating the project.',
+            description:
+              error instanceof Error
+                ? error.message
+                : 'Something went wrong while updating the project.',
             variant: 'destructive',
           })
         },

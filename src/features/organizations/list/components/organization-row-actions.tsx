@@ -2,14 +2,14 @@ import { FC } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Row } from '@tanstack/react-table'
 import { IconCheck, IconEdit, IconTrash } from '@tabler/icons-react'
+import type { OrganizationResponseDto } from '@/api/types.gen'
 import apiClient from '@/query/apiClient'
-import { OrganizationFormValues as Organization } from '@/schemas/organization/organization'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { isVerificationAdmin } from '@/utils/role-check.util'
 import { useToast } from '@/hooks/use-toast'
 
 type OrganizationRowActionProps = {
-  row: Row<Organization>
+  row: Row<OrganizationResponseDto>
 }
 
 const OrganizationRowAction: FC<OrganizationRowActionProps> = ({ row }) => {
@@ -28,7 +28,7 @@ const OrganizationRowAction: FC<OrganizationRowActionProps> = ({ row }) => {
   }
 
   const handleVerify = async () => {
-    const orgId = (row.original as any)?.id
+    const orgId = row.original.id
     if (!orgId) return
     try {
       await apiClient.patch(`/api/v1/organizations/${orgId}/verify`, {
@@ -52,7 +52,7 @@ const OrganizationRowAction: FC<OrganizationRowActionProps> = ({ row }) => {
 
   return (
     <div className='flex items-center justify-center gap-4'>
-      {canVerify && !(row.original as any)?.isVerifiedByAdmin && (
+      {canVerify && !row.original.isVerifiedByAdmin && (
         <IconCheck
           onClick={handleVerify}
           className='cursor-pointer text-green-600'

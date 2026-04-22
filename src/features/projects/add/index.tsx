@@ -51,10 +51,13 @@ export default function AddProject() {
         })
         navigate({ to: '/projects' })
       },
-      onError: (error: any) => {
+      onError: (error: unknown) => {
         toast({
           title: 'Failed to create project',
-          description: error?.message || 'Something went wrong while creating the project.',
+          description:
+            error instanceof Error
+              ? error.message
+              : 'Something went wrong while creating the project.',
           variant: 'destructive',
         })
       },
