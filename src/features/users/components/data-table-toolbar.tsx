@@ -1,8 +1,6 @@
-import { Cross2Icon } from '@radix-ui/react-icons'
 import { Table } from '@tanstack/react-table'
-import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
-import { userTypes } from '../data/data'
+import { userTypeOptions } from '../data/data'
 import { DataTableFacetedFilter } from './data-table-faceted-filter'
 import { DataTableViewOptions } from './data-table-view-options'
 
@@ -13,8 +11,6 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0
-
   return (
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
@@ -41,26 +37,19 @@ export function DataTableToolbar<TData>({
               ]}
             />
           )}
-          {table.getColumn('role') && (
-            <DataTableFacetedFilter
-              column={table.getColumn('role')}
-              title='Role'
-              options={userTypes.map((t) => ({ ...t }))}
-            />
-          )}
         </div>
-        {isFiltered && (
-          <Button
-            variant='ghost'
-            onClick={() => table.resetColumnFilters()}
-            className='h-8 px-2 lg:px-3'
-          >
-            Reset
-            <Cross2Icon className='ml-2 h-4 w-4' />
-          </Button>
-        )}
+
       </div>
-      <DataTableViewOptions table={table} />
+      <div className='flex items-center gap-2'>
+        {table.getColumn('serverRole') && (
+          <DataTableFacetedFilter
+            column={table.getColumn('serverRole')}
+            title='Filter Users by Role'
+            options={userTypeOptions.map((t) => ({ ...t }))}
+          />
+        )}
+        <DataTableViewOptions table={table} />
+      </div>
     </div>
   )
 }

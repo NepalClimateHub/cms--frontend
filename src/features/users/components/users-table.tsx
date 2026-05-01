@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearch } from '@tanstack/react-router'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -39,10 +40,27 @@ interface DataTableProps {
 }
 
 export function UsersTable({ columns, data }: DataTableProps) {
+  const search: any = useSearch({ strict: false })
+
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    search?.role ? [{ id: 'serverRole', value: [search.role] }] : []
+  )
   const [sorting, setSorting] = useState<SortingState>([])
+
+  useEffect(() => {
+    if (search?.role) {
+      setColumnFilters((prev) => {
+        // Only update if not already set to avoid overriding user's manual changes
+        const hasRoleFilter = prev.some((f) => f.id === 'serverRole')
+        if (!hasRoleFilter) {
+          return [...prev, { id: 'serverRole', value: [search.role] }]
+        }
+        return prev
+      })
+    }
+  }, [search?.role])
 
   const table = useReactTable({
     data,

@@ -12,8 +12,8 @@ import {
   blogControllerFindAllBlogsOptions,
 } from '../../api/@tanstack/react-query.gen'
 import { client as apiClient } from '../../api/client.gen'
-import { blogControllerUpdateBlogMutation } from './../../api/@tanstack/react-query.gen'
 import { Category } from '../categories/use-categories'
+import { blogControllerUpdateBlogMutation } from './../../api/@tanstack/react-query.gen'
 
 // Mock blog types - these should be replaced with actual API types when available
 export interface BlogResponseDto {
@@ -113,7 +113,8 @@ export const useAddBlog = () => {
     },
 
     onError: (error) => {
-      const errMsg = error instanceof Error ? error.message : 'Failed to add blog'
+      const errMsg =
+        error instanceof Error ? error.message : 'Failed to add blog'
       toast({
         title: errMsg,
         variant: 'destructive',
@@ -141,7 +142,9 @@ export const useUpdateBlog = () => {
     ...blogControllerUpdateBlogMutation(),
     onSuccess: (_data, variables) => {
       void queryClient.invalidateQueries(blogControllerFindAllBlogsOptions())
-      void queryClient.invalidateQueries(blogControllerGetPublishedBlogsOptions())
+      void queryClient.invalidateQueries(
+        blogControllerGetPublishedBlogsOptions()
+      )
       const id = variables.path?.id
       if (id) {
         void queryClient.invalidateQueries(
@@ -154,7 +157,8 @@ export const useUpdateBlog = () => {
       })
     },
     onError: (error) => {
-      const errMsg = error instanceof Error ? error.message : 'Failed to update blog'
+      const errMsg =
+        error instanceof Error ? error.message : 'Failed to update blog'
       toast({
         title: errMsg,
         variant: 'destructive',
@@ -178,7 +182,8 @@ export const useDeleteBlog = () => {
       })
     },
     onError: (error) => {
-      const errMsg = error instanceof Error ? error.message : 'Failed to delete blog'
+      const errMsg =
+        error instanceof Error ? error.message : 'Failed to delete blog'
       toast({
         title: errMsg,
         variant: 'destructive',
@@ -208,7 +213,8 @@ export const useApproveBlog = () => {
       })
     },
     onError: (error) => {
-      const errMsg = error instanceof Error ? error.message : 'Failed to approve blog'
+      const errMsg =
+        error instanceof Error ? error.message : 'Failed to approve blog'
       toast({
         title: errMsg,
         variant: 'destructive',
@@ -238,7 +244,8 @@ export const useRejectBlog = () => {
       })
     },
     onError: (error) => {
-      const errMsg = error instanceof Error ? error.message : 'Failed to reject blog'
+      const errMsg =
+        error instanceof Error ? error.message : 'Failed to reject blog'
       toast({
         title: errMsg,
         variant: 'destructive',

@@ -3,16 +3,17 @@ import { useQueries, useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { IconArticle } from '@tabler/icons-react'
 import { emailSubscriptionControllerFindAll } from '@/api'
-import type { AdminAnalyticsOutput } from '@/api/types.gen'
 import { climateQuotes } from '@/data/climate-quotes'
-import { useAnalyticsAPI } from '@/query/analytics/use-analytics'
+import {
+  useAnalyticsAPI,
+  useTopBlogAuthors,
+  useNewJoinedUsers,
+} from '@/query/analytics/use-analytics'
 import apiClient from '@/query/apiClient'
 import { Main } from '@/ui/layouts/main'
 import { MultiSelect } from '@/ui/multi-select'
 import { Card, CardTitle } from '@/ui/shadcn/card'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { getRoleFromToken } from '@/utils/jwt.util'
-import { canAccessUserDirectoryAndDatabaseExport } from '@/utils/role-check.util'
 import {
   Calendar,
   Users,
@@ -24,6 +25,9 @@ import {
   FileText,
   Building2,
   ArrowRight,
+  MessageSquare,
+  MessagesSquare,
+  Bot,
 } from 'lucide-react'
 import {
   BarChart,
@@ -34,11 +38,13 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
+import type { AdminAnalyticsOutput } from '@/api/types.gen'
+import { getRoleFromToken } from '@/utils/jwt.util'
+import { canAccessUserDirectoryAndDatabaseExport } from '@/utils/role-check.util'
 
 export default function AdminDashboardHomePage() {
-  const canViewAllUsers = canAccessUserDirectoryAndDatabaseExport(
-    getRoleFromToken()
-  )
+  const canViewAllUsers =
+    canAccessUserDirectoryAndDatabaseExport(getRoleFromToken())
 
   const { data: analyticsData, isLoading } =
     useAnalyticsAPI().getAnalyticsForAdmin
@@ -59,10 +65,20 @@ export default function AdminDashboardHomePage() {
     },
   })
 
+  const { data: topAuthorsData, isLoading: isTopAuthorsLoading } =
+    useTopBlogAuthors()
+
+  const { data: newJoinedUsersData, isLoading: isNewJoinedUsersLoading } =
+    useNewJoinedUsers()
+
   const currentYear = new Date().getFullYear()
   const [selectedYears, setSelectedYears] = useState<string[]>([
     currentYear.toString(),
   ])
+
+  const [aiChatFilter, setAiChatFilter] = useState<
+    'daily' | 'weekly' | 'monthly'
+  >('monthly')
 
   // Fetch data for all selected years using useQueries
   const yearQueries = useQueries({
@@ -100,6 +116,7 @@ export default function AdminDashboardHomePage() {
     eventCount: 'Events',
     userCount: 'Users',
     blogCount: 'Blogs',
+    projectCount: 'Work / Projects',
   }
 
   const icons = {
@@ -108,6 +125,7 @@ export default function AdminDashboardHomePage() {
     eventCount: <Calendar className='h-4 w-4' />,
     userCount: <Users className='h-4 w-4' />,
     blogCount: <Newspaper className='h-4 w-4' />,
+    projectCount: <Briefcase className='h-4 w-4' />,
   }
 
   const colors = {
@@ -116,6 +134,7 @@ export default function AdminDashboardHomePage() {
     eventCount: 'text-purple-600',
     userCount: 'text-rose-600',
     blogCount: 'text-red-600',
+    projectCount: 'text-violet-600',
   }
 
   const routes = {
@@ -124,6 +143,7 @@ export default function AdminDashboardHomePage() {
     eventCount: '/events/list',
     userCount: '/users',
     blogCount: '/blog/list',
+    projectCount: '/projects',
   }
 
   // Generate year options (current year and 4 years back)
@@ -198,13 +218,15 @@ export default function AdminDashboardHomePage() {
     )
     const quoteIndex = dayOfYear % climateQuotes.length
     return climateQuotes[quoteIndex]
-  }, [climateQuotes])
+  }, [])
 
   if (isLoading) {
     return (
       <Main>
         <div className='mb-2 flex flex-col items-start justify-start space-y-10 p-5'>
-          <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
+          <h1 className='text-2xl font-bold tracking-tight'>
+            Analytics Overview
+          </h1>
           <div className='flex w-full items-center justify-center py-16'>
             <div className='h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-gray-800'></div>
           </div>
@@ -217,7 +239,9 @@ export default function AdminDashboardHomePage() {
     return (
       <Main>
         <div className='mb-2 flex flex-col items-start justify-start space-y-10 p-5'>
-          <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
+          <h1 className='text-2xl font-bold tracking-tight'>
+            Analytics Overview
+          </h1>
           <div className='flex w-full items-center justify-center py-16'>
             <p className='text-gray-500'>No data available</p>
           </div>
@@ -230,221 +254,248 @@ export default function AdminDashboardHomePage() {
 
   return (
     <Main>
-      <div className='mb-2 flex flex-col items-start justify-start space-y-10 p-5'>
-        <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
+      <div className='mb-2 flex w-full flex-col space-y-10 p-5'>
+        <h1 className='text-2xl font-bold tracking-tight'>
+          Analytics Overview
+        </h1>
 
-        <div className='space-y-8'>
-          {/* Analytics Cards */}
-          <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5'>
-            {Object.entries(adminStats)
-              .filter(
-                ([key]) =>
-                  (key !== 'userCount' && !key.endsWith('Count')) ||
-                  (!['adminCount', 'organizationCount', 'individualCount'].includes(
-                    key
-                  ) &&
-                    key !== 'userCount')
-              )
-              .map(([key, value]) => {
-                if (key === 'pendingOrganizationVerificationCount') return null
-                if (['adminCount', 'organizationCount', 'individualCount'].includes(key) || key === 'userCount') return null
-                return (
-                  <Link
-                    key={key}
-                    to={routes[key as keyof typeof routes]}
-                    className='group'
-                  >
-                    <Card className='border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-gray-300 hover:shadow-md'>
-                      <div className='space-y-2'>
-                        <div
-                          className={cn(
-                            'flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50',
-                            colors[key as keyof typeof colors]
-                          )}
-                        >
-                          {icons[key as keyof typeof icons]}
-                        </div>
-                        <div>
-                          <p className='text-xs font-medium uppercase tracking-wide text-gray-500'>
-                            {switchText[key as keyof typeof switchText]}
-                          </p>
-                          <p className='text-xl font-semibold text-gray-900'>
-                            {(value as number).toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
+        <div
+          className='flex w-full flex-col gap-8 lg:grid lg:items-start'
+          style={{ gridTemplateColumns: 'minmax(0, 1fr) 300px' }}
+        >
+          {/* Left Column - Analytics (fills remaining space) */}
+          <div className='min-w-0 space-y-8'>
+            {/* Analytics Cards */}
+            <div className='grid grid-cols-2 gap-4 sm:grid-cols-3'>
+              {Object.entries(adminStats)
+                .filter(
+                  ([key]) =>
+                    (key !== 'userCount' && !key.endsWith('Count')) ||
+                    (![
+                      'adminCount',
+                      'organizationCount',
+                      'individualCount',
+                      'aiChatSessionsDaily',
+                      'aiChatSessionsWeekly',
+                      'aiChatSessionsMonthly',
+                      'aiChatMessagesDaily',
+                      'aiChatMessagesWeekly',
+                      'aiChatMessagesMonthly',
+                    ].includes(key) &&
+                      key !== 'userCount')
                 )
-              })}
-            {/* Subscribed Emails Card */}
-            <Link to='/subscribed-emails' className='group'>
-              <Card className='border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-gray-300 hover:shadow-md'>
-                <div className='space-y-2'>
-                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50 text-amber-600'>
-                    <Mail className='h-4 w-4' />
-                  </div>
-                  <div>
-                    <p className='text-xs font-medium uppercase tracking-wide text-gray-500'>
-                      Subscribed Emails
-                    </p>
-                    <p className='text-xl font-semibold text-gray-900'>
-                      {subscribedEmailsData?.toLocaleString() ?? '0'}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-          </div>
-
-          {/* Detailed User Card */}
-          <Card className='overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
-            <div className='flex flex-col gap-6'>
-              <div className='flex items-start justify-between gap-4'>
-                <div className='flex items-center gap-4'>
-                  <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600'>
-                    <Users className='h-6 w-6' />
-                  </div>
-                  <div>
-                    <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>
-                      Total Platform Users
-                    </h2>
-                    <p className='text-3xl font-bold text-gray-900'>
-                      {Number(adminStats.userCount).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-                {canViewAllUsers ? (
-                  <Link
-                    to='/users'
-                    className='text-muted-foreground hover:text-foreground group inline-flex shrink-0 items-center gap-1 text-sm font-medium no-underline transition-colors hover:underline'
-                  >
-                    <span>View all users</span>
-                    <ArrowRight className='h-4 w-4 transition-transform group-hover:translate-x-0.5' />
-                  </Link>
-                ) : null}
-              </div>
-
-              <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
-                <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3 transition-colors hover:bg-gray-50'>
-                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600'>
-                    <Users className='h-4 w-4' />
-                  </div>
-                  <div>
-                    <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>Admins</p>
-                    <p className='text-lg font-semibold text-gray-900'>
-                      {adminStats.adminCount.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-                <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3 transition-colors hover:bg-gray-50'>
-                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-purple-600'>
-                    <Building2 className='h-4 w-4' />
-                  </div>
-                  <div>
-                    <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>Organizations</p>
-                    <p className='text-lg font-semibold text-gray-900'>
-                      {adminStats.organizationCount.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-                <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3 transition-colors hover:bg-gray-50'>
-                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600'>
-                    <Users className='h-4 w-4' />
-                  </div>
-                  <div>
-                    <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>Individuals</p>
-                    <p className='text-lg font-semibold text-gray-900'>
-                      {adminStats.individualCount.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* User Overview Section */}
-          <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
-            {/* Chart */}
-            <Card className='border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2'>
-              <div className='mb-6 flex items-center justify-between'>
-                <CardTitle className='text-lg font-medium text-gray-900'>
-                  New Users Joined
-                </CardTitle>
-                <MultiSelect
-                  options={yearOptions}
-                  onValueChange={(values) => setSelectedYears(values)}
-                  defaultValue={selectedYears}
-                  placeholder='Select years'
-                  className='w-[300px]'
-                  showSelectAll={false}
-                />
-              </div>
-              {isLoadingMonthlyStats ? (
-                <div className='flex h-[240px] items-center justify-center'>
-                  <div className='h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-gray-800'></div>
-                </div>
-              ) : (
-                <ResponsiveContainer width='100%' height={240}>
-                  <BarChart
-                    data={userChartData}
-                    margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray='3 3' stroke='#f8fafc' />
-                    <XAxis
-                      dataKey='month'
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 11, fill: '#64748b' }}
-                    />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 11, fill: '#64748b' }}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '6px',
-                        boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
-                        fontSize: '12px',
-                      }}
-                    />
-                    {selectedYears.map((year, index) => (
-                      <Bar
-                        key={year}
-                        dataKey={year}
-                        radius={[2, 2, 0, 0]}
-                        fill={yearColors[index % yearColors.length]}
-                        name={year}
-                      />
-                    ))}
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
-            </Card>
-
-            {/* Quote */}
-            <Card className='border border-gray-200 bg-white p-6 shadow-sm'>
-              <div className='flex h-full flex-col justify-between'>
-                <div className='space-y-4'>
-                  <div className='flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50'>
-                      <Quote className='h-4 w-4 text-gray-600' />
+                .map(([key, value]) => {
+                  if (key === 'pendingOrganizationVerificationCount')
+                    return null
+                  if (
+                    [
+                      'adminCount',
+                      'organizationCount',
+                      'individualCount',
+                      'aiChatSessionsDaily',
+                      'aiChatSessionsWeekly',
+                      'aiChatSessionsMonthly',
+                      'aiChatMessagesDaily',
+                      'aiChatMessagesWeekly',
+                      'aiChatMessagesMonthly',
+                    ].includes(key) ||
+                    key === 'userCount'
+                  )
+                    return null
+                  return (
+                    <Link
+                      key={key}
+                      to={routes[key as keyof typeof routes]}
+                      className='group'
+                    >
+                      <Card className='border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-gray-300 hover:shadow-md'>
+                        <div className='space-y-2'>
+                          <div
+                            className={cn(
+                              'flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50',
+                              colors[key as keyof typeof colors]
+                            )}
+                          >
+                            {icons[key as keyof typeof icons]}
+                          </div>
+                          <div>
+                            <p className='text-xs font-medium uppercase tracking-wide text-gray-500'>
+                              {switchText[key as keyof typeof switchText]}
+                            </p>
+                            <p className='text-xl font-semibold text-gray-900'>
+                              {(value as number).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  )
+                })}
+              {/* Subscribed Emails Card */}
+              <Link to='/subscribed-emails' className='group'>
+                <Card className='border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-gray-300 hover:shadow-md'>
+                  <div className='space-y-2'>
+                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50 text-amber-600'>
+                      <Mail className='h-4 w-4' />
                     </div>
                     <div>
-                      <CardTitle className='text-lg font-medium text-gray-900'>
-                        Daily Quote
-                      </CardTitle>
+                      <p className='text-xs font-medium uppercase tracking-wide text-gray-500'>
+                        Subscribed Emails
+                      </p>
+                      <p className='text-xl font-semibold text-gray-900'>
+                        {subscribedEmailsData?.toLocaleString() ?? '0'}
+                      </p>
                     </div>
                   </div>
-                  <div className='space-y-3'>
-                    <p className='text-sm leading-relaxed text-gray-600'>
-                      "{quoteOfTheDay.quote}"
+                </Card>
+              </Link>
+            </div>
+
+            {/* Detailed User Card */}
+            <Card className='overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
+              <div className='flex flex-col gap-6'>
+                <div className='flex items-start justify-between gap-4'>
+                  <div className='flex items-center gap-4'>
+                    <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600'>
+                      <Users className='h-6 w-6' />
+                    </div>
+                    <div>
+                      <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>
+                        Total Platform Users
+                      </h2>
+                      <p className='text-3xl font-bold text-gray-900'>
+                        {Number(adminStats.userCount).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                  {canViewAllUsers ? (
+                    <Link
+                      to='/users'
+                      className='group inline-flex shrink-0 items-center gap-1 text-sm font-medium text-muted-foreground no-underline transition-colors hover:text-foreground hover:underline'
+                    >
+                      <span>View all users</span>
+                      <ArrowRight className='h-4 w-4 transition-transform group-hover:translate-x-0.5' />
+                    </Link>
+                  ) : null}
+                </div>
+
+                <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
+                  <Link
+                    to='/users'
+                    search={{ role: 'ADMIN' }}
+                    className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3 transition-colors hover:bg-gray-50'
+                  >
+                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600'>
+                      <Users className='h-4 w-4' />
+                    </div>
+                    <div>
+                      <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>
+                        Admins
+                      </p>
+                      <p className='text-lg font-semibold text-gray-900'>
+                        {adminStats.adminCount.toLocaleString()}
+                      </p>
+                    </div>
+                  </Link>
+                  <Link
+                    to='/users'
+                    search={{ role: 'ORGANIZATION' }}
+                    className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3 transition-colors hover:bg-gray-50'
+                  >
+                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-purple-600'>
+                      <Building2 className='h-4 w-4' />
+                    </div>
+                    <div>
+                      <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>
+                        Organizations
+                      </p>
+                      <p className='text-lg font-semibold text-gray-900'>
+                        {adminStats.organizationCount.toLocaleString()}
+                      </p>
+                    </div>
+                  </Link>
+                  <Link
+                    to='/users'
+                    search={{ role: 'INDIVIDUAL' }}
+                    className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3 transition-colors hover:bg-gray-50'
+                  >
+                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600'>
+                      <Users className='h-4 w-4' />
+                    </div>
+                    <div>
+                      <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>
+                        Individuals
+                      </p>
+                      <p className='text-lg font-semibold text-gray-900'>
+                        {adminStats.individualCount.toLocaleString()}
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </Card>
+
+            {/* AI Chat Analytics Section */}
+            <Card className='overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
+              <div className='mb-4 flex items-center justify-between gap-4'>
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600'>
+                    <Bot className='h-5 w-5' />
+                  </div>
+                  <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>
+                    AI Chat Analytics
+                  </h2>
+                </div>
+                {/* Filter Tabs */}
+                <div className='flex items-center rounded-lg border border-gray-200 bg-gray-50 p-0.5'>
+                  {(['daily', 'weekly', 'monthly'] as const).map((filter) => (
+                    <button
+                      key={filter}
+                      onClick={() => setAiChatFilter(filter)}
+                      className={cn(
+                        'rounded-md px-3 py-1 text-xs font-medium capitalize transition-all duration-150',
+                        aiChatFilter === filter
+                          ? 'bg-white text-blue-600 shadow-sm'
+                          : 'text-gray-500 hover:text-gray-700'
+                      )}
+                    >
+                      {filter.charAt(0).toUpperCase() + filter.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className='grid grid-cols-2 gap-4'>
+                <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600'>
+                    <MessageSquare className='h-4 w-4' />
+                  </div>
+                  <div>
+                    <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>
+                      Chat Sessions
                     </p>
-                    <p className='text-xs font-medium text-gray-500'>
-                      — {quoteOfTheDay.author}
+                    <p className='text-lg font-bold text-gray-900'>
+                      {aiChatFilter === 'daily'
+                        ? adminStats.aiChatSessionsDaily.toLocaleString()
+                        : aiChatFilter === 'weekly'
+                          ? adminStats.aiChatSessionsWeekly.toLocaleString()
+                          : adminStats.aiChatSessionsMonthly.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600'>
+                    <MessagesSquare className='h-4 w-4' />
+                  </div>
+                  <div>
+                    <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>
+                      Message Responses
+                    </p>
+                    <p className='text-lg font-bold text-gray-900'>
+                      {aiChatFilter === 'daily'
+                        ? adminStats.aiChatMessagesDaily.toLocaleString()
+                        : aiChatFilter === 'weekly'
+                          ? adminStats.aiChatMessagesWeekly.toLocaleString()
+                          : adminStats.aiChatMessagesMonthly.toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -452,85 +503,297 @@ export default function AdminDashboardHomePage() {
             </Card>
           </div>
 
-          {/* Quick Actions Section */}
+          {/* Right Column - Quick Actions (fixed 300px) */}
+          <div className='h-full shrink-0'>
+            <Card className='h-full border border-gray-200 bg-white p-5 shadow-sm'>
+              <CardTitle className='mb-6 text-lg font-medium text-gray-900'>
+                Quick Actions
+              </CardTitle>
+              <div className='flex flex-col gap-4'>
+                <Link
+                  to='/events/add'
+                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
+                >
+                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
+                    <Calendar className='h-5 w-5' />
+                  </div>
+                  <div className='min-w-0 flex-1'>
+                    <p className='truncate text-sm font-medium text-gray-900'>
+                      Add Event
+                    </p>
+                  </div>
+                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-blue-600' />
+                </Link>
+
+                <Link
+                  to='/opportunities/add'
+                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-md'
+                >
+                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100'>
+                    <Briefcase className='h-5 w-5' />
+                  </div>
+                  <div className='min-w-0 flex-1'>
+                    <p className='truncate text-sm font-medium text-gray-900'>
+                      Add Opportunity
+                    </p>
+                  </div>
+                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-emerald-600' />
+                </Link>
+
+                <Link
+                  to='/blog/add'
+                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:shadow-md'
+                >
+                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 transition-colors group-hover:bg-red-100'>
+                    <FileText className='h-5 w-5' />
+                  </div>
+                  <div className='min-w-0 flex-1'>
+                    <p className='truncate text-sm font-medium text-gray-900'>
+                      Add Blog
+                    </p>
+                  </div>
+                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-red-600' />
+                </Link>
+
+                <Link
+                  to='/news/add'
+                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
+                >
+                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
+                    <Newspaper className='h-5 w-5' />
+                  </div>
+                  <div className='min-w-0 flex-1'>
+                    <p className='truncate text-sm font-medium text-gray-900'>
+                      Add News
+                    </p>
+                  </div>
+                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-blue-600' />
+                </Link>
+
+                <Link
+                  to='/projects/add'
+                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-md'
+                >
+                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-100'>
+                    <Briefcase className='h-5 w-5' />
+                  </div>
+                  <div className='min-w-0 flex-1'>
+                    <p className='truncate text-sm font-medium text-gray-900'>
+                      Add Work
+                    </p>
+                  </div>
+                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-purple-600' />
+                </Link>
+
+                <Link
+                  to='/resources/add'
+                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-teal-300 hover:bg-teal-50 hover:shadow-md'
+                >
+                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-600 transition-colors group-hover:bg-teal-100'>
+                    <FileText className='h-5 w-5' />
+                  </div>
+                  <div className='min-w-0 flex-1'>
+                    <p className='truncate text-sm font-medium text-gray-900'>
+                      Add Resources
+                    </p>
+                  </div>
+                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-teal-600' />
+                </Link>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* Full-width User Overview Section */}
+        <div className='grid w-full grid-cols-1 gap-6 lg:grid-cols-[1.85fr_1fr]'>
+          {/* Chart */}
+          <Card className='h-full border border-gray-200 bg-white p-6 shadow-sm'>
+            <div className='mb-6 flex items-center justify-between'>
+              <CardTitle className='text-lg font-medium text-gray-900'>
+                User Joining Analytics
+              </CardTitle>
+              <MultiSelect
+                options={yearOptions}
+                onValueChange={(values) => setSelectedYears(values)}
+                defaultValue={selectedYears}
+                placeholder='Select years'
+                className='w-[300px]'
+                showSelectAll={false}
+              />
+            </div>
+            {isLoadingMonthlyStats ? (
+              <div className='flex h-[240px] items-center justify-center'>
+                <div className='h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-gray-800'></div>
+              </div>
+            ) : (
+              <ResponsiveContainer width='100%' height={240}>
+                <BarChart
+                  data={userChartData}
+                  margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray='3 3' stroke='#f8fafc' />
+                  <XAxis
+                    dataKey='month'
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 11, fill: '#64748b' }}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 11, fill: '#64748b' }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '6px',
+                      boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
+                      fontSize: '12px',
+                    }}
+                  />
+                  {selectedYears.map((year, index) => (
+                    <Bar
+                      key={year}
+                      dataKey={year}
+                      radius={[2, 2, 0, 0]}
+                      fill={yearColors[index % yearColors.length]}
+                      name={year}
+                    />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+
+          {/* New Joined Users */}
+          <Card className='h-full overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
+            <div className='mb-4 flex items-center gap-3'>
+              <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-600'>
+                <Users className='h-5 w-5' />
+              </div>
+              <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>
+                New Joined Users
+              </h2>
+            </div>
+
+            {isNewJoinedUsersLoading ? (
+              <div className='flex items-center justify-center py-8'>
+                <div className='h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-gray-800'></div>
+              </div>
+            ) : newJoinedUsersData && newJoinedUsersData.length > 0 ? (
+              <div className='flex flex-col gap-3'>
+                {newJoinedUsersData.map((user, index) => (
+                  <div
+                    key={user.userId}
+                    className='flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3'
+                  >
+                    <div className='flex items-center gap-3'>
+                      <div className='flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600'>
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className='text-sm font-semibold text-gray-900'>
+                          {user.name}
+                        </p>
+                        <p className='text-xs text-gray-500'>{user.email}</p>
+                      </div>
+                    </div>
+                    <div className='flex flex-col items-end'>
+                      <span className='text-xs font-bold text-gray-900'>
+                        {user.role}
+                      </span>
+                      <span className='text-[10px] uppercase text-gray-500'>
+                        Role
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className='py-6 text-center text-sm text-gray-500'>
+                No new users found.
+              </div>
+            )}
+          </Card>
+        </div>
+
+        {/* Authors and Quote Row */}
+        <div className='grid w-full grid-cols-1 gap-6 lg:grid-cols-2'>
+          {/* Top Blog Authors */}
+          <Card className='overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
+            <div className='mb-4 flex items-center gap-3'>
+              <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600'>
+                <FileText className='h-5 w-5' />
+              </div>
+              <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>
+                Top Blog Authors
+              </h2>
+            </div>
+
+            {isTopAuthorsLoading ? (
+              <div className='flex items-center justify-center py-8'>
+                <div className='h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-gray-800'></div>
+              </div>
+            ) : topAuthorsData && topAuthorsData.length > 0 ? (
+              <div className='flex flex-col gap-3'>
+                {topAuthorsData.map((author, index) => (
+                  <div
+                    key={author.userId}
+                    className='flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3'
+                  >
+                    <div className='flex items-center gap-3'>
+                      <div className='flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600'>
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className='text-sm font-semibold text-gray-900'>
+                          {author.name}
+                        </p>
+                        <p className='text-xs text-gray-500'>{author.email}</p>
+                      </div>
+                    </div>
+                    <div className='flex flex-col items-end'>
+                      <span className='text-lg font-bold text-gray-900'>
+                        {author.blogCount}
+                      </span>
+                      <span className='text-[10px] uppercase text-gray-500'>
+                        Blogs
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className='py-6 text-center text-sm text-gray-500'>
+                No blog authors found.
+              </div>
+            )}
+          </Card>
+
+          {/* Quote */}
           <Card className='border border-gray-200 bg-white p-6 shadow-sm'>
-            <CardTitle className='mb-4 text-lg font-medium text-gray-900'>
-              Quick Actions
-            </CardTitle>
-            <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5'>
-              <Link
-                to='/events/add'
-                className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
-              >
-                <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
-                  <Calendar className='h-5 w-5' />
+            <div className='flex h-full flex-col justify-between'>
+              <div className='space-y-4'>
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50'>
+                    <Quote className='h-4 w-4 text-gray-600' />
+                  </div>
+                  <div>
+                    <CardTitle className='text-lg font-medium text-gray-900'>
+                      Daily Quote
+                    </CardTitle>
+                  </div>
                 </div>
-                <div className='flex-1'>
-                  <p className='text-sm font-medium text-gray-900'>Add Event</p>
-                  <p className='text-xs text-gray-500'>Create new event</p>
-                </div>
-                <Plus className='h-4 w-4 text-gray-400 group-hover:text-blue-600' />
-              </Link>
-
-              <Link
-                to='/opportunities/add'
-                className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-md'
-              >
-                <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100'>
-                  <Briefcase className='h-5 w-5' />
-                </div>
-                <div className='flex-1'>
-                  <p className='text-sm font-medium text-gray-900'>
-                    Add Opportunity
+                <div className='space-y-3'>
+                  <p className='text-sm leading-relaxed text-gray-600'>
+                    "{quoteOfTheDay.quote}"
                   </p>
-                  <p className='text-xs text-gray-500'>Post new opportunity</p>
-                </div>
-                <Plus className='h-4 w-4 text-gray-400 group-hover:text-emerald-600' />
-              </Link>
-
-              <Link
-                to='/blog/add'
-                className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:shadow-md'
-              >
-                <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-red-600 transition-colors group-hover:bg-red-100'>
-                  <FileText className='h-5 w-5' />
-                </div>
-                <div className='flex-1'>
-                  <p className='text-sm font-medium text-gray-900'>Add Blog</p>
-                  <p className='text-xs text-gray-500'>Create new blog post</p>
-                </div>
-                <Plus className='h-4 w-4 text-gray-400 group-hover:text-red-600' />
-              </Link>
-
-              <Link
-                to='/news/add'
-                className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
-              >
-                <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
-                  <Newspaper className='h-5 w-5' />
-                </div>
-                <div className='flex-1'>
-                  <p className='text-sm font-medium text-gray-900'>Add News</p>
-                  <p className='text-xs text-gray-500'>Add news article</p>
-                </div>
-                <Plus className='h-4 w-4 text-gray-400 group-hover:text-blue-600' />
-              </Link>
-
-              <Link
-                to='/organizations/add'
-                className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-md'
-              >
-                <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-100'>
-                  <Building2 className='h-5 w-5' />
-                </div>
-                <div className='flex-1'>
-                  <p className='text-sm font-medium text-gray-900'>
-                    Add Organization
+                  <p className='text-xs font-medium text-gray-500'>
+                    — {quoteOfTheDay.author}
                   </p>
-                  <p className='text-xs text-gray-500'>Register organization</p>
                 </div>
-                <Plus className='h-4 w-4 text-gray-400 group-hover:text-purple-600' />
-              </Link>
+              </div>
             </div>
           </Card>
         </div>

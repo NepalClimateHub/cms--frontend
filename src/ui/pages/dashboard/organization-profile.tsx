@@ -57,16 +57,15 @@ import {
   Tags,
 } from 'lucide-react'
 import type { UserOutput } from '@/api/types.gen'
-import { toast } from '@/hooks/use-toast'
 import {
   mapOrganizationProfileDto,
   nullableString,
 } from '@/utils/map-user-output'
+import { toast } from '@/hooks/use-toast'
 
 const orgDetailsFormSchema = z.object({
   name: z.string().min(1, 'Name is required').max(300),
   description: z.string().min(1, 'Description is required').max(20_000),
-  organizationType: z.string().max(200).optional().or(z.literal('')),
   street: z.string().max(500).optional().or(z.literal('')),
   city: z.string().max(200).optional().or(z.literal('')),
   state: z.string().max(200).optional().or(z.literal('')),
@@ -85,7 +84,9 @@ type NormalizedOrgSocials = {
   linkedin: string
 }
 
-function formatSocialsFromUser(raw: UserOutput['socials']): NormalizedOrgSocials {
+function formatSocialsFromUser(
+  raw: UserOutput['socials']
+): NormalizedOrgSocials {
   if (!raw || typeof raw !== 'object') {
     return { facebook: '', instagram: '', linkedin: '' }
   }
@@ -136,7 +137,6 @@ export default function OrganizationProfilePage({
     defaultValues: {
       name: '',
       description: '',
-      organizationType: '',
       street: '',
       city: '',
       state: '',
@@ -184,7 +184,6 @@ export default function OrganizationProfilePage({
     orgForm.reset({
       name: org.name,
       description: org.description ?? '',
-      organizationType: org.organizationType ?? '',
       street: org.address?.street ?? '',
       city: org.address?.city ?? '',
       state: org.address?.state ?? '',
@@ -196,7 +195,6 @@ export default function OrganizationProfilePage({
 
   const onSubmitOrgDetails = (values: OrgDetailsForm) => {
     if (!org) return
-    const typeTrim = values.organizationType?.trim()
     const socials: SocialType = {
       facebook: values.facebook?.trim() || undefined,
       instagram: values.instagram?.trim() || undefined,
@@ -206,7 +204,6 @@ export default function OrganizationProfilePage({
       {
         name: values.name.trim(),
         description: values.description.trim(),
-        organizationType: typeTrim ? typeTrim : null,
         address: {
           street: values.street?.trim() || null,
           city: values.city?.trim() || null,
@@ -549,23 +546,7 @@ export default function OrganizationProfilePage({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={orgForm.control}
-                name='organizationType'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Type</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='e.g. NGO, network, private sector'
-                        {...field}
-                        value={field.value ?? ''}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
               <div className='grid gap-3 sm:grid-cols-2'>
                 <FormField
                   control={orgForm.control}

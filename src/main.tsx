@@ -22,7 +22,6 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
-         
         void failureCount
 
         if (failureCount >= 0 && import.meta.env.MODE === 'development')
@@ -33,7 +32,10 @@ const queryClient = new QueryClient({
         const err = error as unknown as Record<string, unknown>
         const resp = err?.response as Record<string, unknown> | undefined
         const errObj = err?.error as Record<string, unknown> | undefined
-        const status = (resp?.status as number) || (err?.status as number) || (errObj?.status as number);
+        const status =
+          (resp?.status as number) ||
+          (err?.status as number) ||
+          (errObj?.status as number)
         return ![401, 403].includes(status ?? 0)
       },
       refetchOnWindowFocus: false,
@@ -60,32 +62,46 @@ const queryClient = new QueryClient({
       const err = error as Record<string, unknown>
       const resp = err?.response as Record<string, unknown> | undefined
       const errObj = err?.error as Record<string, unknown> | undefined
-      const status = (resp?.status as number) || (err?.status as number) || (errObj?.status as number);
-      
+      const status =
+        (resp?.status as number) ||
+        (err?.status as number) ||
+        (errObj?.status as number)
+
       if (status === 401) {
         toast({
           variant: 'destructive',
           title: 'Session expired!',
         })
-        
+
         // Correctly reset the auth store
         resetAuth()
-        
+
         // Redirect to login with the current path as redirect search param
         const redirect = `${router.history.location.href}`
-        
+
         // Small delay to ensure state updates and router readiness
         setTimeout(() => {
           router.navigate({ to: '/login', search: { redirect } })
         }, 100)
       }
-      
+
       if (status === 500) {
         toast({
           variant: 'destructive',
           title: 'Internal Server Error!',
         })
         router.navigate({ to: '/500' })
+      }
+
+      // Handle Server Down / Maintenance
+      if (
+        status === 503 ||
+        (!status &&
+          (err?.name === 'TypeError' ||
+            err?.message === 'Failed to fetch' ||
+            (err?.message as string)?.includes('Network Error')))
+      ) {
+        router.navigate({ to: '/503' })
       }
     },
   }),

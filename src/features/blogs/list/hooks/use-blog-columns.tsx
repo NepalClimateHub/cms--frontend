@@ -1,9 +1,10 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { BlogResponseDto } from '@/query/blogs/use-blogs'
-import { Badge } from '@/ui/shadcn/badge'
-import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
-import BlogRowAction from '../components/blog-row-actions'
 import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
+import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
+import { Badge } from '@/ui/shadcn/badge'
+import { cn } from '@/ui/shadcn/lib/utils'
+import BlogRowAction from '../components/blog-row-actions'
 
 export const useBlogsColumns = () => {
   const columns: ColumnDef<BlogResponseDto>[] = [
@@ -12,18 +13,24 @@ export const useBlogsColumns = () => {
       header: () => <span></span>,
       cell: ({ row }) => {
         const { bannerImageUrl, title } = row.original
-        const imageUrl = bannerImageUrl || 'images/logo.png'
+        const isPlaceholder = !bannerImageUrl
+        const imageUrl = bannerImageUrl || '/images/logo.png'
 
         return (
           <ImagePreviewDialog
             src={imageUrl}
             alt={title}
             trigger={
-              <div className='flex cursor-pointer items-center justify-center transition-opacity hover:opacity-80'>
+              <div className='flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-gray-100 bg-gray-50/50 transition-opacity hover:opacity-80'>
                 <img
                   src={imageUrl}
                   alt={title}
-                  className='h-[80px] w-[80px] rounded object-cover'
+                  className={cn(
+                    'h-[80px] w-[80px] rounded transition-transform duration-300 hover:scale-105',
+                    isPlaceholder
+                      ? 'bg-white/50 object-contain p-4'
+                      : 'object-cover'
+                  )}
                 />
               </div>
             }
@@ -92,7 +99,9 @@ export const useBlogsColumns = () => {
         <DataTableColumnHeader column={column} title='Status' />
       ),
       cell: ({ row }) => {
-        const status = (row.original as unknown as Record<string, unknown>).status as string || 'DRAFT'
+        const status =
+          ((row.original as unknown as Record<string, unknown>)
+            .status as string) || 'DRAFT'
         const statusConfig: Record<
           string,
           { label: string; className: string }

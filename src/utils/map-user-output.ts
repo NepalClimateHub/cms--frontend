@@ -42,10 +42,12 @@ export function mapUserOutputToAuthUser(
     role: data.role,
     organization: org ?? organizationFallback ?? null,
     bio: nullableString(data.bio),
-    linkedin: nullableString(data.linkedin),
     currentRole: nullableString(data.currentRole),
     profilePhotoUrl: nullableString(data.profilePhotoUrl),
     profilePhotoId: nullableString(data.profilePhotoId),
+    bannerImageUrl: nullableString(data.bannerImageUrl),
+    bannerImageId: nullableString(data.bannerImageId),
+    socials: data.socials,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   }

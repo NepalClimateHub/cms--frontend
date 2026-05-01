@@ -1,5 +1,11 @@
 import type { OrganizationProfile } from '@/schemas/auth/organization-profile'
 
+export type UserSocials = {
+  facebook?: string
+  instagram?: string
+  linkedin?: string
+}
+
 export type User = {
   id: string
   email: string
@@ -17,10 +23,12 @@ export type User = {
     | 'INDIVIDUAL'
   organization: OrganizationProfile | null
   bio?: string | null
-  linkedin?: string | null
   currentRole?: string | null
   profilePhotoUrl?: string | null
   profilePhotoId?: string | null
+  bannerImageUrl?: string | null
+  bannerImageId?: string | null
+  socials?: UserSocials | null
   createdAt: string
   updatedAt: string
 }
