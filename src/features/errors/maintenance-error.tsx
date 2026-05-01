@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useRouter } from '@tanstack/react-router'
+import { useRouter } from '@tanstack/react-router'
 import { Button } from '@/ui/shadcn/button'
 import { ServerOff, RefreshCw } from 'lucide-react'
 
 export default function MaintenanceError() {
-  const navigate = useNavigate()
   const { history } = useRouter()
   const [isChecking, setIsChecking] = useState(false)
 
