@@ -41,6 +41,8 @@ import {
 import type { AdminAnalyticsOutput } from '@/api/types.gen'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { canAccessUserDirectoryAndDatabaseExport } from '@/utils/role-check.util'
+import { UsersViewDialog } from '@/features/users/components/users-view-dialog'
+import { mapUserOutputToUser } from '@/features/users/utils/mapping'
 
 export default function AdminDashboardHomePage() {
   const canViewAllUsers =
@@ -79,6 +81,22 @@ export default function AdminDashboardHomePage() {
   const [aiChatFilter, setAiChatFilter] = useState<
     'daily' | 'weekly' | 'monthly'
   >('monthly')
+
+  const [viewProfileUserId, setViewProfileUserId] = useState<string | null>(
+    null
+  )
+  const [isViewProfileDialogOpen, setIsViewProfileDialogOpen] = useState(false)
+
+  // Fetch single user details for the dialog
+  const { data: selectedUserDetails } = useQuery({
+      queryKey: ['user', viewProfileUserId],
+      queryFn: async () => {
+        if (!viewProfileUserId) return null
+        const response = await apiClient.get(`/api/v1/users/${viewProfileUserId}`)
+        return mapUserOutputToUser(response.data.data)
+      },
+      enabled: !!viewProfileUserId && isViewProfileDialogOpen,
+    })
 
   // Fetch data for all selected years using useQueries
   const yearQueries = useQueries({
@@ -696,7 +714,19 @@ export default function AdminDashboardHomePage() {
                         <p className='text-sm font-semibold text-gray-900'>
                           {user.name}
                         </p>
-                        <p className='text-xs text-gray-500'>{user.email}</p>
+                        <div className='flex items-center gap-2'>
+                          <p className='text-xs text-gray-500'>{user.email}</p>
+                          <span className='text-gray-300'>•</span>
+                          <button
+                            onClick={() => {
+                              setViewProfileUserId(user.userId)
+                              setIsViewProfileDialogOpen(true)
+                            }}
+                            className='text-xs font-medium text-teal-600 hover:text-teal-700 hover:underline'
+                          >
+                            View Profile
+                          </button>
+                        </div>
                       </div>
                     </div>
                     <div className='flex flex-col items-end'>
@@ -798,6 +828,12 @@ export default function AdminDashboardHomePage() {
           </Card>
         </div>
       </div>
+
+      <UsersViewDialog
+        user={selectedUserDetails || null}
+        open={isViewProfileDialogOpen}
+        onOpenChange={setIsViewProfileDialogOpen}
+      />
     </Main>
   )
 }
