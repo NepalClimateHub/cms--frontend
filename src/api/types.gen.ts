@@ -61,9 +61,6 @@ export type UserOutput = {
   bio: {
     [key: string]: unknown
   }
-  linkedin: {
-    [key: string]: unknown
-  }
   currentRole: {
     [key: string]: unknown
   }
@@ -129,7 +126,6 @@ export type UpdateUserInput = {
    * User bio
    */
   bio?: string
-  linkedin?: string
   currentRole?: string
   /**
    * Phone number (omit or null to clear)
@@ -1290,11 +1286,18 @@ export type AdminAnalyticsOutput = {
   eventCount: string
   opportunityCount: string
   blogCount: string
+  projectCount: number
   adminCount: number
   organizationCount: number
   individualCount: number
   /** Organizations with a submitted verification request, awaiting admin review */
   pendingOrganizationVerificationCount: number
+  aiChatSessionsDaily: number
+  aiChatSessionsWeekly: number
+  aiChatSessionsMonthly: number
+  aiChatMessagesDaily: number
+  aiChatMessagesWeekly: number
+  aiChatMessagesMonthly: number
 }
 
 export type ApiResponseOfAdminAnalyticsOutput = {
@@ -1385,10 +1388,9 @@ export type AuthorOutputDto = {
    * Author ID
    */
   id: string
-  /**
-   * Author LinkedIn profile URL
-   */
-  linkedin?: string
+  socials?: {
+    [key: string]: unknown
+  }
   /**
    * Author current role
    */

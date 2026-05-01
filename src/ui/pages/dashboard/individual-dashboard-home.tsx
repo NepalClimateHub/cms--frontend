@@ -1,10 +1,19 @@
 import { Link } from '@tanstack/react-router'
-import { BookOpen, MessageCircle, Sparkles } from 'lucide-react'
+import { useGetProfile } from '@/query/auth/use-auth'
 import { Main } from '@/ui/layouts/main'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent } from '@/ui/shadcn/card'
+import { BookOpen, MessageCircle, Sparkles, UserCheck } from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
+import { getProfileCompletion } from '@/utils/profile-completion'
 
 export default function IndividualDashboardHome() {
+  const { user: authUser } = useAuthStore()
+  const { data: profileData } = useGetProfile()
+  const user = profileData || authUser
+  const completion = getProfileCompletion(user)
+  const isComplete = completion === 100
+
   return (
     <Main>
       <div className='flex min-h-[60vh] flex-col items-center gap-6 px-4 py-8'>
@@ -20,11 +29,23 @@ export default function IndividualDashboardHome() {
                   Individual member
                 </p>
                 <h1 className='mb-4 text-3xl font-bold leading-tight text-white drop-shadow-lg md:text-4xl lg:text-5xl'>
-                  Welcome to your member space
+                  {isComplete
+                    ? 'Welcome to your member space'
+                    : `Your profile is ${completion}% completed`}
                 </h1>
                 <p className='max-w-2xl text-base font-light text-white/95 md:text-lg'>
-                  Share climate stories, manage your blogs, and use tools built
-                  for the Nepal Climate Hub community.
+                  {isComplete ? (
+                    'Share climate stories, manage your blogs, and use tools built for the Nepal Climate Hub community.'
+                  ) : (
+                    <Link
+                      to='/dashboard/profile'
+                      className='flex items-center gap-2 font-medium text-white underline underline-offset-4 hover:text-white/80'
+                    >
+                      <UserCheck className='h-5 w-5' />
+                      Complete your profile now to get the most out of Nepal
+                      Climate Hub.
+                    </Link>
+                  )}
                 </p>
               </div>
               <div className='flex flex-wrap gap-3'>

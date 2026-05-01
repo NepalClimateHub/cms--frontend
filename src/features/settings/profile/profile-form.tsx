@@ -1,7 +1,11 @@
+import { useEffect } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
+import { useUpdateProfile } from '@/query/users/use-users'
+import type { UserSocials } from '@/schemas/auth/profile'
+import { BoxLoader } from '@/ui/loader'
 import { Button } from '@/ui/shadcn/button'
 import {
   Form,
@@ -13,13 +17,9 @@ import {
   FormMessage,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
-
 import { Textarea } from '@/ui/shadcn/textarea'
-import { toast } from '@/hooks/use-toast'
 import { useAuthStore } from '@/stores/authStore'
-import { useUpdateProfile } from '@/query/users/use-users'
-import { useEffect } from 'react'
-import { BoxLoader } from '@/ui/loader'
+import { toast } from '@/hooks/use-toast'
 
 const profileFormSchema = z.object({
   fullName: z
@@ -37,7 +37,11 @@ const profileFormSchema = z.object({
     .email(),
   bio: z.string().max(160).optional(),
   currentRole: z.string().max(100).optional(),
-  linkedin: z.string().url({ message: 'Please enter a valid URL.' }).optional().or(z.literal('')),
+  linkedin: z
+    .string()
+    .url({ message: 'Please enter a valid URL.' })
+    .optional()
+    .or(z.literal('')),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
@@ -65,7 +69,7 @@ export default function ProfileForm() {
         email: user.email || '',
         bio: user.bio || '',
         currentRole: user.currentRole || '',
-        linkedin: user.linkedin || '',
+        linkedin: (user.socials as UserSocials)?.linkedin || '',
       })
     }
   }, [user, form])
@@ -77,8 +81,11 @@ export default function ProfileForm() {
           name: data.fullName,
           bio: data.bio || undefined,
           currentRole: data.currentRole || undefined,
-          linkedin: data.linkedin || undefined,
-        },
+          socials: {
+            ...((user?.socials as UserSocials) || {}),
+            linkedin: data.linkedin || undefined,
+          },
+        } as any,
       },
       {
         onSuccess: () => {
@@ -137,7 +144,7 @@ export default function ProfileForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
-               <FormControl>
+              <FormControl>
                 <Input placeholder='Email' {...field} disabled />
               </FormControl>
               <FormDescription>
@@ -148,7 +155,7 @@ export default function ProfileForm() {
             </FormItem>
           )}
         />
-         <FormField
+        <FormField
           control={form.control}
           name='currentRole'
           render={({ field }) => (
@@ -164,14 +171,17 @@ export default function ProfileForm() {
             </FormItem>
           )}
         />
-         <FormField
+        <FormField
           control={form.control}
           name='linkedin'
           render={({ field }) => (
             <FormItem>
               <FormLabel>LinkedIn Profile URL</FormLabel>
               <FormControl>
-                <Input placeholder='https://linkedin.com/in/username' {...field} />
+                <Input
+                  placeholder='https://linkedin.com/in/username'
+                  {...field}
+                />
               </FormControl>
               <FormDescription>
                 Link to your LinkedIn profile. (Optional)
