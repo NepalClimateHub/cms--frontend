@@ -1,10 +1,25 @@
 import { Link } from '@tanstack/react-router'
-import { BookOpen, Building2, MessageCircle, UserCircle } from 'lucide-react'
+import { useGetProfile } from '@/query/auth/use-auth'
 import { Main } from '@/ui/layouts/main'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent } from '@/ui/shadcn/card'
+import {
+  BookOpen,
+  Building2,
+  MessageCircle,
+  UserCircle,
+  ShieldCheck,
+} from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
+import { getProfileCompletion } from '@/utils/profile-completion'
 
 export default function OrganizationDashboardHome() {
+  const { user: authUser } = useAuthStore()
+  const { data: profileData } = useGetProfile()
+  const user = profileData || authUser
+  const completion = getProfileCompletion(user)
+  const isComplete = completion === 100
+
   return (
     <Main>
       <div className='flex min-h-[60vh] flex-col items-center gap-6 px-4 py-8'>
@@ -20,11 +35,23 @@ export default function OrganizationDashboardHome() {
                   Organization account
                 </p>
                 <h1 className='mb-4 text-3xl font-bold leading-tight text-white drop-shadow-lg md:text-4xl lg:text-5xl'>
-                  Your organization dashboard
+                  {isComplete
+                    ? 'Your organization dashboard'
+                    : `Your profile is ${completion}% completed`}
                 </h1>
                 <p className='max-w-2xl text-base font-light text-white/95 md:text-lg'>
-                  Keep your public profile and verification details up to date,
-                  publish blogs, and connect with the hub as your organization.
+                  {isComplete ? (
+                    'Keep your public profile and verification details up to date, publish blogs, and connect with the hub as your organization.'
+                  ) : (
+                    <Link
+                      to='/dashboard/profile'
+                      className='flex items-center gap-2 font-medium text-white underline underline-offset-4 hover:text-white/80'
+                    >
+                      <ShieldCheck className='h-5 w-5' />
+                      Complete your organization profile now to get verified and
+                      start contributing.
+                    </Link>
+                  )}
                 </p>
               </div>
               <div className='flex flex-wrap gap-3'>

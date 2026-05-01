@@ -34,3 +34,38 @@ export const useMonthlyUserStats = (year: number) => {
     },
   })
 }
+
+export interface TopBlogAuthor {
+  userId: string
+  name: string
+  email: string
+  blogCount: number
+}
+
+export const useTopBlogAuthors = () => {
+  return useQuery({
+    queryKey: ['topBlogAuthors'],
+    queryFn: async () => {
+      const response = await apiClient.get('/api/v1/analytics/top-blog-authors')
+      return response.data.data as TopBlogAuthor[]
+    },
+  })
+}
+
+export interface NewJoinedUser {
+  userId: string
+  name: string
+  email: string
+  joinedAt: string
+  role: string
+}
+
+export const useNewJoinedUsers = () => {
+  return useQuery({
+    queryKey: ['newJoinedUsers'],
+    queryFn: async () => {
+      const response = await apiClient.get('/api/v1/analytics/new-joined-users')
+      return response.data.data as NewJoinedUser[]
+    },
+  })
+}
