@@ -12,6 +12,7 @@ import {
 import apiClient from '@/query/apiClient'
 import { Main } from '@/ui/layouts/main'
 import { MultiSelect } from '@/ui/multi-select'
+import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import { Card, CardTitle } from '@/ui/shadcn/card'
 import { cn } from '@/ui/shadcn/lib/utils'
 import {
@@ -79,7 +80,7 @@ export default function AdminDashboardHomePage() {
   ])
 
   const [aiChatFilter, setAiChatFilter] = useState<
-    'daily' | 'weekly' | 'monthly'
+    'daily' | 'weekly' | 'monthly' | 'all time'
   >('monthly')
 
   const [viewProfileUserId, setViewProfileUserId] = useState<string | null>(
@@ -567,20 +568,22 @@ export default function AdminDashboardHomePage() {
             </div>
             {/* Filter Tabs */}
             <div className='flex items-center rounded-lg border border-gray-200 bg-gray-50 p-0.5'>
-              {(['daily', 'weekly', 'monthly'] as const).map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => setAiChatFilter(filter)}
-                  className={cn(
-                    'rounded-md px-3 py-1 text-xs font-medium capitalize transition-all duration-150',
-                    aiChatFilter === filter
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
-                  )}
-                >
-                  {filter.charAt(0).toUpperCase() + filter.slice(1)}
-                </button>
-              ))}
+              {(['daily', 'weekly', 'monthly', 'all time'] as const).map(
+                (filter) => (
+                  <button
+                    key={filter}
+                    onClick={() => setAiChatFilter(filter)}
+                    className={cn(
+                      'rounded-md px-3 py-1 text-xs font-medium capitalize transition-all duration-150',
+                      aiChatFilter === filter
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-500 hover:text-gray-700'
+                    )}
+                  >
+                    {filter}
+                  </button>
+                )
+              )}
             </div>
           </div>
           <div className='grid grid-cols-2 gap-4'>
@@ -597,7 +600,11 @@ export default function AdminDashboardHomePage() {
                     ? adminStats.aiChatSessionsDaily.toLocaleString()
                     : aiChatFilter === 'weekly'
                       ? adminStats.aiChatSessionsWeekly.toLocaleString()
-                      : adminStats.aiChatSessionsMonthly.toLocaleString()}
+                      : aiChatFilter === 'monthly'
+                        ? adminStats.aiChatSessionsMonthly.toLocaleString()
+                        : (
+                            (adminStats as any).aiChatSessionsAllTime || 0
+                          ).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -614,7 +621,11 @@ export default function AdminDashboardHomePage() {
                     ? adminStats.aiChatMessagesDaily.toLocaleString()
                     : aiChatFilter === 'weekly'
                       ? adminStats.aiChatMessagesWeekly.toLocaleString()
-                      : adminStats.aiChatMessagesMonthly.toLocaleString()}
+                      : aiChatFilter === 'monthly'
+                        ? adminStats.aiChatMessagesMonthly.toLocaleString()
+                        : (
+                            (adminStats as any).aiChatMessagesAllTime || 0
+                          ).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -700,15 +711,25 @@ export default function AdminDashboardHomePage() {
               </div>
             ) : newJoinedUsersData && newJoinedUsersData.length > 0 ? (
               <div className='flex flex-col gap-3'>
-                {newJoinedUsersData.map((user, index) => (
+                {newJoinedUsersData.map((user) => (
                   <div
                     key={user.userId}
                     className='flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3'
                   >
                     <div className='flex items-center gap-3'>
-                      <div className='flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600'>
-                        {index + 1}
-                      </div>
+                      <Avatar className='h-10 w-10 border border-gray-100 shadow-sm'>
+                        <AvatarImage
+                          src={(user as any).profilePhotoUrl}
+                          className='object-cover'
+                        />
+                        <AvatarFallback className='bg-white'>
+                          <img
+                            src='/images/logo.png'
+                            alt='NCH'
+                            className='h-6 w-6 opacity-50'
+                          />
+                        </AvatarFallback>
+                      </Avatar>
                       <div>
                         <p className='text-sm font-semibold text-gray-900'>
                           {user.name}
@@ -731,9 +752,6 @@ export default function AdminDashboardHomePage() {
                     <div className='flex flex-col items-end'>
                       <span className='text-xs font-bold text-gray-900'>
                         {user.role}
-                      </span>
-                      <span className='text-[10px] uppercase text-gray-500'>
-                        Role
                       </span>
                     </div>
                   </div>
