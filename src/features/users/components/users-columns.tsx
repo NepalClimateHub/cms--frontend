@@ -56,8 +56,20 @@ export const columns: ColumnDef<User>[] = [
       <DataTableColumnHeader column={column} title='Name' />
     ),
     cell: ({ row }) => {
-      const { firstName, lastName } = row.original
+      const { firstName, lastName, serverRole, organization } = row.original
       const fullName = `${firstName} ${lastName}`
+
+      if (serverRole === 'ORGANIZATION' && organization) {
+        return (
+          <div className='flex flex-col gap-0.5'>
+            <LongText className='max-w-36 font-medium'>
+              {organization.name}
+            </LongText>
+            <span className='text-xs text-muted-foreground/70'>{fullName}</span>
+          </div>
+        )
+      }
+
       return <LongText className='max-w-36'>{fullName}</LongText>
     },
     meta: { className: 'w-48' },
