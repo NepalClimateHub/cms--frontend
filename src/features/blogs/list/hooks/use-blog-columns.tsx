@@ -4,6 +4,12 @@ import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import { Badge } from '@/ui/shadcn/badge'
 import { cn } from '@/ui/shadcn/lib/utils'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/ui/shadcn/popover'
+import { Info } from 'lucide-react'
 import BlogRowAction from '../components/blog-row-actions'
 
 export const useBlogsColumns = () => {
@@ -109,9 +115,15 @@ export const useBlogsColumns = () => {
         <DataTableColumnHeader column={column} title='Status' />
       ),
       cell: ({ row }) => {
-        const status =
+        let status =
           ((row.original as unknown as Record<string, unknown>)
             .status as string) || 'DRAFT'
+
+        // Fallback logic if status is inconsistent with isDraft
+        if (status === 'DRAFT' && !row.original.isDraft) {
+          status = row.original.approvedByAdmin ? 'PUBLISHED' : 'UNDER_REVIEW'
+        }
+
         const statusConfig: Record<
           string,
           { label: string; className: string }
@@ -123,8 +135,27 @@ export const useBlogsColumns = () => {
         }
         const config = statusConfig[status] || statusConfig.DRAFT
         return (
-          <div className='min-w-[140px] max-w-[140px]'>
+          <div className='flex items-center gap-2'>
             <Badge className={config.className}>{config.label}</Badge>
+            {status === 'REJECTED' && row.original.reviewFeedback && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className='flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200'>
+                    <Info className='h-3 w-3' />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className='w-80'>
+                  <div className='space-y-2'>
+                    <h4 className='font-medium leading-none'>
+                      Rejection Reason
+                    </h4>
+                    <p className='text-sm text-muted-foreground'>
+                      {row.original.reviewFeedback}
+                    </p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
         )
       },
