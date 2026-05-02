@@ -1,9 +1,9 @@
 import { ColumnDef } from '@tanstack/react-table'
+import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
+import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import { Badge } from '@/ui/shadcn/badge'
 import { OpportunityResponseDto } from '@/api/types.gen'
-import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import OpportunitiesRowAction from '../components/opportunity-row-actions'
-import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 
 export const useOpportunitiesColumns = () => {
   const columns: ColumnDef<OpportunityResponseDto>[] = [
@@ -68,29 +68,6 @@ export const useOpportunitiesColumns = () => {
         <DataTableColumnHeader column={column} title='Organizer' />
       ),
       cell: ({ row }) => <div>{row.original.organizer}</div>,
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: 'status',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Opportunity Status' />
-      ),
-      cell: ({ row }) => {
-        const { status, isDraft } = row.original
-        const publishedLike =
-          status === 'PUBLISHED' || (status == null && isDraft === false)
-        return (
-          <div className='flex items-center gap-2'>
-            <Badge
-              variant={publishedLike ? 'default' : 'secondary'}
-              className='text-sm'
-            >
-              {status ?? '—'}
-            </Badge>
-          </div>
-        )
-      },
       enableSorting: false,
       enableHiding: false,
     },

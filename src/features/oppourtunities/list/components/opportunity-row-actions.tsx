@@ -2,14 +2,11 @@ import { useState } from 'react'
 import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
 import type { Row } from '@tanstack/react-table'
-import type {
-  OpportunityResponseDto,
-  UpdateOpportunityDto,
-} from '@/api/types.gen'
 import {
   useDeleteOpportunity,
   useOpportunityAPI,
 } from '@/query/opportunities/use-opportunities'
+import { ConfirmDialog } from '@/ui/confirm-dialog'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
 import {
@@ -22,8 +19,10 @@ import {
 } from '@/ui/shadcn/dialog'
 import { Separator } from '@/ui/shadcn/separator'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
-import { ConfirmDialog } from '@/ui/confirm-dialog'
-import { ContentModerationActions } from '@/ui/content-moderation-actions'
+import type {
+  OpportunityResponseDto,
+  UpdateOpportunityDto,
+} from '@/api/types.gen'
 
 type OpportunityTableRow = OpportunityResponseDto & {
   createdAt?: string
@@ -36,8 +35,7 @@ function statusBadgeVariant(
   isDraft: boolean | undefined
 ) {
   const publishedLike =
-    status === 'PUBLISHED' ||
-    (status == null && isDraft === false)
+    status === 'PUBLISHED' || (status == null && isDraft === false)
   return publishedLike ? 'default' : 'secondary'
 }
 
@@ -98,7 +96,7 @@ const OpportunitiesRowAction = ({ row }: { row: Row<OpportunityTableRow> }) => {
             <LucideEye className='h-4 w-4' />
           </Button>
         </DialogTrigger>
-        <DialogContent className='max-w-3xl'>
+        <DialogContent className='max-h-[80vh] max-w-3xl overflow-y-auto'>
           <DialogHeader>
             <DialogTitle className='text-2xl font-bold'>
               {row.original.title}
@@ -262,10 +260,6 @@ const OpportunitiesRowAction = ({ row }: { row: Row<OpportunityTableRow> }) => {
           </DialogHeader>
         </DialogContent>
       </Dialog>
-      <ContentModerationActions
-        entityId={row.original.id}
-        entityType='opportunity'
-      />
 
       {/* Status Toggle Button */}
       <Button
