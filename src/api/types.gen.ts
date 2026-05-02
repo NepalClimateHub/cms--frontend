@@ -64,6 +64,7 @@ export type UserOutput = {
   currentRole: {
     [key: string]: unknown
   }
+  iAm?: string | null
   bannerImageId?: {
     [key: string]: unknown
   }
@@ -223,6 +224,7 @@ export type RegisterInput = {
   orgType?: string
   province?: string
   district?: string
+  iAm?: string
 }
 
 export type RegisterOutput = {

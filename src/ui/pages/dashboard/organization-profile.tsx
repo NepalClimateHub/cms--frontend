@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { usePatchMyOrganization } from '@/query/users/use-my-organization'
 import type { SocialType } from '@/schemas/shared'
+import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 import ImageUpload from '@/ui/image-upload'
 import ChangePasswordDialog from '@/ui/organisms/dashboard/ChangePasswordDialog'
 import EditProfilePhotoDialog from '@/ui/organisms/dashboard/EditProfilePhotoDialog'
@@ -351,18 +352,26 @@ export default function OrganizationProfilePage({
         </div>
         {/* Cover — LinkedIn-style header */}
         <div className='relative h-[min(28vw,200px)] min-h-[140px] w-full sm:min-h-[160px]'>
-          <div
-            className={cn(
-              'absolute inset-0',
-              bannerUrl
-                ? 'bg-cover bg-center bg-no-repeat'
-                : 'bg-gradient-to-br from-slate-200 via-sky-100/80 to-slate-300/90'
-            )}
-            style={
-              bannerUrl ? { backgroundImage: `url(${bannerUrl})` } : undefined
+          <ImagePreviewDialog
+            src={bannerUrl || ''}
+            alt='Profile cover'
+            trigger={
+              <div
+                className={cn(
+                  'absolute inset-0 cursor-pointer',
+                  bannerUrl
+                    ? 'bg-cover bg-center bg-no-repeat'
+                    : 'bg-gradient-to-br from-slate-200 via-sky-100/80 to-slate-300/90'
+                )}
+                style={
+                  bannerUrl
+                    ? { backgroundImage: `url(${bannerUrl})` }
+                    : undefined
+                }
+                role='img'
+                aria-label='Profile cover'
+              />
             }
-            role='img'
-            aria-label='Profile cover'
           />
           <div className='pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/5' />
           <div className='absolute right-3 top-3 z-10'>
@@ -383,16 +392,22 @@ export default function OrganizationProfilePage({
           <div className='-mt-14 flex flex-col gap-4 sm:-mt-16 sm:flex-row sm:items-end sm:justify-between'>
             <div className='flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-5'>
               <div className='group relative h-[104px] w-[104px] shrink-0 sm:h-[120px] sm:w-[120px]'>
-                <Avatar className='h-full w-full border-4 border-background bg-background text-2xl shadow-md ring-1 ring-border'>
-                  <AvatarImage
-                    src={nullableString(user.profilePhotoUrl) ?? undefined}
-                    alt={user.fullName}
-                    className='object-cover'
-                  />
-                  <AvatarFallback className='text-2xl'>
-                    {nameInitials}
-                  </AvatarFallback>
-                </Avatar>
+                <ImagePreviewDialog
+                  src={nullableString(user.profilePhotoUrl) ?? ''}
+                  alt={user.fullName}
+                  trigger={
+                    <Avatar className='h-full w-full cursor-pointer border-4 border-background bg-background text-2xl shadow-md ring-1 ring-border transition-opacity hover:opacity-90'>
+                      <AvatarImage
+                        src={nullableString(user.profilePhotoUrl) ?? undefined}
+                        alt={user.fullName}
+                        className='object-cover'
+                      />
+                      <AvatarFallback className='text-2xl'>
+                        {nameInitials}
+                      </AvatarFallback>
+                    </Avatar>
+                  }
+                />
                 <Button
                   type='button'
                   size='icon'
