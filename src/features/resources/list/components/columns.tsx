@@ -7,7 +7,6 @@ import {
   useDeleteResource,
 } from '@/query/resources/use-resources'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
-import { ContentModerationActions } from '@/ui/content-moderation-actions'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
 import {
@@ -62,7 +61,7 @@ function ResourceActionsCell({ resource }: { resource: ResourceResponseDto }) {
               <Eye className='h-4 w-4' />
             </Button>
           </DialogTrigger>
-          <DialogContent className='flex max-h-[90vh] max-w-5xl flex-col overflow-hidden'>
+          <DialogContent className='flex max-h-[80vh] max-w-5xl flex-col overflow-hidden'>
             <DialogHeader className='flex-shrink-0'>
               <DialogTitle className='text-2xl font-bold'>
                 {resource.title}
@@ -205,10 +204,6 @@ function ResourceActionsCell({ resource }: { resource: ResourceResponseDto }) {
             </DialogDescription>
           </DialogContent>
         </Dialog>
-        <ContentModerationActions
-          entityId={resource.id}
-          entityType='resource'
-        />
 
         <Button
           size='sm'
