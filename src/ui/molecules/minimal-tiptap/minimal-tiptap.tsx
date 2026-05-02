@@ -3,12 +3,13 @@ import { cn } from '@/ui/shadcn/lib/utils'
 import { Separator } from '@/ui/shadcn/separator'
 import type { Content, Editor } from '@tiptap/react'
 import { EditorContent } from '@tiptap/react'
-import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu'
 import { ImageBubbleMenu } from './components/bubble-menu/image-bubble-menu'
+import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu'
 import { MeasuredContainer } from './components/measured-container'
 import { SectionFive } from './components/section/five'
 import { SectionFour } from './components/section/four'
 import { SectionOne } from './components/section/one'
+import { SectionSix } from './components/section/six'
 import { SectionThree } from './components/section/three'
 import { SectionTwo } from './components/section/two'
 import type { UseMinimalTiptapEditorProps } from './hooks/use-minimal-tiptap'
@@ -40,7 +41,15 @@ const Toolbar = ({ editor }: { editor: Editor }) => (
           'code',
           'clearFormatting',
         ]}
-        mainActionCount={3}
+        mainActionCount={6}
+      />
+
+      <Separator orientation='vertical' className='mx-2 h-7' />
+
+      <SectionSix
+        editor={editor}
+        activeActions={['left', 'center', 'right', 'justify']}
+        mainActionCount={4}
       />
 
       <Separator orientation='vertical' className='mx-2 h-7' />

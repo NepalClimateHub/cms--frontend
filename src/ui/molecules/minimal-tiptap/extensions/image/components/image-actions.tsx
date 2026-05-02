@@ -5,6 +5,7 @@ import {
   DownloadIcon,
   Link2Icon,
   SizeIcon,
+  CropIcon,
 } from '@radix-ui/react-icons'
 import { Button } from '@/ui/shadcn/button'
 import {
@@ -23,6 +24,8 @@ interface ImageActionsProps {
   onDownload?: () => void
   onCopy?: () => void
   onCopyLink?: () => void
+  onResize?: () => void
+  onCrop?: () => void
 }
 
 interface ActionButtonProps
@@ -77,7 +80,13 @@ export const ActionButton = React.memo(
 
 ActionButton.displayName = 'ActionButton'
 
-type ActionKey = 'onView' | 'onDownload' | 'onCopy' | 'onCopyLink'
+type ActionKey =
+  | 'onView'
+  | 'onDownload'
+  | 'onCopy'
+  | 'onCopyLink'
+  | 'onResize'
+  | 'onCrop'
 
 const ActionItems: Array<{
   key: ActionKey
@@ -105,6 +114,16 @@ const ActionItems: Array<{
     icon: <Link2Icon className='size-4' />,
     tooltip: 'Copy image link',
     isLink: true,
+  },
+  {
+    key: 'onResize',
+    icon: <SizeIcon className='size-4' />,
+    tooltip: 'Resize image',
+  },
+  {
+    key: 'onCrop',
+    icon: <CropIcon className='size-4' />,
+    tooltip: 'Crop image',
   },
 ]
 

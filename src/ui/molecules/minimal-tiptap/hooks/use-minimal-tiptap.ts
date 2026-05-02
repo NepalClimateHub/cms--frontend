@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { Placeholder } from '@tiptap/extension-placeholder'
+import { TextAlign } from '@tiptap/extension-text-align'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { Typography } from '@tiptap/extension-typography'
 import { Underline } from '@tiptap/extension-underline'
@@ -9,6 +10,7 @@ import type { Content, UseEditorOptions } from '@tiptap/react'
 import { useEditor } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
 import { toast } from 'sonner'
+import ImageResize from 'tiptap-extension-resize-image'
 import {
   Link,
   Image,
@@ -20,8 +22,8 @@ import {
   ResetMarksOnEnter,
   FileHandler,
 } from '../extensions'
-import { useThrottle } from './use-throttle'
 import { fileToBase64, getOutput, randomId } from '../utils'
+import { useThrottle } from './use-throttle'
 
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
   value?: Content
@@ -44,6 +46,12 @@ const createExtensions = (placeholder: string) => [
     orderedList: { HTMLAttributes: { class: 'list-node' } },
     code: { HTMLAttributes: { class: 'inline', spellcheck: 'false' } },
     dropcursor: { width: 2, class: 'ProseMirror-dropcursor border' },
+  }),
+  ImageResize,
+  TextAlign.configure({
+    types: ['heading', 'paragraph'],
+    alignments: ['left', 'center', 'right', 'justify'],
+    defaultAlignment: 'left',
   }),
   Link,
   Underline,
@@ -87,8 +95,7 @@ const createExtensions = (placeholder: string) => [
         })
       )
     },
-    onImageRemoved() {
-    },
+    onImageRemoved() {},
     onValidationError(errors) {
       errors.forEach((error) => {
         toast.error('Image validation error', {
@@ -172,12 +179,9 @@ export const useMinimalTiptapEditor = ({
   onBlur,
   ...props
 }: UseMinimalTiptapEditorProps) => {
-  const throttledSetValue = useThrottle(
-    (...args: unknown[]) => {
-      onUpdate?.(args[0] as Content)
-    },
-    throttleDelay
-  )
+  const throttledSetValue = useThrottle((...args: unknown[]) => {
+    onUpdate?.(args[0] as Content)
+  }, throttleDelay)
 
   const handleUpdate = React.useCallback(
     (editor: Editor) => throttledSetValue(getOutput(editor, output)),
