@@ -1,6 +1,6 @@
 import * as React from 'react'
-import type { Editor } from '@tiptap/react'
 import type { Node } from '@tiptap/pm/model'
+import type { Editor } from '@tiptap/react'
 import { isUrl } from '../../../utils'
 
 interface UseImageActionsProps {
@@ -8,6 +8,8 @@ interface UseImageActionsProps {
   node: Node
   src: string
   onViewClick: (value: boolean) => void
+  onResizeClick: () => void
+  onCropClick: () => void
 }
 
 export type ImageActionHandlers = {
@@ -18,7 +20,14 @@ export type ImageActionHandlers = {
   onRemoveImg?: () => void
 }
 
-export const useImageActions = ({ editor, node, src, onViewClick }: UseImageActionsProps) => {
+export const useImageActions = ({
+  editor,
+  node,
+  src,
+  onViewClick,
+  onResizeClick,
+  onCropClick,
+}: UseImageActionsProps) => {
   const isLink = React.useMemo(() => isUrl(src), [src])
 
   const onView = React.useCallback(() => {
@@ -37,6 +46,14 @@ export const useImageActions = ({ editor, node, src, onViewClick }: UseImageActi
     editor.commands.copyLink({ src: node.attrs.src })
   }, [editor.commands, node.attrs.src])
 
+  const onResize = React.useCallback(() => {
+    onResizeClick()
+  }, [onResizeClick])
+
+  const onCrop = React.useCallback(() => {
+    onCropClick()
+  }, [onCropClick])
+
   const onRemoveImg = React.useCallback(() => {
     editor.commands.command(({ tr, dispatch }) => {
       const { selection } = tr
@@ -52,5 +69,14 @@ export const useImageActions = ({ editor, node, src, onViewClick }: UseImageActi
     })
   }, [editor.commands])
 
-  return { isLink, onView, onDownload, onCopy, onCopyLink, onRemoveImg }
+  return {
+    isLink,
+    onView,
+    onDownload,
+    onCopy,
+    onCopyLink,
+    onResize,
+    onCrop,
+    onRemoveImg,
+  }
 }

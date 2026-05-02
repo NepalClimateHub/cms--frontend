@@ -10,7 +10,9 @@ import { useDragResize } from '../hooks/use-drag-resize'
 import { useImageActions } from '../hooks/use-image-actions'
 import type { UploadReturnType } from '../image'
 import { ActionButton, ActionWrapper, ImageActions } from './image-actions'
+import { ImageCropper } from './image-cropper'
 import { ImageOverlay } from './image-overlay'
+import { ImageResizer } from './image-resizer'
 import { ResizeHandle } from './resize-handle'
 
 const MAX_HEIGHT = 600
@@ -61,6 +63,9 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
     naturalSize: { width: initialWidth, height: initialHeight },
   })
 
+  const [isResizerOpen, setIsResizerOpen] = React.useState(false)
+  const [isCropperOpen, setIsCropperOpen] = React.useState(false)
+
   const containerRef = React.useRef<HTMLDivElement>(null)
   const [activeResizeHandle, setActiveResizeHandle] = React.useState<
     'left' | 'right' | null
@@ -84,14 +89,23 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
       )
     : Infinity
 
-  const { isLink, onView, onDownload, onCopy, onCopyLink, onRemoveImg } =
-    useImageActions({
-      editor,
-      node,
-      src: imageState.src,
-      onViewClick: (isZoomed) =>
-        setImageState((prev) => ({ ...prev, isZoomed })),
-    })
+  const {
+    isLink,
+    onView,
+    onDownload,
+    onCopy,
+    onCopyLink,
+    onResize,
+    onCrop,
+    onRemoveImg,
+  } = useImageActions({
+    editor,
+    node,
+    src: imageState.src,
+    onViewClick: (isZoomed) => setImageState((prev) => ({ ...prev, isZoomed })),
+    onResizeClick: () => setIsResizerOpen(true),
+    onCropClick: () => setIsCropperOpen(true),
+  })
 
   const {
     currentWidth,
@@ -155,6 +169,70 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
   const handleResizeEnd = React.useCallback(() => {
     setActiveResizeHandle(null)
   }, [])
+
+  const handleResize = React.useCallback(
+    (width: number, height: number) => {
+      updateAttributes({ width, height })
+      updateDimensions((state) => ({ ...state, width, height }))
+      setIsResizerOpen(false)
+    },
+    [updateAttributes, updateDimensions]
+  )
+
+  const handleCropComplete = React.useCallback(
+    async (croppedBlob: Blob) => {
+      setIsCropperOpen(false)
+      setImageState((prev) => ({ ...prev, isServerUploading: true }))
+
+      try {
+        const imageExtension = editor.options.extensions.find(
+          (ext) => ext.name === 'image'
+        )
+        const { uploadFn } = imageExtension?.options ?? {}
+
+        if (uploadFn) {
+          const file = new File(
+            [croppedBlob],
+            fileName || 'cropped-image.jpg',
+            {
+              type: 'image/jpeg',
+            }
+          )
+          const url = await uploadFn(file, editor)
+          const normalizedData = normalizeUploadResponse(url)
+
+          setImageState((prev) => ({
+            ...prev,
+            ...normalizedData,
+            isServerUploading: false,
+            imageLoaded: true,
+          }))
+
+          updateAttributes(normalizedData)
+        } else {
+          const reader = new FileReader()
+          reader.onloadend = () => {
+            const base64 = reader.result as string
+            setImageState((prev) => ({
+              ...prev,
+              src: base64,
+              isServerUploading: false,
+            }))
+            updateAttributes({ src: base64 })
+          }
+          reader.readAsDataURL(croppedBlob)
+        }
+      } catch (error) {
+        console.error('Failed to upload cropped image:', error)
+        setImageState((prev) => ({
+          ...prev,
+          isServerUploading: false,
+          error: true,
+        }))
+      }
+    },
+    [editor, fileName, updateAttributes]
+  )
 
   React.useEffect(() => {
     if (!isResizing) {
@@ -329,15 +407,34 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
                 onDownload={onDownload}
                 onCopy={onCopy}
                 onCopyLink={onCopyLink}
+                onResize={onResize}
+                onCrop={onCrop}
               />
             )}
         </div>
         {node.attrs.caption && (
-          <figcaption className='mt-2 text-sm text-muted-foreground italic text-center'>
+          <figcaption className='mt-2 text-center text-sm italic text-muted-foreground'>
             {node.attrs.caption}
           </figcaption>
         )}
       </div>
+
+      <ImageResizer
+        open={isResizerOpen}
+        onOpenChange={setIsResizerOpen}
+        width={currentWidth}
+        height={currentHeight}
+        naturalWidth={imageState.naturalSize.width}
+        naturalHeight={imageState.naturalSize.height}
+        onResize={handleResize}
+      />
+
+      <ImageCropper
+        open={isCropperOpen}
+        onOpenChange={setIsCropperOpen}
+        imageSrc={imageState.src}
+        onCropComplete={handleCropComplete}
+      />
     </NodeViewWrapper>
   )
 }
