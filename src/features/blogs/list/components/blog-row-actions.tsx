@@ -7,6 +7,7 @@ import {
   useApproveBlog,
   useRejectBlog,
 } from '@/query/blogs/use-blogs'
+import { BlogResponseDto } from '@/query/blogs/use-blogs'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
@@ -21,8 +22,6 @@ import {
 import { Separator } from '@/ui/shadcn/separator'
 // import { useDeleteBlog, useBlogAPI } from '@/query/blogs/use-blogs'
 import { LucideEye, Pencil, Trash, CheckCircle, XCircle } from 'lucide-react'
-
-import { BlogResponseDto } from '@/query/blogs/use-blogs'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { isAdminLevel } from '@/utils/role-check.util'
 
@@ -42,10 +41,6 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
   const rejectBlogMutation = useRejectBlog()
 
   const blogStatus = row.original.status || 'DRAFT'
-
-  const handleStatusToggle = (_blogId: string, _isDraft: boolean) => {
-    // TODO: Wire up updateBlogMutation when available
-  }
 
   const formatDateShort = (date: string | undefined | Date) => {
     if (date == null || date === '') return ''
@@ -150,10 +145,7 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
                 }
                 const config = statusConfig[status] || statusConfig.DRAFT
                 return (
-                  <Badge
-                    variant={config.variant}
-                    className={config.className}
-                  >
+                  <Badge variant={config.variant} className={config.className}>
                     {config.label}
                   </Badge>
                 )
@@ -185,7 +177,7 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
             <Separator />
 
             <div
-              className='prose prose-sm max-w-none dark:prose-invert'
+              className='prose prose-sm dark:prose-invert max-w-none'
               dangerouslySetInnerHTML={{ __html: row.original.content }}
             />
 
@@ -236,19 +228,6 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
             <XCircle className='h-4 w-4' />
           </Button>
         </>
-      )}
-
-      {/* Publish/Conceal: staff only; not for INDIVIDUAL or ORGANIZATION */}
-      {isAdminLevel(role) && (
-        <Button
-          onClick={() =>
-            handleStatusToggle(row.original.id, !row.original.isDraft)
-          }
-          size={'sm'}
-          className='h-6 bg-blue-500 px-2 hover:bg-blue-600'
-        >
-          {row.original.isDraft ? 'Publish' : 'Conceal'}
-        </Button>
       )}
 
       <Button

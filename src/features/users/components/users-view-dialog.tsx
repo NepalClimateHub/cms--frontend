@@ -46,98 +46,105 @@ function DetailRow({
 }
 
 export function UsersViewDialog({ user, open, onOpenChange }: Props) {
-  if (!user) return null
-
-  const fullName = `${user.firstName} ${user.lastName}`.trim()
-  const nameInitials = getInitialsForAvatar(fullName || 'User')
-  const statusClass = callTypes.get(user.status) ?? ''
-  const org = user.organization
-  const profileUrl = user.profilePhotoUrl
-  const bannerUrl = user.bannerImageUrl
+  const fullName = user ? `${user.firstName} ${user.lastName}`.trim() : ''
+  const nameInitials = user ? getInitialsForAvatar(fullName || 'User') : ''
+  const statusClass = user ? (callTypes.get(user.status) ?? '') : ''
+  const org = user?.organization
+  const profileUrl = user?.profilePhotoUrl
+  const bannerUrl = user?.bannerImageUrl
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='flex max-h-[min(90vh,720px)] max-w-lg flex-col gap-0 overflow-hidden p-0 sm:max-w-lg'>
-        <div className='flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden'>
-          <div
-            className='relative h-28 w-full shrink-0 overflow-hidden sm:h-32'
-            role='img'
-            aria-label='Profile banner'
-          >
-            {bannerUrl ? (
-              <img
-                src={bannerUrl}
-                alt=''
-                className='h-full w-full object-cover'
-              />
-            ) : (
-              <div className='h-full w-full bg-gradient-to-br from-slate-200 via-slate-100 to-sky-100/80' />
-            )}
-            <div className='pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent' />
+      <DialogContent className='flex max-h-[min(90vh,720px)] min-h-[400px] max-w-lg flex-col gap-0 overflow-hidden p-0 sm:max-w-lg'>
+        {!user ? (
+          <div className='flex flex-1 flex-col items-center justify-center space-y-4 p-8'>
+            <div className='h-8 w-8 animate-spin rounded-full border-4 border-teal-100 border-t-teal-600' />
+            <p className='text-sm font-medium text-muted-foreground'>
+              Loading profile...
+            </p>
           </div>
-          {/* Flow layout: avatar pulled up with -mt; stays in document flow (no clip from overflow on parent) */}
-          <div className='relative z-10 -mt-10 px-5 sm:-mt-12'>
-            <Avatar className='h-20 w-20 border-4 border-background bg-background text-lg shadow-md ring-1 ring-border sm:h-24 sm:w-24 sm:text-2xl'>
-              <AvatarImage
-                src={profileUrl || undefined}
-                alt={fullName || user.email}
-                className='object-cover'
-              />
-              <AvatarFallback className='text-lg sm:text-2xl'>
-                {nameInitials}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-          <div className='space-y-3 px-5 pb-5 pt-3 text-left'>
-            <DialogHeader className='space-y-1 text-left'>
-              <DialogTitle className='sr-only'>User profile</DialogTitle>
-            </DialogHeader>
-            <div className='space-y-3'>
-              <DetailRow label='Name' value={fullName} />
-              <DetailRow label='Username' value={user.username} />
-              <DetailRow label='Email' value={user.email} />
-              <DetailRow label='Phone' value={user.phoneNumber || null} />
-              <DetailRow
-                label='User type'
-                value={serverRoleLabel(user.serverRole)}
-              />
-              <div className='grid grid-cols-[9rem_1fr] items-center gap-3 sm:grid-cols-[11rem_1fr]'>
-                <dt className='font-medium text-muted-foreground'>Status</dt>
-                <dd>
-                  <span
-                    className={`inline-flex rounded border px-2 py-0.5 text-xs capitalize ${statusClass}`}
-                  >
-                    {user.status}
-                  </span>
-                </dd>
+        ) : (
+          <div className='flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden'>
+            <div
+              className='relative h-28 w-full shrink-0 overflow-hidden sm:h-32'
+              role='img'
+              aria-label='Profile banner'
+            >
+              {bannerUrl ? (
+                <img
+                  src={bannerUrl}
+                  alt=''
+                  className='h-full w-full object-cover'
+                />
+              ) : (
+                <div className='h-full w-full bg-gradient-to-br from-slate-200 via-slate-100 to-sky-100/80' />
+              )}
+              <div className='pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent' />
+            </div>
+            {/* Flow layout: avatar pulled up with -mt; stays in document flow (no clip from overflow on parent) */}
+            <div className='relative z-10 -mt-10 px-5 sm:-mt-12'>
+              <Avatar className='h-20 w-20 border-4 border-background bg-background text-lg shadow-md ring-1 ring-border sm:h-24 sm:w-24 sm:text-2xl'>
+                <AvatarImage
+                  src={profileUrl || undefined}
+                  alt={fullName || user.email}
+                  className='object-cover'
+                />
+                <AvatarFallback className='text-lg sm:text-2xl'>
+                  {nameInitials}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+            <div className='space-y-3 px-5 pb-5 pt-3 text-left'>
+              <DialogHeader className='space-y-1 text-left'>
+                <DialogTitle className='sr-only'>User profile</DialogTitle>
+              </DialogHeader>
+              <div className='space-y-3'>
+                <DetailRow label='Name' value={fullName} />
+                <DetailRow label='Username' value={user.username} />
+                <DetailRow label='Email' value={user.email} />
+                <DetailRow label='Phone' value={user.phoneNumber || null} />
+                <DetailRow
+                  label='User type'
+                  value={serverRoleLabel(user.serverRole)}
+                />
+                <div className='grid grid-cols-[9rem_1fr] items-center gap-3 sm:grid-cols-[11rem_1fr]'>
+                  <dt className='font-medium text-muted-foreground'>Status</dt>
+                  <dd>
+                    <span
+                      className={`inline-flex rounded border px-2 py-0.5 text-xs capitalize ${statusClass}`}
+                    >
+                      {user.status}
+                    </span>
+                  </dd>
+                </div>
+                <DetailRow
+                  label='Admin verified (org)'
+                  value={
+                    user.serverRole !== 'ORGANIZATION'
+                      ? 'N/A'
+                      : org
+                        ? user.isVerifiedByAdmin
+                          ? 'Yes'
+                          : 'No'
+                        : '—'
+                  }
+                />
+                {user.serverRole === 'ORGANIZATION' && org ? (
+                  <DetailRow label='Organization' value={org.name} />
+                ) : null}
+                <Separator className='my-2' />
+                <DetailRow
+                  label='Created'
+                  value={user.createdAt.toLocaleString()}
+                />
+                <DetailRow
+                  label='Updated'
+                  value={user.updatedAt.toLocaleString()}
+                />
               </div>
-              <DetailRow
-                label='Admin verified (org)'
-                value={
-                  user.serverRole !== 'ORGANIZATION'
-                    ? 'N/A'
-                    : org
-                      ? user.isVerifiedByAdmin
-                        ? 'Yes'
-                        : 'No'
-                      : '—'
-                }
-              />
-              {user.serverRole === 'ORGANIZATION' && org ? (
-                <DetailRow label='Organization' value={org.name} />
-              ) : null}
-              <Separator className='my-2' />
-              <DetailRow
-                label='Created'
-                value={user.createdAt.toLocaleString()}
-              />
-              <DetailRow
-                label='Updated'
-                value={user.updatedAt.toLocaleString()}
-              />
             </div>
           </div>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   )
