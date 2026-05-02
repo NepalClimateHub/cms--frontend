@@ -21,6 +21,7 @@ export const indSchema = z
   .object({
     fullName: z.string().min(1, 'Full Name is required'),
     email: z.string().email('Invalid email'),
+    iAm: z.string().min(1, 'Please select what you are.'),
     password: z.string().min(7, 'Password must be at least 7 characters'),
     confirmPassword: z.string(),
   })
