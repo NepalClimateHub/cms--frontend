@@ -14,7 +14,15 @@ import { Main } from '@/ui/layouts/main'
 import { MultiSelect } from '@/ui/multi-select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import { Card, CardTitle } from '@/ui/shadcn/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/ui/shadcn/dialog'
 import { cn } from '@/ui/shadcn/lib/utils'
+import { ScrollArea } from '@/ui/shadcn/scroll-area'
 import {
   Calendar,
   Users,
@@ -79,6 +87,7 @@ export default function AdminDashboardHomePage() {
     currentYear.toString(),
   ])
 
+  const [isTopAuthorsDialogOpen, setIsTopAuthorsDialogOpen] = useState(false)
   const [aiChatFilter, setAiChatFilter] = useState<
     'today' | 'yesterday' | 'this month' | 'all time'
   >('this month')
@@ -714,7 +723,7 @@ export default function AdminDashboardHomePage() {
                 <Users className='h-5 w-5' />
               </div>
               <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>
-                New Joined Users
+                Newly Joined Users
               </h2>
             </div>
 
@@ -786,13 +795,23 @@ export default function AdminDashboardHomePage() {
         <div className='grid w-full grid-cols-1 gap-6 lg:grid-cols-[1.85fr_1fr]'>
           {/* Top Blog Authors */}
           <Card className='overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
-            <div className='mb-4 flex items-center gap-3'>
-              <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600'>
-                <FileText className='h-5 w-5' />
+            <div className='mb-4 flex items-center justify-between gap-3'>
+              <div className='flex items-center gap-3'>
+                <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600'>
+                  <FileText className='h-5 w-5' />
+                </div>
+                <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>
+                  Top Blog Authors
+                </h2>
               </div>
-              <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>
-                Top Blog Authors
-              </h2>
+              {topAuthorsData && topAuthorsData.length > 5 && (
+                <button
+                  onClick={() => setIsTopAuthorsDialogOpen(true)}
+                  className='text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline'
+                >
+                  View all
+                </button>
+              )}
             </div>
 
             {isTopAuthorsLoading ? (
@@ -801,7 +820,7 @@ export default function AdminDashboardHomePage() {
               </div>
             ) : topAuthorsData && topAuthorsData.length > 0 ? (
               <div className='flex flex-col gap-3'>
-                {topAuthorsData.map((author, index) => (
+                {topAuthorsData.slice(0, 5).map((author, index) => (
                   <div
                     key={author.userId}
                     className='flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3'
@@ -869,6 +888,52 @@ export default function AdminDashboardHomePage() {
           open={isViewProfileDialogOpen}
           onOpenChange={setIsViewProfileDialogOpen}
         />
+
+        <Dialog
+          open={isTopAuthorsDialogOpen}
+          onOpenChange={setIsTopAuthorsDialogOpen}
+        >
+          <DialogContent className='max-w-2xl'>
+            <DialogHeader>
+              <DialogTitle>Top Blog Authors</DialogTitle>
+              <DialogDescription>
+                List of top contributing authors based on published blogs.
+              </DialogDescription>
+            </DialogHeader>
+            <ScrollArea className='max-h-[60vh] pr-4'>
+              <div className='flex flex-col gap-3 py-4'>
+                {topAuthorsData?.map((author, index) => (
+                  <div
+                    key={author.userId}
+                    className='flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3'
+                  >
+                    <div className='flex items-center gap-3 overflow-hidden'>
+                      <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600'>
+                        {index + 1}
+                      </div>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-semibold text-gray-900'>
+                          {author.name}
+                        </p>
+                        <p className='truncate text-xs text-gray-500'>
+                          {author.email}
+                        </p>
+                      </div>
+                    </div>
+                    <div className='flex flex-col items-end'>
+                      <span className='text-lg font-bold text-gray-900'>
+                        {author.blogCount}
+                      </span>
+                      <span className='text-[10px] uppercase text-gray-500'>
+                        Blogs
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
       </div>
     </Main>
   )

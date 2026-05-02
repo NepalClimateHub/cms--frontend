@@ -3,6 +3,8 @@
 import { format } from 'date-fns'
 import { Link } from '@tanstack/react-router'
 import {
+  useDeleteNotification,
+  useMarkAllNotificationsRead,
   useMarkNotificationRead,
   useNotificationsQuery,
 } from '@/query/notifications/use-notifications'
@@ -17,7 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/ui/shadcn/sheet'
-import { Bell } from 'lucide-react'
+import { Bell, CheckCheck, Trash2 } from 'lucide-react'
 import { getRoleFromToken } from '@/utils/jwt.util'
 
 export function HeaderNotifications() {
@@ -26,6 +28,8 @@ export function HeaderNotifications() {
 
   const { data, isLoading } = useNotificationsQuery(show)
   const markRead = useMarkNotificationRead()
+  const markAllRead = useMarkAllNotificationsRead()
+  const deleteNotification = useDeleteNotification()
 
   if (!show) {
     return null
@@ -55,8 +59,20 @@ export function HeaderNotifications() {
         </Button>
       </SheetTrigger>
       <SheetContent className='flex w-full flex-col sm:max-w-md'>
-        <SheetHeader>
+        <SheetHeader className='flex-row items-center justify-between space-y-0'>
           <SheetTitle>Your notifications</SheetTitle>
+          {unread > 0 && (
+            <Button
+              variant='ghost'
+              size='sm'
+              className='h-8 text-xs text-muted-foreground hover:text-primary'
+              onClick={() => markAllRead.mutate()}
+              disabled={markAllRead.isPending}
+            >
+              <CheckCheck className='mr-1 size-3.5' />
+              Mark all read
+            </Button>
+          )}
         </SheetHeader>
         {isLoading ? (
           <p className='text-sm text-muted-foreground'>Loading…</p>
@@ -151,6 +167,15 @@ export function HeaderNotifications() {
                         Mark read
                       </Button>
                     ) : null}
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      className='ml-auto h-8 w-8 text-muted-foreground hover:text-destructive'
+                      onClick={() => deleteNotification.mutate(n.id)}
+                      disabled={deleteNotification.isPending}
+                    >
+                      <Trash2 className='size-4' />
+                    </Button>
                   </div>
                 </li>
               ))}

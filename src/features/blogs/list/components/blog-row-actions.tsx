@@ -9,6 +9,7 @@ import {
 } from '@/query/blogs/use-blogs'
 import { BlogResponseDto } from '@/query/blogs/use-blogs'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
+import { Alert, AlertDescription, AlertTitle } from '@/ui/shadcn/alert'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
 import {
@@ -19,9 +20,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/ui/shadcn/dialog'
+import { DialogFooter } from '@/ui/shadcn/dialog'
 import { Separator } from '@/ui/shadcn/separator'
+import { Textarea } from '@/ui/shadcn/textarea'
 // import { useDeleteBlog, useBlogAPI } from '@/query/blogs/use-blogs'
-import { LucideEye, Pencil, Trash, CheckCircle, XCircle } from 'lucide-react'
+import {
+  LucideEye,
+  Pencil,
+  Trash,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+} from 'lucide-react'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { isAdminLevel } from '@/utils/role-check.util'
 
@@ -32,6 +42,9 @@ interface BlogRowActionProps {
 const BlogRowAction = ({ row }: BlogRowActionProps) => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
+  const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false)
+  const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false)
+  const [rejectionRemarks, setRejectionRemarks] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   const role = getRoleFromToken()
@@ -40,7 +53,13 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
   const approveBlogMutation = useApproveBlog()
   const rejectBlogMutation = useRejectBlog()
 
-  const blogStatus = row.original.status || 'DRAFT'
+  const blogStatus = (() => {
+    const status = row.original.status || 'DRAFT'
+    if (status === 'DRAFT' && !row.original.isDraft) {
+      return row.original.approvedByAdmin ? 'PUBLISHED' : 'UNDER_REVIEW'
+    }
+    return status
+  })()
 
   const formatDateShort = (date: string | undefined | Date) => {
     if (date == null || date === '') return ''
@@ -76,6 +95,29 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
         onSettled: () => {
           setIsLoading(false)
           setOpen(false)
+        },
+      }
+    )
+  }
+
+  const handleApprove = () => {
+    approveBlogMutation.mutate(
+      { id: row.original.id },
+      {
+        onSettled: () => {
+          setIsApproveDialogOpen(false)
+        },
+      }
+    )
+  }
+
+  const handleReject = () => {
+    rejectBlogMutation.mutate(
+      { id: row.original.id, remarks: rejectionRemarks },
+      {
+        onSettled: () => {
+          setIsRejectDialogOpen(false)
+          setRejectionRemarks('')
         },
       }
     )
@@ -175,6 +217,28 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
             ) : null}
 
             <Separator />
+            {row.original.status === 'REJECTED' &&
+              row.original.reviewFeedback && (
+                <Alert variant='destructive' className='bg-red-50/50'>
+                  <AlertCircle className='h-4 w-4' />
+                  <AlertTitle>Rejection Remarks</AlertTitle>
+                  <AlertDescription className='italic'>
+                    "{row.original.reviewFeedback}"
+                  </AlertDescription>
+                </Alert>
+              )}
+
+            {row.original.status !== 'REJECTED' &&
+              row.original.reviewFeedback && (
+                <div className='rounded-lg border border-orange-200 bg-orange-50 p-4'>
+                  <p className='text-xs font-bold uppercase tracking-wider text-orange-800'>
+                    Administrative Feedback
+                  </p>
+                  <p className='mt-1 text-sm italic text-orange-900'>
+                    "{row.original.reviewFeedback}"
+                  </p>
+                </div>
+              )}
 
             <div
               className='prose prose-sm dark:prose-invert max-w-none'
@@ -208,27 +272,83 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
 
       {/* Approve/Reject: staff (incl. content admin) for blogs under review */}
       {blogStatus === 'UNDER_REVIEW' && isAdminLevel(role) && (
-        <>
+        <div className='flex gap-2'>
           <Button
-            onClick={() => approveBlogMutation.mutate({ id: row.original.id })}
+            onClick={() => setIsApproveDialogOpen(true)}
             size={'sm'}
             variant={'default'}
-            className='h-6 bg-green-500 px-2 hover:bg-green-600'
+            className='h-7 bg-emerald-600 px-2 text-[10px] font-bold uppercase hover:bg-emerald-700'
             disabled={approveBlogMutation.isPending}
           >
-            <CheckCircle className='h-4 w-4' />
+            <CheckCircle className='mr-1 h-3.5 w-3.5' />
+            Approve
           </Button>
           <Button
-            onClick={() => rejectBlogMutation.mutate({ id: row.original.id })}
+            onClick={() => setIsRejectDialogOpen(true)}
             size={'sm'}
-            variant={'default'}
-            className='h-6 bg-red-500 px-2 hover:bg-red-600'
+            variant={'destructive'}
+            className='h-7 px-2 text-[10px] font-bold uppercase'
             disabled={rejectBlogMutation.isPending}
           >
-            <XCircle className='h-4 w-4' />
+            <XCircle className='mr-1 h-3.5 w-3.5' />
+            Reject
           </Button>
-        </>
+        </div>
       )}
+
+      {/* Approve Confirmation Dialog */}
+      <ConfirmDialog
+        open={isApproveDialogOpen}
+        onOpenChange={setIsApproveDialogOpen}
+        title='Approve Blog'
+        desc='Are you sure you want to approve this blog? It will be published immediately.'
+        confirmText='Yes, Approve'
+        cancelBtnText='No, Cancel'
+        isLoading={approveBlogMutation.isPending}
+        handleConfirm={handleApprove}
+      />
+
+      {/* Reject Dialog with Remarks */}
+      <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
+        <DialogContent className='sm:max-w-[425px]'>
+          <DialogHeader>
+            <DialogTitle>Reject Blog</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to reject this blog? You can optionally
+              provide feedback to the author below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='grid gap-4 py-4'>
+            <div className='flex flex-col gap-2'>
+              <label htmlFor='remarks' className='text-sm font-medium'>
+                Rejection Remarks (Optional)
+              </label>
+              <Textarea
+                id='remarks'
+                placeholder='Tell the author why this blog was rejected...'
+                value={rejectionRemarks}
+                onChange={(e) => setRejectionRemarks(e.target.value)}
+                className='min-h-[100px]'
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => setIsRejectDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant='destructive'
+              onClick={handleReject}
+              disabled={rejectBlogMutation.isPending}
+            >
+              {rejectBlogMutation.isPending ? 'Rejecting...' : 'Reject Blog'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Button
         onClick={() => handleEditBlog(row.original.id)}

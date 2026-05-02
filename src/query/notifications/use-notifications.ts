@@ -54,3 +54,49 @@ export function useMarkNotificationRead() {
     },
   })
 }
+
+export function useMarkAllNotificationsRead() {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: async () => {
+      await apiClient.patch(`/api/v1/notifications/mark-all-read`)
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: notificationsQueryKey })
+      toast({
+        title: 'All notifications marked as read',
+      })
+    },
+    onError: () => {
+      toast({
+        title: 'Could not update notifications',
+        variant: 'destructive',
+      })
+    },
+  })
+}
+
+export function useDeleteNotification() {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await apiClient.delete(`/api/v1/notifications/${id}`)
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: notificationsQueryKey })
+      toast({
+        title: 'Notification deleted',
+      })
+    },
+    onError: () => {
+      toast({
+        title: 'Could not delete notification',
+        variant: 'destructive',
+      })
+    },
+  })
+}

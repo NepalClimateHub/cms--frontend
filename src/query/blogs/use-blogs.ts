@@ -30,6 +30,7 @@ export interface BlogResponseDto {
   isTopRead?: boolean
   approvedByAdmin: boolean
   status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED'
+  reviewFeedback?: string
   bannerImageUrl?: string
   bannerImageId?: string
   tags?: Array<string | Record<string, unknown>>
@@ -197,10 +198,10 @@ export const useApproveBlog = () => {
   const { toast } = useToast()
 
   return useMutation({
-    mutationFn: async ({ id }: { id: string }) => {
+    mutationFn: async ({ id, remarks }: { id: string; remarks?: string }) => {
       const response = await apiClient.patch({
         url: `/api/v1/blogs/${id}/action`,
-        body: { action: 'approve' },
+        body: { action: 'approve', remarks },
       })
       return response.data
     },
@@ -228,10 +229,10 @@ export const useRejectBlog = () => {
   const { toast } = useToast()
 
   return useMutation({
-    mutationFn: async ({ id }: { id: string }) => {
+    mutationFn: async ({ id, remarks }: { id: string; remarks?: string }) => {
       const response = await apiClient.patch({
         url: `/api/v1/blogs/${id}/action`,
-        body: { action: 'reject' },
+        body: { action: 'reject', remarks },
       })
       return response.data
     },
