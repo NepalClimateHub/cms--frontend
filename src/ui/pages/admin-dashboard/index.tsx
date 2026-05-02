@@ -724,7 +724,7 @@ export default function AdminDashboardHomePage() {
               </div>
             ) : newJoinedUsersData && newJoinedUsersData.length > 0 ? (
               <div className='flex flex-col gap-3'>
-                {newJoinedUsersData.map((user) => (
+                {newJoinedUsersData.slice(0, 3).map((user) => (
                   <div
                     key={user.userId}
                     className='flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3'
