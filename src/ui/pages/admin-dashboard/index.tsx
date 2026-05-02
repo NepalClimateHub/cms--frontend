@@ -27,8 +27,8 @@ import {
   Building2,
   ArrowRight,
   MessageSquare,
-  MessagesSquare,
   Bot,
+  MessageCircle,
 } from 'lucide-react'
 import {
   BarChart,
@@ -80,8 +80,8 @@ export default function AdminDashboardHomePage() {
   ])
 
   const [aiChatFilter, setAiChatFilter] = useState<
-    'daily' | 'weekly' | 'monthly' | 'all time'
-  >('monthly')
+    'today' | 'yesterday' | 'this month' | 'all time'
+  >('this month')
 
   const [viewProfileUserId, setViewProfileUserId] = useState<string | null>(
     null
@@ -291,12 +291,14 @@ export default function AdminDashboardHomePage() {
                       'adminCount',
                       'organizationCount',
                       'individualCount',
-                      'aiChatSessionsDaily',
-                      'aiChatSessionsWeekly',
-                      'aiChatSessionsMonthly',
-                      'aiChatMessagesDaily',
-                      'aiChatMessagesWeekly',
-                      'aiChatMessagesMonthly',
+                      'aiChatSessionsToday',
+                      'aiChatSessionsYesterday',
+                      'aiChatSessionsThisMonth',
+                      'aiChatSessionsAllTime',
+                      'aiChatMessagesToday',
+                      'aiChatMessagesYesterday',
+                      'aiChatMessagesThisMonth',
+                      'aiChatMessagesAllTime',
                     ].includes(key) &&
                       key !== 'userCount')
                 )
@@ -308,12 +310,14 @@ export default function AdminDashboardHomePage() {
                       'adminCount',
                       'organizationCount',
                       'individualCount',
-                      'aiChatSessionsDaily',
-                      'aiChatSessionsWeekly',
-                      'aiChatSessionsMonthly',
-                      'aiChatMessagesDaily',
-                      'aiChatMessagesWeekly',
-                      'aiChatMessagesMonthly',
+                      'aiChatSessionsToday',
+                      'aiChatSessionsYesterday',
+                      'aiChatSessionsThisMonth',
+                      'aiChatSessionsAllTime',
+                      'aiChatMessagesToday',
+                      'aiChatMessagesYesterday',
+                      'aiChatMessagesThisMonth',
+                      'aiChatMessagesAllTime',
                     ].includes(key) ||
                     key === 'userCount'
                   )
@@ -555,8 +559,8 @@ export default function AdminDashboardHomePage() {
           </div>
         </div>
 
-        {/* AI Chat Analytics Section */}
-        <Card className='overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
+        {/* AI Chat Analytics Section (Full Width) */}
+        <Card className='mt-6 overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
           <div className='mb-4 flex items-center justify-between gap-4'>
             <div className='flex items-center gap-3'>
               <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600'>
@@ -568,7 +572,7 @@ export default function AdminDashboardHomePage() {
             </div>
             {/* Filter Tabs */}
             <div className='flex items-center rounded-lg border border-gray-200 bg-gray-50 p-0.5'>
-              {(['daily', 'weekly', 'monthly', 'all time'] as const).map(
+              {(['today', 'yesterday', 'this month', 'all time'] as const).map(
                 (filter) => (
                   <button
                     key={filter}
@@ -586,7 +590,7 @@ export default function AdminDashboardHomePage() {
               )}
             </div>
           </div>
-          <div className='grid grid-cols-2 gap-4'>
+          <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2'>
             <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3'>
               <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600'>
                 <MessageSquare className='h-4 w-4' />
@@ -596,33 +600,42 @@ export default function AdminDashboardHomePage() {
                   Chat Sessions
                 </p>
                 <p className='text-lg font-bold text-gray-900'>
-                  {aiChatFilter === 'daily'
-                    ? adminStats.aiChatSessionsDaily.toLocaleString()
-                    : aiChatFilter === 'weekly'
-                      ? adminStats.aiChatSessionsWeekly.toLocaleString()
-                      : aiChatFilter === 'monthly'
-                        ? adminStats.aiChatSessionsMonthly.toLocaleString()
+                  {aiChatFilter === 'today'
+                    ? (adminStats as any).aiChatSessionsToday?.toLocaleString()
+                    : aiChatFilter === 'yesterday'
+                      ? (
+                          adminStats as any
+                        ).aiChatSessionsYesterday?.toLocaleString()
+                      : aiChatFilter === 'this month'
+                        ? (
+                            adminStats as any
+                          ).aiChatSessionsThisMonth?.toLocaleString()
                         : (
                             (adminStats as any).aiChatSessionsAllTime || 0
                           ).toLocaleString()}
                 </p>
               </div>
             </div>
+
             <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3'>
-              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600'>
-                <MessagesSquare className='h-4 w-4' />
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 text-green-600'>
+                <MessageCircle className='h-4 w-4' />
               </div>
               <div>
                 <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>
                   Message Responses
                 </p>
                 <p className='text-lg font-bold text-gray-900'>
-                  {aiChatFilter === 'daily'
-                    ? adminStats.aiChatMessagesDaily.toLocaleString()
-                    : aiChatFilter === 'weekly'
-                      ? adminStats.aiChatMessagesWeekly.toLocaleString()
-                      : aiChatFilter === 'monthly'
-                        ? adminStats.aiChatMessagesMonthly.toLocaleString()
+                  {aiChatFilter === 'today'
+                    ? (adminStats as any).aiChatMessagesToday?.toLocaleString()
+                    : aiChatFilter === 'yesterday'
+                      ? (
+                          adminStats as any
+                        ).aiChatMessagesYesterday?.toLocaleString()
+                      : aiChatFilter === 'this month'
+                        ? (
+                            adminStats as any
+                          ).aiChatMessagesThisMonth?.toLocaleString()
                         : (
                             (adminStats as any).aiChatMessagesAllTime || 0
                           ).toLocaleString()}
@@ -716,8 +729,8 @@ export default function AdminDashboardHomePage() {
                     key={user.userId}
                     className='flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3'
                   >
-                    <div className='flex items-center gap-3'>
-                      <Avatar className='h-10 w-10 border border-gray-100 shadow-sm'>
+                    <div className='flex items-center gap-3 overflow-hidden'>
+                      <Avatar className='h-10 w-10 shrink-0 border border-gray-100 shadow-sm'>
                         <AvatarImage
                           src={(user as any).profilePhotoUrl}
                           className='object-cover'
@@ -730,13 +743,17 @@ export default function AdminDashboardHomePage() {
                           />
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <p className='text-sm font-semibold text-gray-900'>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-semibold text-gray-900'>
                           {user.name}
                         </p>
-                        <div className='flex items-center gap-2'>
-                          <p className='text-xs text-gray-500'>{user.email}</p>
-                          <span className='text-gray-300'>•</span>
+                        <div className='flex flex-wrap items-center gap-x-2 gap-y-0.5'>
+                          <p className='truncate text-xs text-gray-500'>
+                            {user.email}
+                          </p>
+                          <span className='hidden text-gray-300 sm:inline'>
+                            •
+                          </span>
                           <button
                             onClick={() => {
                               setViewProfileUserId(user.userId)
@@ -749,7 +766,7 @@ export default function AdminDashboardHomePage() {
                         </div>
                       </div>
                     </div>
-                    <div className='flex flex-col items-end'>
+                    <div className='hidden shrink-0 flex-col items-end sm:flex'>
                       <span className='text-xs font-bold text-gray-900'>
                         {user.role}
                       </span>
@@ -789,15 +806,17 @@ export default function AdminDashboardHomePage() {
                     key={author.userId}
                     className='flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3'
                   >
-                    <div className='flex items-center gap-3'>
-                      <div className='flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600'>
+                    <div className='flex items-center gap-3 overflow-hidden'>
+                      <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600'>
                         {index + 1}
                       </div>
-                      <div>
-                        <p className='text-sm font-semibold text-gray-900'>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-semibold text-gray-900'>
                           {author.name}
                         </p>
-                        <p className='text-xs text-gray-500'>{author.email}</p>
+                        <p className='truncate text-xs text-gray-500'>
+                          {author.email}
+                        </p>
                       </div>
                     </div>
                     <div className='flex flex-col items-end'>
@@ -844,13 +863,13 @@ export default function AdminDashboardHomePage() {
             </div>
           </Card>
         </div>
-      </div>
 
-      <UsersViewDialog
-        user={selectedUserDetails || null}
-        open={isViewProfileDialogOpen}
-        onOpenChange={setIsViewProfileDialogOpen}
-      />
+        <UsersViewDialog
+          user={selectedUserDetails || null}
+          open={isViewProfileDialogOpen}
+          onOpenChange={setIsViewProfileDialogOpen}
+        />
+      </div>
     </Main>
   )
 }
