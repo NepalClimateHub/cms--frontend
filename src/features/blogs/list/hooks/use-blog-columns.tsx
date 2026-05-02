@@ -26,7 +26,7 @@ export const useBlogsColumns = () => {
                   src={imageUrl}
                   alt={title}
                   className={cn(
-                    'h-[80px] w-[80px] rounded transition-transform duration-300 hover:scale-105',
+                    'h-[100px] w-[160px] rounded transition-transform duration-300 hover:scale-105',
                     isPlaceholder
                       ? 'bg-white/50 object-contain p-4'
                       : 'object-cover'

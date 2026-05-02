@@ -13,23 +13,18 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useFilters } from '@/hooks/use-filters'
-import { parseAsString } from 'nuqs'
+import { parseAsArrayOf, parseAsString } from 'nuqs'
+import { MultiSelect } from '@/ui/multi-select'
 import { useEffect, useState } from 'react'
 import { Input } from '@/ui/shadcn/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/ui/shadcn/select'
+
 
 export default function ResourceList() {
   const navigate = useNavigate()
   const paginationOptions = usePagination()
   const filterOptions = useFilters({
     title: parseAsString,
-    type: parseAsString,
+    type: parseAsArrayOf(parseAsString),
   })
 
   const { pagination, setPage } = paginationOptions
@@ -90,24 +85,17 @@ export default function ResourceList() {
                 onChange={(e) => handleSearch(e.target.value)}
                 className='h-8 w-[150px] lg:w-[250px]'
               />
-              <Select
-                value={(filters.type as string) ?? 'ALL'}
-                onValueChange={(value) =>
-                  setFilterValue('type', value === 'ALL' ? null : value)
-                }
-              >
-                <SelectTrigger className='h-8 w-[150px]'>
-                  <SelectValue placeholder='Type' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='ALL'>All Types</SelectItem>
-                  {Object.values(ResourceType).map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type.replace(/_/g, ' ').toLowerCase()}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <MultiSelect
+                options={Object.values(ResourceType).map((type) => ({
+                  label: type.replace(/_/g, ' ').toLowerCase(),
+                  value: type,
+                }))}
+                onValueChange={(values) => setFilterValue('type', values)}
+                defaultValue={(filters.type as string[]) ?? []}
+                placeholder='All Types'
+                className='h-8 min-h-8 w-[200px] lg:w-[300px]'
+                maxCount={2}
+              />
             </div>
           }
         />
