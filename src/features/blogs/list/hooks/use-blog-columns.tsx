@@ -45,7 +45,17 @@ export const useBlogsColumns = () => {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Title' />
       ),
-      cell: ({ row }) => <div>{row.original.title}</div>,
+      cell: ({ row }) => {
+        const title = row.original.title
+        const words = title.split(' ')
+        const displayTitle =
+          words.length > 5 ? words.slice(0, 5).join(' ') + '...' : title
+        return (
+          <div className='max-w-[250px] whitespace-normal font-medium leading-tight'>
+            {displayTitle}
+          </div>
+        )
+      },
       enableSorting: false,
       enableHiding: false,
     },
