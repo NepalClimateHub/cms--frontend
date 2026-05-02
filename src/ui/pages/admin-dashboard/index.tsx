@@ -453,174 +453,173 @@ export default function AdminDashboardHomePage() {
 
           {/* Right Column - Quick Actions (fixed 300px) */}
           <div className='h-full shrink-0'>
-            <Card className='h-full border border-gray-200 bg-white p-5 shadow-sm'>
-              <CardTitle className='mb-6 text-lg font-medium text-gray-900'>
+            <Card className='flex h-full flex-col border border-gray-200 bg-white p-5 shadow-sm'>
+              <CardTitle className='mb-6 shrink-0 text-lg font-medium text-gray-900'>
                 Quick Actions
               </CardTitle>
-              <div className='flex flex-col gap-4'>
-                <Link
-                  to='/events/add'
-                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
-                >
-                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
-                    <Calendar className='h-5 w-5' />
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-medium text-gray-900'>
-                      Add Event
-                    </p>
-                  </div>
-                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-blue-600' />
-                </Link>
+              <div className='min-h-0 flex-1 overflow-y-auto pr-1'>
+                <div className='flex flex-col gap-4'>
+                  <Link
+                    to='/events/add'
+                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
+                  >
+                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
+                      <Calendar className='h-5 w-5' />
+                    </div>
+                    <div className='min-w-0 flex-1'>
+                      <p className='truncate text-sm font-medium text-gray-900'>
+                        Add Event
+                      </p>
+                    </div>
+                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-blue-600' />
+                  </Link>
 
-                <Link
-                  to='/opportunities/add'
-                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-md'
-                >
-                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100'>
-                    <Briefcase className='h-5 w-5' />
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-medium text-gray-900'>
-                      Add Opportunity
-                    </p>
-                  </div>
-                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-emerald-600' />
-                </Link>
+                  <Link
+                    to='/opportunities/add'
+                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-md'
+                  >
+                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100'>
+                      <Briefcase className='h-5 w-5' />
+                    </div>
+                    <div className='min-w-0 flex-1'>
+                      <p className='truncate text-sm font-medium text-gray-900'>
+                        Add Opportunity
+                      </p>
+                    </div>
+                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-emerald-600' />
+                  </Link>
 
-                <Link
-                  to='/blog/add'
-                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:shadow-md'
-                >
-                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 transition-colors group-hover:bg-red-100'>
-                    <FileText className='h-5 w-5' />
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-medium text-gray-900'>
-                      Add Blog
-                    </p>
-                  </div>
-                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-red-600' />
-                </Link>
+                  <Link
+                    to='/blog/add'
+                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:shadow-md'
+                  >
+                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 transition-colors group-hover:bg-red-100'>
+                      <FileText className='h-5 w-5' />
+                    </div>
+                    <div className='min-w-0 flex-1'>
+                      <p className='truncate text-sm font-medium text-gray-900'>
+                        Add Blog
+                      </p>
+                    </div>
+                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-red-600' />
+                  </Link>
 
-                <Link
-                  to='/news/add'
-                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
-                >
-                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
-                    <Newspaper className='h-5 w-5' />
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-medium text-gray-900'>
-                      Add News
-                    </p>
-                  </div>
-                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-blue-600' />
-                </Link>
+                  <Link
+                    to='/news/add'
+                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
+                  >
+                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
+                      <Newspaper className='h-5 w-5' />
+                    </div>
+                    <div className='min-w-0 flex-1'>
+                      <p className='truncate text-sm font-medium text-gray-900'>
+                        Add News
+                      </p>
+                    </div>
+                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-blue-600' />
+                  </Link>
 
-                <Link
-                  to='/projects/add'
-                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-md'
-                >
-                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-100'>
-                    <Briefcase className='h-5 w-5' />
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-medium text-gray-900'>
-                      Add Work
-                    </p>
-                  </div>
-                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-purple-600' />
-                </Link>
+                  <Link
+                    to='/projects/add'
+                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-md'
+                  >
+                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-100'>
+                      <Briefcase className='h-5 w-5' />
+                    </div>
+                    <div className='min-w-0 flex-1'>
+                      <p className='truncate text-sm font-medium text-gray-900'>
+                        Add Work
+                      </p>
+                    </div>
+                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-purple-600' />
+                  </Link>
 
-                <Link
-                  to='/resources/add'
-                  className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-teal-300 hover:bg-teal-50 hover:shadow-md'
-                >
-                  <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-600 transition-colors group-hover:bg-teal-100'>
-                    <FileText className='h-5 w-5' />
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-medium text-gray-900'>
-                      Add Resources
-                    </p>
-                  </div>
-                  <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-teal-600' />
-                </Link>
+                  <Link
+                    to='/resources/add'
+                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-teal-300 hover:bg-teal-50 hover:shadow-md'
+                  >
+                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-600 transition-colors group-hover:bg-teal-100'>
+                      <FileText className='h-5 w-5' />
+                    </div>
+                    <div className='min-w-0 flex-1'>
+                      <p className='truncate text-sm font-medium text-gray-900'>
+                        Add Resources
+                      </p>
+                    </div>
+                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-teal-600' />
+                  </Link>
+                </div>
               </div>
             </Card>
           </div>
         </div>
 
         {/* AI Chat Analytics Section */}
-        <div className='grid w-full grid-cols-1 gap-8 lg:grid-cols-[1.85fr_1fr]'>
-          <Card className='overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
-            <div className='mb-4 flex items-center justify-between gap-4'>
-              <div className='flex items-center gap-3'>
-                <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600'>
-                  <Bot className='h-5 w-5' />
-                </div>
-                <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>
-                  AI Chat Analytics
-                </h2>
+        <Card className='overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
+          <div className='mb-4 flex items-center justify-between gap-4'>
+            <div className='flex items-center gap-3'>
+              <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600'>
+                <Bot className='h-5 w-5' />
               </div>
-              {/* Filter Tabs */}
-              <div className='flex items-center rounded-lg border border-gray-200 bg-gray-50 p-0.5'>
-                {(['daily', 'weekly', 'monthly'] as const).map((filter) => (
-                  <button
-                    key={filter}
-                    onClick={() => setAiChatFilter(filter)}
-                    className={cn(
-                      'rounded-md px-3 py-1 text-xs font-medium capitalize transition-all duration-150',
-                      aiChatFilter === filter
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-500 hover:text-gray-700'
-                    )}
-                  >
-                    {filter.charAt(0).toUpperCase() + filter.slice(1)}
-                  </button>
-                ))}
+              <h2 className='text-sm font-medium uppercase tracking-wider text-gray-500'>
+                AI Chat Analytics
+              </h2>
+            </div>
+            {/* Filter Tabs */}
+            <div className='flex items-center rounded-lg border border-gray-200 bg-gray-50 p-0.5'>
+              {(['daily', 'weekly', 'monthly'] as const).map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setAiChatFilter(filter)}
+                  className={cn(
+                    'rounded-md px-3 py-1 text-xs font-medium capitalize transition-all duration-150',
+                    aiChatFilter === filter
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  )}
+                >
+                  {filter.charAt(0).toUpperCase() + filter.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className='grid grid-cols-2 gap-4'>
+            <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3'>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600'>
+                <MessageSquare className='h-4 w-4' />
+              </div>
+              <div>
+                <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>
+                  Chat Sessions
+                </p>
+                <p className='text-lg font-bold text-gray-900'>
+                  {aiChatFilter === 'daily'
+                    ? adminStats.aiChatSessionsDaily.toLocaleString()
+                    : aiChatFilter === 'weekly'
+                      ? adminStats.aiChatSessionsWeekly.toLocaleString()
+                      : adminStats.aiChatSessionsMonthly.toLocaleString()}
+                </p>
               </div>
             </div>
-            <div className='grid grid-cols-2 gap-4'>
-              <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600'>
-                  <MessageSquare className='h-4 w-4' />
-                </div>
-                <div>
-                  <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>
-                    Chat Sessions
-                  </p>
-                  <p className='text-lg font-bold text-gray-900'>
-                    {aiChatFilter === 'daily'
-                      ? adminStats.aiChatSessionsDaily.toLocaleString()
-                      : aiChatFilter === 'weekly'
-                        ? adminStats.aiChatSessionsWeekly.toLocaleString()
-                        : adminStats.aiChatSessionsMonthly.toLocaleString()}
-                  </p>
-                </div>
+            <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3'>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600'>
+                <MessagesSquare className='h-4 w-4' />
               </div>
-              <div className='flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 p-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600'>
-                  <MessagesSquare className='h-4 w-4' />
-                </div>
-                <div>
-                  <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>
-                    Message Responses
-                  </p>
-                  <p className='text-lg font-bold text-gray-900'>
-                    {aiChatFilter === 'daily'
-                      ? adminStats.aiChatMessagesDaily.toLocaleString()
-                      : aiChatFilter === 'weekly'
-                        ? adminStats.aiChatMessagesWeekly.toLocaleString()
-                        : adminStats.aiChatMessagesMonthly.toLocaleString()}
-                  </p>
-                </div>
+              <div>
+                <p className='text-xs font-medium uppercase tracking-tight text-gray-500'>
+                  Message Responses
+                </p>
+                <p className='text-lg font-bold text-gray-900'>
+                  {aiChatFilter === 'daily'
+                    ? adminStats.aiChatMessagesDaily.toLocaleString()
+                    : aiChatFilter === 'weekly'
+                      ? adminStats.aiChatMessagesWeekly.toLocaleString()
+                      : adminStats.aiChatMessagesMonthly.toLocaleString()}
+                </p>
               </div>
             </div>
-          </Card>
-          <div className='hidden lg:block'></div>
-        </div>
+          </div>
+        </Card>
 
         {/* Full-width User Overview Section */}
         <div className='grid w-full grid-cols-1 gap-6 lg:grid-cols-[1.85fr_1fr]'>
@@ -749,7 +748,7 @@ export default function AdminDashboardHomePage() {
         </div>
 
         {/* Authors and Quote Row */}
-        <div className='grid w-full grid-cols-1 gap-6 lg:grid-cols-2'>
+        <div className='grid w-full grid-cols-1 gap-6 lg:grid-cols-[1.85fr_1fr]'>
           {/* Top Blog Authors */}
           <Card className='overflow-hidden border border-gray-200 bg-white p-6 shadow-sm'>
             <div className='mb-4 flex items-center gap-3'>
