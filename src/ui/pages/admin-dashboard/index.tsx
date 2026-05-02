@@ -804,7 +804,7 @@ export default function AdminDashboardHomePage() {
                   Top Blog Authors
                 </h2>
               </div>
-              {topAuthorsData && topAuthorsData.length > 5 && (
+              {topAuthorsData && topAuthorsData.length > 3 && (
                 <button
                   onClick={() => setIsTopAuthorsDialogOpen(true)}
                   className='text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline'
@@ -820,7 +820,7 @@ export default function AdminDashboardHomePage() {
               </div>
             ) : topAuthorsData && topAuthorsData.length > 0 ? (
               <div className='flex flex-col gap-3'>
-                {topAuthorsData.slice(0, 5).map((author, index) => (
+                {topAuthorsData.slice(0, 3).map((author, index) => (
                   <div
                     key={author.userId}
                     className='flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-3'
