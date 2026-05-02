@@ -89,14 +89,14 @@ export default function AdminDashboardHomePage() {
 
   // Fetch single user details for the dialog
   const { data: selectedUserDetails } = useQuery({
-      queryKey: ['user', viewProfileUserId],
-      queryFn: async () => {
-        if (!viewProfileUserId) return null
-        const response = await apiClient.get(`/api/v1/users/${viewProfileUserId}`)
-        return mapUserOutputToUser(response.data.data)
-      },
-      enabled: !!viewProfileUserId && isViewProfileDialogOpen,
-    })
+    queryKey: ['user', viewProfileUserId],
+    queryFn: async () => {
+      if (!viewProfileUserId) return null
+      const response = await apiClient.get(`/api/v1/users/${viewProfileUserId}`)
+      return mapUserOutputToUser(response.data.data)
+    },
+    enabled: !!viewProfileUserId && isViewProfileDialogOpen,
+  })
 
   // Fetch data for all selected years using useQueries
   const yearQueries = useQueries({
@@ -452,8 +452,8 @@ export default function AdminDashboardHomePage() {
           </div>
 
           {/* Right Column - Quick Actions (fixed 300px) */}
-          <div className='h-full shrink-0'>
-            <Card className='flex h-full flex-col border border-gray-200 bg-white p-5 shadow-sm'>
+          <div className='shrink-0'>
+            <Card className='flex max-h-[485px] flex-col border border-gray-200 bg-white p-5 shadow-sm'>
               <CardTitle className='mb-6 shrink-0 text-lg font-medium text-gray-900'>
                 Quick Actions
               </CardTitle>
