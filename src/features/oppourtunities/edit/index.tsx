@@ -107,7 +107,7 @@ const EditOpportunity: FC = () => {
           path: {
             id: opportunityId,
           },
-          // @ts-expect-error - body type mismatch
+          // @ts-expect-error: fix later - body type mismatch
           body: formattedValues,
         },
         {

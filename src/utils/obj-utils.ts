@@ -11,7 +11,7 @@ export function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   return ret
 }
 
-export const cleanObj = (obj: Record<string, any>) => {
+export const cleanObj = <T extends Record<string, unknown>>(obj: T): T => {
   const _obj = { ...obj }
   Object.keys(_obj).forEach(
     (key) =>

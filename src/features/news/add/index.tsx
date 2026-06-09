@@ -17,7 +17,7 @@ const NewsAdd = () => {
   const tagsOptions = data?.data?.map((tag) => ({
     value: tag.id,
     label: tag.tag,
-  }))!
+  })) ?? []
 
   const form = useForm<News>({
     resolver: zodResolver(AddNewsSchema),
@@ -25,7 +25,7 @@ const NewsAdd = () => {
 
   const handleFormSubmit = async (values: News) => {
     await addNewsMutation.mutateAsync({
-      // @ts-expect-error body add news Mutation
+      // body shape mismatch with generated DTO
       body: {
         ...values,
         mode: values.mode as RequestMode,

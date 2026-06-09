@@ -1,6 +1,7 @@
 import { QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { Toaster } from '@/ui/shadcn/toaster'
+import { TooltipProvider } from '@/ui/shadcn/tooltip'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { SearchProvider } from '@/context/search-context'
@@ -13,8 +14,10 @@ export const Route = createRootRouteWithContext<{
   component: () => {
     return (
       <SearchProvider>
-        <Outlet />
-        <Toaster />
+        <TooltipProvider>
+          <Outlet />
+          <Toaster />
+        </TooltipProvider>
         {import.meta.env.MODE === 'development' && (
           <>
             <ReactQueryDevtools buttonPosition='bottom-left' />

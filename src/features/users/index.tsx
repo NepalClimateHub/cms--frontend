@@ -4,86 +4,13 @@ import { Header } from '@/ui/layouts/header'
 import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/ui/loader'
 import { Search } from '@/ui/search'
+import { TooltipProvider } from '@/ui/shadcn/tooltip'
 import { ThemeSwitch } from '@/ui/theme-switch'
-import { UserOutput } from '@/api/types.gen'
 import { columns } from './components/users-columns'
 import { UsersDialogs } from './components/users-dialogs'
 import { UsersTable } from './components/users-table'
 import UsersProvider from './context/users-context'
-import { User } from './data/schema'
-
-// Map API UserOutput to table User schema
-const mapUserOutputToUser = (user: UserOutput): User => {
-  const nameParts = user.fullName.split(' ')
-  const firstName = nameParts[0] || ''
-  const lastName = nameParts.slice(1).join(' ') || ''
-  const username =
-    user.email.split('@')[0] || user.fullName.toLowerCase().replace(/\s+/g, '')
-
-  // Map phoneNumber object to string
-  let phoneNumber = ''
-  if (user.phoneNumber) {
-    if (typeof user.phoneNumber === 'string') {
-      phoneNumber = user.phoneNumber
-    } else if (
-      typeof user.phoneNumber === 'object' &&
-      user.phoneNumber !== null
-    ) {
-      // Handle object case - try common property names
-      phoneNumber = String(
-        (
-          user.phoneNumber as {
-            value?: string
-            number?: string
-            phone?: string
-          }
-        ).value ||
-          (
-            user.phoneNumber as {
-              value?: string
-              number?: string
-              phone?: string
-            }
-          ).number ||
-          (
-            user.phoneNumber as {
-              value?: string
-              number?: string
-              phone?: string
-            }
-          ).phone ||
-          ''
-      )
-    }
-  }
-
-  // Map status based on isAccountVerified
-  const status = user.isAccountVerified ? 'active' : 'inactive'
-
-  // Map role based on isSuperAdmin and userType (keep for backward compatibility)
-  let role: 'superadmin' | 'admin' = 'admin'
-  if (user.isSuperAdmin) {
-    role = 'superadmin'
-  } else {
-    role = 'admin'
-  }
-
-  return {
-    id: user.id,
-    firstName,
-    lastName,
-    username,
-    email: user.email,
-    phoneNumber,
-    status: status as 'active' | 'inactive' | 'invited' | 'suspended',
-    role,
-    userType: user.userType,
-    isSuperAdmin: user.isSuperAdmin,
-    profilePhotoUrl: (user as any)?.profilePhotoUrl || null,
-    createdAt: new Date(user.createdAt),
-    updatedAt: new Date(user.updatedAt),
-  }
-}
+import { mapUserOutputToUser } from './utils/mapping'
 
 export default function Users() {
   const { data, isLoading, error } = useGetUsers()
@@ -142,7 +69,9 @@ export default function Users() {
           </div>
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <UsersTable data={userList} columns={columns} />
+          <TooltipProvider delayDuration={300}>
+            <UsersTable data={userList} columns={columns} />
+          </TooltipProvider>
         </div>
       </Main>
 

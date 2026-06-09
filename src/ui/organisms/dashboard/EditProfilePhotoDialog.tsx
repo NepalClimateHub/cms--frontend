@@ -12,15 +12,19 @@ import {
 import { Loader2 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { toast } from '@/hooks/use-toast'
+import { mapUserOutputToAuthUser } from '@/utils/map-user-output'
 
 interface EditProfilePhotoDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  /** Called after a successful save (e.g. to refetch user in a parent view). */
+  onPhotoUpdated?: () => void
 }
 
 export default function EditProfilePhotoDialog({
   open,
   onOpenChange,
+  onPhotoUpdated,
 }: EditProfilePhotoDialogProps) {
   const { user, setUser } = useAuthStore()
   const updateProfileMutation = useUpdateProfile()
@@ -66,40 +70,24 @@ export default function EditProfilePhotoDialog({
 
     updateProfileMutation.mutate(
       {
-        // @ts-expect-error - path type mismatch in generated types
-        path: { id: user.id },
         body: {
-          // @ts-ignore
-          profilePhotoUrl,
-          profilePhotoId,
+          profilePhotoUrl: profilePhotoUrl ?? undefined,
+          profilePhotoId: profilePhotoId ?? undefined,
         },
       },
       {
         onSuccess: async () => {
-          // Refetch profile to get updated user data
-          const profileData = await refetchProfile()
-          if (profileData.data) {
-            // Map UserOutput to User type for auth store
-            const updatedUser = {
-              id: profileData.data.id,
-              email: profileData.data.email,
-              fullName: profileData.data.fullName,
-              permissions: user?.permissions || [],
-              isActive: profileData.data.isAccountVerified,
-              isSuperAdmin: profileData.data.isSuperAdmin,
-              organization: user?.organization || null,
-              profilePhotoUrl:
-                (profileData.data as { profilePhotoUrl?: string | null })
-                  ?.profilePhotoUrl || null,
-              profilePhotoId:
-                (profileData.data as { profilePhotoId?: string | null })
-                  ?.profilePhotoId || null,
-              createdAt: profileData.data.createdAt,
-              updatedAt: profileData.data.updatedAt,
-            }
-            setUser(updatedUser)
+          const profileRes = await refetchProfile()
+          if (profileRes.data) {
+            setUser(
+              mapUserOutputToAuthUser(
+                profileRes.data,
+                user?.organization ?? null
+              )
+            )
           }
           onOpenChange(false)
+          onPhotoUpdated?.()
           toast({
             title: 'Success',
             description: 'Profile photo updated successfully',

@@ -30,13 +30,18 @@ export interface CategorySearchParams {
   [key: string]: unknown;
 }
 
+export type CategoriesListApiResult = {
+  data: Category[]
+  meta?: { total?: number }
+}
+
 export interface CreateCategoryDto {
   name: string;
   description?: string;
   type: CategoryType;
 }
 
-export interface UpdateCategoryDto extends Partial<CreateCategoryDto> {}
+export type UpdateCategoryDto = Partial<CreateCategoryDto>
 
 export const useGetCategories = (params: CategorySearchParams) => {
   return useQuery({
@@ -46,7 +51,7 @@ export const useGetCategories = (params: CategorySearchParams) => {
         url: '/api/v1/categories',
         query: params,
       });
-      return data as any;
+      return data as CategoriesListApiResult;
     },
   });
 };
@@ -54,11 +59,11 @@ export const useGetCategories = (params: CategorySearchParams) => {
 export const useGetCategory = (id: string) => {
   return useQuery({
     queryKey: ['categories', id],
-    queryFn: async () => {
+    queryFn: async (): Promise<Category> => {
       const { data } = await client.get({
         url: `/api/v1/categories/${id}`,
       });
-      return (data as any).data;
+      return (data as { data: Category }).data;
     },
     enabled: !!id,
   });
@@ -78,8 +83,10 @@ export const useCreateCategory = () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category created successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to create category');
+    onError: (error: unknown) => {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to create category'
+      );
     },
   });
 };
@@ -98,8 +105,10 @@ export const useUpdateCategory = (id: string) => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category updated successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to update category');
+    onError: (error: unknown) => {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to update category'
+      );
     },
   });
 };
@@ -116,8 +125,10 @@ export const useDeleteCategory = () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category deleted successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to delete category');
+    onError: (error: unknown) => {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to delete category'
+      );
     },
   });
 };

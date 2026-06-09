@@ -1,15 +1,7 @@
-import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { Row } from '@tanstack/react-table'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { Button } from '@/ui/shadcn/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from '@/ui/shadcn/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip'
+import { ClipboardList, Eye, Pencil, Trash2 } from 'lucide-react'
 import { useUsers } from '../context/users-context'
 import { User } from '../data/schema'
 
@@ -19,45 +11,93 @@ interface DataTableRowActionsProps {
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useUsers()
+  const u = row.original
+  const canViewOrgApplication =
+    u.serverRole === 'ORGANIZATION' &&
+    u.organization &&
+    !u.isVerifiedByAdmin
+
+  const openRow = () => setCurrentRow(row.original)
+
   return (
-    <>
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
+    <div className='flex items-center justify-end gap-0.5'>
+      <Tooltip>
+        <TooltipTrigger asChild>
           <Button
+            type='button'
             variant='ghost'
-            className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
-          >
-            <DotsHorizontalIcon className='h-4 w-4' />
-            <span className='sr-only'>Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align='end' className='w-[160px]'>
-          <DropdownMenuItem
+            size='icon'
+            className='h-8 w-8'
+            aria-label='View user details'
             onClick={() => {
-              setCurrentRow(row.original)
+              openRow()
+              setOpen('view')
+            }}
+          >
+            <Eye className='h-4 w-4' />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side='bottom'>View details</TooltipContent>
+      </Tooltip>
+
+      {canViewOrgApplication ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type='button'
+              variant='ghost'
+              size='icon'
+              className='h-8 w-8'
+              aria-label='View verification application'
+              onClick={() => {
+                openRow()
+                setOpen('viewOrgVerification')
+              }}
+            >
+              <ClipboardList className='h-4 w-4' />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side='bottom'>View application</TooltipContent>
+        </Tooltip>
+      ) : null}
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type='button'
+            variant='ghost'
+            size='icon'
+            className='h-8 w-8'
+            aria-label='Edit user'
+            onClick={() => {
+              openRow()
               setOpen('edit')
             }}
           >
-            Edit
-            <DropdownMenuShortcut>
-              <IconEdit size={16} />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
+            <Pencil className='h-4 w-4' />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side='bottom'>Edit</TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type='button'
+            variant='ghost'
+            size='icon'
+            className='h-8 w-8 text-muted-foreground hover:text-destructive'
+            aria-label='Delete user'
             onClick={() => {
-              setCurrentRow(row.original)
+              openRow()
               setOpen('delete')
             }}
-            className='!text-red-500'
           >
-            Delete
-            <DropdownMenuShortcut>
-              <IconTrash size={16} />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+            <Trash2 className='h-4 w-4' />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side='bottom'>Delete</TooltipContent>
+      </Tooltip>
+    </div>
   )
 }

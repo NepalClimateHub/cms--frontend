@@ -7,7 +7,7 @@ import { events } from '../shared/routes'
 export const addEvent = async (
   payload: EventFormValues
 ): Promise<{
-  data: {}
+  data: unknown
   meta: Meta
 }> => {
   const response = await apiClient.post(events.add.path, payload)
@@ -41,7 +41,7 @@ export const updateEventStatus = async (
   eventId: string,
   isDraft: boolean
 ): Promise<{
-  data: {}
+  data: unknown
   meta: Meta
 }> => {
   const response = await apiClient.patch(`${events.update.path}/${eventId}`, {
@@ -54,7 +54,7 @@ export const updateEvent = async (
   eventId: string,
   payload: EventFormValues
 ): Promise<{
-  data: {}
+  data: unknown
   meta: Meta
 }> => {
   const response = await apiClient.patch(`${events.update.path}/${eventId}`, {
@@ -66,7 +66,7 @@ export const updateEvent = async (
 export const deleteEvent = async (
   eventId: string
 ): Promise<{
-  data: {}
+  data: unknown
   meta: Meta
 }> => {
   const response = await apiClient.delete(`${events.delete.path}/${eventId}`)

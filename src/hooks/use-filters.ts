@@ -44,28 +44,30 @@ export const useFilters = (defaultFilters: InitFilters = {}) => {
     debounce: debounceFilterSetter,
     cancelDebounce: debounceFilterCanceller,
   } = useMemo(() => {
-    return getDebouncer((key: string, value: FilterValues) => {
-      setFilters({ [key]: value });
-    }, 300);
-  }, [setFilters]);
+    return getDebouncer((...args: unknown[]) => {
+      const key = args[0] as string
+      const value = args[1] as FilterValues
+      setFilters({ [key]: value })
+    }, 300)
+  }, [setFilters])
 
   const setFilterDebounce = useCallback(
     (key: string, value: FilterValues) => {
-      debounceFilterSetter(key, value);
+      debounceFilterSetter(key, value)
     },
-    [setFilters]
-  );
+    [debounceFilterSetter]
+  )
 
   const removeFilter = useCallback(
     (key: string) => {
-      debounceFilterCanceller();
+      debounceFilterCanceller()
       setFilters((prev) => ({
         ...prev,
         [key]: null,
-      }));
+      }))
     },
-    [setFilters]
-  );
+    [setFilters, debounceFilterCanceller]
+  )
 
   const replaceFilter = useCallback(
     (oldKey: string, newKey: string, value: FilterValues) => {
@@ -79,8 +81,8 @@ export const useFilters = (defaultFilters: InitFilters = {}) => {
   );
 
   const resetFilters = useCallback(() => {
-    setFilters(null);
-  }, [defaultFilters, setFilters]);
+    setFilters(null)
+  }, [setFilters])
 
   return {
     filters,

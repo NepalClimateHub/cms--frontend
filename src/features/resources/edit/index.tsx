@@ -20,7 +20,7 @@ export default function EditResource() {
   const { data: resourceData, isLoading: isResourceLoading } = useGetResource(id)
   const resource = resourceData?.data
 
-  const { data: tagsData } = useGetTags({ limit: 100 })
+  const { data: tagsData } = useGetTags({ query: { limit: 100 } })
   const tagsOptions = ((tagsData?.data as unknown as Tag[]) || [])
     .filter((tag: Tag) => tag.isResourceTag)
     .map((tag: Tag) => ({

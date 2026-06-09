@@ -2,13 +2,13 @@ import { useEffect } from 'react'
 import Cookies from 'js-cookie'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { useGetProfile } from '@/query/auth/use-auth'
-import { User } from '@/schemas/auth/profile'
 import { AppSidebar } from '@/ui/layouts/app-sidebar'
 import { BoxLoader } from '@/ui/loader'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { SidebarProvider } from '@/ui/shadcn/sidebar'
 import TopHeader from '@/ui/top-header'
 import { getAccessToken, useAuthStore } from '@/stores/authStore'
+import { mapUserOutputToAuthUser } from '@/utils/map-user-output'
 
 export const Route = createFileRoute('/_authenticated')({
   component: RouteComponent,
@@ -32,30 +32,9 @@ function RouteComponent() {
 
   useEffect(() => {
     if (userData) {
-      // Map UserOutput to User type
-      const mappedUser: User = {
-        id: userData.id,
-        email: userData.email,
-        fullName: userData.fullName,
-        permissions: [], // Permissions not in UserOutput, will be empty
-        isActive: userData.isAccountVerified,
-        isSuperAdmin: userData.isSuperAdmin,
-        organization: null, // Organization not in UserOutput
-        profilePhotoUrl:
-          (userData as { profilePhotoUrl?: string | null })?.profilePhotoUrl ||
-          null,
-        profilePhotoId:
-          (userData as { profilePhotoId?: string | null })?.profilePhotoId ||
-          null,
-        linkedin: (userData as { linkedin?: string | null })?.linkedin || null,
-        currentRole:
-          (userData as { currentRole?: string | null })?.currentRole || null,
-        createdAt: userData.createdAt,
-        updatedAt: userData.updatedAt,
-      }
-      setUser(mappedUser)
+      setUser(mapUserOutputToAuthUser(userData, authUser?.organization ?? null))
     }
-  }, [userData, setUser])
+  }, [userData, setUser]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Show loader if profile is loading OR if user data doesn't match auth store user
   // This prevents showing the wrong menu when switching users

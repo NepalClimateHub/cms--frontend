@@ -1,10 +1,19 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { OrganizationFormValues } from '@/schemas/organization/organization'
-import { DataTableColumnHeader } from '../../../../ui/data-table/data-table-column-header'
+import type { OrganizationResponseDto } from '@/api/types.gen'
+import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import OrganizationRowAction from '../components/organization-row-actions'
 
+function formatOrgAddress(org: OrganizationResponseDto): string {
+  const a = org.address
+  if (!a) return '—'
+  const parts = [a.street, a.city, a.state, a.postcode, a.country].filter(
+    (p): p is string => typeof p === 'string' && p.trim() !== ''
+  )
+  return parts.length ? parts.join(', ') : '—'
+}
+
 export const useOrganizationColumns = () => {
-  const columns: ColumnDef<OrganizationFormValues>[] = [
+  const columns: ColumnDef<OrganizationResponseDto>[] = [
     {
       accessorKey: 'name',
       header: ({ column }) => (
@@ -22,8 +31,6 @@ export const useOrganizationColumns = () => {
       cell: ({ row }) => {
         const { description } = row.original
 
-        console.log(row.original)
-
         return (
           <div className='flex space-x-2'>
             <div>{description}</div>
@@ -38,7 +45,13 @@ export const useOrganizationColumns = () => {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Email' />
       ),
-      cell: ({ row }) => <div>{row.getValue('email')}</div>,
+      cell: ({ row }) => (
+        <div>
+          {typeof row.original.email === 'string'
+            ? row.original.email
+            : '—'}
+        </div>
+      ),
       enableSorting: false,
       enableHiding: false,
     },
@@ -47,14 +60,21 @@ export const useOrganizationColumns = () => {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Phone' />
       ),
-      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+      cell: ({ row }) => {
+        const { phoneCountryCode, phoneNumber } = row.original
+        const code =
+          typeof phoneCountryCode === 'string' ? phoneCountryCode : ''
+        const num = typeof phoneNumber === 'string' ? phoneNumber : ''
+        const phone = [code, num].filter(Boolean).join(' ') || '—'
+        return <div>{phone}</div>
+      },
     },
     {
       id: 'address',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Address' />
       ),
-      cell: ({ row }) => <div>{row.getValue('address')}</div>,
+      cell: ({ row }) => <div>{formatOrgAddress(row.original)}</div>,
     },
     {
       id: 'actions',

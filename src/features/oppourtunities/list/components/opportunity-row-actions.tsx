@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
+import type { Row } from '@tanstack/react-table'
 import {
   useDeleteOpportunity,
   useOpportunityAPI,
 } from '@/query/opportunities/use-opportunities'
+import { ConfirmDialog } from '@/ui/confirm-dialog'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
 import {
@@ -17,9 +19,27 @@ import {
 } from '@/ui/shadcn/dialog'
 import { Separator } from '@/ui/shadcn/separator'
 import { LucideEye, Pencil, Trash } from 'lucide-react'
-import { ConfirmDialog } from '@/ui/confirm-dialog'
+import type {
+  OpportunityResponseDto,
+  UpdateOpportunityDto,
+} from '@/api/types.gen'
 
-const OpportunitiesRowAction = ({ row }: { row: any }) => {
+type OpportunityTableRow = OpportunityResponseDto & {
+  createdAt?: string
+  updatedAt?: string
+  imageUrl?: string
+}
+
+function statusBadgeVariant(
+  status: OpportunityResponseDto['status'],
+  isDraft: boolean | undefined
+) {
+  const publishedLike =
+    status === 'PUBLISHED' || (status == null && isDraft === false)
+  return publishedLike ? 'default' : 'secondary'
+}
+
+const OpportunitiesRowAction = ({ row }: { row: Row<OpportunityTableRow> }) => {
   const { mutate: deleteOpportunityMutation } = useDeleteOpportunity()
   const { mutate: updateOpportunityMutation } =
     useOpportunityAPI().updateOpportunity
@@ -32,11 +52,7 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
       path: {
         id: opportunityId,
       },
-
-      // @ts-ignore
-      body: {
-        isDraft: isDraft ? true : false,
-      },
+      body: { isDraft } as UpdateOpportunityDto,
     })
   }
 
@@ -80,7 +96,7 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
             <LucideEye className='h-4 w-4' />
           </Button>
         </DialogTrigger>
-        <DialogContent className='max-w-3xl'>
+        <DialogContent className='max-h-[80vh] max-w-3xl overflow-y-auto'>
           <DialogHeader>
             <DialogTitle className='text-2xl font-bold'>
               {row.original.title}
@@ -105,12 +121,13 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
                   {row.original.format}
                 </Badge>
                 <Badge
-                  variant={
-                    row.original.status === 'open' ? 'default' : 'secondary'
-                  }
+                  variant={statusBadgeVariant(
+                    row.original.status,
+                    row.original.isDraft
+                  )}
                   className='text-sm'
                 >
-                  {row.original.status}
+                  {row.original.status ?? '—'}
                 </Badge>
                 <Badge
                   variant={row.original.isDraft ? 'secondary' : 'default'}
@@ -184,8 +201,7 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
                     Website
                   </h3>
                   <p className='text-base'>
-                    {/* @ts-ignore */}
-                    {row.original?.websiteUrl || 'Not specified'}
+                    {row.original.websiteUrl || 'Not specified'}
                   </p>
                 </div>
               </div>
@@ -237,9 +253,7 @@ const OpportunitiesRowAction = ({ row }: { row: any }) => {
               {/* Timestamps */}
               <Separator />
               <div className='flex justify-between text-sm text-muted-foreground'>
-                {/* @ts-ignore */}
                 <span>Created: {formatDate(row.original.createdAt)}</span>
-                {/* @ts-ignore */}
                 <span>Updated: {formatDate(row.original.updatedAt)}</span>
               </div>
             </DialogDescription>

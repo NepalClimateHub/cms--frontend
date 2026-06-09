@@ -9,10 +9,11 @@ import {
   EventFormValues,
 } from '@/schemas/event'
 import { LOCATION_TYPE } from '@/schemas/shared'
-import AddressForm from '@/ui/address/address'
 import { DatePicker } from '@/ui/datepicker'
 import ImageUpload from '@/ui/image-upload'
-import { MinimalTiptapEditor } from '@/ui/minimal-tiptap'
+import AddressForm from '@/ui/molecules/address/address'
+import { MinimalTiptapEditor } from '@/ui/molecules/minimal-tiptap'
+import SocialsForm from '@/ui/molecules/socials/socials'
 import { MultiSelect } from '@/ui/multi-select'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
@@ -35,7 +36,6 @@ import {
 } from '@/ui/shadcn/select'
 import { Switch } from '@/ui/shadcn/switch'
 import { TooltipProvider } from '@/ui/shadcn/tooltip'
-import SocialsForm from '@/ui/socials/socials'
 
 type Props = {
   form: UseFormReturn<EventFormValues>
@@ -469,7 +469,7 @@ const EventForm: FC<Props> = ({
         <AddressForm form={form} fieldPrefix='address' />
 
         {/* socials */}
-        {/* @ts-expect-error - SocialsForm component has type mismatch with form prop */}
+        {/* @ts-expect-error: fix later - SocialsForm component has type mismatch with form prop */}
         <SocialsForm form={form} />
 
         <Card>

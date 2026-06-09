@@ -1,4 +1,4 @@
-import { HTMLAttributes, useState, useEffect } from 'react'
+import { HTMLAttributes } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
@@ -6,13 +6,7 @@ import { useLogin } from '@/query/auth/use-auth'
 import { LoginPayload, loginSchema } from '@/schemas/auth/login'
 import { PasswordInput } from '@/ui/password-input'
 import { Button } from '@/ui/shadcn/button'
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from '@/ui/shadcn/card'
+import { Card, CardContent } from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
@@ -110,7 +104,7 @@ function UserAuthForm({ className }: HTMLAttributes<HTMLDivElement>) {
           Login
         </Button>
 
-        {(isUnverifiedAccount as any) && (
+        {Boolean(isUnverifiedAccount) && (
           <div className='mt-3 text-center'>
             <p className='mb-2 text-sm text-red-600'>
               Your account is not verified. Please check your email for
@@ -132,121 +126,94 @@ function UserAuthForm({ className }: HTMLAttributes<HTMLDivElement>) {
 }
 
 export default function SignIn() {
-  const features = [
-    'Create your Climate Profile',
-    'Stay updated with Climate News',
-    'Connect with Climate Enthusiasts',
-    'Access Climate Opportunities',
-    'Participate in Climate Events',
-  ]
-
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isVisible, setIsVisible] = useState(true)
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsVisible(false)
-      setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % features.length)
-        setIsVisible(true)
-      }, 300) // Wait for fade out animation
-    }, 3000) // Change every 3 seconds
-
-    return () => clearInterval(interval)
-  }, [features.length])
-
   return (
-    <div className='flex min-h-screen items-center justify-center px-4 py-6 sm:px-6 lg:px-8'>
-      <div className='flex w-full max-w-7xl overflow-hidden rounded-xl border-2 border-gray-200 bg-background shadow-xl'>
-        {/* Main Section - Branding & Features with Login Form */}
+    <div className='flex min-h-screen bg-background'>
+      {/* Left Pane - Branding (Desktop Only) */}
+      <div className='relative hidden w-1/2 flex-col justify-between bg-zinc-900 p-10 text-white lg:flex'>
         <div
-          className='relative flex min-h-[600px] w-full flex-col justify-between bg-cover bg-center bg-no-repeat p-4 sm:p-6 lg:flex lg:min-h-[700px]'
-          style={{ backgroundImage: "url('images/mountain.png')" }}
-        >
-          <div className='absolute inset-0 bg-gradient-to-br from-blue-900/90 via-blue-800/85 to-blue-700/80' />
+          className='absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50 brightness-75 transition-opacity'
+          style={{ backgroundImage: 'url("/signup-bg.png")' }}
+        />
+        <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
 
-          {/* Top Section - Logo and Branding */}
-          <div className='relative z-10 flex flex-col items-start space-y-3'>
-            <div className='flex items-center'>
-              <img
-                src='images/logo.png'
-                alt='Nepal Climate Hub'
-                className='mr-3 h-8 w-8 sm:h-10 sm:w-10'
-              />
-              <span className='text-xl font-bold text-white sm:text-2xl'>
-                Nepal Climate Hub
-              </span>
-            </div>
-            <div className='ml-[2.75rem] min-h-[32px] sm:ml-[3.5rem]'>
-              <div
-                className={cn(
-                  'flex items-center space-x-2 transition-all duration-300',
-                  isVisible
-                    ? 'translate-y-0 opacity-100'
-                    : '-translate-y-2 opacity-0'
-                )}
-              >
-                <div className='h-1.5 w-1.5 animate-pulse rounded-full bg-blue-300' />
-                <p className='text-xs font-medium text-blue-100 sm:text-sm'>
-                  {features[currentIndex]}
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className='relative z-20 flex items-center text-lg font-medium'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            className='mr-2 h-6 w-6'
+          >
+            <path d='M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3' />
+          </svg>
+          Nepal Climate Hub
+        </div>
 
-          {/* Center Section - Login Form */}
-          <div className='relative z-10 mt-5 flex flex-1 flex-col items-center justify-center'>
-            <Card className='w-full max-w-md flex-col border border-gray-200 bg-white p-4 shadow-lg sm:p-5'>
-              <CardHeader className='mb-3 text-center'>
-                <CardTitle className='text-xl font-bold tracking-tight text-gray-900 sm:text-2xl'>
-                  NCH Login
-                </CardTitle>
-                <CardDescription className='text-xs sm:text-sm'>
-                  Sign in to your account
-                </CardDescription>
-              </CardHeader>
-              <CardContent className='flex flex-1 flex-col space-y-3'>
-                <div className='flex-1'>
-                  <UserAuthForm />
-                  <div className='mt-3 text-center'>
-                    <p className='text-xs leading-relaxed text-gray-500'>
-                      By signing in, you agree to our{' '}
-                      <a
-                        href='/terms'
-                        className='font-medium text-blue-600 transition-colors hover:text-blue-700'
-                      >
-                        Terms
-                      </a>{' '}
-                      and{' '}
-                      <a
-                        href='/privacy'
-                        className='font-medium text-blue-600 transition-colors hover:text-blue-700'
-                      >
-                        Privacy
-                      </a>
-                    </p>
-                  </div>
-                </div>
-                <hr />
-                <div className='mt-auto text-center'>
-                  <span className='text-sm text-gray-600'>
-                    Don't have an account?{' '}
-                    <Link
-                      to='/sign-up'
-                      className='font-medium text-blue-600 underline underline-offset-4 transition-colors hover:text-blue-700'
-                    >
-                      Sign Up
-                    </Link>
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-            {/* Community Text Below Login */}
-            <p className='mt-6 max-w-md text-center text-xs leading-relaxed text-blue-100 sm:text-sm'>
-              Join our community of climate enthusiasts and make a difference in
-              Nepal's environmental future.
+        <div className='relative z-20 mt-auto'>
+          <blockquote className='space-y-2'>
+            <p className='text-lg'>
+              &ldquo;Welcome back to Nepal Climate Hub. Log in to continue
+              your journey and connect with the climate community.&rdquo;
+            </p>
+            <footer className='text-sm italic'>
+              Uniting for Climate Action
+            </footer>
+          </blockquote>
+        </div>
+      </div>
+
+      {/* Right Pane - Form */}
+      <div className='flex w-full items-center justify-center p-4 lg:w-1/2 lg:p-8 overflow-y-auto'>
+        <div className='mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[450px]'>
+          <div className='flex flex-col space-y-2 text-center animate-in fade-in slide-in-from-top-4 duration-500'>
+            <h1 className='text-3xl font-semibold tracking-tight'>
+              Sign in to NCH
+            </h1>
+            <p className='text-sm text-muted-foreground'>
+              Enter your email and password to access your account
             </p>
           </div>
+
+          <Card className='border-none bg-transparent shadow-none'>
+            <CardContent className='p-0'>
+              <div className='grid gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500'>
+                <UserAuthForm />
+              </div>
+
+              {/* Footer */}
+              <div className='mt-8 flex flex-col items-center space-y-4 text-center'>
+                <p className='text-sm text-muted-foreground'>
+                  Don't have an account?{' '}
+                  <Link
+                    to='/sign-up'
+                    className='font-semibold text-primary underline-offset-4 transition-colors hover:underline'
+                  >
+                    Sign Up
+                  </Link>
+                </p>
+                <div className='max-w-[340px] text-xs leading-normal text-muted-foreground'>
+                  By signing in, you agree to our{' '}
+                  <a
+                    href='/terms'
+                    className='underline underline-offset-4 transition-colors hover:text-primary'
+                  >
+                    Terms of Service
+                  </a>{' '}
+                  and{' '}
+                  <a
+                    href='/privacy'
+                    className='underline underline-offset-4 transition-colors hover:text-primary'
+                  >
+                    Privacy Policy
+                  </a>
+                  .
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

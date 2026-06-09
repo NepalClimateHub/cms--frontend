@@ -19,7 +19,7 @@ export default function VerifyEmail() {
 
   const handleResendOtp = async () => {
     if (!search.email) {
-      console.error('No email provided')
+      // No email provided
       return
     }
 
@@ -27,8 +27,7 @@ export default function VerifyEmail() {
       await resendVerificationMutation.mutateAsync({ body: { email: search.email } })
       setResendSuccess(true)
       setTimeout(() => setResendSuccess(false), 5000) // Show success for 5 seconds
-    } catch (error) {
-      console.error('Resend verification failed:', error)
+    } catch {
       // Error is already handled by the mutation's onError
     }
   }

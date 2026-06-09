@@ -170,7 +170,9 @@ export const useChatSession = (sessionId?: string) => {
   return useQuery({
     queryKey: ['chat-session', sessionId],
     queryFn: async () => {
-      const messages = await cmsFetch<any[]>(`/ai-assistant/sessions/${sessionId}/messages`);
+      const messages = await cmsFetch<ChatSessionMessagesResponse['messages']>(
+        `/ai-assistant/sessions/${sessionId}/messages`
+      )
       return {
         session_id: sessionId,
         messages,

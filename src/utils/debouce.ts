@@ -1,17 +1,17 @@
-export const debounce = (func: (...args: any[]) => void, delay: number) => {
+export const debounce = (func: (...args: unknown[]) => void, delay: number) => {
   let timeout: ReturnType<typeof setTimeout>
 
-  return (...args: any[]) => {
+  return (...args: unknown[]) => {
     clearTimeout(timeout)
     timeout = setTimeout(() => func(...args), delay)
   }
 }
 
 // for use with hooks
-export const getDebouncer = (func: (...args: any[]) => void, delay: number) => {
+export const getDebouncer = (func: (...args: unknown[]) => void, delay: number) => {
   let timeout: ReturnType<typeof setTimeout>
 
-  const debounce = (...args: any[]) => {
+  const debounce = (...args: unknown[]) => {
     clearTimeout(timeout)
     timeout = setTimeout(() => func(...args), delay)
   }

@@ -37,4 +37,4 @@ export const useAuthStore = create<AuthStore>()(
 
 // for use outside tsx components, e.g. api client
 export const getAccessToken = () => useAuthStore.getState().accessToken;
-export const resetAuth = () => useAuthStore.getState().resetAuthStore;
+export const resetAuth = () => useAuthStore.getState().resetAuthStore();

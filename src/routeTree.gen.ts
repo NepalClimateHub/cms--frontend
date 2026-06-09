@@ -46,6 +46,7 @@ import { Route as AuthenticatedNewsNewsIdIndexImport } from './routes/_authentic
 import { Route as AuthenticatedEventsListIndexImport } from './routes/_authenticated/events/list/index'
 import { Route as AuthenticatedEventsAddIndexImport } from './routes/_authenticated/events/add/index'
 import { Route as AuthenticatedEventsEventIdIndexImport } from './routes/_authenticated/events/$eventId/index'
+import { Route as AuthenticatedDatabaseExportIndexImport } from './routes/_authenticated/database/export/index'
 import { Route as AuthenticatedBlogsAddIndexImport } from './routes/_authenticated/blogs/add/index'
 import { Route as AuthenticatedBlogsBlogIdIndexImport } from './routes/_authenticated/blogs/$blogId/index'
 
@@ -441,6 +442,13 @@ const AuthenticatedEventsEventIdIndexRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
+const AuthenticatedDatabaseExportIndexRoute =
+  AuthenticatedDatabaseExportIndexImport.update({
+    id: '/database/export/',
+    path: '/database/export/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
 const AuthenticatedBlogsAddIndexRoute = AuthenticatedBlogsAddIndexImport.update(
   {
     id: '/blogs/add/',
@@ -733,6 +741,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBlogsAddIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/database/export/': {
+      id: '/_authenticated/database/export/'
+      path: '/database/export'
+      fullPath: '/database/export'
+      preLoaderRoute: typeof AuthenticatedDatabaseExportIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/events/$eventId/': {
       id: '/_authenticated/events/$eventId/'
       path: '/events/$eventId'
@@ -863,6 +878,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
   AuthenticatedBlogsBlogIdIndexRoute: typeof AuthenticatedBlogsBlogIdIndexRoute
   AuthenticatedBlogsAddIndexRoute: typeof AuthenticatedBlogsAddIndexRoute
+  AuthenticatedDatabaseExportIndexRoute: typeof AuthenticatedDatabaseExportIndexRoute
   AuthenticatedEventsEventIdIndexRoute: typeof AuthenticatedEventsEventIdIndexRoute
   AuthenticatedEventsAddIndexRoute: typeof AuthenticatedEventsAddIndexRoute
   AuthenticatedEventsListIndexRoute: typeof AuthenticatedEventsListIndexRoute
@@ -900,6 +916,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
   AuthenticatedBlogsBlogIdIndexRoute: AuthenticatedBlogsBlogIdIndexRoute,
   AuthenticatedBlogsAddIndexRoute: AuthenticatedBlogsAddIndexRoute,
+  AuthenticatedDatabaseExportIndexRoute: AuthenticatedDatabaseExportIndexRoute,
   AuthenticatedEventsEventIdIndexRoute: AuthenticatedEventsEventIdIndexRoute,
   AuthenticatedEventsAddIndexRoute: AuthenticatedEventsAddIndexRoute,
   AuthenticatedEventsListIndexRoute: AuthenticatedEventsListIndexRoute,
@@ -971,6 +988,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/blogs/$blogId': typeof AuthenticatedBlogsBlogIdIndexRoute
   '/blogs/add': typeof AuthenticatedBlogsAddIndexRoute
+  '/database/export': typeof AuthenticatedDatabaseExportIndexRoute
   '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
   '/events/add': typeof AuthenticatedEventsAddIndexRoute
   '/events/list': typeof AuthenticatedEventsListIndexRoute
@@ -1021,6 +1039,7 @@ export interface FileRoutesByTo {
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/blogs/$blogId': typeof AuthenticatedBlogsBlogIdIndexRoute
   '/blogs/add': typeof AuthenticatedBlogsAddIndexRoute
+  '/database/export': typeof AuthenticatedDatabaseExportIndexRoute
   '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
   '/events/add': typeof AuthenticatedEventsAddIndexRoute
   '/events/list': typeof AuthenticatedEventsListIndexRoute
@@ -1075,6 +1094,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
   '/_authenticated/blogs/$blogId/': typeof AuthenticatedBlogsBlogIdIndexRoute
   '/_authenticated/blogs/add/': typeof AuthenticatedBlogsAddIndexRoute
+  '/_authenticated/database/export/': typeof AuthenticatedDatabaseExportIndexRoute
   '/_authenticated/events/$eventId/': typeof AuthenticatedEventsEventIdIndexRoute
   '/_authenticated/events/add/': typeof AuthenticatedEventsAddIndexRoute
   '/_authenticated/events/list/': typeof AuthenticatedEventsListIndexRoute
@@ -1128,6 +1148,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/blogs/$blogId'
     | '/blogs/add'
+    | '/database/export'
     | '/events/$eventId'
     | '/events/add'
     | '/events/list'
@@ -1177,6 +1198,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/blogs/$blogId'
     | '/blogs/add'
+    | '/database/export'
     | '/events/$eventId'
     | '/events/add'
     | '/events/list'
@@ -1229,6 +1251,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/'
     | '/_authenticated/blogs/$blogId/'
     | '/_authenticated/blogs/add/'
+    | '/_authenticated/database/export/'
     | '/_authenticated/events/$eventId/'
     | '/_authenticated/events/add/'
     | '/_authenticated/events/list/'
@@ -1321,6 +1344,7 @@ export const routeTree = rootRoute
         "/_authenticated/tasks/",
         "/_authenticated/blogs/$blogId/",
         "/_authenticated/blogs/add/",
+        "/_authenticated/database/export/",
         "/_authenticated/events/$eventId/",
         "/_authenticated/events/add/",
         "/_authenticated/events/list/",
@@ -1483,6 +1507,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/blogs/add/": {
       "filePath": "_authenticated/blogs/add/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/database/export/": {
+      "filePath": "_authenticated/database/export/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/events/$eventId/": {

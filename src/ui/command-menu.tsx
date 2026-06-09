@@ -40,8 +40,8 @@ export function CommandMenu() {
       <CommandList>
         <ScrollArea type='hover' className='h-72 pr-1'>
           <CommandEmpty>No results found.</CommandEmpty>
-          {sidebarData.navGroups.map((group) => (
-            <>
+          {sidebarData.navGroups.map((group, groupIndex) => (
+            <React.Fragment key={`command-nav-group-${groupIndex}`}>
               {group.items.map((navItem, i) => {
                 if (navItem.url)
                   return (
@@ -74,7 +74,7 @@ export function CommandMenu() {
                   </CommandItem>
                 ))
               })}
-            </>
+            </React.Fragment>
           ))}
           <CommandSeparator />
           <CommandGroup heading='Theme'>

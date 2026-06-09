@@ -11,11 +11,11 @@ import { PlusIcon } from 'lucide-react'
 import { EventResponseDto } from '@/api/types.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
-import { DataTable } from '@/ui/data-table/data-table'
+import { DataTable } from '@/ui/molecules/data-table/data-table'
 import { BoxLoader } from '@/ui/loader'
 import PageHeader from '@/ui/page-header'
-import { DataTablePagination } from '../../../ui/data-table/data-table-pagination'
-import { DataTableToolbar } from '../../../ui/data-table/data-table-toolbar'
+import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination'
+import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
 import EventsFilters from './components/event-filters'
 import { eventsFilterOptions } from './events-filter-options'
 import { useEventsColumns } from './hooks/use-events-columns'
@@ -39,7 +39,7 @@ export default function ListEvents() {
 
   const table = useReactTable({
     data: eventsData,
-    // @ts-expect-error - TODO: check type
+    // @ts-expect-error: fix later - TODO: check type
     columns: eventsCols as ColumnDef<EventResponseDto>[],
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),

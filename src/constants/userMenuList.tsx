@@ -36,7 +36,7 @@ export const dashboardNavItems = [
   },
   {
     title: 'Profile',
-    href: '/profile',
+    href: '/dashboard/profile',
     icon: User,
   },
   {

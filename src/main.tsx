@@ -22,19 +22,21 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
-         
-        if (import.meta.env.MODE === 'development')
-          console.log({ failureCount, error })
+        void failureCount
 
         if (failureCount >= 0 && import.meta.env.MODE === 'development')
           return false
         if (failureCount > 3 && import.meta.env.MODE === 'production')
           return false
 
-        return !(
-          error instanceof AxiosError &&
-          [401, 403].includes(error.response?.status ?? 0)
-        )
+        const err = error as unknown as Record<string, unknown>
+        const resp = err?.response as Record<string, unknown> | undefined
+        const errObj = err?.error as Record<string, unknown> | undefined
+        const status =
+          (resp?.status as number) ||
+          (err?.status as number) ||
+          (errObj?.status as number)
+        return ![401, 403].includes(status ?? 0)
       },
       refetchOnWindowFocus: false,
       staleTime: 10 * 1000, // 10s
@@ -55,27 +57,51 @@ const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
-    onError: (error) => {
-      if (error instanceof AxiosError) {
-        if (error.response?.status === 401) {
-          toast({
-            variant: 'destructive',
-            title: 'Session expired!',
-          })
-          resetAuth()
-          const redirect = `${router.history.location.href}`
+    onError: (error: unknown) => {
+      // Handle 401 (Unauthorized) from both Axios and fetch client
+      const err = error as Record<string, unknown>
+      const resp = err?.response as Record<string, unknown> | undefined
+      const errObj = err?.error as Record<string, unknown> | undefined
+      const status =
+        (resp?.status as number) ||
+        (err?.status as number) ||
+        (errObj?.status as number)
+
+      if (status === 401) {
+        toast({
+          variant: 'destructive',
+          title: 'Session expired!',
+        })
+
+        // Correctly reset the auth store
+        resetAuth()
+
+        // Redirect to login with the current path as redirect search param
+        const redirect = `${router.history.location.href}`
+
+        // Small delay to ensure state updates and router readiness
+        setTimeout(() => {
           router.navigate({ to: '/login', search: { redirect } })
-        }
-        if (error.response?.status === 500) {
-          toast({
-            variant: 'destructive',
-            title: 'Internal Server Error!',
-          })
-          router.navigate({ to: '/500' })
-        }
-        if (error.response?.status === 403) {
-          // router.navigate("/forbidden", { replace: true });
-        }
+        }, 100)
+      }
+
+      if (status === 500) {
+        toast({
+          variant: 'destructive',
+          title: 'Internal Server Error!',
+        })
+        router.navigate({ to: '/500' })
+      }
+
+      // Handle Server Down / Maintenance
+      if (
+        status === 503 ||
+        (!status &&
+          (err?.name === 'TypeError' ||
+            err?.message === 'Failed to fetch' ||
+            (err?.message as string)?.includes('Network Error')))
+      ) {
+        router.navigate({ to: '/503' })
       }
     },
   }),

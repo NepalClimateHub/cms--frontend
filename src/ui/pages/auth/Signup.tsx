@@ -5,11 +5,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
 import { useSignup } from '@/query/auth/use-auth'
 import { orgSchema, indSchema } from '@/schemas/auth/signup'
+import { PasswordInput } from '@/ui/password-input'
 import { Button } from '@/ui/shadcn/button'
-import {
-  Card,
-  CardContent,
-} from '@/ui/shadcn/card'
+import { Card, CardContent } from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
@@ -28,7 +26,6 @@ import {
   SelectValue,
 } from '@/ui/shadcn/select'
 import { Loader2 } from 'lucide-react'
-import { PasswordInput } from '@/ui/password-input'
 
 const organizationTypes = [
   'Non-Profit / NGO',
@@ -38,6 +35,16 @@ const organizationTypes = [
   'Social Enterprise',
   'Government',
   'Other',
+]
+
+const iAmOptions = [
+  'Student',
+  'Activist',
+  'Researcher',
+  'Climate entrepreneur',
+  'Climate practitioner',
+  'Expert',
+  'Anyone curious about climate work',
 ]
 
 const provinces = [
@@ -52,25 +59,95 @@ const provinces = [
 
 const districtsByProvince: Record<string, string[]> = {
   Koshi: [
-    'Bhojpur', 'Dhankuta', 'Ilam', 'Jhapa', 'Khotang', 'Morang', 'Okhaldhunga', 'Panchthar', 'Sankhuwasabha', 'Solukhumbu', 'Sunsari', 'Taplejung', 'Terhathum', 'Udayapur',
+    'Bhojpur',
+    'Dhankuta',
+    'Ilam',
+    'Jhapa',
+    'Khotang',
+    'Morang',
+    'Okhaldhunga',
+    'Panchthar',
+    'Sankhuwasabha',
+    'Solukhumbu',
+    'Sunsari',
+    'Taplejung',
+    'Terhathum',
+    'Udayapur',
   ],
   Madesh: [
-    'Bara', 'Dhanusha', 'Mahottari', 'Parsa', 'Rautahat', 'Saptari', 'Sarlahi', 'Siraha',
+    'Bara',
+    'Dhanusha',
+    'Mahottari',
+    'Parsa',
+    'Rautahat',
+    'Saptari',
+    'Sarlahi',
+    'Siraha',
   ],
   Bagmati: [
-    'Bhaktapur', 'Chitwan', 'Dhading', 'Dolakha', 'Kathmandu', 'Kavrepalanchok', 'Lalitpur', 'Makwanpur', 'Nuwakot', 'Ramechhap', 'Rasuwa', 'Sindhuli', 'Sindhupalchok',
+    'Bhaktapur',
+    'Chitwan',
+    'Dhading',
+    'Dolakha',
+    'Kathmandu',
+    'Kavrepalanchok',
+    'Lalitpur',
+    'Makwanpur',
+    'Nuwakot',
+    'Ramechhap',
+    'Rasuwa',
+    'Sindhuli',
+    'Sindhupalchok',
   ],
   Gandaki: [
-    'Baglung', 'Gorkha', 'Kaski', 'Lamjung', 'Manang', 'Mustang', 'Myagdi', 'Nawalpur', 'Parbat', 'Syangja', 'Tanahun',
+    'Baglung',
+    'Gorkha',
+    'Kaski',
+    'Lamjung',
+    'Manang',
+    'Mustang',
+    'Myagdi',
+    'Nawalpur',
+    'Parbat',
+    'Syangja',
+    'Tanahun',
   ],
   Lumbini: [
-    'Arghakhanchi', 'Banke', 'Bardiya', 'Dang', 'Eastern Rukum', 'Gulmi', 'Kapilvastu', 'Parasi', 'Palpa', 'Pyuthan', 'Rolpa', 'Rupandehi',
+    'Arghakhanchi',
+    'Banke',
+    'Bardiya',
+    'Dang',
+    'Eastern Rukum',
+    'Gulmi',
+    'Kapilvastu',
+    'Parasi',
+    'Palpa',
+    'Pyuthan',
+    'Rolpa',
+    'Rupandehi',
   ],
   Karnali: [
-    'Dailekh', 'Dolpa', 'Humla', 'Jajarkot', 'Jumla', 'Kalikot', 'Mugu', 'Salyan', 'Surkhet', 'Western Rukum',
+    'Dailekh',
+    'Dolpa',
+    'Humla',
+    'Jajarkot',
+    'Jumla',
+    'Kalikot',
+    'Mugu',
+    'Salyan',
+    'Surkhet',
+    'Western Rukum',
   ],
   Sudurpaschim: [
-    'Achham', 'Baitadi', 'Bajhang', 'Bajura', 'Dadeldhura', 'Darchula', 'Doti', 'Kailali', 'Kanchanpur',
+    'Achham',
+    'Baitadi',
+    'Bajhang',
+    'Bajura',
+    'Dadeldhura',
+    'Darchula',
+    'Doti',
+    'Kailali',
+    'Kanchanpur',
   ],
 }
 
@@ -102,6 +179,7 @@ export default function SignUp() {
     defaultValues: {
       fullName: '',
       email: '',
+      iAm: 'Student',
       password: '',
       confirmPassword: '',
     },
@@ -114,7 +192,12 @@ export default function SignUp() {
         username: data.orgEmail,
         password: data.password,
         email: data.orgEmail,
-        userType: 'ORGANIZATION' as const,
+        role: 'ORGANIZATION' as const,
+        orgName: data.orgName,
+        orgType:
+          data.orgType + (data.orgTypeOther ? `: ${data.orgTypeOther}` : ''),
+        province: data.province,
+        district: data.district,
       },
     })
   }
@@ -126,7 +209,8 @@ export default function SignUp() {
         username: data.email,
         password: data.password,
         email: data.email,
-        userType: 'INDIVIDUAL' as const,
+        role: 'INDIVIDUAL' as const,
+        iAm: data.iAm,
       },
     })
   }
@@ -135,12 +219,12 @@ export default function SignUp() {
     <div className='flex min-h-screen bg-background'>
       {/* Left Pane - Branding (Desktop Only) */}
       <div className='relative hidden w-1/2 flex-col justify-between bg-zinc-900 p-10 text-white lg:flex'>
-        <div 
+        <div
           className='absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50 brightness-75 transition-opacity'
           style={{ backgroundImage: 'url("/signup-bg.png")' }}
         />
         <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
-        
+
         <div className='relative z-20 flex items-center text-lg font-medium'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -156,22 +240,25 @@ export default function SignUp() {
           </svg>
           Nepal Climate Hub
         </div>
-        
+
         <div className='relative z-20 mt-auto'>
           <blockquote className='space-y-2'>
             <p className='text-lg'>
-              &ldquo;Join our community of climate leaders and organizations working together 
-              to build a sustainable and resilient future for Nepal.&rdquo;
+              &ldquo;Join our community of climate leaders and organizations
+              working together to build a sustainable and resilient future for
+              Nepal.&rdquo;
             </p>
-            <footer className='text-sm italic'>Uniting for Climate Action</footer>
+            <footer className='text-sm italic'>
+              Uniting for Climate Action
+            </footer>
           </blockquote>
         </div>
       </div>
 
       {/* Right Pane - Form */}
-      <div className='flex w-full items-center justify-center p-4 lg:w-1/2 lg:p-8 overflow-y-auto'>
+      <div className='flex w-full items-center justify-center overflow-y-auto p-4 lg:w-1/2 lg:p-8'>
         <div className='mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[550px]'>
-          <div className='flex flex-col space-y-2 text-center animate-in fade-in slide-in-from-top-4 duration-500'>
+          <div className='flex flex-col space-y-2 text-center duration-500 animate-in fade-in slide-in-from-top-4'>
             <h1 className='text-3xl font-semibold tracking-tight'>
               Create an account
             </h1>
@@ -182,13 +269,15 @@ export default function SignUp() {
 
           <Card className='border-none bg-transparent shadow-none'>
             <CardContent className='p-0'>
-              <div className='mb-8 flex justify-center animate-in fade-in duration-700'>
-                <div className='inline-flex h-12 items-center justify-center rounded-xl bg-muted p-1 text-muted-foreground w-full sm:w-auto'>
+              <div className='mb-8 flex justify-center duration-700 animate-in fade-in'>
+                <div className='inline-flex h-12 w-full items-center justify-center rounded-xl bg-muted p-1 text-muted-foreground sm:w-auto'>
                   <button
                     onClick={() => setTab('organization')}
                     className={cn(
-                      'inline-flex items-center justify-center whitespace-nowrap rounded-lg px-8 py-2 text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 flex-1 sm:flex-none',
-                      tab === 'organization' ? 'bg-background text-foreground shadow-sm' : 'hover:text-foreground/80'
+                      'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-lg px-8 py-2 text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 sm:flex-none',
+                      tab === 'organization'
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'hover:text-foreground/80'
                     )}
                   >
                     Organization
@@ -196,8 +285,10 @@ export default function SignUp() {
                   <button
                     onClick={() => setTab('individual')}
                     className={cn(
-                      'inline-flex items-center justify-center whitespace-nowrap rounded-lg px-8 py-2 text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 flex-1 sm:flex-none',
-                      tab === 'individual' ? 'bg-background text-foreground shadow-sm' : 'hover:text-foreground/80'
+                      'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-lg px-8 py-2 text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 sm:flex-none',
+                      tab === 'individual'
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'hover:text-foreground/80'
                     )}
                   >
                     Individual
@@ -205,7 +296,7 @@ export default function SignUp() {
                 </div>
               </div>
 
-              <div className='grid gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500'>
+              <div className='grid gap-6 duration-500 animate-in fade-in slide-in-from-bottom-2'>
                 {tab === 'organization' && (
                   <Form {...orgForm}>
                     <form
@@ -220,7 +311,11 @@ export default function SignUp() {
                             <FormItem className='sm:col-span-2'>
                               <FormLabel>Organization Name</FormLabel>
                               <FormControl>
-                                <Input placeholder='Acme Corp' {...field} autoComplete='organization' />
+                                <Input
+                                  placeholder='Acme Corp'
+                                  {...field}
+                                  autoComplete='organization'
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -233,7 +328,12 @@ export default function SignUp() {
                             <FormItem className='sm:col-span-2'>
                               <FormLabel>Organization Email</FormLabel>
                               <FormControl>
-                                <Input placeholder='hello@acme.com' type='email' {...field} autoComplete='email' />
+                                <Input
+                                  placeholder='hello@acme.com'
+                                  type='email'
+                                  {...field}
+                                  autoComplete='email'
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -243,7 +343,13 @@ export default function SignUp() {
                           control={orgForm.control}
                           name='orgType'
                           render={({ field }) => (
-                            <FormItem className={cn(orgForm.watch('orgType') === 'Other' ? 'sm:col-span-1' : 'sm:col-span-2')}>
+                            <FormItem
+                              className={cn(
+                                orgForm.watch('orgType') === 'Other'
+                                  ? 'sm:col-span-1'
+                                  : 'sm:col-span-2'
+                              )}
+                            >
                               <FormLabel>Organization Type</FormLabel>
                               <Select
                                 value={field.value}
@@ -273,7 +379,7 @@ export default function SignUp() {
                             control={orgForm.control}
                             name='orgTypeOther'
                             render={({ field }) => (
-                              <FormItem className='sm:col-span-1 text-accent-foreground'>
+                              <FormItem className='text-accent-foreground sm:col-span-1'>
                                 <FormLabel>Specify Type</FormLabel>
                                 <FormControl>
                                   <Input placeholder='Other type' {...field} />
@@ -354,7 +460,11 @@ export default function SignUp() {
                             <FormItem className='sm:col-span-2'>
                               <FormLabel>Admin Full Name</FormLabel>
                               <FormControl>
-                                <Input placeholder='John Doe' {...field} autoComplete='name' />
+                                <Input
+                                  placeholder='John Doe'
+                                  {...field}
+                                  autoComplete='name'
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -422,8 +532,41 @@ export default function SignUp() {
                           <FormItem>
                             <FormLabel>Full Name</FormLabel>
                             <FormControl>
-                              <Input placeholder='John Doe' {...field} autoComplete='name' />
+                              <Input
+                                placeholder='John Doe'
+                                {...field}
+                                autoComplete='name'
+                              />
                             </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={indForm.control}
+                        name='iAm'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>I am</FormLabel>
+                            <Select
+                              value={field.value}
+                              onValueChange={(val) =>
+                                indForm.setValue('iAm', val)
+                              }
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder='Select what you are' />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {iAmOptions.map((option) => (
+                                  <SelectItem key={option} value={option}>
+                                    {option}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -435,7 +578,12 @@ export default function SignUp() {
                           <FormItem>
                             <FormLabel>Email Address</FormLabel>
                             <FormControl>
-                              <Input placeholder='john@example.com' type='email' {...field} autoComplete='email' />
+                              <Input
+                                placeholder='john@example.com'
+                                type='email'
+                                {...field}
+                                autoComplete='email'
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -498,20 +646,27 @@ export default function SignUp() {
                   Already have an account?{' '}
                   <Link
                     to='/sign-in'
-                    className='font-semibold text-primary underline-offset-4 hover:underline transition-colors'
+                    className='font-semibold text-primary underline-offset-4 transition-colors hover:underline'
                   >
                     Sign In
                   </Link>
                 </p>
                 <div className='max-w-[340px] text-xs leading-normal text-muted-foreground'>
                   By creating an account, you agree to our{' '}
-                  <a href='/terms' className='underline underline-offset-4 hover:text-primary transition-colors'>
+                  <a
+                    href='/terms'
+                    className='underline underline-offset-4 transition-colors hover:text-primary'
+                  >
                     Terms of Service
                   </a>{' '}
                   and{' '}
-                  <a href='/privacy' className='underline underline-offset-4 hover:text-primary transition-colors'>
+                  <a
+                    href='/privacy'
+                    className='underline underline-offset-4 transition-colors hover:text-primary'
+                  >
                     Privacy Policy
-                  </a>.
+                  </a>
+                  .
                 </div>
               </div>
             </CardContent>

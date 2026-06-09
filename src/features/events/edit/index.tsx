@@ -37,7 +37,7 @@ const EditEvent = () => {
   // Reset form when data is available
   useEffect(() => {
     if (eventData && !hasReset.current) {
-      // @ts-ignore
+      // @ts-expect-error: fix later
       const typedEventData = eventData as EventResponseDto
       form.reset({
         ...typedEventData,
@@ -54,7 +54,7 @@ const EditEvent = () => {
           ? new Date(typedEventData?.registrationDeadline)
           : new Date(),
         tagIds:
-          // @ts-ignore
+          // @ts-expect-error: fix later
           typedEventData?.tags?.map((tag: { id: string }) => tag?.id) || [],
         bannerImageUrl: typedEventData?.bannerImageUrl
           ? typedEventData?.bannerImageUrl

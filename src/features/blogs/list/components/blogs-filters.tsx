@@ -1,8 +1,8 @@
 import { FC, useEffect, useState } from 'react'
-import { Cross2Icon } from '@radix-ui/react-icons'
-import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
-import { cleanObj } from '@/utils/obj-utils'
+import { Checkbox } from '@/ui/shadcn/checkbox'
+import { Label } from '@/ui/shadcn/label'
+import { Separator } from '@/ui/shadcn/separator'
 import { useFilters } from '@/hooks/use-filters'
 import { useIsFirstRender } from '@/hooks/use-first-render'
 
@@ -15,10 +15,8 @@ const BlogsFilters: FC<BlogsFiltersProps> = ({ setPage, filterOptions }) => {
   const isFirstRender = useIsFirstRender()
   const [search, setSearch] = useState<string>('')
 
-  const { filters, setFilterDebounce, removeFilter, resetFilters } =
+  const { filters, setFilterDebounce, setFilterValue, removeFilter } =
     filterOptions
-
-  const isFilterApplied = !!Object.keys(cleanObj(filters)).length
 
   useEffect(() => {
     if (!isFirstRender) {
@@ -30,6 +28,14 @@ const BlogsFilters: FC<BlogsFiltersProps> = ({ setPage, filterOptions }) => {
     setSearch((filters?.title as string) ?? '')
   }, [filters])
 
+  // Persist includeDrafts state in localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('blog-include-drafts')
+    if (stored !== null && filters.includeDrafts === undefined) {
+      setFilterValue('includeDrafts', stored === 'true')
+    }
+  }, [setFilterValue, filters.includeDrafts])
+
   const handleSearch = (value: string) => {
     setSearch(value)
     if (value) {
@@ -39,25 +45,35 @@ const BlogsFilters: FC<BlogsFiltersProps> = ({ setPage, filterOptions }) => {
     }
   }
 
+  const handleDraftToggle = (checked: boolean) => {
+    localStorage.setItem('blog-include-drafts', String(checked))
+    setFilterValue('includeDrafts', checked)
+  }
+
   return (
-    <div className='flex items-center justify-between'>
-      <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
-        <Input
-          placeholder='Search Blogs...'
-          value={search}
-          onChange={(event) => handleSearch(event.target.value)}
-          className='h-8 w-[150px] lg:w-[250px]'
-        />
-        {isFilterApplied && (
-          <Button
-            variant='ghost'
-            onClick={resetFilters}
-            className='h-8 px-2 lg:px-3'
+    <div className='flex flex-1 items-center justify-between gap-4'>
+      <Input
+        placeholder='Search Blogs...'
+        value={search}
+        onChange={(event) => handleSearch(event.target.value)}
+        className='h-8 w-[150px] lg:w-[250px]'
+      />
+
+      <div className='flex items-center gap-4'>
+        <div className='flex items-center space-x-2'>
+          <Checkbox
+            id='include-drafts'
+            checked={!!filters.includeDrafts}
+            onCheckedChange={(checked) => handleDraftToggle(checked as boolean)}
+          />
+          <Label
+            htmlFor='include-drafts'
+            className='cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
           >
-            Reset
-            <Cross2Icon className='ml-2 h-4 w-4' />
-          </Button>
-        )}
+            Include Drafts
+          </Label>
+        </div>
+        <Separator orientation='vertical' className='h-4' />
       </div>
     </div>
   )

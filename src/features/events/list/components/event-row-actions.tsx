@@ -97,7 +97,7 @@ const EventRowAction: FC<EventRowActionProps> = ({ row }) => {
             <LucideEye />
           </Button>
         </DialogTrigger>
-        <DialogContent className='max-w-2xl'>
+        <DialogContent className='max-h-[80vh] max-w-2xl overflow-y-auto'>
           <DialogHeader>
             <DialogTitle className='text-2xl font-bold text-gray-900'>
               Event Details

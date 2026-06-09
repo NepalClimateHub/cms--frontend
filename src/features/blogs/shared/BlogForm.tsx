@@ -1,20 +1,18 @@
 import { FC } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
+import {
+  useGetCategories,
+  CategoryType,
+  Category,
+} from '@/query/categories/use-categories'
 import { BlogFormValues } from '@/schemas/blog'
 import { DatePicker } from '@/ui/datepicker'
 import ImageUpload from '@/ui/image-upload'
-import { MinimalTiptapEditor } from '@/ui/minimal-tiptap'
+import { MinimalTiptapEditor } from '@/ui/molecules/minimal-tiptap'
 import { MultiSelect } from '@/ui/multi-select'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/ui/shadcn/tooltip'
-import { Info } from 'lucide-react'
 import {
   Form,
   FormControl,
@@ -34,8 +32,15 @@ import {
 } from '@/ui/shadcn/select'
 import { Switch } from '@/ui/shadcn/switch'
 import { Textarea } from '@/ui/shadcn/textarea'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/ui/shadcn/tooltip'
+import { Info } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
-import { useGetCategories, CategoryType, Category } from '@/query/categories/use-categories'
+import { getRoleFromToken, type AppRole } from '@/utils/jwt.util'
 
 type Props = {
   form: UseFormReturn<BlogFormValues>
@@ -59,11 +64,21 @@ const BlogForm: FC<Props> = ({
 }) => {
   const navigate = useNavigate()
   const { user } = useAuthStore()
-  const isAdmin = user?.isSuperAdmin === true
+  const accountRole = (user?.role ?? getRoleFromToken()) as
+    | AppRole
+    | null
+    | undefined
+  const isStaffUser =
+    accountRole === 'SUPER_ADMIN' ||
+    accountRole === 'ADMIN' ||
+    accountRole === 'CONTENT_ADMIN'
+  // Featured / top read: staff only; hide for ORGANIZATION, INDIVIDUAL, and unauthenticated
+  const canEditFeaturedOrTopRead = isStaffUser
 
-  const { data: categoriesData, isLoading: categoriesLoading } = useGetCategories({
-    type: CategoryType.BLOG,
-  })
+  const { data: categoriesData, isLoading: categoriesLoading } =
+    useGetCategories({
+      type: CategoryType.BLOG,
+    })
 
   const blogCategories = categoriesData?.data || []
 
@@ -110,7 +125,7 @@ const BlogForm: FC<Props> = ({
               )}
             />
 
-            {isAdmin && (
+            {isStaffUser && (
               <FormField
                 control={form.control}
                 name='author'
@@ -156,9 +171,18 @@ const BlogForm: FC<Props> = ({
                   </FormDescription>
                   <FormControl>
                     <TooltipProvider>
-                      <Select onValueChange={handleCategoryChange} value={field.value}>
+                      <Select
+                        onValueChange={handleCategoryChange}
+                        value={field.value}
+                      >
                         <SelectTrigger className='w-full'>
-                          <SelectValue placeholder={categoriesLoading ? 'Loading categories...' : 'Select category'} />
+                          <SelectValue
+                            placeholder={
+                              categoriesLoading
+                                ? 'Loading categories...'
+                                : 'Select category'
+                            }
+                          />
                         </SelectTrigger>
                         <SelectContent>
                           {blogCategories.map((category: Category) => (
@@ -170,7 +194,10 @@ const BlogForm: FC<Props> = ({
                                     <TooltipTrigger asChild>
                                       <Info className='ml-2 h-4 w-4 text-muted-foreground transition-colors hover:text-primary' />
                                     </TooltipTrigger>
-                                    <TooltipContent side='right' className='max-w-[200px]'>
+                                    <TooltipContent
+                                      side='right'
+                                      className='max-w-[200px]'
+                                    >
                                       <p>{category.description}</p>
                                     </TooltipContent>
                                   </Tooltip>
@@ -330,7 +357,9 @@ const BlogForm: FC<Props> = ({
             />
 
             <div
-              className={`grid grid-cols-1 gap-6 ${isAdmin ? 'md:grid-cols-2' : ''}`}
+              className={`grid grid-cols-1 gap-6 ${
+                canEditFeaturedOrTopRead ? 'md:grid-cols-2' : ''
+              }`}
             >
               <FormField
                 control={form.control}
@@ -353,7 +382,7 @@ const BlogForm: FC<Props> = ({
                 )}
               />
 
-              {isAdmin && (
+              {canEditFeaturedOrTopRead && (
                 <FormField
                   control={form.control}
                   name='isFeatured'
@@ -378,7 +407,7 @@ const BlogForm: FC<Props> = ({
                 />
               )}
 
-              {isAdmin && (
+              {canEditFeaturedOrTopRead && (
                 <FormField
                   control={form.control}
                   name='isTopRead'

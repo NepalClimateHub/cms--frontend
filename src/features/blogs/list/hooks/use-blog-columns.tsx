@@ -1,9 +1,16 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { BlogResponseDto } from '@/query/blogs/use-blogs'
-import { Badge } from '@/ui/shadcn/badge'
-import { DataTableColumnHeader } from '../../../../ui/data-table/data-table-column-header'
-import BlogRowAction from '../components/blog-row-actions'
 import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
+import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
+import { Badge } from '@/ui/shadcn/badge'
+import { cn } from '@/ui/shadcn/lib/utils'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/ui/shadcn/popover'
+import { Info } from 'lucide-react'
+import BlogRowAction from '../components/blog-row-actions'
 
 export const useBlogsColumns = () => {
   const columns: ColumnDef<BlogResponseDto>[] = [
@@ -12,18 +19,24 @@ export const useBlogsColumns = () => {
       header: () => <span></span>,
       cell: ({ row }) => {
         const { bannerImageUrl, title } = row.original
-        const imageUrl = bannerImageUrl || 'images/logo.png'
+        const isPlaceholder = !bannerImageUrl
+        const imageUrl = bannerImageUrl || '/images/logo.png'
 
         return (
           <ImagePreviewDialog
             src={imageUrl}
             alt={title}
             trigger={
-              <div className='flex cursor-pointer items-center justify-center transition-opacity hover:opacity-80'>
+              <div className='flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-gray-100 bg-gray-50/50 transition-opacity hover:opacity-80'>
                 <img
                   src={imageUrl}
                   alt={title}
-                  className='h-[80px] w-[80px] rounded object-cover'
+                  className={cn(
+                    'h-[100px] w-[160px] rounded transition-transform duration-300 hover:scale-105',
+                    isPlaceholder
+                      ? 'bg-white/50 object-contain p-4'
+                      : 'object-cover'
+                  )}
                 />
               </div>
             }
@@ -38,7 +51,17 @@ export const useBlogsColumns = () => {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Title' />
       ),
-      cell: ({ row }) => <div>{row.original.title}</div>,
+      cell: ({ row }) => {
+        const title = row.original.title
+        const words = title.split(' ')
+        const displayTitle =
+          words.length > 5 ? words.slice(0, 5).join(' ') + '...' : title
+        return (
+          <div className='max-w-[250px] whitespace-normal font-medium leading-tight'>
+            {displayTitle}
+          </div>
+        )
+      },
       enableSorting: false,
       enableHiding: false,
     },
@@ -92,7 +115,15 @@ export const useBlogsColumns = () => {
         <DataTableColumnHeader column={column} title='Status' />
       ),
       cell: ({ row }) => {
-        const status = (row.original as any).status || 'DRAFT'
+        let status =
+          ((row.original as unknown as Record<string, unknown>)
+            .status as string) || 'DRAFT'
+
+        // Fallback logic if status is inconsistent with isDraft
+        if (status === 'DRAFT' && !row.original.isDraft) {
+          status = row.original.approvedByAdmin ? 'PUBLISHED' : 'UNDER_REVIEW'
+        }
+
         const statusConfig: Record<
           string,
           { label: string; className: string }
@@ -104,8 +135,27 @@ export const useBlogsColumns = () => {
         }
         const config = statusConfig[status] || statusConfig.DRAFT
         return (
-          <div className='min-w-[140px] max-w-[140px]'>
+          <div className='flex items-center gap-2'>
             <Badge className={config.className}>{config.label}</Badge>
+            {status === 'REJECTED' && row.original.reviewFeedback && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className='flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200'>
+                    <Info className='h-3 w-3' />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className='w-80'>
+                  <div className='space-y-2'>
+                    <h4 className='font-medium leading-none'>
+                      Rejection Reason
+                    </h4>
+                    <p className='text-sm text-muted-foreground'>
+                      {row.original.reviewFeedback}
+                    </p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
         )
       },

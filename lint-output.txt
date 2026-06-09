@@ -1,0 +1,326 @@
+
+> shadcn-admin@1.1.0 lint
+> eslint .
+
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/api/@tanstack/react-query.gen.ts
+   122:36  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   123:29  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   134:36  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   135:29  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   140:37  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   141:30  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   151:5   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   154:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   411:5   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   414:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   544:5   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   547:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   666:5   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   669:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   799:5   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   802:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   932:5   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   935:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  1099:5   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  1102:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  1328:5   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  1331:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  1447:5   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  1450:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  1580:5   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  1583:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/ask-ai/components/ChatHistoryMenu.tsx
+  31:9  warning  The 'sessions' logical expression could make the dependencies of useMemo Hook (at line 61) change on every render. To fix this, wrap the initialization of 'sessions' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/blogs/add/index.tsx
+  71:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/blogs/list/components/blog-row-actions.tsx
+   27:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   41:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  123:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/blogs/list/components/blogs-filters.tsx
+  27:6  warning  React Hook useEffect has missing dependencies: 'isFirstRender' and 'setPage'. Either include them or remove the dependency array. If 'setPage' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/blogs/list/hooks/use-blog-columns.tsx
+  95:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/database/export/index.tsx
+  54:7  error  Unexpected console statement  no-console
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/events/add/index.tsx
+  17:23  error  Optional chain expressions can return undefined by design - using a non-null assertion is unsafe and wrong  @typescript-eslint/no-non-null-asserted-optional-chain
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/events/edit/index.tsx
+  66:6  warning  React Hook useEffect has a missing dependency: 'form'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/events/list/components/event-filters.tsx
+  34:6  warning  React Hook useEffect has missing dependencies: 'isFirstRender' and 'setPage'. Either include them or remove the dependency array. If 'setPage' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/events/list/hooks/use-events-columns.tsx
+  19:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/news/add/index.tsx
+  17:23  error  Optional chain expressions can return undefined by design - using a non-null assertion is unsafe and wrong  @typescript-eslint/no-non-null-asserted-optional-chain
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/news/edit/index.tsx
+  50:6  warning  React Hook useEffect has a missing dependency: 'form'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/news/list/components/news-filters.tsx
+  32:6  warning  React Hook useEffect has missing dependencies: 'isFirstRender' and 'setPage'. Either include them or remove the dependency array. If 'setPage' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/oppourtunities/add/index.tsx
+  109:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  125:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  151:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  153:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/oppourtunities/edit/index.tsx
+  72:6  warning  React Hook useEffect has a missing dependency: 'form'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/oppourtunities/list/components/opportunities-filters.tsx
+  37:6  warning  React Hook useEffect has missing dependencies: 'isFirstRender' and 'setPage'. Either include them or remove the dependency array. If 'setPage' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/oppourtunities/list/components/opportunity-row-actions.tsx
+  23:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/organizations/list/components/organization-filters.tsx
+  30:6  warning  React Hook useEffect has missing dependencies: 'isFirstRender' and 'setPage'. Either include them or remove the dependency array. If 'setPage' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/organizations/list/components/organization-row-actions.tsx
+  31:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  55:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/projects/add/index.tsx
+  54:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/projects/edit/index.tsx
+  77:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/resources/list/components/columns.tsx
+  74:51  error  React Hook "useState" is called in function "cell" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"  react-hooks/rules-of-hooks
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/resources/list/index.tsx
+  46:6  warning  React Hook useEffect has a missing dependency: 'setPage'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/settings/profile/profile-form.tsx
+  93:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/tags/list/components/tag-filters.tsx
+  27:6  warning  React Hook useEffect has missing dependencies: 'isFirstRender' and 'setPage'. Either include them or remove the dependency array. If 'setPage' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/features/users/index.tsx
+  86:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  87:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/hooks/use-filters.ts
+  56:5  warning  React Hook useCallback has a missing dependency: 'debounceFilterSetter'. Either include it or remove the dependency array     react-hooks/exhaustive-deps
+  67:5  warning  React Hook useCallback has a missing dependency: 'debounceFilterCanceller'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  83:6  warning  React Hook useCallback has an unnecessary dependency: 'defaultFilters'. Either exclude it or remove the dependency array      react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/hooks/use-pagination.ts
+  34:5  warning  React Hook useCallback has a missing dependency: 'setPagination'. Either include it or remove the dependency array                           react-hooks/exhaustive-deps
+  45:5  warning  React Hook useCallback has a missing dependency: 'setPagination'. Either include it or remove the dependency array                           react-hooks/exhaustive-deps
+  56:6  warning  React Hook useCallback has a missing dependency: 'setPagination'. Either include it or remove the dependency array                           react-hooks/exhaustive-deps
+  60:5  warning  React Hook useCallback has missing dependencies: 'limit', 'offset', and 'setPagination'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/main.tsx
+  27:11  error  Unexpected console statement              no-console
+  34:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:70  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:96  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/query/ask-ai/climate-api.ts
+  153:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/query/auth/use-auth.ts
+   69:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   85:7   error  Unexpected console statement              no-console
+  170:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  182:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  183:7   error  Unexpected console statement              no-console
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/query/blogs/use-blogs.ts
+  113:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  115:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  143:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  145:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  168:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  197:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  224:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  226:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/query/categories/use-categories.ts
+   39:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+   49:22  error  Unexpected any. Specify a different type                          @typescript-eslint/no-explicit-any
+   61:23  error  Unexpected any. Specify a different type                          @typescript-eslint/no-explicit-any
+   81:22  error  Unexpected any. Specify a different type                          @typescript-eslint/no-explicit-any
+  101:22  error  Unexpected any. Specify a different type                          @typescript-eslint/no-explicit-any
+  119:22  error  Unexpected any. Specify a different type                          @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/query/events/events-service.ts
+  10:9  error  The `{}` ("empty object") type allows any non-nullish value, including literals like `0` and `""`.
+- If that's what you want, disable this lint rule with an inline comment or configure the 'allowObjectTypes' rule option.
+- If you want a type meaning "any object", you probably want `object` instead.
+- If you want a type meaning "any value", you probably want `unknown` instead  @typescript-eslint/no-empty-object-type
+  44:9  error  The `{}` ("empty object") type allows any non-nullish value, including literals like `0` and `""`.
+- If that's what you want, disable this lint rule with an inline comment or configure the 'allowObjectTypes' rule option.
+- If you want a type meaning "any object", you probably want `object` instead.
+- If you want a type meaning "any value", you probably want `unknown` instead  @typescript-eslint/no-empty-object-type
+  57:9  error  The `{}` ("empty object") type allows any non-nullish value, including literals like `0` and `""`.
+- If that's what you want, disable this lint rule with an inline comment or configure the 'allowObjectTypes' rule option.
+- If you want a type meaning "any object", you probably want `object` instead.
+- If you want a type meaning "any value", you probably want `unknown` instead  @typescript-eslint/no-empty-object-type
+  69:9  error  The `{}` ("empty object") type allows any non-nullish value, including literals like `0` and `""`.
+- If that's what you want, disable this lint rule with an inline comment or configure the 'allowObjectTypes' rule option.
+- If you want a type meaning "any object", you probably want `object` instead.
+- If you want a type meaning "any value", you probably want `unknown` instead  @typescript-eslint/no-empty-object-type
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/query/opportunities/use-opportunities.ts
+  58:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/query/projects/use-projects.ts
+  28:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:67  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  62:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  81:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  98:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/query/resources/use-resources.ts
+   71:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:68  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  104:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  123:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  140:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/query/tags-regular/tags-service.ts
+  10:9  error  The `{}` ("empty object") type allows any non-nullish value, including literals like `0` and `""`.
+- If that's what you want, disable this lint rule with an inline comment or configure the 'allowObjectTypes' rule option.
+- If you want a type meaning "any object", you probably want `object` instead.
+- If you want a type meaning "any value", you probably want `unknown` instead  @typescript-eslint/no-empty-object-type
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/query/tags-regular/use-tags.ts
+  36:5  error  The following dependencies are missing in your queryKey: cleanQuery  @tanstack/query/exhaustive-deps
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/query/tags/use-tags.tsx
+  11:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/routes/_authenticated/ask-ai/index.tsx
+   51:3  error  Unexpected console statement  no-console
+   95:3  error  Unexpected console statement  no-console
+  146:7  error  Unexpected console statement  no-console
+  340:3  error  Unexpected console statement  no-console
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/routes/_authenticated/index.tsx
+   9:22  error  React Hook "useAuthStore" is called in function "component" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"    react-hooks/rules-of-hooks
+  12:25  error  React Hook "useRouterState" is called in function "component" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"  react-hooks/rules-of-hooks
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/data-table/data-table-view-options.tsx
+  50:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/image-kit/IKContext/index.tsx
+  8:14  warning  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file  react-refresh/only-export-components
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/image-kit/IKUpload/index.tsx
+  201:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/image-upload.tsx
+  66:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/minimal-tiptap/components/image/image-edit-block.tsx
+  58:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/minimal-tiptap/components/link/link-popover-block.tsx
+  67:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/minimal-tiptap/components/spinner.tsx
+  4:11  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/minimal-tiptap/extensions/image/components/image-view-block.tsx
+  204:16  error  'error' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/minimal-tiptap/extensions/image/image.ts
+  46:144  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/minimal-tiptap/hooks/use-throttle.ts
+  3:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/multi-select.tsx
+  135:7  error  'asChild' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/organisms/dashboard/EditProfileDialog.tsx
+   73:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   73:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   74:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   74:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   83:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   84:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   97:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   98:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  104:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  105:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  122:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  208:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  209:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  210:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  215:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  216:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  217:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/pages/admin-dashboard/index.tsx
+  194:6   warning  React Hook useMemo has an unnecessary dependency: 'climateQuotes'. Either exclude it or remove the dependency array. Outer scope values like 'climateQuotes' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+  293:45  error    Unexpected any. Specify a different type                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  305:96  error    Unexpected any. Specify a different type                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  314:96  error    Unexpected any. Specify a different type                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  323:96  error    Unexpected any. Specify a different type                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/pages/auth/Signin.tsx
+  113:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/pages/auth/VerifyEmail.tsx
+  22:7  error  Unexpected console statement  no-console
+  31:7  error  Unexpected console statement  no-console
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/pages/dashboard/UserProfilePage.tsx
+  186:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  220:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  222:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/shadcn/badge.tsx
+  35:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/shadcn/button.tsx
+  74:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/shadcn/form.tsx
+  167:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/shadcn/sidebar.tsx
+  771:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/ui/shadcn/toggle.tsx
+  42:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/utils/debouce.ts
+   1:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   4:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  11:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/sdsys/Files/nepalclimatehub/cms--frontend/src/utils/jwt.util.tsx
+  20:7  error  Unexpected console statement  no-console
+
+✖ 172 problems (147 errors, 25 warnings)
+

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useLogout } from '@/query/auth/use-auth'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
 import { NavGroup } from '@/ui/layouts/nav-group'
@@ -49,12 +49,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarHeader>
         <SidebarContent className='py-4'>
           {sidebarData.navGroups.map((group, index) => (
-            <>
+            <Fragment key={`sidebar-group-${index}`}>
               <NavGroup {...group} />
               {index < sidebarData.navGroups.length - 1 && (
                 <SidebarSeparator className='my-4' />
               )}
-            </>
+            </Fragment>
           ))}
         </SidebarContent>
         <SidebarFooter>

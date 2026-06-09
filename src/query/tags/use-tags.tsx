@@ -8,7 +8,9 @@ import {
   tagControllerGetTagsTypeOptions,
 } from '../../api/@tanstack/react-query.gen'
 
-export const useGetTags = (options: any) => {
+type TagGetTagsOptions = Parameters<typeof tagControllerGetTagsOptions>[0]
+
+export const useGetTags = (options?: TagGetTagsOptions) => {
   return useQuery({
     ...tagControllerGetTagsOptions(options),
   })

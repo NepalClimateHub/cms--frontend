@@ -3,9 +3,9 @@ import { z } from 'zod'
 export const organizationSchema = z.object({
   name: z.string(),
   description: z.string(),
-  email: z.string(),
-  phoneCountryCode: z.string(),
-  phoneNumber: z.string(),
+  email: z.string().optional(),
+  phoneCountryCode: z.string().optional(),
+  phoneNumber: z.string().optional(),
   address: z.string(),
   socials: z.object({}),
   bannerImageUrl: z.string(),

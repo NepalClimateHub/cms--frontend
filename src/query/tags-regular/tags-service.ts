@@ -7,7 +7,7 @@ import { tags } from '../shared/routes'
 export const addTag = async (
   payload: TagsInitializer
 ): Promise<{
-  data: {}
+  data: unknown
   meta: Meta
 }> => {
   const response = await apiClient.post(tags.add.path, payload)

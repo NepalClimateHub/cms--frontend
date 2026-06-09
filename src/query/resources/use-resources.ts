@@ -2,6 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { client } from '@/api/client.gen'
+import { Meta } from '@/schemas/shared'
 
 export enum ResourceType {
   DOCUMENTARY = 'DOCUMENTARY',
@@ -68,12 +69,15 @@ export interface CreateResourceFormValues {
   tagIds?: string[]
 }
 
-export const useGetResources = (params: any) => {
+export const useGetResources = (params: Record<string, unknown>) => {
   return useQuery({
     queryKey: ['resources', params],
     queryFn: async () => {
       const response = await client.get({ url: '/api/v1/resources', query: params })
-      return response.data as { data: ResourceResponseDto[]; meta: any }
+      return response.data as {
+        data: ResourceResponseDto[]
+        meta: Meta
+      }
     },
   })
 }
@@ -101,8 +105,10 @@ export const useCreateResource = () => {
       queryClient.invalidateQueries({ queryKey: ['resources'] })
       toast.success('Resource created successfully')
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to create resource')
+    onError: (error: unknown) => {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to create resource'
+      )
     },
   })
 }
@@ -120,8 +126,10 @@ export const useUpdateResource = () => {
       queryClient.invalidateQueries({ queryKey: ['resource', id] })
       toast.success('Resource updated successfully')
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to update resource')
+    onError: (error: unknown) => {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to update resource'
+      )
     },
   })
 }
@@ -137,8 +145,10 @@ export const useDeleteResource = () => {
       queryClient.invalidateQueries({ queryKey: ['resources'] })
       toast.success('Resource deleted successfully')
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to delete resource')
+    onError: (error: unknown) => {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to delete resource'
+      )
     },
   })
 }

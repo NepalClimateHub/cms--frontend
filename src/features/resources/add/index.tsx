@@ -16,7 +16,7 @@ export default function AddResource() {
   const navigate = useNavigate()
   
   // Fetch tags for selection
-  const { data: tagsData } = useGetTags({ limit: 100 })
+  const { data: tagsData } = useGetTags({ query: { limit: 100 } })
   const tagsOptions = ((tagsData?.data as unknown as Tag[]) || [])
     .filter((tag: Tag) => tag.isResourceTag)
     .map((tag: Tag) => ({

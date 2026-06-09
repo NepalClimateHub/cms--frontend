@@ -1,4 +1,10 @@
-import { OrganizationFormValues as Organization } from '@/schemas/organization/organization'
+import type { OrganizationProfile } from '@/schemas/auth/organization-profile'
+
+export type UserSocials = {
+  facebook?: string
+  instagram?: string
+  linkedin?: string
+}
 
 export type User = {
   id: string
@@ -6,13 +12,23 @@ export type User = {
   fullName: string
   permissions: string[]
   isActive: boolean
-  isSuperAdmin: boolean
-  organization: Organization | null
+  /** Platform admin verified the organization account (role ORGANIZATION) */
+  isVerifiedByAdmin?: boolean
+  isSuperAdmin?: boolean
+  role?:
+    | 'SUPER_ADMIN'
+    | 'ADMIN'
+    | 'CONTENT_ADMIN'
+    | 'ORGANIZATION'
+    | 'INDIVIDUAL'
+  organization: OrganizationProfile | null
   bio?: string | null
-  linkedin?: string | null
   currentRole?: string | null
   profilePhotoUrl?: string | null
   profilePhotoId?: string | null
+  bannerImageUrl?: string | null
+  bannerImageId?: string | null
+  socials?: UserSocials | null
   createdAt: string
   updatedAt: string
 }
