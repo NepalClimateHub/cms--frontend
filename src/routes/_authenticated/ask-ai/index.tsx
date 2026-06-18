@@ -14,10 +14,11 @@ import {
   FileText,
   Copy,
   Check,
+  History,
 } from 'lucide-react'
-import { useClimateChat, useChatSession } from '@/query/ask-ai/climate-api'
+import { useClimateChat, useChatSession, usePromptUsage } from '@/query/ask-ai/climate-api'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { ChatHistoryMenu } from '@/features/ask-ai/components/ChatHistoryMenu'
+import { ChatHistorySheet } from '@/features/ask-ai/components/ChatHistorySheet'
 import {
   Dialog,
   DialogContent,
@@ -27,6 +28,9 @@ import {
 } from '@/ui/shadcn/dialog'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { getAccessToken } from '@/stores/authStore'
+import { getRoleFromToken } from '@/utils/jwt.util'
+import { isSuperAdmin } from '@/utils/role-check.util'
 
 export const Route = createFileRoute('/_authenticated/ask-ai/')({
   component: AskAI,
@@ -34,8 +38,17 @@ export const Route = createFileRoute('/_authenticated/ask-ai/')({
 
 interface Source {
   source?: string
+  documentId?: string
+  chunkId?: string
+  title?: string
+  url?: string
   page?: number
   score?: number
+}
+
+interface GroupedSource extends Source {
+  pages: number[]
+  firstPage?: number
 }
 
 interface Message {
@@ -44,6 +57,7 @@ interface Message {
   content: string
   sources?: Source[]
   timestamp: Date
+  isError?: boolean
 }
 
 
@@ -95,15 +109,80 @@ function parseContentAndSources(content: string, existing?: Source[]) {
   return { cleaned, sources }
 }
 
+function getSourceTitle(source: Source) {
+  return source.title || source.source?.split('/').pop() || 'Unknown source'
+}
 
+function getSourceGroupKey(source: Source) {
+  return (
+    source.documentId ||
+    source.url ||
+    source.source ||
+    source.title ||
+    'unknown-source'
+  )
+}
+
+function groupSources(sources: Source[]): GroupedSource[] {
+  const groups = new Map<string, GroupedSource>()
+
+  for (const source of sources) {
+    const key = getSourceGroupKey(source)
+    const existing = groups.get(key)
+
+    if (!existing) {
+      const pages = typeof source.page === 'number' ? [source.page] : []
+      groups.set(key, {
+        ...source,
+        pages,
+        firstPage: pages[0],
+      })
+      continue
+    }
+
+    if (!existing.documentId && source.documentId) existing.documentId = source.documentId
+    if (!existing.chunkId && source.chunkId) existing.chunkId = source.chunkId
+    if (!existing.title && source.title) existing.title = source.title
+    if (!existing.url && source.url) existing.url = source.url
+    if (!existing.source && source.source) existing.source = source.source
+    if (
+      typeof source.score === 'number' &&
+      (typeof existing.score !== 'number' || source.score > existing.score)
+    ) {
+      existing.score = source.score
+    }
+    if (typeof source.page === 'number') {
+      existing.pages.push(source.page)
+    }
+  }
+
+  return Array.from(groups.values()).map((source) => {
+    const pages = Array.from(new Set(source.pages)).sort((a, b) => a - b)
+    return {
+      ...source,
+      page: pages[0],
+      pages,
+      firstPage: pages[0],
+    }
+  })
+}
+
+function formatPageLabel(pages: number[]) {
+  if (pages.length === 0) return ''
+  return `${pages.length === 1 ? 'Page' : 'Pages'} ${pages.join(', ')}`
+}
 
 function AskAI() {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
   const [conversationId, setConversationId] = useState<string>()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const chatMutation = useClimateChat()
+  const { data: usage } = usePromptUsage()
+  const superAdmin = isSuperAdmin(getRoleFromToken())
+  const limitReached = !superAdmin && (usage ? usage.remaining <= 0 : false)
 
   const { data: sessionData, isLoading: isSessionLoading } = useChatSession(conversationId)
 
@@ -114,10 +193,11 @@ function AskAI() {
     if (sessionData && conversationId) {
       setMessages(
         sessionData.messages.map((msg) => ({
-          id: crypto.randomUUID(),
+          id: msg.id || crypto.randomUUID(),
           role: msg.role as 'user' | 'assistant',
           content: msg.content,
-          timestamp: new Date(msg.createdAt),
+          sources: msg.sources,
+          timestamp: new Date(msg.createdAt || msg.created_at || Date.now()),
         }))
       )
     }
@@ -128,6 +208,26 @@ function AskAI() {
 
   const handleSend = async () => {
     if (!input.trim() || chatMutation.isPending) return
+    if (limitReached) {
+      setMessages((p) => [
+        ...p,
+        {
+          id: crypto.randomUUID(),
+          role: 'user' as const,
+          content: input.trim(),
+          timestamp: new Date(),
+        },
+        {
+          id: crypto.randomUUID(),
+          role: 'assistant' as const,
+          content: `Daily prompt limit reached (${usage?.used}/${usage?.limit}). You've used all your prompts for today. Come back tomorrow!`,
+          timestamp: new Date(),
+          isError: true,
+        },
+      ])
+      setInput('')
+      return
+    }
     const userMsg: Message = {
       id: crypto.randomUUID(),
       role: 'user',
@@ -184,18 +284,40 @@ function AskAI() {
   return (
     <Main className='flex flex-col bg-background' fixed>
 
-      <div className='mb-4'>
-        <h1 className='text-2xl font-bold tracking-tight'>Ask AI</h1>
-        <p className='text-muted-foreground'>Get AI-powered answers from Nepal's climate documents</p>
+      <div className='mb-4 flex items-center justify-between'>
+        <div>
+          <h1 className='text-2xl font-bold tracking-tight'>Ask AI</h1>
+          <p className='text-muted-foreground'>Get AI-powered answers from Nepal's climate documents</p>
+        </div>
+        <div className='flex items-center gap-3'>
+          {usage && !superAdmin && (
+            <span className={cn(
+              'text-xs font-medium px-2.5 py-1 rounded-full',
+              limitReached
+                ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+            )}>
+              {usage.used}/{usage.limit} prompts used today
+            </span>
+          )}
+          <Button
+            variant='outline'
+            className='gap-2 h-9'
+            onClick={() => setSidebarOpen(true)}
+          >
+            <History className='h-4 w-4' />
+            <span>History</span>
+          </Button>
+        </div>
       </div>
 
-      <div className='flex-shrink-0 flex items-center justify-end gap-3 mb-1'>
-        <ChatHistoryMenu
-          onSelectSession={setConversationId}
-          currentSessionId={conversationId}
-          onNewChat={handleNewChat}
-        />
-      </div>
+      <ChatHistorySheet
+        open={sidebarOpen}
+        onOpenChange={setSidebarOpen}
+        onSelectSession={setConversationId}
+        currentSessionId={conversationId}
+        onNewChat={handleNewChat}
+      />
 
 
       <div className='flex flex-1 overflow-hidden'>
@@ -298,22 +420,27 @@ function EmptyState({ onSuggestion }: { onSuggestion: (q: string) => void }) {
 }
 
 
-function SourceCard({ source, index }: { source: Source; index: number }) {
-  const name = source.source || 'Unknown source'
-
-  let filename = name.split('/').pop() || ''
-
-  if (filename && !filename.includes('.')) filename += '.pdf'
-  const ragApiUrl = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000'
-  const documentUrl = filename ? `${ragApiUrl}/documents/${encodeURIComponent(filename)}` : ''
+function SourceCard({ source, index }: { source: GroupedSource; index: number }) {
+  const filename = getSourceTitle(source)
+  const documentUrl = getSourceUrl(source)
+  const pageLabel = formatPageLabel(source.pages)
 
   return (
-    <div className='flex items-center gap-3 rounded-lg border bg-card px-3 py-2 hover:shadow-sm transition-shadow'>
+    <div className='flex items-start gap-3 rounded-lg border bg-card px-3 py-2 hover:shadow-sm transition-shadow'>
       <span className='flex items-center justify-center h-6 w-6 rounded-md bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold flex-shrink-0'>
         {index}
       </span>
 
-      <p className='text-sm font-medium truncate flex-1 min-w-0'>{filename}</p>
+      <div className='min-w-0 flex-1'>
+        <p className='text-sm font-medium truncate'>{filename}</p>
+        {pageLabel && (
+          <SourcePageLinks
+            filename={filename}
+            documentUrl={documentUrl}
+            pages={source.pages}
+          />
+        )}
+      </div>
 
       {documentUrl && (
         <Dialog>
@@ -323,13 +450,46 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
               View Document
             </button>
           </DialogTrigger>
-          <DocumentViewerDialog filename={filename} documentUrl={documentUrl} page={source.page} />
+          <DocumentViewerDialog filename={filename} documentUrl={documentUrl} page={source.firstPage} />
         </Dialog>
       )}
+    </div>
+  )
+}
 
-      {source.page != null && (
-        <span className='text-xs text-muted-foreground flex-shrink-0'>Page {source.page}</span>
-      )}
+function SourcePageLinks({
+  filename,
+  documentUrl,
+  pages,
+}: {
+  filename: string
+  documentUrl: string
+  pages: number[]
+}) {
+  if (!documentUrl) {
+    return (
+      <p className='text-xs text-muted-foreground mt-0.5'>
+        {formatPageLabel(pages)}
+      </p>
+    )
+  }
+
+  return (
+    <div className='mt-0.5 flex flex-wrap items-center gap-1 text-xs text-muted-foreground'>
+      <span>{pages.length === 1 ? 'Page' : 'Pages'}</span>
+      {pages.map((page, index) => (
+        <span key={page} className='inline-flex items-center'>
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className='font-medium text-blue-600 hover:text-blue-700 hover:underline underline-offset-2 dark:text-blue-400 dark:hover:text-blue-300'>
+                {page}
+              </button>
+            </DialogTrigger>
+            <DocumentViewerDialog filename={filename} documentUrl={documentUrl} page={page} />
+          </Dialog>
+          {index < pages.length - 1 && <span>,</span>}
+        </span>
+      ))}
     </div>
   )
 }
@@ -337,12 +497,30 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
 
 function ChatMessage({ message }: { message: Message }) {
   const isUser = message.role === 'user'
+  const [collapsed, setCollapsed] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  // Error messages (e.g. rate limit) get a red banner style
+  if (message.isError) {
+    return (
+      <div className='flex flex-col gap-1 items-start'>
+        <div className='w-full max-w-[95%] flex items-center gap-3 rounded-2xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 px-5 py-4'>
+          <div className='flex items-center justify-center h-8 w-8 rounded-full bg-red-100 dark:bg-red-900/50 flex-shrink-0'>
+            <span className='text-lg'>⚠️</span>
+          </div>
+          <div>
+            <p className='text-sm font-medium text-red-700 dark:text-red-300'>Daily prompt limit reached</p>
+            <p className='text-xs text-red-600/70 dark:text-red-400/70 mt-0.5'>{message.content}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const { cleaned, sources } = isUser
     ? { cleaned: message.content, sources: [] as Source[] }
     : parseContentAndSources(message.content, message.sources)
-
-  const [collapsed, setCollapsed] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const groupedSources = groupSources(sources)
 
   const handleCopy = () => {
     navigator.clipboard.writeText(cleaned)
@@ -364,9 +542,9 @@ function ChatMessage({ message }: { message: Message }) {
             <div className='flex items-center gap-2'>
               <FileText className='h-4 w-4 text-muted-foreground' />
               <span className='text-sm font-medium'>Answer</span>
-              {sources.length > 0 && (
+              {groupedSources.length > 0 && (
                 <div className='flex items-center gap-1 ml-1'>
-                  {sources.map((s, i) => (
+                  {groupedSources.map((s, i) => (
                     <SourceBubble key={i} source={s} index={i + 1} />
                   ))}
                 </div>
@@ -430,7 +608,7 @@ function ChatMessage({ message }: { message: Message }) {
               </div>
 
               <div className='flex items-center gap-3 mt-3 text-xs text-muted-foreground'>
-                {sources.length > 0 && (
+                {groupedSources.length > 0 && (
                   <span className='flex items-center gap-1 text-green-600 dark:text-green-400'>
                     <ShieldCheck className='h-3.5 w-3.5' />
                     Answer grounded in sources
@@ -439,14 +617,14 @@ function ChatMessage({ message }: { message: Message }) {
                 <span>{message.timestamp.toLocaleTimeString()}</span>
               </div>
 
-              {sources.length > 0 && (
+              {groupedSources.length > 0 && (
                 <div className='mt-4 pt-3 border-t'>
                   <div className='flex items-center gap-2 mb-2'>
                     <BookOpen className='h-3.5 w-3.5 text-muted-foreground' />
-                    <span className='text-xs font-medium text-muted-foreground'>Sources ({sources.length})</span>
+                    <span className='text-xs font-medium text-muted-foreground'>Sources ({groupedSources.length})</span>
                   </div>
                   <div className='flex flex-col gap-2'>
-                    {sources.map((src, idx) => (
+                    {groupedSources.map((src, idx) => (
                       <SourceCard key={idx} source={src} index={idx + 1} />
                     ))}
                   </div>
@@ -460,12 +638,9 @@ function ChatMessage({ message }: { message: Message }) {
   )
 }
 
-function SourceBubble({ source, index }: { source: Source; index: number }) {
-  const name = source.source || 'Unknown source'
-  let filename = name.split('/').pop() || ''
-  if (filename && !filename.includes('.')) filename += '.pdf'
-  const ragApiUrl = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000'
-  const documentUrl = filename ? `${ragApiUrl}/documents/${encodeURIComponent(filename)}` : ''
+function SourceBubble({ source, index }: { source: GroupedSource; index: number }) {
+  const filename = getSourceTitle(source)
+  const documentUrl = getSourceUrl(source)
 
   if (!documentUrl) {
     return (
@@ -485,12 +660,35 @@ function SourceBubble({ source, index }: { source: Source; index: number }) {
           {index}
         </button>
       </DialogTrigger>
-      <DocumentViewerDialog filename={filename} documentUrl={documentUrl} page={source.page} />
+      <DocumentViewerDialog filename={filename} documentUrl={documentUrl} page={source.firstPage} />
     </Dialog>
   )
 }
 
 function DocumentViewerDialog({ filename, documentUrl, page }: { filename: string, documentUrl: string, page?: number }) {
+  const [blobUrl, setBlobUrl] = useState('')
+  const [loadError, setLoadError] = useState('')
+
+  useEffect(() => {
+    let currentUrl = ''
+    const load = async () => {
+      try {
+        const response = await fetch(documentUrl, {
+          headers: { Authorization: `Bearer ${getAccessToken()}` },
+        })
+        if (!response.ok) throw new Error('Unable to load PDF')
+        currentUrl = URL.createObjectURL(await response.blob())
+        setBlobUrl(currentUrl)
+      } catch (error) {
+        setLoadError(error instanceof Error ? error.message : 'Unable to load PDF')
+      }
+    }
+    load()
+    return () => {
+      if (currentUrl) URL.revokeObjectURL(currentUrl)
+    }
+  }, [documentUrl])
+
   return (
     <DialogContent className='max-w-5xl w-[90vw] h-[85vh] p-0 gap-0'>
       <DialogHeader className='px-6 py-4 border-b flex flex-row items-center justify-between'>
@@ -503,7 +701,7 @@ function DocumentViewerDialog({ filename, documentUrl, page }: { filename: strin
           )}
         </DialogTitle>
         <a 
-          href={documentUrl} 
+          href={blobUrl || undefined}
           target="_blank" 
           rel="noopener noreferrer"
           className="text-xs text-blue-600 hover:underline flex items-center gap-1 ml-4"
@@ -511,12 +709,28 @@ function DocumentViewerDialog({ filename, documentUrl, page }: { filename: strin
           Open in New Tab <ChevronRight className="h-3 w-3" />
         </a>
       </DialogHeader>
-      <iframe
-        src={`${documentUrl}${page ? `#page=${page}` : ''}`}
-        className='w-full flex-1 border-0'
-        style={{ height: 'calc(85vh - 65px)' }}
-        title={`PDF: ${filename}`}
-      />
+      {loadError ? (
+        <div className='flex flex-1 items-center justify-center text-sm text-red-600'>{loadError}</div>
+      ) : blobUrl ? (
+        <iframe
+          src={`${blobUrl}${page ? `#page=${page}` : ''}`}
+          className='w-full flex-1 border-0'
+          style={{ height: 'calc(85vh - 65px)' }}
+          title={`PDF: ${filename}`}
+        />
+      ) : (
+        <div className='flex flex-1 items-center justify-center'><Loader2 className='h-5 w-5 animate-spin' /></div>
+      )}
     </DialogContent>
   )
+}
+
+function getSourceUrl(source: Source) {
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+  if (source.url) {
+    return source.url.startsWith('http') ? source.url : `${apiUrl}${source.url}`
+  }
+  return source.documentId
+    ? `${apiUrl}/api/v1/ai-assistant/documents/${source.documentId}/file`
+    : ''
 }

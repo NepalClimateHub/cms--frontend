@@ -27,6 +27,7 @@ import { Route as AuthenticatedSetupIndexImport } from './routes/_authenticated/
 import { Route as AuthenticatedResourcesIndexImport } from './routes/_authenticated/resources/index'
 import { Route as AuthenticatedProjectsIndexImport } from './routes/_authenticated/projects/index'
 import { Route as AuthenticatedAskAiIndexImport } from './routes/_authenticated/ask-ai/index'
+import { Route as AuthenticatedAiDocumentsIndexImport } from './routes/_authenticated/ai-documents/index'
 import { Route as AuthenticatedResourcesAddImport } from './routes/_authenticated/resources/add'
 import { Route as AuthenticatedResourcesIdImport } from './routes/_authenticated/resources/$id'
 import { Route as AuthenticatedProjectsAddImport } from './routes/_authenticated/projects/add'
@@ -271,6 +272,13 @@ const AuthenticatedAskAiIndexRoute = AuthenticatedAskAiIndexImport.update({
   path: '/ask-ai/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+
+const AuthenticatedAiDocumentsIndexRoute =
+  AuthenticatedAiDocumentsIndexImport.update({
+    id: '/ai-documents/',
+    path: '/ai-documents/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 const AuthenticatedSettingsNotificationsLazyRoute =
   AuthenticatedSettingsNotificationsLazyImport.update({
@@ -657,6 +665,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsNotificationsLazyImport
       parentRoute: typeof AuthenticatedSettingsRouteLazyImport
     }
+    '/_authenticated/ai-documents/': {
+      id: '/_authenticated/ai-documents/'
+      path: '/ai-documents'
+      fullPath: '/ai-documents'
+      preLoaderRoute: typeof AuthenticatedAiDocumentsIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/ask-ai/': {
       id: '/_authenticated/ask-ai/'
       path: '/ask-ai'
@@ -868,6 +883,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProjectsAddRoute: typeof AuthenticatedProjectsAddRoute
   AuthenticatedResourcesIdRoute: typeof AuthenticatedResourcesIdRoute
   AuthenticatedResourcesAddRoute: typeof AuthenticatedResourcesAddRoute
+  AuthenticatedAiDocumentsIndexRoute: typeof AuthenticatedAiDocumentsIndexRoute
   AuthenticatedAskAiIndexRoute: typeof AuthenticatedAskAiIndexRoute
   AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
   AuthenticatedResourcesIndexRoute: typeof AuthenticatedResourcesIndexRoute
@@ -905,6 +921,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProjectsAddRoute: AuthenticatedProjectsAddRoute,
   AuthenticatedResourcesIdRoute: AuthenticatedResourcesIdRoute,
   AuthenticatedResourcesAddRoute: AuthenticatedResourcesAddRoute,
+  AuthenticatedAiDocumentsIndexRoute: AuthenticatedAiDocumentsIndexRoute,
   AuthenticatedAskAiIndexRoute: AuthenticatedAskAiIndexRoute,
   AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
   AuthenticatedResourcesIndexRoute: AuthenticatedResourcesIndexRoute,
@@ -976,6 +993,7 @@ export interface FileRoutesByFullPath {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/ai-documents': typeof AuthenticatedAiDocumentsIndexRoute
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/resources': typeof AuthenticatedResourcesIndexRoute
@@ -1027,6 +1045,7 @@ export interface FileRoutesByTo {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/ai-documents': typeof AuthenticatedAiDocumentsIndexRoute
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/resources': typeof AuthenticatedResourcesIndexRoute
@@ -1082,6 +1101,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/_authenticated/ai-documents/': typeof AuthenticatedAiDocumentsIndexRoute
   '/_authenticated/ask-ai/': typeof AuthenticatedAskAiIndexRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
   '/_authenticated/resources/': typeof AuthenticatedResourcesIndexRoute
@@ -1136,6 +1156,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/ai-documents'
     | '/ask-ai'
     | '/projects'
     | '/resources'
@@ -1186,6 +1207,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/ai-documents'
     | '/ask-ai'
     | '/projects'
     | '/resources'
@@ -1239,6 +1261,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
+    | '/_authenticated/ai-documents/'
     | '/_authenticated/ask-ai/'
     | '/_authenticated/projects/'
     | '/_authenticated/resources/'
@@ -1334,6 +1357,7 @@ export const routeTree = rootRoute
         "/_authenticated/projects/add",
         "/_authenticated/resources/$id",
         "/_authenticated/resources/add",
+        "/_authenticated/ai-documents/",
         "/_authenticated/ask-ai/",
         "/_authenticated/projects/",
         "/_authenticated/resources/",
@@ -1460,6 +1484,10 @@ export const routeTree = rootRoute
     "/_authenticated/settings/notifications": {
       "filePath": "_authenticated/settings/notifications.lazy.tsx",
       "parent": "/_authenticated/settings"
+    },
+    "/_authenticated/ai-documents/": {
+      "filePath": "_authenticated/ai-documents/index.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/ask-ai/": {
       "filePath": "_authenticated/ask-ai/index.tsx",
