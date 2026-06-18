@@ -18,14 +18,20 @@ export interface ChatRequest {
   top_k?: number;
 }
 
+export interface ChatSource {
+  source?: string;
+  documentId?: string;
+  chunkId?: string;
+  title?: string;
+  url?: string;
+  page?: number;
+  score?: number;
+}
+
 export interface ChatResponse {
   response: string;
   conversation_id?: string;
-  sources?: Array<{
-    source?: string;
-    page?: number;
-    score?: number;
-  }>;
+  sources?: ChatSource[];
   user_id?: string;
   metadata?: Record<string, unknown>;
   createdAt?: string; // ISO timestamp from backend
@@ -46,9 +52,12 @@ export interface ChatHistoryResponse {
 export interface ChatSessionMessagesResponse {
   session_id: string;
   messages: Array<{
+    id?: string;
     role: string;
     content: string;
-    createdAt: string;
+    sources?: ChatSource[];
+    createdAt?: string;
+    created_at?: string;
   }>;
 }
 
@@ -89,12 +98,35 @@ const cmsFetch = async <T>(
     if (response.status === 401) {
       throw new Error('Session expired. Please login again.');
     }
-    throw new Error(`API error: ${response.statusText}`);
+    throw new Error(await errorPayloadMessage(response));
   }
 
   const json = await response.json();
   // CMS Backend wraps responses in { data: ..., meta: {} }
   return json.data !== undefined ? json.data : json;
+};
+
+const errorPayloadMessage = async (response: Response) => {
+  const fallback = response.statusText || `Request failed (${response.status})`;
+
+  try {
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const body = await response.json();
+      return (
+        body?.error?.message ||
+        body?.error?.details?.message ||
+        body?.message ||
+        body?.detail ||
+        fallback
+      );
+    }
+
+    const text = await response.text();
+    return text || fallback;
+  } catch {
+    return fallback;
+  }
 };
 
 // ============ React Query Hooks ============
@@ -210,4 +242,3 @@ export const useRenameSession = () => {
     },
   });
 };
-
