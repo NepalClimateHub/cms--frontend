@@ -10,6 +10,7 @@ import {
   Briefcase,
   Library,
   Database,
+  Files,
 } from 'lucide-react'
 import { NavGroup } from '../types'
 
@@ -100,6 +101,12 @@ export const sidebarMenus: NavGroup[] = [
           Roles.INDIVIDUAL,
           Roles.ORGANIZATION,
         ],
+      },
+      {
+        title: 'AI Documents',
+        url: '/ai-documents',
+        icon: Files,
+        roles: [Roles.SUPER_ADMIN, Roles.ADMIN],
       },
       {
         title: 'Setup',

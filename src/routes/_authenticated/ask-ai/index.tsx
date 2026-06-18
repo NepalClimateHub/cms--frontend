@@ -28,6 +28,9 @@ import {
 } from '@/ui/shadcn/dialog'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { getAccessToken } from '@/stores/authStore'
+import { getRoleFromToken } from '@/utils/jwt.util'
+import { isSuperAdmin } from '@/utils/role-check.util'
 
 export const Route = createFileRoute('/_authenticated/ask-ai/')({
   component: AskAI,
@@ -35,6 +38,10 @@ export const Route = createFileRoute('/_authenticated/ask-ai/')({
 
 interface Source {
   source?: string
+  documentId?: string
+  chunkId?: string
+  title?: string
+  url?: string
   page?: number
   score?: number
 }
@@ -108,7 +115,8 @@ function AskAI() {
 
   const chatMutation = useClimateChat()
   const { data: usage } = usePromptUsage()
-  const limitReached = usage ? usage.remaining <= 0 : false
+  const superAdmin = isSuperAdmin(getRoleFromToken())
+  const limitReached = !superAdmin && (usage ? usage.remaining <= 0 : false)
 
   const { data: sessionData, isLoading: isSessionLoading } = useChatSession(conversationId)
 
@@ -215,7 +223,7 @@ function AskAI() {
           <p className='text-muted-foreground'>Get AI-powered answers from Nepal's climate documents</p>
         </div>
         <div className='flex items-center gap-3'>
-          {usage && (
+          {usage && !superAdmin && (
             <span className={cn(
               'text-xs font-medium px-2.5 py-1 rounded-full',
               limitReached
@@ -346,13 +354,8 @@ function EmptyState({ onSuggestion }: { onSuggestion: (q: string) => void }) {
 
 
 function SourceCard({ source, index }: { source: Source; index: number }) {
-  const name = source.source || 'Unknown source'
-
-  let filename = name.split('/').pop() || ''
-
-  if (filename && !filename.includes('.')) filename += '.pdf'
-  const ragApiUrl = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000'
-  const documentUrl = filename ? `${ragApiUrl}/documents/${encodeURIComponent(filename)}` : ''
+  const filename = source.title || source.source?.split('/').pop() || 'Unknown source'
+  const documentUrl = getSourceUrl(source)
 
   return (
     <div className='flex items-center gap-3 rounded-lg border bg-card px-3 py-2 hover:shadow-sm transition-shadow'>
@@ -384,6 +387,8 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
 
 function ChatMessage({ message }: { message: Message }) {
   const isUser = message.role === 'user'
+  const [collapsed, setCollapsed] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   // Error messages (e.g. rate limit) get a red banner style
   if (message.isError) {
@@ -405,9 +410,6 @@ function ChatMessage({ message }: { message: Message }) {
   const { cleaned, sources } = isUser
     ? { cleaned: message.content, sources: [] as Source[] }
     : parseContentAndSources(message.content, message.sources)
-
-  const [collapsed, setCollapsed] = useState(false)
-  const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
     navigator.clipboard.writeText(cleaned)
@@ -526,11 +528,8 @@ function ChatMessage({ message }: { message: Message }) {
 }
 
 function SourceBubble({ source, index }: { source: Source; index: number }) {
-  const name = source.source || 'Unknown source'
-  let filename = name.split('/').pop() || ''
-  if (filename && !filename.includes('.')) filename += '.pdf'
-  const ragApiUrl = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000'
-  const documentUrl = filename ? `${ragApiUrl}/documents/${encodeURIComponent(filename)}` : ''
+  const filename = source.title || source.source?.split('/').pop() || 'Unknown source'
+  const documentUrl = getSourceUrl(source)
 
   if (!documentUrl) {
     return (
@@ -556,6 +555,29 @@ function SourceBubble({ source, index }: { source: Source; index: number }) {
 }
 
 function DocumentViewerDialog({ filename, documentUrl, page }: { filename: string, documentUrl: string, page?: number }) {
+  const [blobUrl, setBlobUrl] = useState('')
+  const [loadError, setLoadError] = useState('')
+
+  useEffect(() => {
+    let currentUrl = ''
+    const load = async () => {
+      try {
+        const response = await fetch(documentUrl, {
+          headers: { Authorization: `Bearer ${getAccessToken()}` },
+        })
+        if (!response.ok) throw new Error('Unable to load PDF')
+        currentUrl = URL.createObjectURL(await response.blob())
+        setBlobUrl(currentUrl)
+      } catch (error) {
+        setLoadError(error instanceof Error ? error.message : 'Unable to load PDF')
+      }
+    }
+    load()
+    return () => {
+      if (currentUrl) URL.revokeObjectURL(currentUrl)
+    }
+  }, [documentUrl])
+
   return (
     <DialogContent className='max-w-5xl w-[90vw] h-[85vh] p-0 gap-0'>
       <DialogHeader className='px-6 py-4 border-b flex flex-row items-center justify-between'>
@@ -568,7 +590,7 @@ function DocumentViewerDialog({ filename, documentUrl, page }: { filename: strin
           )}
         </DialogTitle>
         <a 
-          href={documentUrl} 
+          href={blobUrl || undefined}
           target="_blank" 
           rel="noopener noreferrer"
           className="text-xs text-blue-600 hover:underline flex items-center gap-1 ml-4"
@@ -576,12 +598,28 @@ function DocumentViewerDialog({ filename, documentUrl, page }: { filename: strin
           Open in New Tab <ChevronRight className="h-3 w-3" />
         </a>
       </DialogHeader>
-      <iframe
-        src={`${documentUrl}${page ? `#page=${page}` : ''}`}
-        className='w-full flex-1 border-0'
-        style={{ height: 'calc(85vh - 65px)' }}
-        title={`PDF: ${filename}`}
-      />
+      {loadError ? (
+        <div className='flex flex-1 items-center justify-center text-sm text-red-600'>{loadError}</div>
+      ) : blobUrl ? (
+        <iframe
+          src={`${blobUrl}${page ? `#page=${page}` : ''}`}
+          className='w-full flex-1 border-0'
+          style={{ height: 'calc(85vh - 65px)' }}
+          title={`PDF: ${filename}`}
+        />
+      ) : (
+        <div className='flex flex-1 items-center justify-center'><Loader2 className='h-5 w-5 animate-spin' /></div>
+      )}
     </DialogContent>
   )
+}
+
+function getSourceUrl(source: Source) {
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+  if (source.url) {
+    return source.url.startsWith('http') ? source.url : `${apiUrl}${source.url}`
+  }
+  return source.documentId
+    ? `${apiUrl}/api/v1/ai-assistant/documents/${source.documentId}/file`
+    : ''
 }
