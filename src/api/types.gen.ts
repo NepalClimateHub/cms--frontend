@@ -680,7 +680,11 @@ export type EventResponseDto = {
     /**
      * status
      */
-    status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
+    status?: string;
+    /**
+     * moderation status
+     */
+    moderationStatus?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
     /**
      * cost
      */
@@ -770,7 +774,11 @@ export type CreateEventDto = {
     /**
      * status
      */
-    status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
+    status?: string;
+    /**
+     * moderation status
+     */
+    moderationStatus?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
     /**
      * cost
      */
@@ -864,7 +872,11 @@ export type UpdateEventDto = {
     /**
      * status
      */
-    status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
+    status?: string;
+    /**
+     * moderation status
+     */
+    moderationStatus?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
     /**
      * cost
      */
@@ -1085,7 +1097,11 @@ export type OpportunityResponseDto = {
     /**
      * status
      */
-    status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
+    status?: string;
+    /**
+     * moderation status
+     */
+    moderationStatus?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
     /**
      * cost
      */
@@ -1175,7 +1191,11 @@ export type CreateOpportunityDto = {
     /**
      * status
      */
-    status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
+    status?: string;
+    /**
+     * moderation status
+     */
+    moderationStatus?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
     /**
      * cost
      */
@@ -1253,7 +1273,11 @@ export type UpdateOpportunityDto = {
     /**
      * status
      */
-    status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
+    status?: string;
+    /**
+     * moderation status
+     */
+    moderationStatus?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
     /**
      * cost
      */
@@ -2842,7 +2866,8 @@ export type EventsControllerGetEventsData = {
         offset?: number;
         title?: string;
         tagIds?: Array<string>;
-        status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
+        status?: string;
+        moderationStatus?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
     };
     url: '/api/v1/events';
 };
@@ -3097,7 +3122,8 @@ export type OpportunityControllerGetOpportunitiesData = {
         offset?: number;
         title: string;
         tagIds?: Array<string>;
-        status?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
+        status?: string;
+        moderationStatus?: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'IMPROVEMENT_REQUIRED';
     };
     url: '/api/v1/opportunities';
 };
