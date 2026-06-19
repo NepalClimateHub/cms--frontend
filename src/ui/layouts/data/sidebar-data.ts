@@ -6,10 +6,13 @@ import {
   Newspaper,
   PartyPopper,
   User,
+  Users,
   MessageCircle,
   Briefcase,
   Library,
   Database,
+  Trophy,
+  Tag,
 } from 'lucide-react'
 import { NavGroup } from '../types'
 
@@ -32,6 +35,18 @@ export const sidebarMenus: NavGroup[] = [
           Roles.SUPER_ADMIN,
           Roles.ADMIN,
           Roles.CONTENT_ADMIN,
+          Roles.ORGANIZATION,
+        ],
+      },
+      {
+        title: 'Ask AI',
+        url: '/ask-ai',
+        icon: MessageCircle,
+        roles: [
+          Roles.SUPER_ADMIN,
+          Roles.ADMIN,
+          Roles.CONTENT_ADMIN,
+          Roles.INDIVIDUAL,
           Roles.ORGANIZATION,
         ],
       },
@@ -89,23 +104,31 @@ export const sidebarMenus: NavGroup[] = [
         icon: Mail,
         roles: [Roles.SUPER_ADMIN, Roles.ADMIN, Roles.CONTENT_ADMIN],
       },
-      {
-        title: 'Ask AI',
-        url: '/ask-ai',
-        icon: MessageCircle,
-        roles: [
-          Roles.SUPER_ADMIN,
-          Roles.ADMIN,
-          Roles.CONTENT_ADMIN,
-          Roles.INDIVIDUAL,
-          Roles.ORGANIZATION,
-        ],
-      },
+
       {
         title: 'Setup',
-        url: '/setup',
         icon: IconSettings,
         roles: [Roles.SUPER_ADMIN, Roles.ADMIN, Roles.CONTENT_ADMIN],
+        items: [
+          {
+            title: 'Tags & Categories',
+            url: '/setup',
+            icon: Tag,
+            roles: [Roles.SUPER_ADMIN, Roles.ADMIN, Roles.CONTENT_ADMIN],
+          },
+          {
+            title: 'Members',
+            url: '/members',
+            icon: Users,
+            roles: [Roles.SUPER_ADMIN, Roles.ADMIN, Roles.CONTENT_ADMIN],
+          },
+          {
+            title: 'Climate Champions',
+            url: '/climate-champions',
+            icon: Trophy,
+            roles: [Roles.SUPER_ADMIN, Roles.ADMIN, Roles.CONTENT_ADMIN],
+          },
+        ],
       },
       {
         title: 'Database Export',
