@@ -31,11 +31,12 @@ type OpportunityTableRow = OpportunityResponseDto & {
 }
 
 function statusBadgeVariant(
-  status: OpportunityResponseDto['status'],
+  moderationStatus: OpportunityResponseDto['moderationStatus'],
   isDraft: boolean | undefined
 ) {
   const publishedLike =
-    status === 'PUBLISHED' || (status == null && isDraft === false)
+    moderationStatus === 'PUBLISHED' ||
+    (moderationStatus == null && isDraft === false)
   return publishedLike ? 'default' : 'secondary'
 }
 
@@ -122,12 +123,12 @@ const OpportunitiesRowAction = ({ row }: { row: Row<OpportunityTableRow> }) => {
                 </Badge>
                 <Badge
                   variant={statusBadgeVariant(
-                    row.original.status,
+                    row.original.moderationStatus,
                     row.original.isDraft
                   )}
                   className='text-sm'
                 >
-                  {row.original.status ?? '—'}
+                  {row.original.moderationStatus ?? '—'}
                 </Badge>
                 <Badge
                   variant={row.original.isDraft ? 'secondary' : 'default'}
