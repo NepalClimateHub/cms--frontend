@@ -3,7 +3,13 @@ import { useGetProfile } from '@/query/auth/use-auth'
 import { Main } from '@/ui/layouts/main'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent } from '@/ui/shadcn/card'
-import { BookOpen, MessageCircle, Sparkles, UserCheck } from 'lucide-react'
+import {
+  BookOpen,
+  MessageCircle,
+  Sparkles,
+  UserCheck,
+  UserCircle,
+} from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { getProfileCompletion } from '@/utils/profile-completion'
 
@@ -15,7 +21,7 @@ export default function IndividualDashboardHome() {
   const isComplete = completion === 100
 
   return (
-    <Main>
+    <Main isHome>
       <div className='flex min-h-[60vh] flex-col items-center gap-6 px-4 py-8'>
         <Card className='w-full max-w-4xl overflow-hidden border-0 shadow-xl'>
           <div className='relative bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 p-8 md:p-12 lg:p-16'>
@@ -39,6 +45,7 @@ export default function IndividualDashboardHome() {
                   ) : (
                     <Link
                       to='/dashboard/profile'
+                      search={{ highlightEdit: true }}
                       className='flex items-center gap-2 font-medium text-white underline underline-offset-4 hover:text-white/80'
                     >
                       <UserCheck className='h-5 w-5' />
@@ -53,6 +60,21 @@ export default function IndividualDashboardHome() {
                   asChild
                   size='lg'
                   className='bg-white/95 text-emerald-800 shadow-md hover:bg-white'
+                >
+                  <Link
+                    to='/dashboard/profile'
+                    search={{ highlightEdit: true }}
+                    className='gap-2'
+                  >
+                    <UserCircle className='h-4 w-4' />
+                    Edit Profile
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size='lg'
+                  variant='secondary'
+                  className='border border-white/40 bg-white/10 text-white backdrop-blur hover:bg-white/20'
                 >
                   <Link to='/blog/list' className='gap-2'>
                     <BookOpen className='h-4 w-4' />

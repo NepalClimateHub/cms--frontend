@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearch } from '@tanstack/react-router'
 import apiClient from '@/query/apiClient'
 import { useGetProfile } from '@/query/auth/use-auth'
 import type { User as AuthStoreUser } from '@/schemas/auth/profile'
@@ -82,6 +83,8 @@ function shouldShowOrganizationProfile(
 export default function UserProfilePage() {
   const { user: authUser } = useAuthStore()
   const { data: profileData, isLoading, refetch } = useGetProfile()
+  const search = useSearch({ from: '/_authenticated/dashboard/profile' })
+  const highlightEdit = search.highlightEdit
 
   // Use profile data from API if available, otherwise fallback to auth store user
   const user = (profileData || authUser) as AuthStoreUser | null
@@ -176,6 +179,7 @@ export default function UserProfilePage() {
       <OrganizationProfilePage
         user={userForOrgPage}
         onUserUpdated={() => refetch()}
+        highlightEdit={highlightEdit}
       />
     )
   }
@@ -203,6 +207,12 @@ export default function UserProfilePage() {
             variant='outline'
             size='sm'
             onClick={() => setIsEditProfileDialogOpen(true)}
+            className={cn(
+              'transition-all duration-300',
+              highlightEdit &&
+                !isEditProfileDialogOpen &&
+                'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-lg shadow-emerald-500/20 ring-2 ring-emerald-500 ring-offset-2 scale-105 animate-pulse'
+            )}
           >
             <Edit className='mr-2 h-4 w-4' />
             Edit Profile

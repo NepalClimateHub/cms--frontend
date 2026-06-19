@@ -26,12 +26,18 @@ import { Route as AuthenticatedSubscribedEmailsIndexImport } from './routes/_aut
 import { Route as AuthenticatedSetupIndexImport } from './routes/_authenticated/setup/index'
 import { Route as AuthenticatedResourcesIndexImport } from './routes/_authenticated/resources/index'
 import { Route as AuthenticatedProjectsIndexImport } from './routes/_authenticated/projects/index'
+import { Route as AuthenticatedMembersIndexImport } from './routes/_authenticated/members/index'
+import { Route as AuthenticatedClimateChampionsIndexImport } from './routes/_authenticated/climate-champions/index'
 import { Route as AuthenticatedAskAiIndexImport } from './routes/_authenticated/ask-ai/index'
 import { Route as AuthenticatedResourcesAddImport } from './routes/_authenticated/resources/add'
 import { Route as AuthenticatedResourcesIdImport } from './routes/_authenticated/resources/$id'
 import { Route as AuthenticatedProjectsAddImport } from './routes/_authenticated/projects/add'
 import { Route as AuthenticatedProjectsIdImport } from './routes/_authenticated/projects/$id'
+import { Route as AuthenticatedMembersAddImport } from './routes/_authenticated/members/add'
+import { Route as AuthenticatedMembersIdImport } from './routes/_authenticated/members/$id'
 import { Route as AuthenticatedDashboardProfileImport } from './routes/_authenticated/dashboard/profile'
+import { Route as AuthenticatedClimateChampionsAddImport } from './routes/_authenticated/climate-champions/add'
+import { Route as AuthenticatedClimateChampionsIdImport } from './routes/_authenticated/climate-champions/$id'
 import { Route as AuthenticatedBlogListImport } from './routes/_authenticated/blog/list'
 import { Route as AuthenticatedBlogAddImport } from './routes/_authenticated/blog/add'
 import { Route as AuthenticatedBlogIdImport } from './routes/_authenticated/blog/$id'
@@ -266,6 +272,19 @@ const AuthenticatedProjectsIndexRoute = AuthenticatedProjectsIndexImport.update(
   } as any,
 )
 
+const AuthenticatedMembersIndexRoute = AuthenticatedMembersIndexImport.update({
+  id: '/members/',
+  path: '/members/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedClimateChampionsIndexRoute =
+  AuthenticatedClimateChampionsIndexImport.update({
+    id: '/climate-champions/',
+    path: '/climate-champions/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
 const AuthenticatedAskAiIndexRoute = AuthenticatedAskAiIndexImport.update({
   id: '/ask-ai/',
   path: '/ask-ai/',
@@ -340,10 +359,36 @@ const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdImport.update({
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
+const AuthenticatedMembersAddRoute = AuthenticatedMembersAddImport.update({
+  id: '/members/add',
+  path: '/members/add',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedMembersIdRoute = AuthenticatedMembersIdImport.update({
+  id: '/members/$id',
+  path: '/members/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
 const AuthenticatedDashboardProfileRoute =
   AuthenticatedDashboardProfileImport.update({
     id: '/dashboard/profile',
     path: '/dashboard/profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedClimateChampionsAddRoute =
+  AuthenticatedClimateChampionsAddImport.update({
+    id: '/climate-champions/add',
+    path: '/climate-champions/add',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedClimateChampionsIdRoute =
+  AuthenticatedClimateChampionsIdImport.update({
+    id: '/climate-champions/$id',
+    path: '/climate-champions/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -594,11 +639,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBlogListImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/climate-champions/$id': {
+      id: '/_authenticated/climate-champions/$id'
+      path: '/climate-champions/$id'
+      fullPath: '/climate-champions/$id'
+      preLoaderRoute: typeof AuthenticatedClimateChampionsIdImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/climate-champions/add': {
+      id: '/_authenticated/climate-champions/add'
+      path: '/climate-champions/add'
+      fullPath: '/climate-champions/add'
+      preLoaderRoute: typeof AuthenticatedClimateChampionsAddImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/dashboard/profile': {
       id: '/_authenticated/dashboard/profile'
       path: '/dashboard/profile'
       fullPath: '/dashboard/profile'
       preLoaderRoute: typeof AuthenticatedDashboardProfileImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/members/$id': {
+      id: '/_authenticated/members/$id'
+      path: '/members/$id'
+      fullPath: '/members/$id'
+      preLoaderRoute: typeof AuthenticatedMembersIdImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/members/add': {
+      id: '/_authenticated/members/add'
+      path: '/members/add'
+      fullPath: '/members/add'
+      preLoaderRoute: typeof AuthenticatedMembersAddImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/projects/$id': {
@@ -662,6 +735,20 @@ declare module '@tanstack/react-router' {
       path: '/ask-ai'
       fullPath: '/ask-ai'
       preLoaderRoute: typeof AuthenticatedAskAiIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/climate-champions/': {
+      id: '/_authenticated/climate-champions/'
+      path: '/climate-champions'
+      fullPath: '/climate-champions'
+      preLoaderRoute: typeof AuthenticatedClimateChampionsIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/members/': {
+      id: '/_authenticated/members/'
+      path: '/members'
+      fullPath: '/members'
+      preLoaderRoute: typeof AuthenticatedMembersIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/projects/': {
@@ -863,12 +950,18 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBlogIdRoute: typeof AuthenticatedBlogIdRoute
   AuthenticatedBlogAddRoute: typeof AuthenticatedBlogAddRoute
   AuthenticatedBlogListRoute: typeof AuthenticatedBlogListRoute
+  AuthenticatedClimateChampionsIdRoute: typeof AuthenticatedClimateChampionsIdRoute
+  AuthenticatedClimateChampionsAddRoute: typeof AuthenticatedClimateChampionsAddRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
+  AuthenticatedMembersIdRoute: typeof AuthenticatedMembersIdRoute
+  AuthenticatedMembersAddRoute: typeof AuthenticatedMembersAddRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
   AuthenticatedProjectsAddRoute: typeof AuthenticatedProjectsAddRoute
   AuthenticatedResourcesIdRoute: typeof AuthenticatedResourcesIdRoute
   AuthenticatedResourcesAddRoute: typeof AuthenticatedResourcesAddRoute
   AuthenticatedAskAiIndexRoute: typeof AuthenticatedAskAiIndexRoute
+  AuthenticatedClimateChampionsIndexRoute: typeof AuthenticatedClimateChampionsIndexRoute
+  AuthenticatedMembersIndexRoute: typeof AuthenticatedMembersIndexRoute
   AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
   AuthenticatedResourcesIndexRoute: typeof AuthenticatedResourcesIndexRoute
   AuthenticatedSetupIndexRoute: typeof AuthenticatedSetupIndexRoute
@@ -900,12 +993,19 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBlogIdRoute: AuthenticatedBlogIdRoute,
   AuthenticatedBlogAddRoute: AuthenticatedBlogAddRoute,
   AuthenticatedBlogListRoute: AuthenticatedBlogListRoute,
+  AuthenticatedClimateChampionsIdRoute: AuthenticatedClimateChampionsIdRoute,
+  AuthenticatedClimateChampionsAddRoute: AuthenticatedClimateChampionsAddRoute,
   AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
+  AuthenticatedMembersIdRoute: AuthenticatedMembersIdRoute,
+  AuthenticatedMembersAddRoute: AuthenticatedMembersAddRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
   AuthenticatedProjectsAddRoute: AuthenticatedProjectsAddRoute,
   AuthenticatedResourcesIdRoute: AuthenticatedResourcesIdRoute,
   AuthenticatedResourcesAddRoute: AuthenticatedResourcesAddRoute,
   AuthenticatedAskAiIndexRoute: AuthenticatedAskAiIndexRoute,
+  AuthenticatedClimateChampionsIndexRoute:
+    AuthenticatedClimateChampionsIndexRoute,
+  AuthenticatedMembersIndexRoute: AuthenticatedMembersIndexRoute,
   AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
   AuthenticatedResourcesIndexRoute: AuthenticatedResourcesIndexRoute,
   AuthenticatedSetupIndexRoute: AuthenticatedSetupIndexRoute,
@@ -967,7 +1067,11 @@ export interface FileRoutesByFullPath {
   '/blog/$id': typeof AuthenticatedBlogIdRoute
   '/blog/add': typeof AuthenticatedBlogAddRoute
   '/blog/list': typeof AuthenticatedBlogListRoute
+  '/climate-champions/$id': typeof AuthenticatedClimateChampionsIdRoute
+  '/climate-champions/add': typeof AuthenticatedClimateChampionsAddRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/members/$id': typeof AuthenticatedMembersIdRoute
+  '/members/add': typeof AuthenticatedMembersAddRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/projects/add': typeof AuthenticatedProjectsAddRoute
   '/resources/$id': typeof AuthenticatedResourcesIdRoute
@@ -977,6 +1081,8 @@ export interface FileRoutesByFullPath {
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
+  '/climate-champions': typeof AuthenticatedClimateChampionsIndexRoute
+  '/members': typeof AuthenticatedMembersIndexRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/resources': typeof AuthenticatedResourcesIndexRoute
   '/setup': typeof AuthenticatedSetupIndexRoute
@@ -1018,7 +1124,11 @@ export interface FileRoutesByTo {
   '/blog/$id': typeof AuthenticatedBlogIdRoute
   '/blog/add': typeof AuthenticatedBlogAddRoute
   '/blog/list': typeof AuthenticatedBlogListRoute
+  '/climate-champions/$id': typeof AuthenticatedClimateChampionsIdRoute
+  '/climate-champions/add': typeof AuthenticatedClimateChampionsAddRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/members/$id': typeof AuthenticatedMembersIdRoute
+  '/members/add': typeof AuthenticatedMembersAddRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/projects/add': typeof AuthenticatedProjectsAddRoute
   '/resources/$id': typeof AuthenticatedResourcesIdRoute
@@ -1028,6 +1138,8 @@ export interface FileRoutesByTo {
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
+  '/climate-champions': typeof AuthenticatedClimateChampionsIndexRoute
+  '/members': typeof AuthenticatedMembersIndexRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/resources': typeof AuthenticatedResourcesIndexRoute
   '/setup': typeof AuthenticatedSetupIndexRoute
@@ -1073,7 +1185,11 @@ export interface FileRoutesById {
   '/_authenticated/blog/$id': typeof AuthenticatedBlogIdRoute
   '/_authenticated/blog/add': typeof AuthenticatedBlogAddRoute
   '/_authenticated/blog/list': typeof AuthenticatedBlogListRoute
+  '/_authenticated/climate-champions/$id': typeof AuthenticatedClimateChampionsIdRoute
+  '/_authenticated/climate-champions/add': typeof AuthenticatedClimateChampionsAddRoute
   '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/_authenticated/members/$id': typeof AuthenticatedMembersIdRoute
+  '/_authenticated/members/add': typeof AuthenticatedMembersAddRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/projects/add': typeof AuthenticatedProjectsAddRoute
   '/_authenticated/resources/$id': typeof AuthenticatedResourcesIdRoute
@@ -1083,6 +1199,8 @@ export interface FileRoutesById {
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/_authenticated/ask-ai/': typeof AuthenticatedAskAiIndexRoute
+  '/_authenticated/climate-champions/': typeof AuthenticatedClimateChampionsIndexRoute
+  '/_authenticated/members/': typeof AuthenticatedMembersIndexRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
   '/_authenticated/resources/': typeof AuthenticatedResourcesIndexRoute
   '/_authenticated/setup/': typeof AuthenticatedSetupIndexRoute
@@ -1127,7 +1245,11 @@ export interface FileRouteTypes {
     | '/blog/$id'
     | '/blog/add'
     | '/blog/list'
+    | '/climate-champions/$id'
+    | '/climate-champions/add'
     | '/dashboard/profile'
+    | '/members/$id'
+    | '/members/add'
     | '/projects/$id'
     | '/projects/add'
     | '/resources/$id'
@@ -1137,6 +1259,8 @@ export interface FileRouteTypes {
     | '/settings/display'
     | '/settings/notifications'
     | '/ask-ai'
+    | '/climate-champions'
+    | '/members'
     | '/projects'
     | '/resources'
     | '/setup'
@@ -1177,7 +1301,11 @@ export interface FileRouteTypes {
     | '/blog/$id'
     | '/blog/add'
     | '/blog/list'
+    | '/climate-champions/$id'
+    | '/climate-champions/add'
     | '/dashboard/profile'
+    | '/members/$id'
+    | '/members/add'
     | '/projects/$id'
     | '/projects/add'
     | '/resources/$id'
@@ -1187,6 +1315,8 @@ export interface FileRouteTypes {
     | '/settings/display'
     | '/settings/notifications'
     | '/ask-ai'
+    | '/climate-champions'
+    | '/members'
     | '/projects'
     | '/resources'
     | '/setup'
@@ -1230,7 +1360,11 @@ export interface FileRouteTypes {
     | '/_authenticated/blog/$id'
     | '/_authenticated/blog/add'
     | '/_authenticated/blog/list'
+    | '/_authenticated/climate-champions/$id'
+    | '/_authenticated/climate-champions/add'
     | '/_authenticated/dashboard/profile'
+    | '/_authenticated/members/$id'
+    | '/_authenticated/members/add'
     | '/_authenticated/projects/$id'
     | '/_authenticated/projects/add'
     | '/_authenticated/resources/$id'
@@ -1240,6 +1374,8 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
     | '/_authenticated/ask-ai/'
+    | '/_authenticated/climate-champions/'
+    | '/_authenticated/members/'
     | '/_authenticated/projects/'
     | '/_authenticated/resources/'
     | '/_authenticated/setup/'
@@ -1329,12 +1465,18 @@ export const routeTree = rootRoute
         "/_authenticated/blog/$id",
         "/_authenticated/blog/add",
         "/_authenticated/blog/list",
+        "/_authenticated/climate-champions/$id",
+        "/_authenticated/climate-champions/add",
         "/_authenticated/dashboard/profile",
+        "/_authenticated/members/$id",
+        "/_authenticated/members/add",
         "/_authenticated/projects/$id",
         "/_authenticated/projects/add",
         "/_authenticated/resources/$id",
         "/_authenticated/resources/add",
         "/_authenticated/ask-ai/",
+        "/_authenticated/climate-champions/",
+        "/_authenticated/members/",
         "/_authenticated/projects/",
         "/_authenticated/resources/",
         "/_authenticated/setup/",
@@ -1425,8 +1567,24 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/blog/list.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/climate-champions/$id": {
+      "filePath": "_authenticated/climate-champions/$id.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/climate-champions/add": {
+      "filePath": "_authenticated/climate-champions/add.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/dashboard/profile": {
       "filePath": "_authenticated/dashboard/profile.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/members/$id": {
+      "filePath": "_authenticated/members/$id.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/members/add": {
+      "filePath": "_authenticated/members/add.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/projects/$id": {
@@ -1463,6 +1621,14 @@ export const routeTree = rootRoute
     },
     "/_authenticated/ask-ai/": {
       "filePath": "_authenticated/ask-ai/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/climate-champions/": {
+      "filePath": "_authenticated/climate-champions/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/members/": {
+      "filePath": "_authenticated/members/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/projects/": {
