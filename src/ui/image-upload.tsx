@@ -54,12 +54,16 @@ const ImageUpload: FC<ImageUploadProps> = ({
     setIsUploading(true)
   }
 
-  const handleError = () => {
+  const handleError = (err?: Error) => {
     setIsUploading(false)
     setIsError(true)
+    const isGenericMessage = !err?.message || err.message === '[object Object]'
     toast({
       variant: 'destructive',
-      title: 'Upload failed. Please try again.',
+      title: 'Image upload failed',
+      description: isGenericMessage
+        ? 'Something went wrong. Please try again.'
+        : err.message,
     })
   }
 

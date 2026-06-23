@@ -131,13 +131,10 @@ const AddOpportunity: FC = () => {
                 },
                 {
                   onSuccess: () => {
-                    toast({
-                      title: 'Opportunity added successfully',
-                    })
+                    toast({ title: 'Opportunity added successfully' })
                     navigate({ to: '/opportunities/list' })
                   },
                   onError: () => {
-                    // Still show success even if socials update fails
                     toast({
                       title: 'Opportunity added successfully',
                       description: 'Note: Social links may need to be updated manually',
@@ -147,21 +144,9 @@ const AddOpportunity: FC = () => {
                 }
               )
             } else {
-              toast({
-                title: 'Opportunity added successfully',
-              })
+              toast({ title: 'Opportunity added successfully' })
               navigate({ to: '/opportunities/list' })
             }
-          },
-          onError: (error: unknown) => {
-            const message =
-              error instanceof Error
-                ? error.message
-                : 'Failed to add opportunity'
-            toast({
-              title: message,
-              variant: 'destructive',
-            })
           },
         }
       )
