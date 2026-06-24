@@ -281,7 +281,7 @@ export default function AdminDashboardHomePage() {
   const adminStats: AdminAnalyticsOutput = analyticsData.data
 
   return (
-    <Main>
+    <Main isHome>
       <div className='mb-2 flex w-full flex-col space-y-10 p-5'>
         <h1 className='text-2xl font-bold tracking-tight'>
           Analytics Overview

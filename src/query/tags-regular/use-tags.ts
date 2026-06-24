@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { TagsInitializer, TagsType } from '@/schemas/tags/tags'
-import { handleServerError } from '@/utils/handle-server-error'
 import { cleanObj } from '@/utils/obj-utils'
 import { toast } from '@/hooks/use-toast'
 import { tags } from '../shared/routes'
@@ -11,9 +10,6 @@ export const useAddTag = () => {
   return useMutation({
     mutationFn: (payload: TagsInitializer) => addTag(payload),
     mutationKey: [tags.add.key],
-    onError: (err: Error) => {
-      handleServerError(err)
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [tags.getall.key],

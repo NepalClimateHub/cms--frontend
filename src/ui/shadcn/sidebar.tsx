@@ -24,7 +24,6 @@ import { useIsMobile } from '@/hooks/use-mobile'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = '16rem'
 const SIDEBAR_WIDTH_MOBILE = '18rem'
 const SIDEBAR_WIDTH_ICON = '3rem'
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
@@ -37,6 +36,9 @@ type SidebarContext = {
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
   toggleSidebar: () => void
+  width: number
+  isResizing: boolean
+  startResizing: (e: React.MouseEvent) => void
 }
 
 const SidebarContext = React.createContext<SidebarContext | null>(null)
@@ -99,6 +101,50 @@ const SidebarProvider = React.forwardRef<
         : setOpen((open) => !open)
     }, [isMobile, setOpen, setOpenMobile])
 
+    // Sidebar width resize state & handlers
+    const [width, setWidth] = React.useState<number>(() => {
+      const savedWidth = localStorage.getItem('sidebar:width')
+      return savedWidth ? parseInt(savedWidth, 10) : 256 // default 256px
+    })
+    const [isResizing, setIsResizing] = React.useState(false)
+    const startXRef = React.useRef(0)
+    const hasMovedRef = React.useRef(false)
+
+    const startResizing = React.useCallback((e: React.MouseEvent) => {
+      e.preventDefault()
+      setIsResizing(true)
+      startXRef.current = e.clientX
+      hasMovedRef.current = false
+    }, [])
+
+    React.useEffect(() => {
+      if (!isResizing) return
+
+      const handleMouseMove = (e: MouseEvent) => {
+        if (Math.abs(e.clientX - startXRef.current) > 4) {
+          hasMovedRef.current = true
+        }
+        const newWidth = Math.max(160, Math.min(480, e.clientX))
+        setWidth(newWidth)
+        localStorage.setItem('sidebar:width', String(newWidth))
+      }
+
+      const handleMouseUp = () => {
+        setIsResizing(false)
+        if (!hasMovedRef.current) {
+          toggleSidebar()
+        }
+      }
+
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
+      }
+    }, [isResizing, toggleSidebar])
+
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
@@ -128,8 +174,11 @@ const SidebarProvider = React.forwardRef<
         openMobile,
         setOpenMobile,
         toggleSidebar,
+        width,
+        isResizing,
+        startResizing,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar, width, isResizing, startResizing]
     )
 
     return (
@@ -138,13 +187,14 @@ const SidebarProvider = React.forwardRef<
           <div
             style={
               {
-                '--sidebar-width': SIDEBAR_WIDTH,
+                '--sidebar-width': `${width}px`,
                 '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
                 ...style,
               } as React.CSSProperties
             }
             className={cn(
               'group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar',
+              isResizing && '[&_*]:transition-none [&_*]:duration-0',
               className
             )}
             ref={ref}
@@ -298,7 +348,7 @@ const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<'button'>
 >(({ className, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar()
+  const { startResizing } = useSidebar()
 
   return (
     <button
@@ -306,8 +356,8 @@ const SidebarRail = React.forwardRef<
       data-sidebar='rail'
       aria-label='Toggle Sidebar'
       tabIndex={-1}
-      onClick={toggleSidebar}
-      title='Toggle Sidebar'
+      onMouseDown={startResizing}
+      title='Resize Sidebar'
       className={cn(
         'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',
         '[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize',

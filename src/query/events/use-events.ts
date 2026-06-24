@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { EventFormValues } from '@/schemas/event'
-import { handleServerError } from '@/utils/handle-server-error'
 import { cleanObj } from '@/utils/obj-utils'
 import { toast } from '@/hooks/use-toast'
 import { events } from '../shared/routes'
@@ -18,9 +17,6 @@ export const useAddEvents = () => {
   return useMutation({
     mutationFn: (payload: EventFormValues) => addEvent(payload),
     mutationKey: [events.add.key],
-    onError: (err: Error) => {
-      handleServerError(err)
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [events.getall.key],
@@ -78,9 +74,6 @@ export const useUpdateEvent = () => {
     mutationFn: (data: { eventId: string; payload: EventFormValues }) =>
       updateEvent(data.eventId, data.payload),
     mutationKey: [events.update.key],
-    onError: (err: Error) => {
-      handleServerError(err)
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [events.getall.key],
@@ -100,9 +93,6 @@ export const useUpdateEventStatus = () => {
     mutationFn: (payload: { eventId: string; isDraft: boolean }) =>
       updateEventStatus(payload.eventId, payload.isDraft),
     mutationKey: [events.update.key],
-    onError: (err: Error) => {
-      handleServerError(err)
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [events.getall.key],
@@ -121,9 +111,6 @@ export const useDeleteEvent = () => {
   return useMutation({
     mutationFn: (payload: { eventId: string }) => deleteEvent(payload.eventId),
     mutationKey: [events.update.key],
-    onError: (err: Error) => {
-      handleServerError(err)
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [events.getall.key],
