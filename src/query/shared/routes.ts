@@ -22,7 +22,7 @@ export const tags = {
 
 export const imagekit = {
   getauthparams: {
-    path: '/imagekit',
+    path: '/api/v1/imagekit',
     key: 'authparams',
   },
 }
