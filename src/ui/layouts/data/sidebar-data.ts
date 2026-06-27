@@ -13,6 +13,7 @@ import {
   Database,
   Trophy,
   Tag,
+  Activity,
 } from 'lucide-react'
 import { NavGroup } from '../types'
 
@@ -135,6 +136,12 @@ export const sidebarMenus: NavGroup[] = [
         url: '/database/export',
         icon: Database,
         roles: [Roles.SUPER_ADMIN, Roles.ADMIN],
+      },
+      {
+        title: 'Activities',
+        url: '/activities',
+        icon: Activity,
+        roles: [Roles.SUPER_ADMIN],
       },
     ],
   },
