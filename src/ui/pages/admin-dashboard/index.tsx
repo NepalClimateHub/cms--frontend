@@ -279,6 +279,7 @@ export default function AdminDashboardHomePage() {
   }
 
   const adminStats: AdminAnalyticsOutput = analyticsData.data
+  const isSuperAdminUser = getRoleFromToken() === 'SUPER_ADMIN'
 
   return (
     <Main isHome>
@@ -287,7 +288,12 @@ export default function AdminDashboardHomePage() {
           Analytics Overview
         </h1>
 
-        <div className='grid w-full grid-cols-1 gap-8 lg:grid-cols-[1.85fr_1fr]'>
+        <div
+          className={cn(
+            'grid w-full grid-cols-1 gap-8',
+            isSuperAdminUser ? 'lg:grid-cols-1' : 'lg:grid-cols-[1.85fr_1fr]'
+          )}
+        >
           {/* Left Column - Analytics (fills remaining space) */}
           <div className='min-w-0 space-y-8'>
             {/* Analytics Cards */}
@@ -466,106 +472,108 @@ export default function AdminDashboardHomePage() {
           </div>
 
           {/* Right Column - Quick Actions (fixed 300px) */}
-          <div className='shrink-0'>
-            <Card className='flex max-h-[485px] flex-col border border-gray-200 bg-white p-5 shadow-sm'>
-              <CardTitle className='mb-6 shrink-0 text-lg font-medium text-gray-900'>
-                Quick Actions
-              </CardTitle>
-              <div className='min-h-0 flex-1 overflow-y-auto pr-1'>
-                <div className='flex flex-col gap-4'>
-                  <Link
-                    to='/events/add'
-                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
-                  >
-                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
-                      <Calendar className='h-5 w-5' />
-                    </div>
-                    <div className='min-w-0 flex-1'>
-                      <p className='truncate text-sm font-medium text-gray-900'>
-                        Add Event
-                      </p>
-                    </div>
-                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-blue-600' />
-                  </Link>
+          {!isSuperAdminUser && (
+            <div className='shrink-0'>
+              <Card className='flex max-h-[485px] flex-col border border-gray-200 bg-white p-5 shadow-sm'>
+                <CardTitle className='mb-6 shrink-0 text-lg font-medium text-gray-900'>
+                  Quick Actions
+                </CardTitle>
+                <div className='min-h-0 flex-1 overflow-y-auto pr-1'>
+                  <div className='flex flex-col gap-4'>
+                    <Link
+                      to='/events/add'
+                      className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
+                    >
+                      <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
+                        <Calendar className='h-5 w-5' />
+                      </div>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-medium text-gray-900'>
+                          Add Event
+                        </p>
+                      </div>
+                      <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-blue-600' />
+                    </Link>
 
-                  <Link
-                    to='/opportunities/add'
-                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-md'
-                  >
-                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100'>
-                      <Briefcase className='h-5 w-5' />
-                    </div>
-                    <div className='min-w-0 flex-1'>
-                      <p className='truncate text-sm font-medium text-gray-900'>
-                        Add Opportunity
-                      </p>
-                    </div>
-                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-emerald-600' />
-                  </Link>
+                    <Link
+                      to='/opportunities/add'
+                      className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-md'
+                    >
+                      <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100'>
+                        <Briefcase className='h-5 w-5' />
+                      </div>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-medium text-gray-900'>
+                          Add Opportunity
+                        </p>
+                      </div>
+                      <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-emerald-600' />
+                    </Link>
 
-                  <Link
-                    to='/blog/add'
-                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:shadow-md'
-                  >
-                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 transition-colors group-hover:bg-red-100'>
-                      <FileText className='h-5 w-5' />
-                    </div>
-                    <div className='min-w-0 flex-1'>
-                      <p className='truncate text-sm font-medium text-gray-900'>
-                        Add Blog
-                      </p>
-                    </div>
-                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-red-600' />
-                  </Link>
+                    <Link
+                      to='/blog/add'
+                      className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:shadow-md'
+                    >
+                      <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 transition-colors group-hover:bg-red-100'>
+                        <FileText className='h-5 w-5' />
+                      </div>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-medium text-gray-900'>
+                          Add Blog
+                        </p>
+                      </div>
+                      <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-red-600' />
+                    </Link>
 
-                  <Link
-                    to='/news/add'
-                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
-                  >
-                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
-                      <Newspaper className='h-5 w-5' />
-                    </div>
-                    <div className='min-w-0 flex-1'>
-                      <p className='truncate text-sm font-medium text-gray-900'>
-                        Add News
-                      </p>
-                    </div>
-                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-blue-600' />
-                  </Link>
+                    <Link
+                      to='/news/add'
+                      className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
+                    >
+                      <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100'>
+                        <Newspaper className='h-5 w-5' />
+                      </div>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-medium text-gray-900'>
+                          Add News
+                        </p>
+                      </div>
+                      <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-blue-600' />
+                    </Link>
 
-                  <Link
-                    to='/projects/add'
-                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-md'
-                  >
-                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-100'>
-                      <Briefcase className='h-5 w-5' />
-                    </div>
-                    <div className='min-w-0 flex-1'>
-                      <p className='truncate text-sm font-medium text-gray-900'>
-                        Add Work
-                      </p>
-                    </div>
-                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-purple-600' />
-                  </Link>
+                    <Link
+                      to='/projects/add'
+                      className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-md'
+                    >
+                      <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-100'>
+                        <Briefcase className='h-5 w-5' />
+                      </div>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-medium text-gray-900'>
+                          Add Work
+                        </p>
+                      </div>
+                      <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-purple-600' />
+                    </Link>
 
-                  <Link
-                    to='/resources/add'
-                    className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-teal-300 hover:bg-teal-50 hover:shadow-md'
-                  >
-                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-600 transition-colors group-hover:bg-teal-100'>
-                      <FileText className='h-5 w-5' />
-                    </div>
-                    <div className='min-w-0 flex-1'>
-                      <p className='truncate text-sm font-medium text-gray-900'>
-                        Add Resources
-                      </p>
-                    </div>
-                    <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-teal-600' />
-                  </Link>
+                    <Link
+                      to='/resources/add'
+                      className='group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-teal-300 hover:bg-teal-50 hover:shadow-md'
+                    >
+                      <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-600 transition-colors group-hover:bg-teal-100'>
+                        <FileText className='h-5 w-5' />
+                      </div>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-medium text-gray-900'>
+                          Add Resources
+                        </p>
+                      </div>
+                      <Plus className='h-4 w-4 shrink-0 text-gray-400 group-hover:text-teal-600' />
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          </div>
+              </Card>
+            </div>
+          )}
         </div>
 
         {/* AI Chat Analytics Section (Full Width) */}
