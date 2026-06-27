@@ -279,6 +279,26 @@ export type RefreshTokenInput = {
     refreshToken: string;
 };
 
+export type ActivityLogResponseDto = {
+    id: string;
+    userId: string;
+    userEmail: string;
+    userName: string;
+    userRole: string;
+    action: 'LOGIN' | 'CREATE' | 'UPDATE' | 'DELETE' | 'APPROVE' | 'REJECT';
+    entity: 'AUTH' | 'BLOG' | 'EVENT' | 'NEWS' | 'OPPORTUNITY' | 'PROJECT' | 'RESOURCE' | 'MEMBER' | 'CLIMATE_CHAMPION';
+    entityId?: string;
+    entityName?: string;
+    createdAt: string;
+};
+
+export type ApiResponseOfActivityLogResponseDtoArray = {
+    meta: {
+        [key: string]: unknown;
+    };
+    data: Array<ActivityLogResponseDto>;
+};
+
 export type AddressResponse = {
     /**
      * Street
@@ -2531,6 +2551,36 @@ export type AuthControllerRefreshTokenResponses = {
 };
 
 export type AuthControllerRefreshTokenResponse = AuthControllerRefreshTokenResponses[keyof AuthControllerRefreshTokenResponses];
+
+export type ActivityLogControllerGetActivityLogsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Filter by user ID
+         */
+        userId?: string;
+        action?: 'LOGIN' | 'CREATE' | 'UPDATE' | 'DELETE' | 'APPROVE' | 'REJECT';
+        entity?: 'AUTH' | 'BLOG' | 'EVENT' | 'NEWS' | 'OPPORTUNITY' | 'PROJECT' | 'RESOURCE' | 'MEMBER' | 'CLIMATE_CHAMPION';
+        /**
+         * ISO date string (inclusive start)
+         */
+        startDate?: string;
+        /**
+         * ISO date string (inclusive end)
+         */
+        endDate?: string;
+        page?: number;
+        limit?: number;
+    };
+    url: '/api/v1/activity-logs';
+};
+
+export type ActivityLogControllerGetActivityLogsResponses = {
+    200: ApiResponseOfActivityLogResponseDtoArray;
+};
+
+export type ActivityLogControllerGetActivityLogsResponse = ActivityLogControllerGetActivityLogsResponses[keyof ActivityLogControllerGetActivityLogsResponses];
 
 export type OrganizationControllerGetOrgsData = {
     body?: never;
