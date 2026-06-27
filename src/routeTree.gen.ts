@@ -29,6 +29,7 @@ import { Route as AuthenticatedProjectsIndexImport } from './routes/_authenticat
 import { Route as AuthenticatedMembersIndexImport } from './routes/_authenticated/members/index'
 import { Route as AuthenticatedClimateChampionsIndexImport } from './routes/_authenticated/climate-champions/index'
 import { Route as AuthenticatedAskAiIndexImport } from './routes/_authenticated/ask-ai/index'
+import { Route as AuthenticatedActivitiesIndexImport } from './routes/_authenticated/activities/index'
 import { Route as AuthenticatedResourcesAddImport } from './routes/_authenticated/resources/add'
 import { Route as AuthenticatedResourcesIdImport } from './routes/_authenticated/resources/$id'
 import { Route as AuthenticatedProjectsAddImport } from './routes/_authenticated/projects/add'
@@ -290,6 +291,13 @@ const AuthenticatedAskAiIndexRoute = AuthenticatedAskAiIndexImport.update({
   path: '/ask-ai/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+
+const AuthenticatedActivitiesIndexRoute =
+  AuthenticatedActivitiesIndexImport.update({
+    id: '/activities/',
+    path: '/activities/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 const AuthenticatedSettingsNotificationsLazyRoute =
   AuthenticatedSettingsNotificationsLazyImport.update({
@@ -730,6 +738,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsNotificationsLazyImport
       parentRoute: typeof AuthenticatedSettingsRouteLazyImport
     }
+    '/_authenticated/activities/': {
+      id: '/_authenticated/activities/'
+      path: '/activities'
+      fullPath: '/activities'
+      preLoaderRoute: typeof AuthenticatedActivitiesIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/ask-ai/': {
       id: '/_authenticated/ask-ai/'
       path: '/ask-ai'
@@ -959,6 +974,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProjectsAddRoute: typeof AuthenticatedProjectsAddRoute
   AuthenticatedResourcesIdRoute: typeof AuthenticatedResourcesIdRoute
   AuthenticatedResourcesAddRoute: typeof AuthenticatedResourcesAddRoute
+  AuthenticatedActivitiesIndexRoute: typeof AuthenticatedActivitiesIndexRoute
   AuthenticatedAskAiIndexRoute: typeof AuthenticatedAskAiIndexRoute
   AuthenticatedClimateChampionsIndexRoute: typeof AuthenticatedClimateChampionsIndexRoute
   AuthenticatedMembersIndexRoute: typeof AuthenticatedMembersIndexRoute
@@ -1002,6 +1018,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProjectsAddRoute: AuthenticatedProjectsAddRoute,
   AuthenticatedResourcesIdRoute: AuthenticatedResourcesIdRoute,
   AuthenticatedResourcesAddRoute: AuthenticatedResourcesAddRoute,
+  AuthenticatedActivitiesIndexRoute: AuthenticatedActivitiesIndexRoute,
   AuthenticatedAskAiIndexRoute: AuthenticatedAskAiIndexRoute,
   AuthenticatedClimateChampionsIndexRoute:
     AuthenticatedClimateChampionsIndexRoute,
@@ -1080,6 +1097,7 @@ export interface FileRoutesByFullPath {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/activities': typeof AuthenticatedActivitiesIndexRoute
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
   '/climate-champions': typeof AuthenticatedClimateChampionsIndexRoute
   '/members': typeof AuthenticatedMembersIndexRoute
@@ -1137,6 +1155,7 @@ export interface FileRoutesByTo {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/activities': typeof AuthenticatedActivitiesIndexRoute
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
   '/climate-champions': typeof AuthenticatedClimateChampionsIndexRoute
   '/members': typeof AuthenticatedMembersIndexRoute
@@ -1198,6 +1217,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/_authenticated/activities/': typeof AuthenticatedActivitiesIndexRoute
   '/_authenticated/ask-ai/': typeof AuthenticatedAskAiIndexRoute
   '/_authenticated/climate-champions/': typeof AuthenticatedClimateChampionsIndexRoute
   '/_authenticated/members/': typeof AuthenticatedMembersIndexRoute
@@ -1258,6 +1278,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/activities'
     | '/ask-ai'
     | '/climate-champions'
     | '/members'
@@ -1314,6 +1335,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/activities'
     | '/ask-ai'
     | '/climate-champions'
     | '/members'
@@ -1373,6 +1395,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
+    | '/_authenticated/activities/'
     | '/_authenticated/ask-ai/'
     | '/_authenticated/climate-champions/'
     | '/_authenticated/members/'
@@ -1474,6 +1497,7 @@ export const routeTree = rootRoute
         "/_authenticated/projects/add",
         "/_authenticated/resources/$id",
         "/_authenticated/resources/add",
+        "/_authenticated/activities/",
         "/_authenticated/ask-ai/",
         "/_authenticated/climate-champions/",
         "/_authenticated/members/",
@@ -1618,6 +1642,10 @@ export const routeTree = rootRoute
     "/_authenticated/settings/notifications": {
       "filePath": "_authenticated/settings/notifications.lazy.tsx",
       "parent": "/_authenticated/settings"
+    },
+    "/_authenticated/activities/": {
+      "filePath": "_authenticated/activities/index.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/ask-ai/": {
       "filePath": "_authenticated/ask-ai/index.tsx",
