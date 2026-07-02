@@ -119,9 +119,12 @@ export const useBlogsColumns = () => {
           ((row.original as unknown as Record<string, unknown>)
             .status as string) || 'DRAFT'
 
-        // Fallback logic if status is inconsistent with isDraft
+        // Fallback logic if status is inconsistent with isDraft.
+        // Only the backend's own `status` can say PUBLISHED - `approvedByAdmin`
+        // can go stale (e.g. after a re-edit), so it must never be used to
+        // upgrade the displayed status to PUBLISHED.
         if (status === 'DRAFT' && !row.original.isDraft) {
-          status = row.original.approvedByAdmin ? 'PUBLISHED' : 'UNDER_REVIEW'
+          status = 'UNDER_REVIEW'
         }
 
         const statusConfig: Record<
