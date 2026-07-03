@@ -369,7 +369,9 @@ const BlogForm: FC<Props> = ({
                     <div className='space-y-0.5'>
                       <FormLabel className='text-base'>Draft Status</FormLabel>
                       <FormDescription>
-                        Save as draft or publish immediately
+                        {isStaffUser
+                          ? 'Save as draft or publish immediately'
+                          : 'Save as draft, or submit for admin review before it goes live'}
                       </FormDescription>
                     </div>
                     <FormControl>

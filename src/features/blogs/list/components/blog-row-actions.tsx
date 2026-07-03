@@ -55,8 +55,11 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
 
   const blogStatus = (() => {
     const status = row.original.status || 'DRAFT'
+    // Only the backend's own `status` can say PUBLISHED - `approvedByAdmin`
+    // can go stale (e.g. after a re-edit), so it must never be used to
+    // upgrade the displayed status to PUBLISHED.
     if (status === 'DRAFT' && !row.original.isDraft) {
-      return row.original.approvedByAdmin ? 'PUBLISHED' : 'UNDER_REVIEW'
+      return 'UNDER_REVIEW'
     }
     return status
   })()
