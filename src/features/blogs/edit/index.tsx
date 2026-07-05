@@ -36,7 +36,7 @@ const EditBlog = () => {
         bannerImageId: blogData?.bannerImageId ?? '',
         publishedDate: blogData?.publishedDate
           ? new Date(blogData?.publishedDate)
-          : undefined,
+          : new Date(),
         tagIds: Array.isArray((blogData as { tags?: unknown[] })?.tags)
           ? ((blogData as { tags?: { id: string }[] }).tags || []).map(
               (tag) => tag.id
@@ -52,9 +52,7 @@ const EditBlog = () => {
     try {
       const formattedValues: Record<string, unknown> = {
         ...values,
-        publishedDate: values.publishedDate
-          ? new Date(values.publishedDate).toISOString()
-          : undefined,
+        publishedDate: new Date(values.publishedDate).toISOString(),
         tagIds: values.tagIds ?? undefined,
       }
       if (values.bannerImageId) {
@@ -64,7 +62,7 @@ const EditBlog = () => {
         formattedValues.bannerImageUrl = values.bannerImageUrl
       }
 
-      await blogMutation.mutate({
+      await blogMutation.mutateAsync({
         path: {
           id: blogId,
         },

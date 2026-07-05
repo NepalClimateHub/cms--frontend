@@ -46,7 +46,7 @@ const AddBlog: FC = () => {
       excerpt: '',
       author: isStaffContentRole ? '' : defaultAuthorForNonStaff,
       category: '',
-      publishedDate: undefined,
+      publishedDate: new Date(),
       isDraft: false,
       isFeatured: false,
       isTopRead: false,
@@ -80,9 +80,7 @@ const AddBlog: FC = () => {
     try {
       const formattedValues = {
         ...values,
-        publishedDate: values.publishedDate
-          ? new Date(values.publishedDate).toISOString()
-          : undefined,
+        publishedDate: new Date(values.publishedDate).toISOString(),
         excerpt: values.excerpt ?? undefined,
         category: values.category ?? undefined,
         author: values.author ?? undefined,
