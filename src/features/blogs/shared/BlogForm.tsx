@@ -219,7 +219,9 @@ const BlogForm: FC<Props> = ({
               name='publishedDate'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Published Date</FormLabel>
+                  <FormLabel>
+                    Published Date <span className='text-red-500'>*</span>
+                  </FormLabel>
                   <FormDescription>
                     When was this blog published?
                   </FormDescription>
