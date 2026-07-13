@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
 import {
@@ -38,9 +38,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/ui/shadcn/tooltip'
-import { Info } from 'lucide-react'
+import { Info, Eye } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { getRoleFromToken, type AppRole } from '@/utils/jwt.util'
+import { BlogPreviewModal } from './BlogPreviewModal'
 
 type Props = {
   form: UseFormReturn<BlogFormValues>
@@ -63,6 +64,8 @@ const BlogForm: FC<Props> = ({
   tagsOptions,
 }) => {
   const navigate = useNavigate()
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const previewValues = form.watch()
   const { user } = useAuthStore()
   const accountRole = (user?.role ?? getRoleFromToken()) as
     | AppRole
@@ -437,7 +440,7 @@ const BlogForm: FC<Props> = ({
           </CardContent>
         </Card>
 
-        <div className='flex justify-end space-x-4'>
+        <div className='sticky bottom-0 z-40 -mx-4 md:-mx-8 border-t bg-background/95 py-4 px-6 md:px-8 flex justify-end gap-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-md'>
           <Button
             type='button'
             variant='outline'
@@ -445,10 +448,25 @@ const BlogForm: FC<Props> = ({
           >
             Cancel
           </Button>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => setIsPreviewOpen(true)}
+            className='gap-2'
+          >
+            <Eye className='h-4 w-4' />
+            Preview
+          </Button>
           <Button type='submit' disabled={isLoading}>
             {isLoading ? 'Saving...' : isEdit ? 'Update Blog' : 'Create Blog'}
           </Button>
         </div>
+
+        <BlogPreviewModal
+          open={isPreviewOpen}
+          onClose={() => setIsPreviewOpen(false)}
+          values={previewValues}
+        />
       </form>
     </Form>
   )
