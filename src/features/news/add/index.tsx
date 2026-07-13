@@ -44,7 +44,7 @@ const NewsAdd = () => {
         description='Add a new news'
         showBackButton={true}
       />
-      <div className='mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+      <div className='mx-4 px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
         <div className='w-full'>
           <NewsForm
             form={form}

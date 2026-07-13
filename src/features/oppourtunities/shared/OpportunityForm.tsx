@@ -532,7 +532,7 @@ const OpportunityForm: FC<Props> = ({
         {/* Socials */}
         <SocialsForm form={form} />
 
-        <div className='flex justify-end gap-4'>
+        <div className='sticky bottom-0 z-40 -mx-4 md:-mx-8 border-t bg-background/95 py-4 px-6 md:px-8 flex justify-end gap-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-md'>
           <Button
             type='button'
             variant='outline'
