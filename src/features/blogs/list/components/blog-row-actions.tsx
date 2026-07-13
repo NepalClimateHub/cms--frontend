@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
 import { Row } from '@tanstack/react-table'
 import {
@@ -9,8 +8,6 @@ import {
 } from '@/query/blogs/use-blogs'
 import { BlogResponseDto } from '@/query/blogs/use-blogs'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
-import { Alert, AlertDescription, AlertTitle } from '@/ui/shadcn/alert'
-import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
@@ -18,22 +15,19 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/ui/shadcn/dialog'
 import { DialogFooter } from '@/ui/shadcn/dialog'
-import { Separator } from '@/ui/shadcn/separator'
 import { Textarea } from '@/ui/shadcn/textarea'
-// import { useDeleteBlog, useBlogAPI } from '@/query/blogs/use-blogs'
 import {
   LucideEye,
   Pencil,
   Trash,
   CheckCircle,
   XCircle,
-  AlertCircle,
 } from 'lucide-react'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { isAdminLevel } from '@/utils/role-check.util'
+import BlogPreviewModal from '../../shared/BlogPreviewModal'
 
 interface BlogRowActionProps {
   row: Row<BlogResponseDto>
@@ -46,6 +40,7 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false)
   const [rejectionRemarks, setRejectionRemarks] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
 
   const role = getRoleFromToken()
 
@@ -63,22 +58,6 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
     }
     return status
   })()
-
-  const formatDateShort = (date: string | undefined | Date) => {
-    if (date == null || date === '') return ''
-    try {
-      return format(new Date(date), 'PPP')
-    } catch {
-      return String(date)
-    }
-  }
-
-  const tagLabel = (tag: unknown): string => {
-    if (tag && typeof tag === 'object' && 'tag' in tag) {
-      return String((tag as { tag: unknown }).tag)
-    }
-    return ''
-  }
 
   const handleEditBlog = (blogId: string) => {
     navigate({
@@ -128,150 +107,20 @@ const BlogRowAction = ({ row }: BlogRowActionProps) => {
 
   return (
     <div className='flex items-center justify-center gap-4'>
-      <Dialog>
-        <DialogTrigger>
-          <Button
-            size={'sm'}
-            variant={'default'}
-            className='h-6 bg-green-500 px-2 hover:bg-green-600'
-          >
-            <LucideEye className='h-4 w-4' />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className='flex max-h-[90vh] max-w-5xl flex-col overflow-hidden'>
-          <DialogHeader className='flex-shrink-0'>
-            <DialogTitle className='text-2xl font-bold'>
-              {row.original.title}
-            </DialogTitle>
-          </DialogHeader>
-          <DialogDescription className='min-h-0 flex-1 space-y-4 overflow-y-auto pr-2 text-foreground'>
-            {row.original.bannerImageUrl ? (
-              <div className='overflow-hidden rounded-lg border'>
-                <img
-                  src={row.original.bannerImageUrl}
-                  alt=''
-                  className='max-h-40 w-full object-cover'
-                />
-              </div>
-            ) : null}
+      <Button
+        size={'sm'}
+        variant={'default'}
+        className='h-6 bg-green-500 px-2 hover:bg-green-600'
+        onClick={() => setIsPreviewOpen(true)}
+      >
+        <LucideEye className='h-4 w-4' />
+      </Button>
 
-            <div className='flex flex-wrap items-center gap-2'>
-              <Badge variant='outline'>{row.original.category}</Badge>
-              {(() => {
-                const status = row.original.status || 'DRAFT'
-                const statusConfig: Record<
-                  string,
-                  {
-                    label: string
-                    variant: 'default' | 'secondary' | 'outline'
-                    className: string
-                  }
-                > = {
-                  DRAFT: {
-                    label: 'Draft',
-                    variant: 'secondary',
-                    className: 'bg-yellow-100',
-                  },
-                  UNDER_REVIEW: {
-                    label: 'Under Review',
-                    variant: 'outline',
-                    className: 'bg-blue-100',
-                  },
-                  PUBLISHED: {
-                    label: 'Published',
-                    variant: 'default',
-                    className: 'bg-green-100',
-                  },
-                  REJECTED: {
-                    label: 'Rejected',
-                    variant: 'outline',
-                    className: 'bg-red-100',
-                  },
-                }
-                const config = statusConfig[status] || statusConfig.DRAFT
-                return (
-                  <Badge variant={config.variant} className={config.className}>
-                    {config.label}
-                  </Badge>
-                )
-              })()}
-              {row.original.isFeatured ? (
-                <Badge variant='secondary'>Featured</Badge>
-              ) : null}
-              {row.original.isTopRead ? (
-                <Badge variant='secondary'>Top read</Badge>
-              ) : null}
-            </div>
-
-            <p className='text-sm text-muted-foreground'>
-              <span>By {row.original.author}</span>
-              {row.original.readingTime ? (
-                <span> · {row.original.readingTime}</span>
-              ) : null}
-              {row.original.publishedDate ? (
-                <span> · {formatDateShort(row.original.publishedDate)}</span>
-              ) : null}
-            </p>
-
-            {row.original.excerpt?.trim() ? (
-              <p className='text-sm leading-relaxed text-muted-foreground'>
-                {row.original.excerpt}
-              </p>
-            ) : null}
-
-            <Separator />
-            {row.original.status === 'REJECTED' &&
-              row.original.reviewFeedback && (
-                <Alert variant='destructive' className='bg-red-50/50'>
-                  <AlertCircle className='h-4 w-4' />
-                  <AlertTitle>Rejection Remarks</AlertTitle>
-                  <AlertDescription className='italic'>
-                    "{row.original.reviewFeedback}"
-                  </AlertDescription>
-                </Alert>
-              )}
-
-            {row.original.status !== 'REJECTED' &&
-              row.original.reviewFeedback && (
-                <div className='rounded-lg border border-orange-200 bg-orange-50 p-4'>
-                  <p className='text-xs font-bold uppercase tracking-wider text-orange-800'>
-                    Administrative Feedback
-                  </p>
-                  <p className='mt-1 text-sm italic text-orange-900'>
-                    "{row.original.reviewFeedback}"
-                  </p>
-                </div>
-              )}
-
-            <div
-              className='prose prose-sm dark:prose-invert max-w-none'
-              dangerouslySetInnerHTML={{ __html: row.original.content }}
-            />
-
-            {row.original.tags &&
-            Array.isArray(row.original.tags) &&
-            row.original.tags.length > 0 ? (
-              <div className='flex flex-wrap gap-1.5 pt-1'>
-                {row.original.tags.map((tag, idx) => {
-                  const label = tagLabel(tag)
-                  const id =
-                    tag &&
-                    typeof tag === 'object' &&
-                    'id' in tag &&
-                    (tag as { id: unknown }).id != null
-                      ? String((tag as { id: unknown }).id)
-                      : `tag-${idx}`
-                  return (
-                    <Badge key={id} variant='outline' className='text-xs'>
-                      {label || JSON.stringify(tag)}
-                    </Badge>
-                  )
-                })}
-              </div>
-            ) : null}
-          </DialogDescription>
-        </DialogContent>
-      </Dialog>
+      <BlogPreviewModal
+        open={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        values={row.original as any}
+      />
 
       {/* Approve/Reject: staff (incl. content admin) for blogs under review */}
       {blogStatus === 'UNDER_REVIEW' && isAdminLevel(role) && (
