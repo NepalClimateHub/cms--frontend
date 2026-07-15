@@ -2254,6 +2254,33 @@ export type UpdateClimateChampionDto = {
     order?: number;
 };
 
+export type CreateMinutesDto = {
+    title: string;
+    date?: string;
+    meetingTime?: string;
+    agenda: string;
+    meetingSummary: string;
+};
+
+export type MinutesResponseDto = {
+    id: string;
+    title: string;
+    date?: string;
+    meetingTime?: string;
+    agenda: string;
+    meetingSummary: string;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type UpdateMinutesDto = {
+    title?: string;
+    date?: string;
+    meetingTime?: string;
+    agenda?: string;
+    meetingSummary?: string;
+};
+
 export type AppControllerGetHelloData = {
     body?: never;
     path?: never;
@@ -4335,6 +4362,100 @@ export type ClimateChampionControllerReorderClimateChampionsResponses = {
      */
     200: unknown;
 };
+
+export type MinutesControllerFindAllData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Optional, defaults to 100
+         */
+        limit?: number;
+        /**
+         * Optional, defaults to 0
+         */
+        offset?: number;
+        title?: string;
+    };
+    url: '/api/v1/minutes';
+};
+
+export type MinutesControllerFindAllResponses = {
+    /**
+     * Return all minutes.
+     */
+    200: Array<MinutesResponseDto>;
+};
+
+export type MinutesControllerFindAllResponse = MinutesControllerFindAllResponses[keyof MinutesControllerFindAllResponses];
+
+export type MinutesControllerCreateData = {
+    body: CreateMinutesDto;
+    path?: never;
+    query?: never;
+    url: '/api/v1/minutes';
+};
+
+export type MinutesControllerCreateResponses = {
+    /**
+     * The minutes have been successfully created.
+     */
+    201: MinutesResponseDto;
+};
+
+export type MinutesControllerCreateResponse = MinutesControllerCreateResponses[keyof MinutesControllerCreateResponses];
+
+export type MinutesControllerRemoveData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/minutes/{id}';
+};
+
+export type MinutesControllerRemoveResponses = {
+    /**
+     * The minutes have been successfully deleted.
+     */
+    200: unknown;
+};
+
+export type MinutesControllerFindOneData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/minutes/{id}';
+};
+
+export type MinutesControllerFindOneResponses = {
+    /**
+     * Return the minutes.
+     */
+    200: MinutesResponseDto;
+};
+
+export type MinutesControllerFindOneResponse = MinutesControllerFindOneResponses[keyof MinutesControllerFindOneResponses];
+
+export type MinutesControllerUpdateData = {
+    body: UpdateMinutesDto;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/minutes/{id}';
+};
+
+export type MinutesControllerUpdateResponses = {
+    /**
+     * The minutes have been successfully updated.
+     */
+    200: MinutesResponseDto;
+};
+
+export type MinutesControllerUpdateResponse = MinutesControllerUpdateResponses[keyof MinutesControllerUpdateResponses];
 
 export type ClientOptions = {
     baseUrl: string;

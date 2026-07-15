@@ -26,6 +26,7 @@ import { Route as AuthenticatedSubscribedEmailsIndexImport } from './routes/_aut
 import { Route as AuthenticatedSetupIndexImport } from './routes/_authenticated/setup/index'
 import { Route as AuthenticatedResourcesIndexImport } from './routes/_authenticated/resources/index'
 import { Route as AuthenticatedProjectsIndexImport } from './routes/_authenticated/projects/index'
+import { Route as AuthenticatedMinutesIndexImport } from './routes/_authenticated/minutes/index'
 import { Route as AuthenticatedMembersIndexImport } from './routes/_authenticated/members/index'
 import { Route as AuthenticatedClimateChampionsIndexImport } from './routes/_authenticated/climate-champions/index'
 import { Route as AuthenticatedAskAiIndexImport } from './routes/_authenticated/ask-ai/index'
@@ -50,6 +51,8 @@ import { Route as AuthenticatedOpportunitiesOpportunityIdIndexImport } from './r
 import { Route as AuthenticatedNewsListIndexImport } from './routes/_authenticated/news/list/index'
 import { Route as AuthenticatedNewsAddIndexImport } from './routes/_authenticated/news/add/index'
 import { Route as AuthenticatedNewsNewsIdIndexImport } from './routes/_authenticated/news/$newsId/index'
+import { Route as AuthenticatedMinutesAddIndexImport } from './routes/_authenticated/minutes/add/index'
+import { Route as AuthenticatedMinutesMinutesIdIndexImport } from './routes/_authenticated/minutes/$minutesId/index'
 import { Route as AuthenticatedEventsListIndexImport } from './routes/_authenticated/events/list/index'
 import { Route as AuthenticatedEventsAddIndexImport } from './routes/_authenticated/events/add/index'
 import { Route as AuthenticatedEventsEventIdIndexImport } from './routes/_authenticated/events/$eventId/index'
@@ -273,6 +276,12 @@ const AuthenticatedProjectsIndexRoute = AuthenticatedProjectsIndexImport.update(
   } as any,
 )
 
+const AuthenticatedMinutesIndexRoute = AuthenticatedMinutesIndexImport.update({
+  id: '/minutes/',
+  path: '/minutes/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
 const AuthenticatedMembersIndexRoute = AuthenticatedMembersIndexImport.update({
   id: '/members/',
   path: '/members/',
@@ -471,6 +480,20 @@ const AuthenticatedNewsNewsIdIndexRoute =
   AuthenticatedNewsNewsIdIndexImport.update({
     id: '/news/$newsId/',
     path: '/news/$newsId/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedMinutesAddIndexRoute =
+  AuthenticatedMinutesAddIndexImport.update({
+    id: '/minutes/add/',
+    path: '/minutes/add/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedMinutesMinutesIdIndexRoute =
+  AuthenticatedMinutesMinutesIdIndexImport.update({
+    id: '/minutes/$minutesId/',
+    path: '/minutes/$minutesId/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -766,6 +789,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMembersIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/minutes/': {
+      id: '/_authenticated/minutes/'
+      path: '/minutes'
+      fullPath: '/minutes'
+      preLoaderRoute: typeof AuthenticatedMinutesIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/projects/': {
       id: '/_authenticated/projects/'
       path: '/projects'
@@ -869,6 +899,20 @@ declare module '@tanstack/react-router' {
       path: '/events/list'
       fullPath: '/events/list'
       preLoaderRoute: typeof AuthenticatedEventsListIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/minutes/$minutesId/': {
+      id: '/_authenticated/minutes/$minutesId/'
+      path: '/minutes/$minutesId'
+      fullPath: '/minutes/$minutesId'
+      preLoaderRoute: typeof AuthenticatedMinutesMinutesIdIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/minutes/add/': {
+      id: '/_authenticated/minutes/add/'
+      path: '/minutes/add'
+      fullPath: '/minutes/add'
+      preLoaderRoute: typeof AuthenticatedMinutesAddIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/news/$newsId/': {
@@ -978,6 +1022,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAskAiIndexRoute: typeof AuthenticatedAskAiIndexRoute
   AuthenticatedClimateChampionsIndexRoute: typeof AuthenticatedClimateChampionsIndexRoute
   AuthenticatedMembersIndexRoute: typeof AuthenticatedMembersIndexRoute
+  AuthenticatedMinutesIndexRoute: typeof AuthenticatedMinutesIndexRoute
   AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
   AuthenticatedResourcesIndexRoute: typeof AuthenticatedResourcesIndexRoute
   AuthenticatedSetupIndexRoute: typeof AuthenticatedSetupIndexRoute
@@ -991,6 +1036,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEventsEventIdIndexRoute: typeof AuthenticatedEventsEventIdIndexRoute
   AuthenticatedEventsAddIndexRoute: typeof AuthenticatedEventsAddIndexRoute
   AuthenticatedEventsListIndexRoute: typeof AuthenticatedEventsListIndexRoute
+  AuthenticatedMinutesMinutesIdIndexRoute: typeof AuthenticatedMinutesMinutesIdIndexRoute
+  AuthenticatedMinutesAddIndexRoute: typeof AuthenticatedMinutesAddIndexRoute
   AuthenticatedNewsNewsIdIndexRoute: typeof AuthenticatedNewsNewsIdIndexRoute
   AuthenticatedNewsAddIndexRoute: typeof AuthenticatedNewsAddIndexRoute
   AuthenticatedNewsListIndexRoute: typeof AuthenticatedNewsListIndexRoute
@@ -1023,6 +1070,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedClimateChampionsIndexRoute:
     AuthenticatedClimateChampionsIndexRoute,
   AuthenticatedMembersIndexRoute: AuthenticatedMembersIndexRoute,
+  AuthenticatedMinutesIndexRoute: AuthenticatedMinutesIndexRoute,
   AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
   AuthenticatedResourcesIndexRoute: AuthenticatedResourcesIndexRoute,
   AuthenticatedSetupIndexRoute: AuthenticatedSetupIndexRoute,
@@ -1037,6 +1085,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEventsEventIdIndexRoute: AuthenticatedEventsEventIdIndexRoute,
   AuthenticatedEventsAddIndexRoute: AuthenticatedEventsAddIndexRoute,
   AuthenticatedEventsListIndexRoute: AuthenticatedEventsListIndexRoute,
+  AuthenticatedMinutesMinutesIdIndexRoute:
+    AuthenticatedMinutesMinutesIdIndexRoute,
+  AuthenticatedMinutesAddIndexRoute: AuthenticatedMinutesAddIndexRoute,
   AuthenticatedNewsNewsIdIndexRoute: AuthenticatedNewsNewsIdIndexRoute,
   AuthenticatedNewsAddIndexRoute: AuthenticatedNewsAddIndexRoute,
   AuthenticatedNewsListIndexRoute: AuthenticatedNewsListIndexRoute,
@@ -1101,6 +1152,7 @@ export interface FileRoutesByFullPath {
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
   '/climate-champions': typeof AuthenticatedClimateChampionsIndexRoute
   '/members': typeof AuthenticatedMembersIndexRoute
+  '/minutes': typeof AuthenticatedMinutesIndexRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/resources': typeof AuthenticatedResourcesIndexRoute
   '/setup': typeof AuthenticatedSetupIndexRoute
@@ -1116,6 +1168,8 @@ export interface FileRoutesByFullPath {
   '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
   '/events/add': typeof AuthenticatedEventsAddIndexRoute
   '/events/list': typeof AuthenticatedEventsListIndexRoute
+  '/minutes/$minutesId': typeof AuthenticatedMinutesMinutesIdIndexRoute
+  '/minutes/add': typeof AuthenticatedMinutesAddIndexRoute
   '/news/$newsId': typeof AuthenticatedNewsNewsIdIndexRoute
   '/news/add': typeof AuthenticatedNewsAddIndexRoute
   '/news/list': typeof AuthenticatedNewsListIndexRoute
@@ -1159,6 +1213,7 @@ export interface FileRoutesByTo {
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
   '/climate-champions': typeof AuthenticatedClimateChampionsIndexRoute
   '/members': typeof AuthenticatedMembersIndexRoute
+  '/minutes': typeof AuthenticatedMinutesIndexRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/resources': typeof AuthenticatedResourcesIndexRoute
   '/setup': typeof AuthenticatedSetupIndexRoute
@@ -1174,6 +1229,8 @@ export interface FileRoutesByTo {
   '/events/$eventId': typeof AuthenticatedEventsEventIdIndexRoute
   '/events/add': typeof AuthenticatedEventsAddIndexRoute
   '/events/list': typeof AuthenticatedEventsListIndexRoute
+  '/minutes/$minutesId': typeof AuthenticatedMinutesMinutesIdIndexRoute
+  '/minutes/add': typeof AuthenticatedMinutesAddIndexRoute
   '/news/$newsId': typeof AuthenticatedNewsNewsIdIndexRoute
   '/news/add': typeof AuthenticatedNewsAddIndexRoute
   '/news/list': typeof AuthenticatedNewsListIndexRoute
@@ -1221,6 +1278,7 @@ export interface FileRoutesById {
   '/_authenticated/ask-ai/': typeof AuthenticatedAskAiIndexRoute
   '/_authenticated/climate-champions/': typeof AuthenticatedClimateChampionsIndexRoute
   '/_authenticated/members/': typeof AuthenticatedMembersIndexRoute
+  '/_authenticated/minutes/': typeof AuthenticatedMinutesIndexRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
   '/_authenticated/resources/': typeof AuthenticatedResourcesIndexRoute
   '/_authenticated/setup/': typeof AuthenticatedSetupIndexRoute
@@ -1236,6 +1294,8 @@ export interface FileRoutesById {
   '/_authenticated/events/$eventId/': typeof AuthenticatedEventsEventIdIndexRoute
   '/_authenticated/events/add/': typeof AuthenticatedEventsAddIndexRoute
   '/_authenticated/events/list/': typeof AuthenticatedEventsListIndexRoute
+  '/_authenticated/minutes/$minutesId/': typeof AuthenticatedMinutesMinutesIdIndexRoute
+  '/_authenticated/minutes/add/': typeof AuthenticatedMinutesAddIndexRoute
   '/_authenticated/news/$newsId/': typeof AuthenticatedNewsNewsIdIndexRoute
   '/_authenticated/news/add/': typeof AuthenticatedNewsAddIndexRoute
   '/_authenticated/news/list/': typeof AuthenticatedNewsListIndexRoute
@@ -1282,6 +1342,7 @@ export interface FileRouteTypes {
     | '/ask-ai'
     | '/climate-champions'
     | '/members'
+    | '/minutes'
     | '/projects'
     | '/resources'
     | '/setup'
@@ -1297,6 +1358,8 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/events/add'
     | '/events/list'
+    | '/minutes/$minutesId'
+    | '/minutes/add'
     | '/news/$newsId'
     | '/news/add'
     | '/news/list'
@@ -1339,6 +1402,7 @@ export interface FileRouteTypes {
     | '/ask-ai'
     | '/climate-champions'
     | '/members'
+    | '/minutes'
     | '/projects'
     | '/resources'
     | '/setup'
@@ -1354,6 +1418,8 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/events/add'
     | '/events/list'
+    | '/minutes/$minutesId'
+    | '/minutes/add'
     | '/news/$newsId'
     | '/news/add'
     | '/news/list'
@@ -1399,6 +1465,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ask-ai/'
     | '/_authenticated/climate-champions/'
     | '/_authenticated/members/'
+    | '/_authenticated/minutes/'
     | '/_authenticated/projects/'
     | '/_authenticated/resources/'
     | '/_authenticated/setup/'
@@ -1414,6 +1481,8 @@ export interface FileRouteTypes {
     | '/_authenticated/events/$eventId/'
     | '/_authenticated/events/add/'
     | '/_authenticated/events/list/'
+    | '/_authenticated/minutes/$minutesId/'
+    | '/_authenticated/minutes/add/'
     | '/_authenticated/news/$newsId/'
     | '/_authenticated/news/add/'
     | '/_authenticated/news/list/'
@@ -1501,6 +1570,7 @@ export const routeTree = rootRoute
         "/_authenticated/ask-ai/",
         "/_authenticated/climate-champions/",
         "/_authenticated/members/",
+        "/_authenticated/minutes/",
         "/_authenticated/projects/",
         "/_authenticated/resources/",
         "/_authenticated/setup/",
@@ -1514,6 +1584,8 @@ export const routeTree = rootRoute
         "/_authenticated/events/$eventId/",
         "/_authenticated/events/add/",
         "/_authenticated/events/list/",
+        "/_authenticated/minutes/$minutesId/",
+        "/_authenticated/minutes/add/",
         "/_authenticated/news/$newsId/",
         "/_authenticated/news/add/",
         "/_authenticated/news/list/",
@@ -1659,6 +1731,10 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/members/index.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/minutes/": {
+      "filePath": "_authenticated/minutes/index.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/projects/": {
       "filePath": "_authenticated/projects/index.tsx",
       "parent": "/_authenticated"
@@ -1717,6 +1793,14 @@ export const routeTree = rootRoute
     },
     "/_authenticated/events/list/": {
       "filePath": "_authenticated/events/list/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/minutes/$minutesId/": {
+      "filePath": "_authenticated/minutes/$minutesId/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/minutes/add/": {
+      "filePath": "_authenticated/minutes/add/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/news/$newsId/": {

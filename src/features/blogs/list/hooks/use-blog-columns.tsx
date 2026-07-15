@@ -12,7 +12,11 @@ import {
 import { Info } from 'lucide-react'
 import BlogRowAction from '../components/blog-row-actions'
 
-export const useBlogsColumns = () => {
+export const useBlogsColumns = ({
+  onViewAuthorProfile,
+}: {
+  onViewAuthorProfile?: (userId: string) => void
+} = {}) => {
   const columns: ColumnDef<BlogResponseDto>[] = [
     {
       id: 'image',
@@ -56,9 +60,17 @@ export const useBlogsColumns = () => {
         const words = title.split(' ')
         const displayTitle =
           words.length > 5 ? words.slice(0, 5).join(' ') + '...' : title
+        const category = row.original.category
         return (
-          <div className='max-w-[250px] whitespace-normal font-medium leading-tight'>
-            {displayTitle}
+          <div className='flex flex-col items-start gap-1'>
+            <div className='max-w-[250px] whitespace-normal font-medium leading-tight'>
+              {displayTitle}
+            </div>
+            {category && (
+              <Badge variant='outline' className='text-[11px] font-normal text-muted-foreground bg-muted/20'>
+                {category}
+              </Badge>
+            )}
           </div>
         )
       },
@@ -66,48 +78,45 @@ export const useBlogsColumns = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'content',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Content' />
-      ),
-      cell: ({ row }) => {
-        const { content } = row.original
-
-        return (
-          <div
-            className='flex space-x-2'
-            dangerouslySetInnerHTML={{
-              __html: content.toString().slice(0, 50) + '...',
-            }}
-          />
-        )
-      },
-      enableSorting: false,
-      enableHiding: true,
-    },
-    {
       accessorKey: 'author',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Author' />
       ),
-      cell: ({ row }) => <div>{row.original.author}</div>,
+      cell: ({ row }) => {
+        const authorId = row.original.authorUser?.id
+        const authorName = row.original.author
+        if (authorId && onViewAuthorProfile) {
+          return (
+            <button
+              onClick={() => onViewAuthorProfile(authorId)}
+              className='text-blue-600 hover:text-blue-800 hover:underline font-medium text-left cursor-pointer transition-colors'
+            >
+              {authorName}
+            </button>
+          )
+        }
+        return <div>{authorName}</div>
+      },
       enableSorting: false,
       enableHiding: false,
     },
     {
-      accessorKey: 'category',
+      accessorKey: 'publishedDate',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Category' />
+        <DataTableColumnHeader column={column} title='Published Date' />
       ),
-      cell: ({ row }) => (
-        <div className='flex items-center gap-2'>
-          <Badge variant='outline' className='text-sm'>
-            {row.original.category}
-          </Badge>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const publishedDate = row.original.publishedDate
+        if (!publishedDate) return <div>N/A</div>
+        const formattedDate = new Date(publishedDate).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })
+        return <div>{formattedDate}</div>
+      },
       enableSorting: false,
-      enableHiding: false,
+      enableHiding: true,
     },
     {
       accessorKey: 'status',

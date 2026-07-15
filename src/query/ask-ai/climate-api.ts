@@ -118,9 +118,9 @@ export const useChatHistory = () => {
   return useQuery({
     ...aiAssistantControllerGetSessionsOptions(),
     enabled: !!token,
-    select: (sessions) => ({
+    select: (sessions: any) => ({
       user_id: '',
-      conversations: (sessions || []) as ChatSession[],
+      conversations: (sessions?.data || []) as ChatSession[],
     }),
     meta: { ignoreGlobalError: true },
   });
@@ -136,9 +136,9 @@ export const useChatSession = (sessionId?: string) => {
       },
     }),
     enabled: !!token && !!sessionId,
-    select: (messages) => ({
+    select: (messages: any) => ({
       session_id: sessionId,
-      messages: (messages || []) as ChatSessionMessagesResponse['messages'],
+      messages: (messages?.data || []) as ChatSessionMessagesResponse['messages'],
     }),
     meta: { ignoreGlobalError: true },
   });
