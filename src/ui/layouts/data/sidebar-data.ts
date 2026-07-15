@@ -14,6 +14,7 @@ import {
   Trophy,
   Tag,
   Activity,
+  FileText,
 } from 'lucide-react'
 import { NavGroup } from '../types'
 
@@ -103,6 +104,12 @@ export const sidebarMenus: NavGroup[] = [
         title: 'Subscribed Emails',
         url: '/subscribed-emails',
         icon: Mail,
+        roles: [Roles.SUPER_ADMIN, Roles.ADMIN, Roles.CONTENT_ADMIN],
+      },
+      {
+        title: 'Minutes',
+        url: '/minutes',
+        icon: FileText,
         roles: [Roles.SUPER_ADMIN, Roles.ADMIN, Roles.CONTENT_ADMIN],
       },
 
