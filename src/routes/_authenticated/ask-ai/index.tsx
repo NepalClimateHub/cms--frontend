@@ -14,8 +14,10 @@ import {
   FileText,
   Copy,
   Check,
+  ServerCrash,
+  RotateCw,
 } from 'lucide-react'
-import { useClimateChat, useChatSession } from '@/query/ask-ai/climate-api'
+import { useClimateChat, useChatSession, useChatHistory } from '@/query/ask-ai/climate-api'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { ChatHistoryMenu } from '@/features/ask-ai/components/ChatHistoryMenu'
 import {
@@ -52,12 +54,12 @@ function parseContentAndSources(content: string, existing?: Source[]) {
   const re = /\n*(?:\*{0,2}Sources:?\*{0,2})\s*\n([\s\S]*?)$/i
   const m = content.match(re)
   const cleaned = m ? content.slice(0, m.index).trimEnd() : content
-  
+
   // Use structured API sources if available
   if (existing && existing.length > 0) {
     return { cleaned, sources: existing }
   }
-  
+
   // Fallback: parse from text only if sources look valid (for chat history)
   let sources: Source[] = []
   if (m) {
@@ -67,14 +69,14 @@ function parseContentAndSources(content: string, existing?: Source[]) {
       .map((l) => {
         let text = l.replace(/^[\s\-*•]+/, '').trim()
         let page: number | undefined
-        
+
         // Match " (Page N)" or " - Page N"
         const pageMatch = text.match(/[(-]\s*Page\s+(\d+)\s*[)-]?/i)
         if (pageMatch) {
           page = parseInt(pageMatch[1], 10)
           text = text.replace(pageMatch[0], '').trim()
         }
-        
+
         return { source: text, page }
       })
       // Filter out garbage: reject entries that look malformed
@@ -85,12 +87,12 @@ function parseContentAndSources(content: string, existing?: Source[]) {
         // Accept anything else (LLM writes clean names without .pdf)
         return true
       })
-    
+
     if (parsed.length > 0) {
       sources = parsed
     }
   }
-  
+
 
   return { cleaned, sources }
 }
@@ -106,9 +108,7 @@ function AskAI() {
   const chatMutation = useClimateChat()
 
   const { data: sessionData, isLoading: isSessionLoading } = useChatSession(conversationId)
-
-
-
+  const { isError: isHistoryError, refetch: refetchHistory } = useChatHistory()
 
   useEffect(() => {
     if (sessionData && conversationId) {
@@ -123,8 +123,12 @@ function AskAI() {
     }
   }, [sessionData, conversationId])
 
-  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  useEffect(scrollToBottom, [messages])
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
 
   const handleSend = async () => {
     if (!input.trim() || chatMutation.isPending) return
@@ -189,77 +193,100 @@ function AskAI() {
         <p className='text-muted-foreground'>Get AI-powered answers from Nepal's climate documents</p>
       </div>
 
-      <div className='flex-shrink-0 flex items-center justify-end gap-3 mb-1'>
-        <ChatHistoryMenu
-          onSelectSession={setConversationId}
-          currentSessionId={conversationId}
-          onNewChat={handleNewChat}
-        />
-      </div>
-
-
-      <div className='flex flex-1 overflow-hidden'>
-
-        <div className='flex flex-1 flex-col overflow-hidden min-w-0'>
-
-          <div className='flex-1 overflow-y-auto px-2 py-4'>
-            <div className='mx-auto max-w-3xl space-y-6'>
-              {messages.length === 0 ? (
-                <EmptyState onSuggestion={setInput} />
-              ) : (
-                messages.map((msg) => (
-                  <ChatMessage key={msg.id} message={msg} />
-                ))
-              )}
-
-              {(chatMutation.isPending || isSessionLoading) && (
-                <div className='flex items-center gap-2 text-muted-foreground animate-pulse'>
-                  <Loader2 className='h-4 w-4 animate-spin' />
-                  <span>{isSessionLoading ? 'Loading chat...' : 'Thinking...'}</span>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
+      {isHistoryError ? (
+        <div className='flex-1 flex flex-col items-center justify-center p-6 text-center max-w-md mx-auto my-auto gap-5'>
+          <div className='relative'>
+            <div className='absolute -inset-4 animate-pulse rounded-full bg-destructive/10 blur-xl' />
+            <div className='relative flex h-16 w-16 items-center justify-center rounded-2xl bg-destructive/10 text-destructive ring-1 ring-destructive/20'>
+              <ServerCrash className='h-8 w-8' />
             </div>
           </div>
+          <div className='space-y-2'>
+            <h3 className='text-xl font-bold tracking-tight text-foreground'>
+              AI Assistant Offline
+            </h3>
+            <p className='text-sm text-muted-foreground leading-relaxed'>
+              We are currently unable to connect to the climate AI assistant. The rest of the dashboard is active and ready for you to use.
+            </p>
+          </div>
+          <Button onClick={() => refetchHistory()} size='default' className='px-6 shadow-md'>
+            <RotateCw className='mr-2 h-4 w-4' />
+            Retry Connection
+          </Button>
+        </div>
+      ) : (
+        <>
+          <div className='flex-shrink-0 flex items-center justify-end gap-3 mb-1'>
+            <ChatHistoryMenu
+              onSelectSession={setConversationId}
+              currentSessionId={conversationId}
+              onNewChat={handleNewChat}
+            />
+          </div>
 
+          <div className='flex flex-1 overflow-hidden'>
 
-          <div className='flex-shrink-0 px-2 pb-4 pt-2'>
-            <div className='mx-auto max-w-3xl'>
-              <div className='relative flex items-center w-full shadow-sm rounded-2xl border bg-background focus-within:ring-1 focus-within:ring-ring px-2 py-2'>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='flex-shrink-0 text-muted-foreground hover:text-foreground h-10 w-10 rounded-full'
-                >
-                  <Plus className='h-5 w-5' />
-                </Button>
-                <Textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder='Ask something...'
-                  className='flex-1 border-none shadow-none focus-visible:ring-0 min-h-[44px] max-h-[200px] resize-none py-3 px-3 scrollbar-hide'
-                  rows={1}
-                  disabled={chatMutation.isPending}
-                />
-                <Button
-                  onClick={handleSend}
-                  disabled={chatMutation.isPending || !input.trim()}
-                  size='icon'
-                  className='h-10 w-10 rounded-xl flex-shrink-0'
-                >
-                  {chatMutation.isPending ? (
-                    <Loader2 className='h-5 w-5 animate-spin' />
+            <div className='flex flex-1 flex-col overflow-hidden min-w-0'>
+
+              <div className='flex-1 overflow-y-auto px-2 py-4'>
+                <div className='mx-auto max-w-3xl space-y-6'>
+                  {messages.length === 0 ? (
+                    <EmptyState onSuggestion={setInput} />
                   ) : (
-                    <Send className='h-5 w-5' />
+                    messages.map((msg) => (
+                      <ChatMessage key={msg.id} message={msg} />
+                    ))
                   )}
-                </Button>
+
+                  {(chatMutation.isPending || isSessionLoading) && (
+                    <div className='flex items-center gap-2 text-muted-foreground animate-pulse'>
+                      <Loader2 className='h-4 w-4 animate-spin' />
+                      <span>{isSessionLoading ? 'Loading chat...' : 'Thinking...'}</span>
+                    </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+              </div>
+
+              <div className='flex-shrink-0 px-2 pb-4 pt-2'>
+                <div className='mx-auto max-w-3xl'>
+                  <div className='relative flex items-center w-full shadow-sm rounded-2xl border bg-background focus-within:ring-1 focus-within:ring-ring px-2 py-2'>
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      className='flex-shrink-0 text-muted-foreground hover:text-foreground h-10 w-10 rounded-full'
+                    >
+                      <Plus className='h-5 w-5' />
+                    </Button>
+                    <Textarea
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder='Ask something...'
+                      className='flex-1 border-none shadow-none focus-visible:ring-0 min-h-[44px] max-h-[200px] resize-none py-3 px-3 scrollbar-hide'
+                      rows={1}
+                      disabled={chatMutation.isPending}
+                    />
+                    <Button
+                      onClick={handleSend}
+                      disabled={chatMutation.isPending || !input.trim()}
+                      size='icon'
+                      className='h-10 w-10 rounded-xl flex-shrink-0'
+                    >
+                      {chatMutation.isPending ? (
+                        <Loader2 className='h-5 w-5 animate-spin' />
+                      ) : (
+                        <Send className='h-5 w-5' />
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-      </div>
+          </div>
+        </>
+      )}
     </Main>
   )
 }
@@ -502,9 +529,9 @@ function DocumentViewerDialog({ filename, documentUrl, page }: { filename: strin
             </span>
           )}
         </DialogTitle>
-        <a 
-          href={documentUrl} 
-          target="_blank" 
+        <a
+          href={documentUrl}
+          target="_blank"
           rel="noopener noreferrer"
           className="text-xs text-blue-600 hover:underline flex items-center gap-1 ml-4"
         >

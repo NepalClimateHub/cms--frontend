@@ -16,6 +16,8 @@ import './index.css'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 import { handleServerError } from './utils/handle-server-error'
+import MissingApiUrl from './features/errors/missing-api-url'
+import { isEnvConfigured } from './config/env.config'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,7 +49,19 @@ const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
-    onError: (error: unknown) => {
+    onError: (error: unknown, query: any) => {
+      // Skip global 500/503 error handling/redirects for AI assistant backend queries
+      const queryKey = query?.queryKey || []
+      const isAiQuery =
+        queryKey.includes('aiAssistantControllerGetSessions') ||
+        queryKey.includes('aiAssistantControllerGetMessages') ||
+        queryKey.includes('aiAssistantControllerChat') ||
+        queryKey.includes('climate-health')
+
+      if (isAiQuery || query?.meta?.ignoreGlobalError) {
+        return
+      }
+
       // Handle 401 (Unauthorized) from both Axios and fetch client
       const err = error as Record<string, unknown>
       const resp = err?.response as Record<string, unknown> | undefined
@@ -117,18 +131,28 @@ const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
 
-  apiConfig()
-  root.render(
-    <StrictMode>
-      <NuqsAdapter>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
-            <FontProvider>
-              <RouterProvider router={router} />
-            </FontProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </NuqsAdapter>
-    </StrictMode>
-  )
+  if (!isEnvConfigured()) {
+    root.render(
+      <StrictMode>
+        <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
+          <MissingApiUrl />
+        </ThemeProvider>
+      </StrictMode>
+    )
+  } else {
+    apiConfig()
+    root.render(
+      <StrictMode>
+        <NuqsAdapter>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
+              <FontProvider>
+                <RouterProvider router={router} />
+              </FontProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </NuqsAdapter>
+      </StrictMode>
+    )
+  }
 }
