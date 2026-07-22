@@ -9,7 +9,7 @@ import {
   EventFormValues,
 } from '@/schemas/event'
 import { LOCATION_TYPE } from '@/schemas/shared'
-import { DatePicker } from '@/ui/datepicker'
+import { DateTimePicker } from '@/ui/datetime-picker'
 import ImageUpload from '@/ui/image-upload'
 import AddressForm from '@/ui/molecules/address/address'
 import { MinimalTiptapEditor } from '@/ui/molecules/minimal-tiptap'
@@ -318,12 +318,12 @@ const EventForm: FC<Props> = ({
               name='startDate'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Event Date</FormLabel>
+                  <FormLabel>Event Date & Time</FormLabel>
                   <FormDescription>
                     When will the event take place?
                   </FormDescription>
                   <FormControl>
-                    <DatePicker {...field} />
+                    <DateTimePicker {...field} placeholder='Pick event date and time' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -339,7 +339,7 @@ const EventForm: FC<Props> = ({
                     Last date to register for the event
                   </FormDescription>
                   <FormControl>
-                    <DatePicker {...field} />
+                    <DateTimePicker {...field} placeholder='Pick registration deadline' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
