@@ -15,6 +15,7 @@ import {
   Tag,
   Activity,
   FileText,
+  MessageSquareQuote,
 } from 'lucide-react'
 import { NavGroup } from '../types'
 
@@ -134,6 +135,12 @@ export const sidebarMenus: NavGroup[] = [
             title: 'Climate Champions',
             url: '/climate-champions',
             icon: Trophy,
+            roles: [Roles.SUPER_ADMIN, Roles.ADMIN, Roles.CONTENT_ADMIN],
+          },
+          {
+            title: 'Testimonials',
+            url: '/testimonials',
+            icon: MessageSquareQuote,
             roles: [Roles.SUPER_ADMIN, Roles.ADMIN, Roles.CONTENT_ADMIN],
           },
         ],
