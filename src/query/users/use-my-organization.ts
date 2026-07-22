@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { UserOutput } from '@/api/types.gen'
 import apiClient from '@/query/apiClient'
 import { auth } from '@/query/shared/routes'
-import { handleServerError } from '@/utils/handle-server-error'
 import { SocialType } from '@/schemas/shared'
 
 export type UpdateMyOrganizationBody = {
@@ -40,6 +39,5 @@ export function usePatchMyOrganization() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [auth.profile.key] })
     },
-    onError: handleServerError,
   })
 }

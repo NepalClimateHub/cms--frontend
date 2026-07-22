@@ -297,127 +297,133 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
       data-drag-handle
       className='relative text-center leading-none'
     >
-      <div
+      <figure
         className='group/node-image relative mx-auto rounded-md object-contain'
         style={{
           maxWidth: `min(${maxWidth}px, 100%)`,
           width: currentWidth,
-          maxHeight: MAX_HEIGHT,
-          aspectRatio: `${imageState.naturalSize.width} / ${imageState.naturalSize.height}`,
         }}
       >
         <div
-          className={cn(
-            'relative flex h-full cursor-default flex-col items-center gap-2 rounded',
-            {
-              'outline outline-2 outline-offset-1 outline-primary':
-                selected || isResizing,
-            }
-          )}
+          style={{
+            maxHeight: MAX_HEIGHT,
+            aspectRatio: `${imageState.naturalSize.width} / ${imageState.naturalSize.height}`,
+          }}
         >
-          <div className='h-full contain-paint'>
-            <div className='relative h-full'>
-              {imageState.isServerUploading && !imageState.error && (
-                <div className='absolute inset-0 flex items-center justify-center'>
-                  <Spinner className='size-7' />
-                </div>
-              )}
+          <div
+            className={cn(
+              'relative flex h-full cursor-default flex-col items-center gap-2 rounded',
+              {
+                'outline outline-2 outline-offset-1 outline-primary':
+                  selected || isResizing,
+              }
+            )}
+          >
+            <div className='h-full contain-paint'>
+              <div className='relative h-full'>
+                {imageState.isServerUploading && !imageState.error && (
+                  <div className='absolute inset-0 flex items-center justify-center'>
+                    <Spinner className='size-7' />
+                  </div>
+                )}
 
-              {imageState.error && (
-                <div className='absolute inset-0 flex flex-col items-center justify-center'>
-                  <InfoCircledIcon className='size-8 text-destructive' />
-                  <p className='mt-2 text-sm text-muted-foreground'>
-                    Failed to load image
-                  </p>
-                </div>
-              )}
+                {imageState.error && (
+                  <div className='absolute inset-0 flex flex-col items-center justify-center'>
+                    <InfoCircledIcon className='size-8 text-destructive' />
+                    <p className='mt-2 text-sm text-muted-foreground'>
+                      Failed to load image
+                    </p>
+                  </div>
+                )}
 
-              <ControlledZoom
-                isZoomed={imageState.isZoomed}
-                onZoomChange={() =>
-                  setImageState((prev) => ({ ...prev, isZoomed: false }))
-                }
-              >
-                <img
-                  className={cn(
-                    'h-auto rounded object-contain transition-shadow',
-                    {
-                      'opacity-0': !imageState.imageLoaded || imageState.error,
-                    }
-                  )}
-                  style={{
-                    maxWidth: `min(100%, ${maxWidth}px)`,
-                    minWidth: `${MIN_WIDTH}px`,
-                    maxHeight: MAX_HEIGHT,
-                  }}
-                  width={currentWidth}
-                  height={currentHeight}
-                  src={imageState.src}
-                  onError={handleImageError}
-                  onLoad={handleImageLoad}
-                  alt={node.attrs.alt || ''}
-                  title={node.attrs.title || ''}
-                  id={node.attrs.id}
-                />
-              </ControlledZoom>
+                <ControlledZoom
+                  isZoomed={imageState.isZoomed}
+                  onZoomChange={() =>
+                    setImageState((prev) => ({ ...prev, isZoomed: false }))
+                  }
+                >
+                  <img
+                    className={cn(
+                      'h-auto rounded object-contain transition-shadow',
+                      {
+                        'opacity-0': !imageState.imageLoaded || imageState.error,
+                      }
+                    )}
+                    style={{
+                      maxWidth: `min(100%, ${maxWidth}px)`,
+                      minWidth: `${MIN_WIDTH}px`,
+                      maxHeight: MAX_HEIGHT,
+                    }}
+                    width={currentWidth}
+                    height={currentHeight}
+                    src={imageState.src}
+                    onError={handleImageError}
+                    onLoad={handleImageLoad}
+                    alt={node.attrs.alt || ''}
+                    title={node.attrs.title || ''}
+                    id={node.attrs.id}
+                  />
+                </ControlledZoom>
+              </div>
+
+              {imageState.isServerUploading && <ImageOverlay />}
+
+              {editor.isEditable &&
+                imageState.imageLoaded &&
+                !imageState.error &&
+                !imageState.isServerUploading && (
+                  <>
+                    <ResizeHandle
+                      onPointerDown={handleResizeStart('left')}
+                      className={cn('left-1', {
+                        hidden: isResizing && activeResizeHandle === 'right',
+                      })}
+                      isResizing={isResizing && activeResizeHandle === 'left'}
+                    />
+                    <ResizeHandle
+                      onPointerDown={handleResizeStart('right')}
+                      className={cn('right-1', {
+                        hidden: isResizing && activeResizeHandle === 'left',
+                      })}
+                      isResizing={isResizing && activeResizeHandle === 'right'}
+                    />
+                  </>
+                )}
             </div>
 
-            {imageState.isServerUploading && <ImageOverlay />}
+            {imageState.error && (
+              <ActionWrapper>
+                <ActionButton
+                  icon={<TrashIcon className='size-4' />}
+                  tooltip='Remove image'
+                  onClick={onRemoveImg}
+                />
+              </ActionWrapper>
+            )}
 
-            {editor.isEditable &&
-              imageState.imageLoaded &&
+            {!isResizing &&
               !imageState.error &&
               !imageState.isServerUploading && (
-                <>
-                  <ResizeHandle
-                    onPointerDown={handleResizeStart('left')}
-                    className={cn('left-1', {
-                      hidden: isResizing && activeResizeHandle === 'right',
-                    })}
-                    isResizing={isResizing && activeResizeHandle === 'left'}
-                  />
-                  <ResizeHandle
-                    onPointerDown={handleResizeStart('right')}
-                    className={cn('right-1', {
-                      hidden: isResizing && activeResizeHandle === 'left',
-                    })}
-                    isResizing={isResizing && activeResizeHandle === 'right'}
-                  />
-                </>
+                <ImageActions
+                  shouldMerge={shouldMerge}
+                  isLink={isLink}
+                  onView={onView}
+                  onDownload={onDownload}
+                  onCopy={onCopy}
+                  onCopyLink={onCopyLink}
+                  onResize={onResize}
+                  onCrop={onCrop}
+                />
               )}
           </div>
-
-          {imageState.error && (
-            <ActionWrapper>
-              <ActionButton
-                icon={<TrashIcon className='size-4' />}
-                tooltip='Remove image'
-                onClick={onRemoveImg}
-              />
-            </ActionWrapper>
-          )}
-
-          {!isResizing &&
-            !imageState.error &&
-            !imageState.isServerUploading && (
-              <ImageActions
-                shouldMerge={shouldMerge}
-                isLink={isLink}
-                onView={onView}
-                onDownload={onDownload}
-                onCopy={onCopy}
-                onCopyLink={onCopyLink}
-                onResize={onResize}
-                onCrop={onCrop}
-              />
-            )}
         </div>
+
         {node.attrs.caption && (
           <figcaption className='mt-2 text-center text-sm italic text-muted-foreground'>
             {node.attrs.caption}
           </figcaption>
         )}
-      </div>
+      </figure>
 
       <ImageResizer
         open={isResizerOpen}

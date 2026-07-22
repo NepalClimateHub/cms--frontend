@@ -8,7 +8,7 @@ export const blogSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   categoryId: z.string().min(1, 'Category selection is required'),
   readingTime: z.string().optional(),
-  publishedDate: z.date().optional(),
+  publishedDate: z.date({ required_error: 'Published date is required' }),
   isDraft: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
   isTopRead: z.boolean().default(false),

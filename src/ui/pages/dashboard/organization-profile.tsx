@@ -116,11 +116,13 @@ function formatLocation(org: UserOutput['organization']) {
 type OrganizationProfilePageProps = {
   user: UserOutput
   onUserUpdated: () => void
+  highlightEdit?: boolean
 }
 
 export default function OrganizationProfilePage({
   user,
   onUserUpdated,
+  highlightEdit,
 }: OrganizationProfilePageProps) {
   const org = user.organization
   const nameInitials = getInitialsForAvatar(user.fullName || 'User')
@@ -185,11 +187,11 @@ export default function OrganizationProfilePage({
     orgForm.reset({
       name: org.name,
       description: org.description ?? '',
-      street: org.address?.street ?? '',
-      city: org.address?.city ?? '',
-      state: org.address?.state ?? '',
-      country: org.address?.country ?? '',
-      postcode: org.address?.postcode ?? '',
+      street: typeof org.address?.street === 'string' ? org.address.street : '',
+      city: typeof org.address?.city === 'string' ? org.address.city : '',
+      state: typeof org.address?.state === 'string' ? org.address.state : '',
+      country: typeof org.address?.country === 'string' ? org.address.country : '',
+      postcode: typeof org.address?.postcode === 'string' ? org.address.postcode : '',
       ...s,
     })
   }, [isEditOrgDetailsOpen, org, user.socials, orgForm])
@@ -285,6 +287,12 @@ export default function OrganizationProfilePage({
             variant='outline'
             size='sm'
             onClick={() => setIsEditOrgDetailsOpen(true)}
+            className={cn(
+              'transition-all duration-300',
+              highlightEdit &&
+                !isEditOrgDetailsOpen &&
+                'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-lg shadow-emerald-500/20 ring-2 ring-emerald-500 ring-offset-2 scale-105 animate-pulse'
+            )}
           >
             <Edit className='mr-2 h-4 w-4' />
             Edit details
@@ -452,7 +460,7 @@ export default function OrganizationProfilePage({
                   Type
                 </h4>
                 <p className='text-foreground'>
-                  {org.organizationType?.trim() || '—'}
+                  {((org.organizationType as any)?.trim() || '—')}
                 </p>
               </div>
             </div>

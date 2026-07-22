@@ -1,5 +1,6 @@
 import { client } from '@/api/client.gen'
 import { getAccessToken } from '@/stores/authStore'
+import { env } from './env.config'
 
 export const apiConfig = () => {
   const accessToken = getAccessToken()
@@ -13,7 +14,7 @@ export const apiConfig = () => {
   }
 
   client.setConfig({
-    baseUrl: import.meta.env.VITE_API_URL,
+    baseUrl: env.VITE_API_URL,
     headers,
   })
 }

@@ -20,21 +20,21 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const openRow = () => setCurrentRow(row.original)
 
   return (
-    <div className='flex items-center justify-end gap-0.5'>
+    <div className='flex items-center justify-end gap-2'>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
             type='button'
-            variant='ghost'
-            size='icon'
-            className='h-8 w-8'
+            variant='default'
+            size='sm'
+            className='h-6 bg-green-500 px-2 text-white hover:bg-green-600'
             aria-label='View user details'
             onClick={() => {
               openRow()
               setOpen('view')
             }}
           >
-            <Eye className='h-4 w-4' />
+            <Eye />
           </Button>
         </TooltipTrigger>
         <TooltipContent side='bottom'>View details</TooltipContent>
@@ -45,16 +45,16 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           <TooltipTrigger asChild>
             <Button
               type='button'
-              variant='ghost'
-              size='icon'
-              className='h-8 w-8'
+              variant='default'
+              size='sm'
+              className='h-6 bg-purple-600 px-2 text-white hover:bg-purple-700'
               aria-label='View verification application'
               onClick={() => {
                 openRow()
                 setOpen('viewOrgVerification')
               }}
             >
-              <ClipboardList className='h-4 w-4' />
+              <ClipboardList />
             </Button>
           </TooltipTrigger>
           <TooltipContent side='bottom'>View application</TooltipContent>
@@ -65,16 +65,16 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         <TooltipTrigger asChild>
           <Button
             type='button'
-            variant='ghost'
-            size='icon'
-            className='h-8 w-8'
+            variant='default'
+            size='sm'
+            className='h-6 bg-blue-500 px-2 text-white hover:bg-blue-600'
             aria-label='Edit user'
             onClick={() => {
               openRow()
               setOpen('edit')
             }}
           >
-            <Pencil className='h-4 w-4' />
+            <Pencil />
           </Button>
         </TooltipTrigger>
         <TooltipContent side='bottom'>Edit</TooltipContent>
@@ -84,16 +84,16 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         <TooltipTrigger asChild>
           <Button
             type='button'
-            variant='ghost'
-            size='icon'
-            className='h-8 w-8 text-muted-foreground hover:text-destructive'
+            variant='destructive'
+            size='sm'
+            className='h-6 px-2'
             aria-label='Delete user'
             onClick={() => {
               openRow()
               setOpen('delete')
             }}
           >
-            <Trash2 className='h-4 w-4' />
+            <Trash2 />
           </Button>
         </TooltipTrigger>
         <TooltipContent side='bottom'>Delete</TooltipContent>

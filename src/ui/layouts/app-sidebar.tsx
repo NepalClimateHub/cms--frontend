@@ -12,6 +12,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar,
 } from '@/ui/shadcn/sidebar'
 import { LogOut } from 'lucide-react'
 import { ProfileCard } from '../profile-card'
@@ -21,6 +22,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const sidebarData = useSideBarData()
   const logout = useLogout()
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+  const { state } = useSidebar()
 
   const handleLogoutConfirm = () => {
     logout()
@@ -36,15 +38,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {...props}
       >
         <SidebarHeader className='border-b border-border/40'>
-          <div className='flex items-center px-3 py-4'>
+          <div
+            className={`flex items-center ${
+              state === 'collapsed' ? 'justify-center py-4' : 'px-3 py-4'
+            }`}
+          >
             <img
               src='images/logo.png'
               alt='Nepal Climate Hub'
-              className='mr-3 h-8 w-8'
+              className={state === 'collapsed' ? 'h-8 w-8' : 'mr-3 h-8 w-8'}
             />
-            <span className='text-lg font-bold text-foreground'>
-              NCH Dashboard
-            </span>
+            {state !== 'collapsed' && (
+              <span className='truncate text-lg font-bold text-foreground'>
+                NCH Dashboard
+              </span>
+            )}
           </div>
         </SidebarHeader>
         <SidebarContent className='py-4'>

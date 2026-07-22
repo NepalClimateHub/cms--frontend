@@ -46,7 +46,7 @@ const AddBlog: FC = () => {
       excerpt: '',
       author: isStaffContentRole ? '' : defaultAuthorForNonStaff,
       category: '',
-      publishedDate: undefined,
+      publishedDate: new Date(),
       isDraft: false,
       isFeatured: false,
       isTopRead: false,
@@ -80,9 +80,7 @@ const AddBlog: FC = () => {
     try {
       const formattedValues = {
         ...values,
-        publishedDate: values.publishedDate
-          ? new Date(values.publishedDate).toISOString()
-          : undefined,
+        publishedDate: new Date(values.publishedDate).toISOString(),
         excerpt: values.excerpt ?? undefined,
         category: values.category ?? undefined,
         author: values.author ?? undefined,
@@ -111,7 +109,7 @@ const AddBlog: FC = () => {
         description='Fill in the details to add a new blog!'
         showBackButton={true}
       />
-      <div className='mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+      <div className='mx-4 px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
         <div className='w-full'>
           <BlogForm
             form={form}

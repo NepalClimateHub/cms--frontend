@@ -1,7 +1,6 @@
 import { FC, useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 import { useGetIkAuthParams } from '@/query/imagekit/use-ik'
-import { imagekit } from '@/query/shared/routes'
+import { getIkAuthParams } from '@/query/imagekit/ik-service'
 import { XCircle } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 import IKContext from '@/ui/molecules/image-kit/IKContext'
@@ -34,7 +33,6 @@ const ImageUpload: FC<ImageUploadProps> = ({
   initialImageUrl,
   inputId,
 }) => {
-  const queryClient = useQueryClient()
   const [isUploading, setIsUploading] = useState(false)
   const [isError, setIsError] = useState(false)
   const [imageURL, setImageURL] = useState<string | null>(
@@ -42,11 +40,11 @@ const ImageUpload: FC<ImageUploadProps> = ({
   )
   const [imageId, setImageId] = useState<string | null>(initialImageId || null)
 
+  // Only used for stable config values (endpoint, publicKey, folder) — these don't expire
   const { data, isLoading } = useGetIkAuthParams()
 
   const endpoint = data?.data?.endpoint
   const publicKey = data?.data?.publicKey
-  const ikAuthParams = data?.data?.ikAuthParams
   const folder = data?.data?.folder
 
   const handleUploadStart = () => {
@@ -54,20 +52,20 @@ const ImageUpload: FC<ImageUploadProps> = ({
     setIsUploading(true)
   }
 
-  const handleError = () => {
+  const handleError = (err?: Error) => {
     setIsUploading(false)
     setIsError(true)
+    const isGenericMessage = !err?.message || err.message === '[object Object]'
     toast({
       variant: 'destructive',
-      title: 'Upload failed. Please try again.',
+      title: 'Image upload failed',
+      description: isGenericMessage
+        ? 'Something went wrong. Please try again.'
+        : err.message,
     })
   }
 
   const handleUploadSuccess = (data: { url?: string; fileId?: string }) => {
-    queryClient.invalidateQueries({
-      queryKey: [imagekit.getauthparams.key],
-      exact: false,
-    })
     setIsUploading(false)
     setIsError(false)
     setImageURL(data?.url ?? null)
@@ -85,8 +83,13 @@ const ImageUpload: FC<ImageUploadProps> = ({
     handleImage(null, null)
   }
 
+  // Called by ImageKit SDK right before each upload — always fetches fresh credentials
+  const authenticator = async () => {
+    const result = await getIkAuthParams()
+    return result.data.ikAuthParams
+  }
+
   return (
-    // <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 my-4 bg-white shadow-sm">
     <div
       className={`my-4 inline-flex rounded-lg border-2 border-dashed border-gray-300 bg-white p-6 shadow-sm transition-all duration-300 ${className}`}
     >
@@ -94,7 +97,7 @@ const ImageUpload: FC<ImageUploadProps> = ({
         <IKContext
           publicKey={publicKey}
           urlEndpoint={endpoint}
-          authenticator={() => new Promise((resolve) => resolve(ikAuthParams))}
+          authenticator={authenticator}
         >
           <div className='space-y-4'>
             <div className='flex items-center justify-start gap-8'>

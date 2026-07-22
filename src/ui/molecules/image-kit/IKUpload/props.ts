@@ -114,6 +114,6 @@ export type IKUploadProps = Omit<InferProps<typeof Props>, "customMetadata" | "t
     transformation?: TransformationType;
     overrideParameters?: (file: File) => OverrideValues;
     checks?: string
-} & React.InputHTMLAttributes<HTMLInputElement>;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onError'>;
 
 export default Props;

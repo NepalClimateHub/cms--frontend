@@ -131,13 +131,10 @@ const AddOpportunity: FC = () => {
                 },
                 {
                   onSuccess: () => {
-                    toast({
-                      title: 'Opportunity added successfully',
-                    })
+                    toast({ title: 'Opportunity added successfully' })
                     navigate({ to: '/opportunities/list' })
                   },
                   onError: () => {
-                    // Still show success even if socials update fails
                     toast({
                       title: 'Opportunity added successfully',
                       description: 'Note: Social links may need to be updated manually',
@@ -147,21 +144,9 @@ const AddOpportunity: FC = () => {
                 }
               )
             } else {
-              toast({
-                title: 'Opportunity added successfully',
-              })
+              toast({ title: 'Opportunity added successfully' })
               navigate({ to: '/opportunities/list' })
             }
-          },
-          onError: (error: unknown) => {
-            const message =
-              error instanceof Error
-                ? error.message
-                : 'Failed to add opportunity'
-            toast({
-              title: message,
-              variant: 'destructive',
-            })
           },
         }
       )
@@ -177,7 +162,7 @@ const AddOpportunity: FC = () => {
         description='Fill in the details to add a new opportunity!'
         showBackButton={true}
       />
-      <div className='mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+      <div className='mx-4 px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
         <div className='w-full'>
           <OpportunityForm
             form={form}

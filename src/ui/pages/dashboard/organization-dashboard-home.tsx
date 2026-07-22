@@ -21,7 +21,7 @@ export default function OrganizationDashboardHome() {
   const isComplete = completion === 100
 
   return (
-    <Main>
+    <Main isHome>
       <div className='flex min-h-[60vh] flex-col items-center gap-6 px-4 py-8'>
         <Card className='w-full max-w-4xl overflow-hidden border-0 shadow-xl'>
           <div className='relative bg-gradient-to-br from-slate-700 via-teal-700 to-emerald-800 p-8 md:p-12 lg:p-16'>
@@ -45,6 +45,7 @@ export default function OrganizationDashboardHome() {
                   ) : (
                     <Link
                       to='/dashboard/profile'
+                      search={{ highlightEdit: true }}
                       className='flex items-center gap-2 font-medium text-white underline underline-offset-4 hover:text-white/80'
                     >
                       <ShieldCheck className='h-5 w-5' />
@@ -60,9 +61,13 @@ export default function OrganizationDashboardHome() {
                   size='lg'
                   className='bg-white/95 text-teal-900 shadow-md hover:bg-white'
                 >
-                  <Link to='/dashboard/profile' className='gap-2'>
+                  <Link
+                    to='/dashboard/profile'
+                    search={{ highlightEdit: true }}
+                    className='gap-2'
+                  >
                     <UserCircle className='h-4 w-4' />
-                    Organization profile
+                    Edit profile
                   </Link>
                 </Button>
                 <Button
