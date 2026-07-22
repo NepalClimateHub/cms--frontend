@@ -36,8 +36,23 @@ const AddEvent = () => {
     form.setValue('bannerImageUrl', assetURL)
   }
 
+  const formatToUTCISO = (date?: Date | string | null) => {
+    if (!date) return undefined
+    const d = typeof date === 'string' ? new Date(date) : date
+    if (isNaN(d.getTime())) return undefined
+    const yyyy = d.getFullYear()
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    const dd = String(d.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}T00:00:00.000Z`
+  }
+
   const handleFormSubmit = async (values: EventFormValues) => {
-    await eventMutation.mutateAsync(values)
+    const formattedPayload = {
+      ...values,
+      startDate: values.startDate ? formatToUTCISO(values.startDate) : values.startDate,
+      registrationDeadline: values.registrationDeadline ? formatToUTCISO(values.registrationDeadline) : values.registrationDeadline,
+    }
+    await eventMutation.mutateAsync(formattedPayload as unknown as EventFormValues)
     navigate({
       to: '/events/list',
     })

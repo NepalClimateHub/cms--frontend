@@ -104,7 +104,10 @@ export const useAddBlog = () => {
     ...blogControllerCreateBlogMutation(),
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries(blogControllerGetPublishedBlogsOptions())
+      void queryClient.invalidateQueries(blogControllerFindAllBlogsOptions())
+      void queryClient.invalidateQueries(
+        blogControllerGetPublishedBlogsOptions()
+      )
       toast({
         title: 'Blogs added',
         description: 'Blogs has been added successfully.',
