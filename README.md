@@ -60,17 +60,31 @@ The dashboard will be available at `http://localhost:5173`.
 
 ## Folder Structure
 
-This project follows the **atomic design** methodology:
+The frontend keeps route definitions, feature code, API/query helpers, schemas, and reusable UI separated by responsibility:
 
 ```
 src/
-├── components/
-│   ├── atoms/        # Smallest UI building blocks (buttons, inputs, icons)
-│   ├── molecules/    # Composed atoms (cards, dialogs, tables)
-│   ├── organisms/    # Page sections (header, footer, sidebars)
-│   ├── templates/    # Page-level layout components
-│   └── shadcn/       # Downloaded shadcn/ui components
-└── pages/            # Complete pages composed of templates
+├── api/              # Generated API client and API helpers
+├── config/           # App-level configuration
+├── constants/        # Shared constants
+├── context/          # React context providers
+├── data/             # Static data used by the UI
+├── features/         # Domain features such as auth, blogs, projects, users, and Ask AI
+├── hooks/            # Shared React hooks
+├── query/            # TanStack Query hooks grouped by domain
+├── routes/           # TanStack Router route files
+├── schemas/          # Validation schemas grouped by domain
+├── stores/           # Client-side state stores
+├── ui/
+│   ├── layouts/      # Layout shells and layout data
+│   ├── molecules/    # Reusable composed UI pieces
+│   ├── organisms/    # Larger dashboard sections
+│   ├── pages/        # Page-level UI composition
+│   ├── shadcn/       # shadcn/ui components and helpers
+│   └── templates/    # Reusable page templates
+├── utils/            # Shared utility functions
+├── main.tsx          # App entry point
+└── routeTree.gen.ts  # Generated TanStack Router tree
 ```
 
 ## Related Services
