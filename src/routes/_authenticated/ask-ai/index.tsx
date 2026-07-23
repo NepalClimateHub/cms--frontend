@@ -6,7 +6,6 @@ import { Textarea } from '@/ui/shadcn/textarea'
 import {
   Send,
   Loader2,
-  ChevronRight,
   ChevronDown,
   Plus,
   BookOpen,
@@ -16,10 +15,21 @@ import {
   Check,
   ServerCrash,
   RotateCw,
+  ExternalLink,
 } from 'lucide-react'
-import { useClimateChat, useChatSession, useChatHistory } from '@/query/ask-ai/climate-api'
+import {
+  ChatSource,
+  parseVisualSpec,
+  useClimateChat,
+  useChatHistory,
+  useChatSession,
+  VisualSpec,
+} from '@/query/ask-ai/climate-api'
+import { env } from '@/config/env.config'
+import { getAccessToken } from '@/stores/authStore'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { ChatHistoryMenu } from '@/features/ask-ai/components/ChatHistoryMenu'
+import { InlineVisual } from '@/features/ask-ai/components/visual-responses'
 import {
   Dialog,
   DialogContent,
@@ -34,17 +44,14 @@ export const Route = createFileRoute('/_authenticated/ask-ai/')({
   component: AskAI,
 })
 
-interface Source {
-  source?: string
-  page?: number
-  score?: number
-}
+type Source = ChatSource
 
 interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
   sources?: Source[]
+  visual?: VisualSpec
   timestamp: Date
 }
 
@@ -117,6 +124,8 @@ function AskAI() {
           id: crypto.randomUUID(),
           role: msg.role as 'user' | 'assistant',
           content: msg.content,
+          sources: msg.sources,
+          visual: parseVisualSpec(msg.metadata),
           timestamp: new Date(msg.createdAt),
         }))
       )
@@ -154,6 +163,7 @@ function AskAI() {
           role: 'assistant',
           content: res.response,
           sources: res.sources,
+          visual: parseVisualSpec(res.metadata),
           timestamp: new Date(),
         },
       ])
@@ -325,14 +335,39 @@ function EmptyState({ onSuggestion }: { onSuggestion: (q: string) => void }) {
 }
 
 
+function sourceLabel(source: Source) {
+  const raw = source.title || source.source || source.url || 'Unknown source'
+  return raw.split('/').pop() || raw
+}
+
+function sourceDocumentUrl(source: Source) {
+  const apiUrl = (env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
+  if (source.documentId) {
+    return `${apiUrl}/api/v1/ai-assistant/documents/${source.documentId}/file`
+  }
+  if (source.url && /^https?:\/\//i.test(source.url)) return source.url
+  if (source.url?.startsWith('/api/')) {
+    return `${apiUrl}${source.url}`
+  }
+
+  const rawSource = source.url || source.source
+  if (!rawSource) return ''
+  const filename = rawSource.split('/').pop() || ''
+  const ragApiUrl = env.VITE_RAG_API_URL.replace(/\/$/, '')
+  return filename
+    ? `${ragApiUrl}/documents/${encodeURIComponent(filename)}`
+    : ''
+}
+
+function sourceRequiresAuth(source: Source) {
+  return Boolean(
+    source.documentId || source.url?.startsWith('/api/')
+  )
+}
+
 function SourceCard({ source, index }: { source: Source; index: number }) {
-  const name = source.source || 'Unknown source'
-
-  let filename = name.split('/').pop() || ''
-
-  if (filename && !filename.includes('.')) filename += '.pdf'
-  const ragApiUrl = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000'
-  const documentUrl = filename ? `${ragApiUrl}/documents/${encodeURIComponent(filename)}` : ''
+  const filename = sourceLabel(source)
+  const documentUrl = sourceDocumentUrl(source)
 
   return (
     <div className='flex items-center gap-3 rounded-lg border bg-card px-3 py-2 hover:shadow-sm transition-shadow'>
@@ -350,7 +385,7 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
               View Document
             </button>
           </DialogTrigger>
-          <DocumentViewerDialog filename={filename} documentUrl={documentUrl} page={source.page} />
+          <DocumentViewerDialog source={source} />
         </Dialog>
       )}
 
@@ -361,6 +396,16 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
   )
 }
 
+function VisualCitation({
+  sourceIndex,
+  sources,
+}: {
+  sourceIndex: number
+  sources: Source[]
+}) {
+  const source = sources[sourceIndex - 1]
+  return source ? <SourceBubble source={source} index={sourceIndex} /> : null
+}
 
 function ChatMessage({ message }: { message: Message }) {
   const isUser = message.role === 'user'
@@ -456,6 +501,15 @@ function ChatMessage({ message }: { message: Message }) {
                 </ReactMarkdown>
               </div>
 
+              {message.visual && (
+                <InlineVisual
+                  visual={message.visual}
+                  renderCitation={(sourceIndex) => (
+                    <VisualCitation sourceIndex={sourceIndex} sources={sources} />
+                  )}
+                />
+              )}
+
               <div className='flex items-center gap-3 mt-3 text-xs text-muted-foreground'>
                 {sources.length > 0 && (
                   <span className='flex items-center gap-1 text-green-600 dark:text-green-400'>
@@ -488,11 +542,8 @@ function ChatMessage({ message }: { message: Message }) {
 }
 
 function SourceBubble({ source, index }: { source: Source; index: number }) {
-  const name = source.source || 'Unknown source'
-  let filename = name.split('/').pop() || ''
-  if (filename && !filename.includes('.')) filename += '.pdf'
-  const ragApiUrl = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000'
-  const documentUrl = filename ? `${ragApiUrl}/documents/${encodeURIComponent(filename)}` : ''
+  const filename = sourceLabel(source)
+  const documentUrl = sourceDocumentUrl(source)
 
   if (!documentUrl) {
     return (
@@ -512,38 +563,94 @@ function SourceBubble({ source, index }: { source: Source; index: number }) {
           {index}
         </button>
       </DialogTrigger>
-      <DocumentViewerDialog filename={filename} documentUrl={documentUrl} page={source.page} />
+      <DocumentViewerDialog source={source} />
     </Dialog>
   )
 }
 
-function DocumentViewerDialog({ filename, documentUrl, page }: { filename: string, documentUrl: string, page?: number }) {
+function DocumentViewerDialog({ source }: { source: Source }) {
+  const filename = sourceLabel(source)
+  const documentUrl = sourceDocumentUrl(source)
+  const [viewerUrl, setViewerUrl] = useState('')
+  const [loadError, setLoadError] = useState('')
+
+  useEffect(() => {
+    if (!documentUrl) return
+    if (!sourceRequiresAuth(source)) {
+      setViewerUrl(documentUrl)
+      return
+    }
+
+    const controller = new AbortController()
+    let objectUrl = ''
+    const loadDocument = async () => {
+      try {
+        const token = getAccessToken()
+        const response = await fetch(documentUrl, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          signal: controller.signal,
+        })
+        if (!response.ok) throw new Error('Unable to load source document')
+        objectUrl = URL.createObjectURL(await response.blob())
+        setViewerUrl(objectUrl)
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setLoadError(
+            error instanceof Error ? error.message : 'Unable to load source document'
+          )
+        }
+      }
+    }
+    loadDocument()
+
+    return () => {
+      controller.abort()
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
+  }, [documentUrl, source])
+
   return (
     <DialogContent className='max-w-5xl w-[90vw] h-[85vh] p-0 gap-0'>
-      <DialogHeader className='px-6 py-4 border-b flex flex-row items-center justify-between'>
-        <DialogTitle className='text-sm font-medium truncate flex-1'>
+      <DialogHeader className='flex flex-row items-center justify-between border-b py-4 pl-6 pr-12'>
+        <DialogTitle className='min-w-0 flex-1 truncate text-sm font-medium'>
           {filename}
-          {page != null && (
+          {source.page != null && (
             <span className='ml-2 text-muted-foreground font-normal'>
-              — Page {page}
+              - Page {source.page}
             </span>
           )}
         </DialogTitle>
-        <a
-          href={documentUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-blue-600 hover:underline flex items-center gap-1 ml-4"
-        >
-          Open in New Tab <ChevronRight className="h-3 w-3" />
-        </a>
+        {viewerUrl && (
+          <a
+            href={viewerUrl}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='ml-3 inline-flex flex-shrink-0 items-center gap-1 text-xs text-blue-600 hover:underline'
+            aria-label='Open source document in a new tab'
+            title='Open in new tab'
+          >
+            <span className='hidden sm:inline'>Open in New Tab</span>
+            <ExternalLink className='h-3.5 w-3.5' />
+          </a>
+        )}
       </DialogHeader>
-      <iframe
-        src={`${documentUrl}${page ? `#page=${page}` : ''}`}
-        className='w-full flex-1 border-0'
-        style={{ height: 'calc(85vh - 65px)' }}
-        title={`PDF: ${filename}`}
-      />
+      {loadError ? (
+        <div className='flex flex-1 items-center justify-center px-6 text-sm text-destructive'>
+          {loadError}
+        </div>
+      ) : viewerUrl ? (
+        <iframe
+          src={`${viewerUrl}${source.page ? `#page=${source.page}` : ''}`}
+          className='w-full flex-1 border-0'
+          style={{ height: 'calc(85vh - 65px)' }}
+          title={`PDF: ${filename}`}
+        />
+      ) : (
+        <div className='flex flex-1 items-center justify-center gap-2 text-sm text-muted-foreground'>
+          <Loader2 className='h-4 w-4 animate-spin' />
+          Loading document...
+        </div>
+      )}
     </DialogContent>
   )
 }

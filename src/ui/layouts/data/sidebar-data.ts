@@ -9,6 +9,7 @@ import {
   Users,
   MessageCircle,
   Briefcase,
+  BrainCircuit,
   Library,
   Database,
   Trophy,
@@ -52,6 +53,12 @@ export const sidebarMenus: NavGroup[] = [
           Roles.INDIVIDUAL,
           Roles.ORGANIZATION,
         ],
+      },
+      {
+        title: 'AI Documents',
+        url: '/ai-documents',
+        icon: BrainCircuit,
+        roles: [Roles.SUPER_ADMIN, Roles.ADMIN],
       },
       {
         title: 'Events',

@@ -43,6 +43,27 @@ export interface AiDocument {
   index_jobs: IndexJob[]
 }
 
+export interface AiDocumentChunk {
+  id: string
+  chunkIndex: number
+  pageStart?: number | null
+  pageEnd?: number | null
+  text: string
+  meta?: Record<string, unknown>
+}
+
+interface DocumentChunksResponse {
+  document: {
+    id: string
+    title: string
+    version: number
+  }
+  chunks: AiDocumentChunk[]
+  total: number
+  page: number
+  limit: number
+}
+
 interface DocumentListResponse {
   documents: AiDocument[]
   total: number
@@ -54,6 +75,12 @@ interface DocumentSummary {
   documents: Array<{ status: DocumentStatus; _count: number }>
   totalChunks: number
   lastSuccessfulJob?: IndexJob
+}
+
+export interface AiAssistantSettings {
+  visualResponsesEnabled: boolean
+  updatedAt: string
+  updatedBy?: string | null
 }
 
 interface ApiErrorPayload {
@@ -133,11 +160,56 @@ export function useAiDocuments(search: string, status: string) {
   })
 }
 
+export function useAiDocumentChunks(
+  documentId: string | undefined,
+  page: number,
+  search: string,
+  enabled: boolean
+) {
+  return useQuery({
+    queryKey: ['ai-document-chunks', documentId, page, search],
+    queryFn: () => {
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: '25',
+      })
+      if (search.trim()) params.set('search', search.trim())
+      return request<DocumentChunksResponse>(
+        `/documents/${documentId}/chunks?${params}`
+      )
+    },
+    enabled: enabled && Boolean(documentId),
+  })
+}
+
 export function useAiDocumentSummary() {
   return useQuery({
     queryKey: ['ai-document-summary'],
     queryFn: () => request<DocumentSummary>('/summary'),
     refetchInterval: 15000,
+  })
+}
+
+export function useAiAssistantSettings(enabled: boolean) {
+  return useQuery({
+    queryKey: ['ai-assistant-settings'],
+    queryFn: () => request<AiAssistantSettings>('/settings'),
+    enabled,
+  })
+}
+
+export function useUpdateAiAssistantSettings() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (visualResponsesEnabled: boolean) =>
+      request<AiAssistantSettings>('/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visualResponsesEnabled }),
+      }),
+    onSuccess: (settings) => {
+      queryClient.setQueryData(['ai-assistant-settings'], settings)
+    },
   })
 }
 

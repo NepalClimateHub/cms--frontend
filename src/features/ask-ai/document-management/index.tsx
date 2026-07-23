@@ -1,6 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useDeferredValue, useMemo, useState } from 'react'
 import {
+  ChevronLeft,
+  ChevronRight,
+  Copy,
   FileText,
+  Info,
+  ListTree,
   Loader2,
   RefreshCw,
   RotateCcw,
@@ -12,16 +17,21 @@ import {
   AiDocument,
   DocumentStatus,
   openAiDocument,
+  useAiDocumentChunks,
+  useAiAssistantSettings,
   useAiDocuments,
   useAiDocumentSummary,
   useDeleteAiDocument,
   useRebuildAiIndex,
   useReindexAiDocument,
   useRetryAiDocument,
+  useUpdateAiAssistantSettings,
   useUploadAiDocument,
 } from '@/query/ask-ai/document-management'
+import { useAuthStore } from '@/stores/authStore'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
+import { isSuperAdmin } from '@/utils/role-check.util'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
@@ -34,6 +44,12 @@ import {
   DialogTitle,
 } from '@/ui/shadcn/dialog'
 import { Input } from '@/ui/shadcn/input'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/ui/shadcn/popover'
+import { Switch } from '@/ui/shadcn/switch'
 import {
   Table,
   TableBody,
@@ -84,6 +100,13 @@ function formatDuration(job?: AiDocument['index_jobs'][0]) {
   return `${Math.floor(s / 60)}m ${s % 60}s`
 }
 
+function formatChunkPages(pageStart?: number | null, pageEnd?: number | null) {
+  if (pageStart == null && pageEnd == null) return 'Page unavailable'
+  const start = pageStart ?? pageEnd
+  const end = pageEnd ?? pageStart
+  return start === end ? `Page ${start}` : `Pages ${start}-${end}`
+}
+
 const stageProgress: Record<string, number> = {
   queued: 5,
   extracting: 25,
@@ -108,6 +131,8 @@ function IndexingProgress({ stage }: { stage: string }) {
 }
 
 export default function AiDocumentManagement() {
+  const userRole = useAuthStore((state) => state.user?.role ?? null)
+  const isSuperAdminUser = isSuperAdmin(userRole)
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
   const [uploadOpen, setUploadOpen] = useState(false)
@@ -116,13 +141,29 @@ export default function AiDocumentManagement() {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [currentFileIndex, setCurrentFileIndex] = useState(0)
   const [deleteTarget, setDeleteTarget] = useState<AiDocument | null>(null)
+  const [chunkTarget, setChunkTarget] = useState<AiDocument | null>(null)
+  const [chunkPage, setChunkPage] = useState(1)
+  const [chunkSearch, setChunkSearch] = useState('')
+  const deferredChunkSearch = useDeferredValue(chunkSearch)
   const documentsQuery = useAiDocuments(search, status)
+  const chunksQuery = useAiDocumentChunks(
+    chunkTarget?.id,
+    chunkPage,
+    deferredChunkSearch,
+    Boolean(chunkTarget)
+  )
   const summaryQuery = useAiDocumentSummary()
   const upload = useUploadAiDocument()
   const reindex = useReindexAiDocument()
   const retry = useRetryAiDocument()
   const remove = useDeleteAiDocument()
   const rebuild = useRebuildAiIndex()
+  const settingsQuery = useAiAssistantSettings(isSuperAdminUser)
+  const updateSettings = useUpdateAiAssistantSettings()
+  const chunkPageCount = Math.max(
+    1,
+    Math.ceil((chunksQuery.data?.total || 0) / 25)
+  )
 
   const counts = useMemo(
     () => Object.fromEntries((summaryQuery.data?.documents || []).map((item) => [item.status, item._count])),
@@ -171,7 +212,95 @@ export default function AiDocumentManagement() {
         title='AI Documents'
         description='Manage the PDFs used by the NCH Climate Assistant.'
         actions={
-          <div className='flex gap-2'>
+          <div className='flex flex-wrap items-center justify-end gap-2'>
+            {isSuperAdminUser && (
+              <div className='flex h-10 items-center gap-3 rounded-md border px-3'>
+                <label
+                  htmlFor='visual-responses'
+                  className='text-sm font-medium'
+                >
+                  Visual responses
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      size='icon'
+                      className='h-7 w-7 text-muted-foreground'
+                      aria-label='How visual responses work'
+                      title='How visual responses work'
+                    >
+                      <Info className='h-4 w-4' />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align='end'
+                    className='w-80 max-w-[calc(100vw-2rem)] space-y-4'
+                  >
+                    <div className='space-y-1'>
+                      <h4 className='text-sm font-semibold'>
+                        Visual responses
+                      </h4>
+                      <p className='text-sm text-muted-foreground'>
+                        This global setting applies to all chat users.
+                      </p>
+                    </div>
+
+                    <ul className='list-disc space-y-1 pl-4 text-sm text-muted-foreground'>
+                      <li>
+                        Shows key figures, policy timelines, sector grids,
+                        document comparisons, process steps, or emissions charts.
+                      </li>
+                      <li>Requires document-supported facts and values.</li>
+                      <li>Selects one best-fit visual for each answer.</li>
+                      <li>Unsupported answers remain text-only.</li>
+                      <li>Turning it off hides saved visuals without deleting them.</li>
+                    </ul>
+
+                    <div className='space-y-2'>
+                      <p className='text-xs font-semibold uppercase text-muted-foreground'>
+                        Example questions
+                      </p>
+                      <ul className='space-y-2 text-sm'>
+                        <li>&quot;Show the key targets in Nepal's NDC.&quot;</li>
+                        <li>&quot;Create a timeline of Nepal's climate policies.&quot;</li>
+                        <li>
+                          &quot;Which sectors are prioritized in the National
+                          Adaptation Plan?&quot;
+                        </li>
+                        <li>
+                          &quot;Compare Nepal&apos;s adaptation plan with its climate
+                          policy.&quot;
+                        </li>
+                        <li>
+                          &quot;What are the steps in the adaptation planning process?&quot;
+                        </li>
+                        <li>&quot;How could Nepal's emissions change toward 2050?&quot;</li>
+                      </ul>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                <Switch
+                  id='visual-responses'
+                  aria-label='Enable visual responses'
+                  checked={settingsQuery.data?.visualResponsesEnabled ?? false}
+                  disabled={settingsQuery.isLoading || updateSettings.isPending}
+                  onCheckedChange={(checked) => {
+                    updateSettings.mutate(checked, {
+                      onSuccess: () => {
+                        toast({
+                          title: checked
+                            ? 'Visual responses enabled'
+                            : 'Visual responses disabled',
+                        })
+                      },
+                      onError: reportError,
+                    })
+                  }}
+                />
+              </div>
+            )}
             <Button
               variant='outline'
               disabled={rebuild.isPending}
@@ -280,6 +409,21 @@ export default function AiDocumentManagement() {
                   <TableCell>{document.indexed_at ? new Date(document.indexed_at).toLocaleString() : '-'}</TableCell>
                   <TableCell>
                     <div className='flex justify-end gap-1'>
+                      <Button
+                        size='sm'
+                        variant='ghost'
+                        className='whitespace-nowrap'
+                        title='View chunks'
+                        disabled={!document.chunk_count}
+                        onClick={() => {
+                          setChunkTarget(document)
+                          setChunkPage(1)
+                          setChunkSearch('')
+                        }}
+                      >
+                        <ListTree className='mr-2 h-4 w-4' />
+                        View Chunks
+                      </Button>
                       {document.status === 'FAILED' || document.status === 'DELETE_CLEANUP_FAILED' ? (
                         <Button size='icon' variant='ghost' title='Retry' disabled={retry.isPending} onClick={() => runAction(() => retry.mutateAsync(document.id), 'Retry queued')}>
                           <RotateCcw className='h-4 w-4' />
@@ -310,6 +454,126 @@ export default function AiDocumentManagement() {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog
+        open={Boolean(chunkTarget)}
+        onOpenChange={(open) => {
+          if (!open) setChunkTarget(null)
+        }}
+      >
+        <DialogContent className='flex h-[85vh] w-[calc(100vw-2rem)] max-w-5xl flex-col overflow-hidden sm:max-w-5xl'>
+          <DialogHeader>
+            <DialogTitle>Document chunks</DialogTitle>
+            <DialogDescription>
+              {chunkTarget?.title} - active version{' '}
+              {chunksQuery.data?.document.version ?? chunkTarget?.active_version}
+            </DialogDescription>
+          </DialogHeader>
+
+          <Input
+            value={chunkSearch}
+            onChange={(event) => {
+              setChunkSearch(event.target.value)
+              setChunkPage(1)
+            }}
+            placeholder='Search extracted chunk text...'
+            aria-label='Search document chunks'
+          />
+
+          <div className='min-h-0 flex-1 overflow-y-auto rounded-md border'>
+            {chunksQuery.isLoading || chunksQuery.isFetching ? (
+              <div className='flex h-full min-h-48 items-center justify-center gap-2 text-sm text-muted-foreground'>
+                <Loader2 className='h-4 w-4 animate-spin' />
+                Loading chunks...
+              </div>
+            ) : chunksQuery.isError ? (
+              <div className='flex h-full min-h-48 items-center justify-center px-6 text-center text-sm text-destructive'>
+                {chunksQuery.error instanceof Error
+                  ? chunksQuery.error.message
+                  : 'Unable to load document chunks.'}
+              </div>
+            ) : !chunksQuery.data?.chunks.length ? (
+              <div className='flex h-full min-h-48 items-center justify-center px-6 text-center text-sm text-muted-foreground'>
+                No chunks match this search.
+              </div>
+            ) : (
+              <ol className='divide-y'>
+                {chunksQuery.data.chunks.map((chunk) => (
+                  <li key={chunk.id} className='space-y-3 p-4'>
+                    <div className='flex items-center justify-between gap-3'>
+                      <div className='flex min-w-0 flex-wrap items-center gap-2'>
+                        <Badge variant='secondary'>
+                          Chunk {chunk.chunkIndex + 1}
+                        </Badge>
+                        <span className='text-xs text-muted-foreground'>
+                          {formatChunkPages(chunk.pageStart, chunk.pageEnd)}
+                        </span>
+                      </div>
+                      <Button
+                        type='button'
+                        size='icon'
+                        variant='ghost'
+                        className='h-8 w-8 flex-shrink-0'
+                        title='Copy chunk text'
+                        aria-label={`Copy chunk ${chunk.chunkIndex + 1} text`}
+                        onClick={() => {
+                          navigator.clipboard.writeText(chunk.text).then(
+                            () => toast({ title: 'Chunk text copied' }),
+                            reportError
+                          )
+                        }}
+                      >
+                        <Copy className='h-4 w-4' />
+                      </Button>
+                    </div>
+                    <p className='max-h-48 overflow-y-auto whitespace-pre-wrap break-words text-sm leading-6'>
+                      {chunk.text}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+
+          <div className='flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground'>
+            <span>
+              {chunksQuery.data?.total
+                ? `Showing ${(chunkPage - 1) * 25 + 1}-${Math.min(
+                    chunkPage * 25,
+                    chunksQuery.data.total
+                  )} of ${chunksQuery.data.total}`
+                : '0 chunks'}
+            </span>
+            <div className='flex items-center gap-2'>
+              <Button
+                type='button'
+                size='sm'
+                variant='outline'
+                disabled={chunkPage <= 1 || chunksQuery.isFetching}
+                onClick={() => setChunkPage((page) => page - 1)}
+              >
+                <ChevronLeft className='mr-1 h-4 w-4' />
+                Previous
+              </Button>
+              <span className='min-w-20 text-center'>
+                Page {chunkPage} of {chunkPageCount}
+              </span>
+              <Button
+                type='button'
+                size='sm'
+                variant='outline'
+                disabled={
+                  chunkPage >= chunkPageCount || chunksQuery.isFetching
+                }
+                onClick={() => setChunkPage((page) => page + 1)}
+              >
+                Next
+                <ChevronRight className='ml-1 h-4 w-4' />
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}>
         <DialogContent>
