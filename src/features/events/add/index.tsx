@@ -8,6 +8,8 @@ import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
 import EventForm from '../shared/EventForm'
 
+import { formatLocalDateTimeToISO } from '@/utils/date-utils'
+
 const AddEvent = () => {
   const eventMutation = useAddEvents()
   const navigate = useNavigate()
@@ -36,18 +38,11 @@ const AddEvent = () => {
     form.setValue('bannerImageUrl', assetURL)
   }
 
-  const formatToISO = (date?: Date | string | null) => {
-    if (!date) return undefined
-    const d = typeof date === 'string' ? new Date(date) : date
-    if (isNaN(d.getTime())) return undefined
-    return d.toISOString()
-  }
-
   const handleFormSubmit = async (values: EventFormValues) => {
     const formattedPayload = {
       ...values,
-      startDate: values.startDate ? formatToISO(values.startDate) : undefined,
-      registrationDeadline: values.registrationDeadline ? formatToISO(values.registrationDeadline) : undefined,
+      startDate: values.startDate ? formatLocalDateTimeToISO(values.startDate) : undefined,
+      registrationDeadline: values.registrationDeadline ? formatLocalDateTimeToISO(values.registrationDeadline) : undefined,
     }
     await eventMutation.mutateAsync(formattedPayload as unknown as EventFormValues)
     navigate({
