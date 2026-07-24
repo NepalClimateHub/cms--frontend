@@ -10,7 +10,6 @@ import type { Content, UseEditorOptions } from '@tiptap/react'
 import { useEditor } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
 import { toast } from 'sonner'
-import ImageResize from 'tiptap-extension-resize-image'
 import {
   Link,
   Image,
@@ -47,7 +46,6 @@ const createExtensions = (placeholder: string) => [
     code: { HTMLAttributes: { class: 'inline', spellcheck: 'false' } },
     dropcursor: { width: 2, class: 'ProseMirror-dropcursor border' },
   }),
-  ImageResize,
   TextAlign.configure({
     types: ['heading', 'paragraph'],
     alignments: ['left', 'center', 'right', 'justify'],
@@ -95,7 +93,7 @@ const createExtensions = (placeholder: string) => [
         })
       )
     },
-    onImageRemoved() {},
+    onImageRemoved() { },
     onValidationError(errors) {
       errors.forEach((error) => {
         toast.error('Image validation error', {
@@ -217,6 +215,15 @@ export const useMinimalTiptapEditor = ({
     onBlur: ({ editor }) => handleBlur(editor),
     ...props,
   })
+
+  React.useEffect(() => {
+    if (editor && value !== undefined && !editor.isDestroyed) {
+      const currentContent = getOutput(editor, output)
+      if (currentContent !== value) {
+        editor.commands.setContent(value)
+      }
+    }
+  }, [editor, value, output])
 
   return editor
 }
