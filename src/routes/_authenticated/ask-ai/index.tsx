@@ -36,6 +36,9 @@ export const Route = createFileRoute('/_authenticated/ask-ai/')({
 
 interface Source {
   source?: string
+  title?: string
+  url?: string
+  documentId?: string
   page?: number
   score?: number
 }
@@ -49,11 +52,12 @@ interface Message {
 }
 
 
-function parseContentAndSources(content: string, existing?: Source[]) {
+function parseContentAndSources(content?: string, existing?: Source[]) {
+  const text = content || ''
   // Strip any trailing "Sources:" section the LLM appends to the answer text
   const re = /\n*(?:\*{0,2}Sources:?\*{0,2})\s*\n([\s\S]*?)$/i
-  const m = content.match(re)
-  const cleaned = m ? content.slice(0, m.index).trimEnd() : content
+  const m = text.match(re)
+  const cleaned = m ? text.slice(0, m.index).trimEnd() : text
 
   // Use structured API sources if available
   if (existing && existing.length > 0) {
@@ -79,12 +83,11 @@ function parseContentAndSources(content: string, existing?: Source[]) {
 
         return { source: text, page }
       })
-      // Filter out garbage: reject entries that look malformed
+      // Filter out garbage: reject entries that look malformed or long text sentences
       .filter(s => {
         if (!s.source) return false
-        // Reject obvious garbage like "Sources:**"
         if (s.source.includes('**') || s.source.includes('Sources:')) return false
-        // Accept anything else (LLM writes clean names without .pdf)
+        if (s.source.length > 90 || s.source.includes(',')) return false
         return true
       })
 
@@ -116,7 +119,7 @@ function AskAI() {
         sessionData.messages.map((msg) => ({
           id: crypto.randomUUID(),
           role: msg.role as 'user' | 'assistant',
-          content: msg.content,
+          content: msg.content || '',
           timestamp: new Date(msg.createdAt),
         }))
       )
@@ -325,14 +328,37 @@ function EmptyState({ onSuggestion }: { onSuggestion: (q: string) => void }) {
 }
 
 
-function SourceCard({ source, index }: { source: Source; index: number }) {
-  const name = source.source || 'Unknown source'
-
-  let filename = name.split('/').pop() || ''
-
+function getSourceDetails(source: Source) {
+  const rawTitle = source.title || source.source || 'Unknown source'
+  let filename = rawTitle.split('/').pop() || ''
   if (filename && !filename.includes('.')) filename += '.pdf'
+
   const ragApiUrl = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000'
-  const documentUrl = filename ? `${ragApiUrl}/documents/${encodeURIComponent(filename)}` : ''
+  const cmsBackendUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1').replace(/\/api\/v1\/?$/, '')
+
+  let documentUrl = ''
+  if (source.documentId) {
+    documentUrl = `${ragApiUrl}/documents/${encodeURIComponent(source.documentId)}`
+  } else if (source.url) {
+    if (source.url.startsWith('http')) {
+      documentUrl = source.url
+    } else {
+      documentUrl = `${cmsBackendUrl}${source.url}`
+    }
+  } else if (filename && filename.length < 90 && !filename.includes(',')) {
+    documentUrl = `${ragApiUrl}/documents/${encodeURIComponent(filename)}`
+  }
+
+  const displayTitle = source.title 
+    ? source.title 
+    : (filename.length < 80 ? filename : 'Document Source')
+
+  return { title: displayTitle, filename: displayTitle, documentUrl }
+}
+
+
+function SourceCard({ source, index }: { source: Source; index: number }) {
+  const { filename, documentUrl } = getSourceDetails(source)
 
   return (
     <div className='flex items-center gap-3 rounded-lg border bg-card px-3 py-2 hover:shadow-sm transition-shadow'>
@@ -364,9 +390,10 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
 
 function ChatMessage({ message }: { message: Message }) {
   const isUser = message.role === 'user'
+  const messageContent = message?.content || ''
   const { cleaned, sources } = isUser
-    ? { cleaned: message.content, sources: [] as Source[] }
-    : parseContentAndSources(message.content, message.sources)
+    ? { cleaned: messageContent, sources: [] as Source[] }
+    : parseContentAndSources(messageContent, message.sources)
 
   const [collapsed, setCollapsed] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -488,11 +515,7 @@ function ChatMessage({ message }: { message: Message }) {
 }
 
 function SourceBubble({ source, index }: { source: Source; index: number }) {
-  const name = source.source || 'Unknown source'
-  let filename = name.split('/').pop() || ''
-  if (filename && !filename.includes('.')) filename += '.pdf'
-  const ragApiUrl = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000'
-  const documentUrl = filename ? `${ragApiUrl}/documents/${encodeURIComponent(filename)}` : ''
+  const { filename, documentUrl } = getSourceDetails(source)
 
   if (!documentUrl) {
     return (
