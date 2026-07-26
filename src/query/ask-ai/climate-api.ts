@@ -79,7 +79,8 @@ export const useClimateChat = () => {
       if (response.error) {
         throw new Error((response.error as any)?.message || 'Failed to communicate with AI');
       }
-      return response.data as ChatResponse;
+      const raw = response.data as any;
+      return (raw?.data || raw) as ChatResponse;
     },
     onSuccess: () => {
       // Invalidate chat history so list updates with new session/timestamp
@@ -97,7 +98,8 @@ export const useClimateQuery = () => {
       if (response.error) {
         throw new Error((response.error as any)?.message || 'Failed to query AI');
       }
-      return response.data as ChatResponse;
+      const raw = response.data as any;
+      return (raw?.data || raw) as ChatResponse;
     },
   });
 };
@@ -118,10 +120,14 @@ export const useChatHistory = () => {
   return useQuery({
     ...aiAssistantControllerGetSessionsOptions(),
     enabled: !!token,
-    select: (sessions: any) => ({
-      user_id: '',
-      conversations: (sessions?.data || []) as ChatSession[],
-    }),
+    select: (sessions: any) => {
+      const raw = sessions?.data as any;
+      const list = Array.isArray(raw?.data) ? raw.data : Array.isArray(raw) ? raw : [];
+      return {
+        user_id: '',
+        conversations: list as ChatSession[],
+      };
+    },
     meta: { ignoreGlobalError: true },
   });
 };
@@ -136,10 +142,14 @@ export const useChatSession = (sessionId?: string) => {
       },
     }),
     enabled: !!token && !!sessionId,
-    select: (messages: any) => ({
-      session_id: sessionId,
-      messages: (messages?.data || []) as ChatSessionMessagesResponse['messages'],
-    }),
+    select: (messages: any) => {
+      const raw = messages?.data as any;
+      const list = Array.isArray(raw?.data) ? raw.data : Array.isArray(raw) ? raw : [];
+      return {
+        session_id: sessionId,
+        messages: list as ChatSessionMessagesResponse['messages'],
+      };
+    },
     meta: { ignoreGlobalError: true },
   });
 };
