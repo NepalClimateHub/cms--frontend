@@ -16,20 +16,27 @@ import {
   ServerCrash,
   RotateCw,
   ExternalLink,
+  History,
 } from 'lucide-react'
 import {
+  buildRecentConversationHistory,
   ChatSource,
-  parseVisualSpec,
+  parseVisualMetadata,
   useClimateChat,
   useChatHistory,
   useChatSession,
+  VisualDecision,
   VisualSpec,
 } from '@/query/ask-ai/climate-api'
 import { env } from '@/config/env.config'
-import { getAccessToken } from '@/stores/authStore'
+import { getAccessToken, useAuthStore } from '@/stores/authStore'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { ChatHistoryMenu } from '@/features/ask-ai/components/ChatHistoryMenu'
-import { InlineVisual } from '@/features/ask-ai/components/visual-responses'
+import { ChatHistorySheet } from '@/features/ask-ai/components/ChatHistorySheet'
+import {
+  InlineVisual,
+  VisualDecisionStatus,
+} from '@/features/ask-ai/components/visual-responses'
+import { isSuperAdmin } from '@/utils/role-check.util'
 import {
   Dialog,
   DialogContent,
@@ -52,6 +59,7 @@ interface Message {
   content: string
   sources?: Source[]
   visual?: VisualSpec
+  visualDecision?: VisualDecision
   timestamp: Date
 }
 
@@ -110,7 +118,10 @@ function AskAI() {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
   const [conversationId, setConversationId] = useState<string>()
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const userRole = useAuthStore((state) => state.user?.role ?? null)
+  const showVisualDecision = isSuperAdmin(userRole)
 
   const chatMutation = useClimateChat()
 
@@ -120,14 +131,17 @@ function AskAI() {
   useEffect(() => {
     if (sessionData && conversationId) {
       setMessages(
-        sessionData.messages.map((msg) => ({
-          id: crypto.randomUUID(),
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content,
-          sources: msg.sources,
-          visual: parseVisualSpec(msg.metadata),
-          timestamp: new Date(msg.createdAt),
-        }))
+        sessionData.messages.map((msg) => {
+          const visualMetadata = parseVisualMetadata(msg.metadata)
+          return {
+            id: crypto.randomUUID(),
+            role: msg.role as 'user' | 'assistant',
+            content: msg.content,
+            sources: msg.sources,
+            ...visualMetadata,
+            timestamp: new Date(msg.createdAt),
+          }
+        })
       )
     }
   }, [sessionData, conversationId])
@@ -154,8 +168,11 @@ function AskAI() {
       const res = await chatMutation.mutateAsync({
         query: userMsg.content,
         conversation_id: conversationId,
+        conversation_history: buildRecentConversationHistory(messages),
+        top_k: 8,
       })
 
+      const visualMetadata = parseVisualMetadata(res.metadata)
       setMessages((p) => [
         ...p,
         {
@@ -163,7 +180,7 @@ function AskAI() {
           role: 'assistant',
           content: res.response,
           sources: res.sources,
-          visual: parseVisualSpec(res.metadata),
+          ...visualMetadata,
           timestamp: new Date(),
         },
       ])
@@ -227,12 +244,23 @@ function AskAI() {
       ) : (
         <>
           <div className='flex-shrink-0 flex items-center justify-end gap-3 mb-1'>
-            <ChatHistoryMenu
-              onSelectSession={setConversationId}
-              currentSessionId={conversationId}
-              onNewChat={handleNewChat}
-            />
+            <Button
+              variant='outline'
+              className='h-9 gap-2'
+              onClick={() => setIsHistoryOpen(true)}
+            >
+              <History className='h-4 w-4' />
+              <span>History</span>
+            </Button>
           </div>
+
+          <ChatHistorySheet
+            open={isHistoryOpen}
+            onOpenChange={setIsHistoryOpen}
+            onSelectSession={setConversationId}
+            currentSessionId={conversationId}
+            onNewChat={handleNewChat}
+          />
 
           <div className='flex flex-1 overflow-hidden'>
 
@@ -244,7 +272,11 @@ function AskAI() {
                     <EmptyState onSuggestion={setInput} />
                   ) : (
                     messages.map((msg) => (
-                      <ChatMessage key={msg.id} message={msg} />
+                      <ChatMessage
+                        key={msg.id}
+                        message={msg}
+                        showVisualDecision={showVisualDecision}
+                      />
                     ))
                   )}
 
@@ -407,7 +439,13 @@ function VisualCitation({
   return source ? <SourceBubble source={source} index={sourceIndex} /> : null
 }
 
-function ChatMessage({ message }: { message: Message }) {
+function ChatMessage({
+  message,
+  showVisualDecision,
+}: {
+  message: Message
+  showVisualDecision: boolean
+}) {
   const isUser = message.role === 'user'
   const { cleaned, sources } = isUser
     ? { cleaned: message.content, sources: [] as Source[] }
@@ -510,6 +548,10 @@ function ChatMessage({ message }: { message: Message }) {
                 />
               )}
 
+              {showVisualDecision && message.visualDecision && (
+                <VisualDecisionStatus decision={message.visualDecision} />
+              )}
+
               <div className='flex items-center gap-3 mt-3 text-xs text-muted-foreground'>
                 {sources.length > 0 && (
                   <span className='flex items-center gap-1 text-green-600 dark:text-green-400'>
@@ -547,7 +589,10 @@ function SourceBubble({ source, index }: { source: Source; index: number }) {
 
   if (!documentUrl) {
     return (
-      <span className='inline-flex items-center justify-center h-5 w-5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[10px] font-bold cursor-default'>
+      <span
+        className='inline-flex items-center justify-center h-5 w-5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[10px] font-bold cursor-default'
+        data-source-index={index}
+      >
         {index}
       </span>
     )
@@ -559,6 +604,7 @@ function SourceBubble({ source, index }: { source: Source; index: number }) {
         <button
           className='inline-flex items-center justify-center h-5 w-5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[10px] font-bold hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors'
           title={`View ${filename}`}
+          data-source-index={index}
         >
           {index}
         </button>

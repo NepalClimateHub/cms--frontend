@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/ui/shadcn/alert-dialog'
-import { Loader2, MessageSquare, Trash2, Plus, MoreHorizontal, Pencil } from 'lucide-react'
+import { Loader2, Trash2, Plus, MoreHorizontal, Pencil } from 'lucide-react'
 import { useChatHistory, useDeleteSession, useRenameSession, ChatSession } from '@/query/ask-ai/climate-api'
 import { formatDistanceToNow } from 'date-fns'
 import { cn } from '@/ui/shadcn/lib/utils'
@@ -121,7 +121,15 @@ export function ChatHistorySheet({
   }
 
   const formatDate = (session: ChatSession) => {
-    const raw = session.updatedAt || (session as any).updated_at || session.createdAt || (session as any).created_at
+    const legacySession = session as ChatSession & {
+      updated_at?: string
+      created_at?: string
+    }
+    const raw =
+      session.updatedAt ||
+      legacySession.updated_at ||
+      session.createdAt ||
+      legacySession.created_at
     const d = raw ? new Date(raw) : null
     return d && !isNaN(d.getTime())
       ? formatDistanceToNow(d, { addSuffix: true })
@@ -162,8 +170,37 @@ export function ChatHistorySheet({
                     currentSessionId === session.id && "bg-muted font-medium"
                   )}
                 >
+                  {editingId !== session.id && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 flex-shrink-0"
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label={`Actions for ${session.title || 'Untitled Chat'}`}
+                          title="Chat actions"
+                        >
+                          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-36">
+                        <DropdownMenuItem onClick={(e) => handleStartRename(e, session)}>
+                          <Pencil className="h-3.5 w-3.5 mr-2" />
+                          Rename
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={(e) => handleDeleteClick(e, session.id)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+
                   <div className="flex items-center gap-3 overflow-hidden flex-1 min-w-0">
-                    <MessageSquare className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                     <div className="flex flex-col overflow-hidden flex-1 min-w-0">
                       {editingId === session.id ? (
                         <Input
@@ -185,34 +222,6 @@ export function ChatHistorySheet({
                       )}
                     </div>
                   </div>
-
-                  {editingId !== session.id && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-36">
-                        <DropdownMenuItem onClick={(e) => handleStartRename(e as any, session)}>
-                          <Pencil className="h-3.5 w-3.5 mr-2" />
-                          Rename
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={(e) => handleDeleteClick(e as any, session.id)}
-                        >
-                          <Trash2 className="h-3.5 w-3.5 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
                 </div>
               ))
             )}

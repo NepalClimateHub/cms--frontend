@@ -11,7 +11,18 @@ import {
   aiAssistantControllerUpdateSession,
 } from '@/api/sdk.gen';
 import type { ChatRequestDto as ApiChatRequestDto } from '@/api/types.gen';
-import { z } from 'zod';
+export { buildRecentConversationHistory } from './conversation-history';
+export {
+  parseVisualDecision,
+  parseVisualMetadata,
+  parseVisualSpec,
+  visualDecisionCategorySchema,
+  visualDecisionReasonSchema,
+  visualDecisionSchema,
+  visualDecisionStatusSchema,
+  visualSpecSchema,
+} from './visual-contracts';
+export type { VisualDecision, VisualSpec } from './visual-contracts';
 
 // Constants
 const RAG_API_URL = env.VITE_RAG_API_URL;
@@ -37,102 +48,6 @@ export interface ChatSource {
   chunkId?: string;
   page?: number;
   score?: number;
-}
-
-const visualBaseItemSchema = z.object({
-  label: z.string().trim().min(1).max(60),
-  sourceIndex: z.number().int().min(1).max(3),
-}).strict();
-
-const emissionsProjectionItemSchema = visualBaseItemSchema.extend({
-  year: z.string().regex(/^\d{4}$/),
-  value: z.number(),
-  unit: z.string().trim().min(1).max(24).optional(),
-}).strict();
-
-const canonicalVisualSpecSchema = z.discriminatedUnion('type', [
-  z.object({
-    version: z.literal(1),
-    type: z.literal('metric_strip'),
-    title: z.string().trim().min(1).max(80).optional(),
-    items: z.array(visualBaseItemSchema.extend({
-      value: z.string().trim().min(1).max(32),
-    }).strict()).min(2).max(5),
-  }).strict(),
-  z.object({
-    version: z.literal(1),
-    type: z.literal('policy_timeline'),
-    title: z.string().trim().min(1).max(80).optional(),
-    items: z.array(visualBaseItemSchema.extend({
-      year: z.string().regex(/^\d{4}$/),
-    }).strict()).min(2).max(5),
-  }).strict(),
-  z.object({
-    version: z.literal(1),
-    type: z.literal('sector_grid'),
-    title: z.string().trim().min(1).max(80).optional(),
-    items: z.array(visualBaseItemSchema).min(2).max(8),
-  }).strict(),
-  z.object({
-    version: z.literal(1),
-    type: z.literal('document_comparison'),
-    title: z.string().trim().min(1).max(80).optional(),
-    columns: z.array(z.object({
-      label: z.string().trim().min(1).max(60),
-      sourceIndex: z.number().int().min(1).max(3),
-    }).strict()).length(2),
-    rows: z.array(z.object({
-      label: z.string().trim().min(1).max(60),
-      values: z.array(z.string().trim().min(1).max(100)).length(2),
-    }).strict()).min(2).max(5),
-  }).strict(),
-  z.object({
-    version: z.literal(1),
-    type: z.literal('process_stepper'),
-    title: z.string().trim().min(1).max(80).optional(),
-    items: z.array(z.object({
-      step: z.number().int().min(1).max(6),
-      label: z.string().trim().min(1).max(100),
-      sourceIndex: z.number().int().min(1).max(3),
-    }).strict()).min(2).max(6),
-  }).strict(),
-  z.object({
-    version: z.literal(1),
-    type: z.literal('emissions_projection'),
-    title: z.string().trim().min(1).max(80).optional(),
-    yAxisLabel: z.string().trim().min(1).max(60).optional(),
-    items: z.array(emissionsProjectionItemSchema).min(2).max(8),
-  }).strict(),
-]).superRefine((visual, context) => {
-  if (visual.type !== 'process_stepper') return
-
-  const steps = visual.items.map((item) => item.step)
-  if (new Set(steps).size !== steps.length) {
-    context.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Process steps must be unique',
-      path: ['items'],
-    })
-  }
-});
-
-export const visualSpecSchema = z.preprocess((value) => {
-  if (
-    value &&
-    typeof value === 'object' &&
-    !Array.isArray(value) &&
-    (value as Record<string, unknown>).type === 'sector_chips'
-  ) {
-    return { ...(value as Record<string, unknown>), type: 'sector_grid' }
-  }
-  return value
-}, canonicalVisualSpecSchema);
-
-export type VisualSpec = z.infer<typeof visualSpecSchema>;
-
-export function parseVisualSpec(metadata?: Record<string, unknown>): VisualSpec | undefined {
-  const parsed = visualSpecSchema.safeParse(metadata?.visual);
-  return parsed.success ? parsed.data : undefined;
 }
 
 export interface ChatResponse {
@@ -204,7 +119,7 @@ export const useClimateChat = () => {
   return useMutation({
     mutationFn: async (request: ChatRequest) => {
       const response = await aiAssistantControllerChat({
-        body: request as unknown as ApiChatRequestDto,
+        body: request as ApiChatRequestDto,
       });
       if (response.error) {
         throw new Error(apiErrorMessage(response.error, 'Failed to communicate with AI'));

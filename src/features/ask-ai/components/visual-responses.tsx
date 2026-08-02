@@ -1,10 +1,16 @@
 import type { ReactNode } from 'react'
-import type { VisualSpec } from '@/query/ask-ai/climate-api'
+import type {
+  VisualDecision,
+  VisualSpec,
+} from '@/query/ask-ai/climate-api'
 import {
   Banknote,
   Building2,
   Construction,
+  Database,
   Droplets,
+  Eye,
+  EyeOff,
   HeartPulse,
   Leaf,
   Mountain,
@@ -12,6 +18,7 @@ import {
   Trees,
   TriangleAlert,
   Users,
+  Wrench,
   Zap,
 } from 'lucide-react'
 import {
@@ -106,18 +113,13 @@ function PolicyTimeline({
   renderCitation: RenderCitation
 }) {
   return (
-    <ol
-      className='ml-2 space-y-4 border-l md:ml-0 md:grid md:space-y-0 md:border-l-0 md:border-t'
-      style={{
-        gridTemplateColumns: `repeat(${visual.items.length}, minmax(0, 1fr))`,
-      }}
-    >
+    <ol className='grid grid-cols-1 gap-x-6 gap-y-4 pl-2 sm:grid-cols-2 xl:grid-cols-4'>
       {visual.items.map((item) => (
         <li
           key={`${item.year}-${item.label}`}
-          className='relative min-w-0 pl-5 md:pl-0 md:pr-4 md:pt-4'
+          className='relative min-w-0 border-l pl-5'
         >
-          <span className='absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-emerald-600 bg-background md:-top-[5px] md:left-0' />
+          <span className='absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-emerald-600 bg-background' />
           <div className='flex items-start gap-2'>
             <div className='min-w-0 flex-1'>
               <p className='text-sm font-semibold text-emerald-700 dark:text-emerald-300'>
@@ -167,6 +169,16 @@ function DocumentComparison({
   visual: DocumentComparisonSpec
   renderCitation: RenderCitation
 }) {
+  const getCell = (rowIndex: number, columnIndex: number) => {
+    if (visual.version === 2) {
+      return visual.rows[rowIndex].cells[columnIndex]
+    }
+    return {
+      value: visual.rows[rowIndex].values[columnIndex],
+      sourceIndex: visual.columns[columnIndex].sourceIndex,
+    }
+  }
+
   return (
     <div>
       <div className='space-y-4 md:hidden'>
@@ -180,20 +192,23 @@ function DocumentComparison({
             </h5>
             <dl className='space-y-2'>
               {visual.columns.map((column, columnIndex) => (
-                <div
-                  key={`${column.label}-${columnIndex}`}
-                  className='grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-3'
-                >
-                  <dt className='break-words text-xs font-medium'>
-                    {column.label}
-                  </dt>
-                  <dd className='flex min-w-0 items-start justify-between gap-2 text-sm'>
-                    <span className='break-words'>
-                      {row.values[columnIndex]}
-                    </span>
-                    {renderCitation(column.sourceIndex)}
-                  </dd>
-                </div>
+                (() => {
+                  const cell = getCell(rowIndex, columnIndex)
+                  return (
+                    <div
+                      key={`${column.label}-${columnIndex}`}
+                      className='grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-3'
+                    >
+                      <dt className='break-words text-xs font-medium'>
+                        {column.label}
+                      </dt>
+                      <dd className='flex min-w-0 items-start justify-between gap-2 text-sm'>
+                        <span className='break-words'>{cell.value}</span>
+                        {renderCitation(cell.sourceIndex)}
+                      </dd>
+                    </div>
+                  )
+                })()
               ))}
             </dl>
           </section>
@@ -232,14 +247,19 @@ function DocumentComparison({
               <span className='break-words'>{row.label}</span>
             </div>
             {visual.columns.map((column, columnIndex) => (
-              <div
-                key={`${column.label}-${columnIndex}`}
-                className='flex min-w-0 items-start justify-between gap-2 border-l p-3'
-                role='cell'
-              >
-                <span className='break-words'>{row.values[columnIndex]}</span>
-                {renderCitation(column.sourceIndex)}
-              </div>
+              (() => {
+                const cell = getCell(rowIndex, columnIndex)
+                return (
+                  <div
+                    key={`${column.label}-${columnIndex}`}
+                    className='flex min-w-0 items-start justify-between gap-2 border-l p-3'
+                    role='cell'
+                  >
+                    <span className='break-words'>{cell.value}</span>
+                    {renderCitation(cell.sourceIndex)}
+                  </div>
+                )
+              })()
             ))}
           </div>
         ))}
@@ -256,18 +276,13 @@ function ProcessStepper({
   renderCitation: RenderCitation
 }) {
   return (
-    <ol
-      className='ml-4 space-y-4 border-l md:ml-0 md:grid md:space-y-0 md:border-l-0 md:border-t'
-      style={{
-        gridTemplateColumns: `repeat(${visual.items.length}, minmax(0, 1fr))`,
-      }}
-    >
+    <ol className='grid grid-cols-1 gap-x-6 gap-y-4 pl-3 sm:grid-cols-2 xl:grid-cols-4'>
       {visual.items.map((item) => (
         <li
           key={item.step}
-          className='relative min-w-0 pl-7 md:pl-0 md:pr-4 md:pt-6'
+          className='relative min-w-0 border-l pl-7'
         >
-          <span className='absolute -left-3 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-700 text-xs font-semibold text-white md:-top-3 md:left-0'>
+          <span className='absolute -left-3 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-700 text-xs font-semibold text-white'>
             {item.step}
           </span>
           <div className='flex items-start justify-between gap-2'>
@@ -281,12 +296,14 @@ function ProcessStepper({
 }
 
 const emissionsChartColors = [
-  '#047857',
-  '#0369a1',
-  '#b45309',
-  '#be123c',
-  '#6d28d9',
-  '#0f766e',
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+  'hsl(var(--primary))',
+  'hsl(var(--destructive))',
+  'hsl(var(--muted-foreground))',
 ]
 
 function EmissionsProjection({
@@ -323,13 +340,19 @@ function EmissionsProjection({
             <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
             <XAxis
               dataKey='year'
-              tick={{ fontSize: 12 }}
+              tick={{
+                fill: 'hsl(var(--muted-foreground))',
+                fontSize: 12,
+              }}
               tickLine={false}
               axisLine={false}
             />
             <YAxis
               width={44}
-              tick={{ fontSize: 12 }}
+              tick={{
+                fill: 'hsl(var(--muted-foreground))',
+                fontSize: 12,
+              }}
               tickLine={false}
               axisLine={false}
             />
@@ -339,8 +362,22 @@ function EmissionsProjection({
                 name,
               ]}
               labelFormatter={(label) => `Year ${label}`}
+              contentStyle={{
+                backgroundColor: 'hsl(var(--popover))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: 6,
+                color: 'hsl(var(--popover-foreground))',
+              }}
+              itemStyle={{ color: 'hsl(var(--popover-foreground))' }}
+              labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
+              cursor={{ stroke: 'hsl(var(--muted-foreground))' }}
             />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
+            <Legend
+              wrapperStyle={{
+                color: 'hsl(var(--foreground))',
+                fontSize: 12,
+              }}
+            />
             {labels.map((label, index) => (
               <Line
                 key={label}
@@ -422,5 +459,73 @@ export function InlineVisual({
       <h4 className='mb-3 text-sm font-semibold'>{title}</h4>
       <VisualBody visual={visual} renderCitation={renderCitation} />
     </section>
+  )
+}
+
+const visualStatusLabels: Record<VisualDecision['status'], string> = {
+  generated: 'Visual generated',
+  not_generated: 'No visual generated',
+  skipped: 'Visual skipped',
+}
+
+const visualCategoryLabels: Record<
+  Exclude<VisualDecision['category'], null | undefined>,
+  string
+> = {
+  emissions: 'Emissions',
+  comparison: 'Comparison',
+  process: 'Process',
+  timeline: 'Timeline',
+  sectors: 'Sectors',
+  metrics: 'Metrics',
+}
+
+const visualReasonLabels: Record<
+  Exclude<VisualDecision['reason'], null | undefined>,
+  string
+> = {
+  disabled: 'Visuals disabled',
+  not_grounded: 'Answer not grounded',
+  insufficient_evidence: 'Insufficient evidence',
+  no_supported_category: 'No supported category',
+  retrieval_gap: 'Retrieval gap',
+  validation_failed: 'Validation failed',
+  planner_error: 'Planner error',
+}
+
+export function VisualDecisionStatus({
+  decision,
+}: {
+  decision: VisualDecision
+}) {
+  const StatusIcon = decision.status === 'generated' ? Eye : EyeOff
+
+  return (
+    <div
+      className='mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-dashed pt-2 text-[11px] text-muted-foreground'
+      data-testid='visual-decision'
+      data-visual-decision-status={decision.status}
+      role='status'
+    >
+      <span className='inline-flex items-center gap-1 font-medium text-foreground'>
+        <StatusIcon className='h-3.5 w-3.5' aria-hidden='true' />
+        {visualStatusLabels[decision.status]}
+      </span>
+      {decision.category && (
+        <span>{visualCategoryLabels[decision.category]}</span>
+      )}
+      {decision.reason && <span>{visualReasonLabels[decision.reason]}</span>}
+      <span className='inline-flex items-center gap-1'>
+        <Database className='h-3 w-3' aria-hidden='true' />
+        {decision.evidenceCount}{' '}
+        {decision.evidenceCount === 1 ? 'evidence item' : 'evidence items'}
+      </span>
+      {decision.repairAttempted && (
+        <span className='inline-flex items-center gap-1'>
+          <Wrench className='h-3 w-3' aria-hidden='true' />
+          Repair attempted
+        </span>
+      )}
+    </div>
   )
 }

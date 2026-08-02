@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "test": "node node_modules/playwright/cli.js test tests/visual-contracts.spec.ts",
+    "test:visual": "node node_modules/playwright/cli.js test --config playwright.visual.config.ts tests/visual-responses.spec.ts",
     "lint": "eslint .",
     "codegen:local": "openapi-ts",
     "preview": "vite preview",
