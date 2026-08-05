@@ -245,6 +245,95 @@ const visualSpecV2Schema = z.discriminatedUnion('type', [
       items: z.array(emissionsProjectionItemV2Schema).min(2).max(8),
     })
     .strict(),
+  z
+    .object({
+      version: z.literal(2),
+      type: z.literal('climate_timeseries'),
+      title: titleSchema,
+      grain: z.enum(['month', 'year']),
+      yAxis: z
+        .object({
+          label: labelSchema,
+          unit: z.string().trim().min(1).max(24),
+        })
+        .strict(),
+      series: z
+        .array(
+          z
+            .object({
+              name: labelSchema,
+              sourceIndex: sourceIndexV2Schema,
+              points: z
+                .array(
+                  z
+                    .object({
+                      period: z.string().regex(/^\d{4}(?:-(?:0[1-9]|1[0-2]))?$/),
+                      value: z.number().finite(),
+                      coverage: z.number().int().min(1).optional(),
+                    })
+                    .strict()
+                )
+                .min(1)
+                .max(500),
+            })
+            .strict()
+        )
+        .min(1)
+        .max(8),
+    })
+    .strict(),
+  z
+    .object({
+      version: z.literal(2),
+      type: z.literal('climate_scatter'),
+      title: titleSchema,
+      xAxis: z.object({ label: labelSchema, unit: z.string().trim().min(1).max(24) }).strict(),
+      yAxis: z.object({ label: labelSchema, unit: z.string().trim().min(1).max(24) }).strict(),
+      points: z
+        .array(
+          z
+            .object({
+              label: z.string().trim().min(1).max(100),
+              x: z.number().finite(),
+              y: z.number().finite(),
+              group: labelSchema.optional(),
+              coverage: z.number().int().min(1).optional(),
+              sourceIndex: sourceIndexV2Schema,
+            })
+            .strict()
+        )
+        .min(2)
+        .max(500),
+      correlation: z.number().min(-1).max(1).nullable().optional(),
+    })
+    .strict(),
+  z
+    .object({
+      version: z.literal(2),
+      type: z.literal('station_map'),
+      title: titleSchema,
+      indicator: z.enum(['TAVG', 'TMIN', 'TMAX', 'PRCP']),
+      unit: z.string().trim().min(1).max(24),
+      scale: z.object({ min: z.number().finite(), max: z.number().finite() }).strict(),
+      points: z
+        .array(
+          z
+            .object({
+              stationId: z.string().trim().min(5).max(32),
+              name: z.string().trim().min(1).max(120),
+              country: labelSchema,
+              longitude: z.number().min(-180).max(180),
+              latitude: z.number().min(-90).max(90),
+              value: z.number().finite(),
+              coverage: z.number().int().min(1),
+              sourceIndex: sourceIndexV2Schema,
+            })
+            .strict()
+        )
+        .min(1)
+        .max(500),
+    })
+    .strict(),
 ])
 
 const canonicalVisualSpecSchema = z
@@ -303,6 +392,30 @@ const canonicalVisualSpecSchema = z
         })
       }
     }
+
+    if (
+      visual.version === 2 &&
+      visual.type === 'climate_timeseries' &&
+      visual.series.reduce((total, series) => total + series.points.length, 0) > 2000
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Climate time series are limited to 2,000 total points',
+        path: ['series'],
+      })
+    }
+
+    if (
+      visual.version === 2 &&
+      visual.type === 'station_map' &&
+      visual.scale.min > visual.scale.max
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Station map scale minimum must not exceed its maximum',
+        path: ['scale'],
+      })
+    }
   })
 
 export const visualSpecSchema = z.preprocess((value) => {
@@ -333,6 +446,9 @@ export const visualDecisionReasonSchema = z.enum([
   'retrieval_gap',
   'validation_failed',
   'planner_error',
+  'insufficient_coverage',
+  'too_many_points',
+  'unsupported_data_query',
 ])
 
 export const visualDecisionCategorySchema = z.enum([
@@ -342,6 +458,7 @@ export const visualDecisionCategorySchema = z.enum([
   'timeline',
   'sectors',
   'metrics',
+  'climate_data',
 ])
 
 export const visualDecisionSchema = z

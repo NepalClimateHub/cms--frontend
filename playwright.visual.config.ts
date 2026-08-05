@@ -2,6 +2,7 @@ import { defineConfig, devices } from 'playwright/test'
 
 export default defineConfig({
   testDir: './tests',
+  testMatch: '**/*.pw.ts',
   fullyParallel: false,
   retries: 0,
   reporter: 'line',
@@ -13,6 +14,16 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'mobile-chromium',
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 3,
+        isMobile: true,
+        hasTouch: true,
+      },
     },
   ],
   webServer: {

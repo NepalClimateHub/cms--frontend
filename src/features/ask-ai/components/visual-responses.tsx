@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { lazy, Suspense, type ReactNode } from 'react'
 import type {
   VisualDecision,
   VisualSpec,
@@ -27,10 +27,17 @@ import {
   Line,
   LineChart,
   ResponsiveContainer,
+  Scatter,
+  ScatterChart,
   Tooltip,
   XAxis,
   YAxis,
+  ZAxis,
 } from 'recharts'
+
+const StationMap = lazy(() =>
+  import('./station-map').then((module) => ({ default: module.StationMap }))
+)
 
 type RenderCitation = (sourceIndex: number) => ReactNode
 type MetricStripSpec = Extract<VisualSpec, { type: 'metric_strip' }>
@@ -45,6 +52,11 @@ type EmissionsProjectionSpec = Extract<
   VisualSpec,
   { type: 'emissions_projection' }
 >
+type ClimateTimeSeriesSpec = Extract<
+  VisualSpec,
+  { type: 'climate_timeseries' }
+>
+type ClimateScatterSpec = Extract<VisualSpec, { type: 'climate_scatter' }>
 
 const visualTitles: Record<VisualSpec['type'], string> = {
   metric_strip: 'Key figures',
@@ -53,6 +65,9 @@ const visualTitles: Record<VisualSpec['type'], string> = {
   document_comparison: 'Document comparison',
   process_stepper: 'Process',
   emissions_projection: 'Emissions projection',
+  climate_timeseries: 'Climate time series',
+  climate_scatter: 'Climate relationship',
+  station_map: 'Climate station map',
 }
 
 function SectorIcon({ label }: { label: string }) {
@@ -414,6 +429,119 @@ function EmissionsProjection({
   )
 }
 
+function ClimateTimeSeries({
+  visual,
+  renderCitation,
+}: {
+  visual: ClimateTimeSeriesSpec
+  renderCitation: RenderCitation
+}) {
+  const periods = Array.from(
+    new Set(visual.series.flatMap((series) => series.points.map((point) => point.period)))
+  ).sort()
+  const data = periods.map((period) => {
+    const row: Record<string, string | number | undefined> = { period }
+    visual.series.forEach((series) => {
+      row[series.name] = series.points.find((point) => point.period === period)?.value
+    })
+    return row
+  })
+  return (
+    <div className='space-y-3'>
+      <div className='h-80 w-full min-w-0'>
+        <ResponsiveContainer width='100%' height='100%'>
+          <LineChart data={data} margin={{ top: 8, right: 14, bottom: 4, left: 0 }}>
+            <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
+            <XAxis dataKey='period' tick={{ fontSize: 11 }} minTickGap={28} />
+            <YAxis width={48} tick={{ fontSize: 11 }} />
+            <Tooltip
+              formatter={(value, name) => [`${value} ${visual.yAxis.unit}`, name]}
+              contentStyle={{
+                backgroundColor: 'hsl(var(--popover))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: 6,
+                color: 'hsl(var(--popover-foreground))',
+              }}
+            />
+            <Legend wrapperStyle={{ fontSize: 12 }} />
+            {visual.series.map((series, index) => (
+              <Line
+                key={series.name}
+                type='monotone'
+                dataKey={series.name}
+                connectNulls={false}
+                stroke={emissionsChartColors[index % emissionsChartColors.length]}
+                strokeWidth={2}
+                dot={data.length <= 60 ? { r: 2.5 } : false}
+                isAnimationActive={false}
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
+        <span>{visual.yAxis.label} ({visual.yAxis.unit})</span>
+        {[...new Set(visual.series.map((series) => series.sourceIndex))].map((sourceIndex) => (
+          <span key={sourceIndex}>{renderCitation(sourceIndex)}</span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ClimateScatter({
+  visual,
+  renderCitation,
+}: {
+  visual: ClimateScatterSpec
+  renderCitation: RenderCitation
+}) {
+  return (
+    <div className='space-y-3'>
+      <div className='h-80 w-full min-w-0'>
+        <ResponsiveContainer width='100%' height='100%'>
+          <ScatterChart margin={{ top: 8, right: 14, bottom: 18, left: 8 }}>
+            <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
+            <XAxis
+              type='number'
+              dataKey='x'
+              name={visual.xAxis.label}
+              unit={` ${visual.xAxis.unit}`}
+              tick={{ fontSize: 11 }}
+              label={{ value: visual.xAxis.label, position: 'insideBottom', offset: -12 }}
+            />
+            <YAxis
+              type='number'
+              dataKey='y'
+              name={visual.yAxis.label}
+              unit={` ${visual.yAxis.unit}`}
+              width={58}
+              tick={{ fontSize: 11 }}
+            />
+            <ZAxis dataKey='coverage' range={[55, 180]} name='Coverage' />
+            <Tooltip
+              cursor={{ strokeDasharray: '3 3' }}
+              contentStyle={{
+                backgroundColor: 'hsl(var(--popover))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: 6,
+              }}
+            />
+            <Scatter data={visual.points} fill='hsl(var(--chart-2))' isAnimationActive={false} />
+          </ScatterChart>
+        </ResponsiveContainer>
+      </div>
+      <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
+        <span>
+          {visual.points.length} stations
+          {visual.correlation == null ? '' : `; correlation ${visual.correlation}`}
+        </span>
+        {renderCitation(visual.points[0].sourceIndex)}
+      </div>
+    </div>
+  )
+}
+
 function VisualBody({
   visual,
   renderCitation,
@@ -437,6 +565,16 @@ function VisualBody({
     case 'emissions_projection':
       return (
         <EmissionsProjection visual={visual} renderCitation={renderCitation} />
+      )
+    case 'climate_timeseries':
+      return <ClimateTimeSeries visual={visual} renderCitation={renderCitation} />
+    case 'climate_scatter':
+      return <ClimateScatter visual={visual} renderCitation={renderCitation} />
+    case 'station_map':
+      return (
+        <Suspense fallback={<div className='h-80 animate-pulse bg-muted' aria-label='Loading station map' />}>
+          <StationMap visual={visual} />
+        </Suspense>
       )
   }
 }
@@ -478,6 +616,7 @@ const visualCategoryLabels: Record<
   timeline: 'Timeline',
   sectors: 'Sectors',
   metrics: 'Metrics',
+  climate_data: 'Climate data',
 }
 
 const visualReasonLabels: Record<
@@ -491,6 +630,9 @@ const visualReasonLabels: Record<
   retrieval_gap: 'Retrieval gap',
   validation_failed: 'Validation failed',
   planner_error: 'Planner error',
+  insufficient_coverage: 'Insufficient data coverage',
+  too_many_points: 'Too many data points',
+  unsupported_data_query: 'Unsupported climate-data query',
 }
 
 export function VisualDecisionStatus({

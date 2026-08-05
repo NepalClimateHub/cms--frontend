@@ -17,6 +17,7 @@ import {
   RotateCw,
   ExternalLink,
   History,
+  Database,
 } from 'lucide-react'
 import {
   buildRecentConversationHistory,
@@ -409,12 +410,24 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
 
       <p className='text-sm font-medium truncate flex-1 min-w-0'>{filename}</p>
 
-      {documentUrl && (
+      {documentUrl && source.sourceType === 'dataset' && (
+        <a
+          href={documentUrl}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='flex flex-shrink-0 items-center gap-1 text-xs font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300'
+        >
+          <Database className='h-3.5 w-3.5' />
+          View Data
+        </a>
+      )}
+
+      {documentUrl && source.sourceType !== 'dataset' && (
         <Dialog>
           <DialogTrigger asChild>
             <button className='flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors flex-shrink-0'>
               <BookOpen className='h-3.5 w-3.5' />
-              View Document
+              View Source
             </button>
           </DialogTrigger>
           <DocumentViewerDialog source={source} />
@@ -595,6 +608,21 @@ function SourceBubble({ source, index }: { source: Source; index: number }) {
       >
         {index}
       </span>
+    )
+  }
+
+  if (source.sourceType === 'dataset') {
+    return (
+      <a
+        href={documentUrl}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='inline-flex h-5 w-5 items-center justify-center rounded bg-blue-100 text-[10px] font-bold text-blue-700 transition-colors hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-800'
+        title={`Open ${filename}`}
+        data-source-index={index}
+      >
+        {index}
+      </a>
     )
   }
 

@@ -79,8 +79,43 @@ interface DocumentSummary {
 
 export interface AiAssistantSettings {
   visualResponsesEnabled: boolean
+  climateDataEnabled: boolean
+  climateMapsEnabled: boolean
+  graphRagEnabled: boolean
+  climateRolloutStage: 'DISABLED' | 'ADMIN' | 'INTERNAL' | 'LIMITED' | 'ALL'
   updatedAt: string
   updatedBy?: string | null
+}
+
+export interface ClimateDataStatus {
+  enabled: boolean
+  mapsEnabled: boolean
+  graphRagEnabled: boolean
+  rolloutStage: 'DISABLED' | 'ADMIN' | 'INTERNAL' | 'LIMITED' | 'ALL'
+  stale: boolean
+  latestSuccessfulSync?: string | null
+  stationCount: number
+  observationCount: number
+  manifestCount: number
+  operational?: {
+    queries24h: number
+    failures24h: number
+    cacheHits24h: number
+    mapFallbacks24h: number
+    p95QueryLatencyMs?: number | null
+    routes: Record<string, number>
+    queryCacheEntries: number
+  }
+  latestRun?: {
+    id: string
+    mode: 'BACKFILL' | 'INCREMENTAL'
+    status: 'QUEUED' | 'RUNNING' | 'SUCCEEDED' | 'FAILED'
+    stage: string
+    rows_processed: number
+    failed_batches: number
+    error?: string | null
+  } | null
+  countries: Array<{ code: string; name: string; stations: number }>
 }
 
 interface ApiErrorPayload {
@@ -201,15 +236,40 @@ export function useAiAssistantSettings(enabled: boolean) {
 export function useUpdateAiAssistantSettings() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (visualResponsesEnabled: boolean) =>
+    mutationFn: (changes: Partial<Pick<AiAssistantSettings,
+      'visualResponsesEnabled' | 'climateDataEnabled' | 'climateMapsEnabled' | 'graphRagEnabled'
+      | 'climateRolloutStage'
+    >>) =>
       request<AiAssistantSettings>('/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ visualResponsesEnabled }),
+        body: JSON.stringify(changes),
       }),
     onSuccess: (settings) => {
       queryClient.setQueryData(['ai-assistant-settings'], settings)
     },
+  })
+}
+
+export function useClimateDataStatus() {
+  return useQuery({
+    queryKey: ['climate-data-status'],
+    queryFn: () => request<ClimateDataStatus>('/climate-data/status'),
+    refetchInterval: (query) =>
+      ['QUEUED', 'RUNNING'].includes(query.state.data?.latestRun?.status || '') ? 5000 : 30000,
+  })
+}
+
+export function useSyncClimateData() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (mode: 'BACKFILL' | 'INCREMENTAL') =>
+      request('/climate-data/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['climate-data-status'] }),
   })
 }
 

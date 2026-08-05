@@ -41,6 +41,7 @@ export interface ChatRequest {
 }
 
 export interface ChatSource {
+  sourceType?: 'document' | 'dataset' | 'graph'
   source?: string;
   title?: string;
   url?: string;
@@ -48,6 +49,10 @@ export interface ChatSource {
   chunkId?: string;
   page?: number;
   score?: number;
+  datasetId?: string;
+  coverageStart?: string;
+  coverageEnd?: string;
+  synchronizedAt?: string | null;
 }
 
 export interface ChatResponse {
@@ -86,6 +91,21 @@ export interface HealthResponse {
   status: string;
   pipeline_initialized: boolean;
   vector_store_loaded: boolean;
+}
+
+export async function reportClimateClientMetric(event: 'map_fallback') {
+  const token = getAccessToken()
+  const baseUrl = (env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
+  if (!token) return
+  await fetch(`${baseUrl}/api/v1/ai-assistant/climate-data/metrics`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ event }),
+    keepalive: true,
+  }).catch(() => undefined)
 }
 
 function apiErrorMessage(error: unknown, fallback: string) {
