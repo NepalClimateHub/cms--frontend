@@ -2,6 +2,8 @@ import { Row } from '@tanstack/react-table'
 import { Button } from '@/ui/shadcn/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip'
 import { ClipboardList, Eye, Pencil, Trash2 } from 'lucide-react'
+import { getRoleFromToken } from '@/utils/jwt.util'
+import { isVerificationAdmin } from '@/utils/role-check.util'
 import { useUsers } from '../context/users-context'
 import { User } from '../data/schema'
 
@@ -12,6 +14,9 @@ interface DataTableRowActionsProps {
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useUsers()
   const u = row.original
+  const role = getRoleFromToken()
+  const canDelete = isVerificationAdmin(role) // SUPER_ADMIN or ADMIN
+
   const canViewOrgApplication =
     u.serverRole === 'ORGANIZATION' &&
     u.organization &&
@@ -80,24 +85,26 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         <TooltipContent side='bottom'>Edit</TooltipContent>
       </Tooltip>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            type='button'
-            variant='destructive'
-            size='sm'
-            className='h-6 px-2'
-            aria-label='Delete user'
-            onClick={() => {
-              openRow()
-              setOpen('delete')
-            }}
-          >
-            <Trash2 />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side='bottom'>Delete</TooltipContent>
-      </Tooltip>
+      {canDelete && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type='button'
+              variant='destructive'
+              size='sm'
+              className='h-6 px-2'
+              aria-label='Delete user'
+              onClick={() => {
+                openRow()
+                setOpen('delete')
+              }}
+            >
+              <Trash2 />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side='bottom'>Delete</TooltipContent>
+        </Tooltip>
+      )}
     </div>
   )
 }
