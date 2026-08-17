@@ -76,3 +76,17 @@ export const useUpdateUserByAdmin = () => {
     },
   })
 }
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiClient.delete(`/api/v1/users/${id}`)
+      return res.data
+    },
+    onSuccess: () => {
+      void invalidateUsersListQueries(queryClient)
+    },
+  })
+}

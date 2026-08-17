@@ -45,6 +45,9 @@ const ENTITIES = [
   'RESOURCE',
   'MEMBER',
   'CLIMATE_CHAMPION',
+  'TESTIMONIAL',
+  'USER',
+  'ORGANIZATION',
 ] as const
 
 export default function ActivitiesFeature() {
@@ -293,18 +296,18 @@ export default function ActivitiesFeature() {
             selectedEntity !== 'all' ||
             startDate ||
             endDate) && (
-            <div className='mt-4 flex justify-end'>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={handleResetFilters}
-                className='h-8 text-xs text-muted-foreground hover:text-foreground'
-              >
-                <FilterX className='mr-2 h-4 w-4' />
-                Reset Filters
-              </Button>
-            </div>
-          )}
+              <div className='mt-4 flex justify-end'>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={handleResetFilters}
+                  className='h-8 text-xs text-muted-foreground hover:text-foreground'
+                >
+                  <FilterX className='mr-2 h-4 w-4' />
+                  Reset Filters
+                </Button>
+              </div>
+            )}
         </CardContent>
       </Card>
 
