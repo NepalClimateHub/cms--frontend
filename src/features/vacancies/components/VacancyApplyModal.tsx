@@ -185,7 +185,9 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                   name='fullName'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name *</FormLabel>
+                      <FormLabel>
+                        Full Name <span className='text-red-500'>*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -199,7 +201,9 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                   name='email'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email *</FormLabel>
+                      <FormLabel>
+                        Email <span className='text-red-500'>*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type='email'
@@ -218,7 +222,9 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                   name='contact'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Contact Number *</FormLabel>
+                      <FormLabel>
+                        Contact Number <span className='text-red-500'>*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder='+977 98XXXXXXXX' {...field} />
                       </FormControl>
@@ -232,7 +238,9 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                   name='currentAddress'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Current Address *</FormLabel>
+                      <FormLabel>
+                        Current Address <span className='text-red-500'>*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -249,7 +257,9 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                 name='message'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Message / Cover Letter *</FormLabel>
+                    <FormLabel>
+                      Message / Cover Letter <span className='text-red-500'>*</span>
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         rows={4}
@@ -267,7 +277,9 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                 name='cvUrl'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CV Upload * (PDF/DOCX/Doc)</FormLabel>
+                    <FormLabel>
+                      CV Upload <span className='text-red-500'>*</span> (PDF/DOCX/Doc)
+                    </FormLabel>
                     <FormControl>
                       <div className='rounded-lg border-2 border-dashed border-border bg-muted/30 p-4'>
                         <IKContext
