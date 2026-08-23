@@ -21,6 +21,7 @@ import { Route as authVerifyEmailImport } from './routes/(auth)/verify-email'
 import { Route as authSignInImport } from './routes/(auth)/sign-in'
 import { Route as auth500Import } from './routes/(auth)/500'
 import { Route as PublicLoginIndexImport } from './routes/_public/login/index'
+import { Route as AuthenticatedVacanciesIndexImport } from './routes/_authenticated/vacancies/index'
 import { Route as AuthenticatedUsersIndexImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedTestimonialsIndexImport } from './routes/_authenticated/testimonials/index'
 import { Route as AuthenticatedSubscribedEmailsIndexImport } from './routes/_authenticated/subscribed-emails/index'
@@ -32,6 +33,8 @@ import { Route as AuthenticatedMembersIndexImport } from './routes/_authenticate
 import { Route as AuthenticatedClimateChampionsIndexImport } from './routes/_authenticated/climate-champions/index'
 import { Route as AuthenticatedAskAiIndexImport } from './routes/_authenticated/ask-ai/index'
 import { Route as AuthenticatedActivitiesIndexImport } from './routes/_authenticated/activities/index'
+import { Route as AuthenticatedVacanciesAddImport } from './routes/_authenticated/vacancies/add'
+import { Route as AuthenticatedVacanciesIdImport } from './routes/_authenticated/vacancies/$id'
 import { Route as AuthenticatedTestimonialsAddImport } from './routes/_authenticated/testimonials/add'
 import { Route as AuthenticatedTestimonialsIdImport } from './routes/_authenticated/testimonials/$id'
 import { Route as AuthenticatedResourcesAddImport } from './routes/_authenticated/resources/add'
@@ -243,6 +246,13 @@ const PublicLoginIndexRoute = PublicLoginIndexImport.update({
   getParentRoute: () => PublicRouteRoute,
 } as any)
 
+const AuthenticatedVacanciesIndexRoute =
+  AuthenticatedVacanciesIndexImport.update({
+    id: '/vacancies/',
+    path: '/vacancies/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
 const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexImport.update({
   id: '/users/',
   path: '/users/',
@@ -361,6 +371,18 @@ const AuthenticatedSettingsAccountLazyRoute =
       (d) => d.Route,
     ),
   )
+
+const AuthenticatedVacanciesAddRoute = AuthenticatedVacanciesAddImport.update({
+  id: '/vacancies/add',
+  path: '/vacancies/add',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedVacanciesIdRoute = AuthenticatedVacanciesIdImport.update({
+  id: '/vacancies/$id',
+  path: '/vacancies/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 const AuthenticatedTestimonialsAddRoute =
   AuthenticatedTestimonialsAddImport.update({
@@ -771,6 +793,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTestimonialsAddImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/vacancies/$id': {
+      id: '/_authenticated/vacancies/$id'
+      path: '/vacancies/$id'
+      fullPath: '/vacancies/$id'
+      preLoaderRoute: typeof AuthenticatedVacanciesIdImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/vacancies/add': {
+      id: '/_authenticated/vacancies/add'
+      path: '/vacancies/add'
+      fullPath: '/vacancies/add'
+      preLoaderRoute: typeof AuthenticatedVacanciesAddImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/settings/account': {
       id: '/_authenticated/settings/account'
       path: '/account'
@@ -874,6 +910,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof AuthenticatedUsersIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/vacancies/': {
+      id: '/_authenticated/vacancies/'
+      path: '/vacancies'
+      fullPath: '/vacancies'
+      preLoaderRoute: typeof AuthenticatedVacanciesIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_public/login/': {
@@ -1065,6 +1108,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedResourcesAddRoute: typeof AuthenticatedResourcesAddRoute
   AuthenticatedTestimonialsIdRoute: typeof AuthenticatedTestimonialsIdRoute
   AuthenticatedTestimonialsAddRoute: typeof AuthenticatedTestimonialsAddRoute
+  AuthenticatedVacanciesIdRoute: typeof AuthenticatedVacanciesIdRoute
+  AuthenticatedVacanciesAddRoute: typeof AuthenticatedVacanciesAddRoute
   AuthenticatedActivitiesIndexRoute: typeof AuthenticatedActivitiesIndexRoute
   AuthenticatedAskAiIndexRoute: typeof AuthenticatedAskAiIndexRoute
   AuthenticatedClimateChampionsIndexRoute: typeof AuthenticatedClimateChampionsIndexRoute
@@ -1076,6 +1121,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSubscribedEmailsIndexRoute: typeof AuthenticatedSubscribedEmailsIndexRoute
   AuthenticatedTestimonialsIndexRoute: typeof AuthenticatedTestimonialsIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
+  AuthenticatedVacanciesIndexRoute: typeof AuthenticatedVacanciesIndexRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
   AuthenticatedBlogsBlogIdIndexRoute: typeof AuthenticatedBlogsBlogIdIndexRoute
@@ -1115,6 +1161,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedResourcesAddRoute: AuthenticatedResourcesAddRoute,
   AuthenticatedTestimonialsIdRoute: AuthenticatedTestimonialsIdRoute,
   AuthenticatedTestimonialsAddRoute: AuthenticatedTestimonialsAddRoute,
+  AuthenticatedVacanciesIdRoute: AuthenticatedVacanciesIdRoute,
+  AuthenticatedVacanciesAddRoute: AuthenticatedVacanciesAddRoute,
   AuthenticatedActivitiesIndexRoute: AuthenticatedActivitiesIndexRoute,
   AuthenticatedAskAiIndexRoute: AuthenticatedAskAiIndexRoute,
   AuthenticatedClimateChampionsIndexRoute:
@@ -1128,6 +1176,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedSubscribedEmailsIndexRoute,
   AuthenticatedTestimonialsIndexRoute: AuthenticatedTestimonialsIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
+  AuthenticatedVacanciesIndexRoute: AuthenticatedVacanciesIndexRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
   AuthenticatedBlogsBlogIdIndexRoute: AuthenticatedBlogsBlogIdIndexRoute,
@@ -1197,6 +1246,8 @@ export interface FileRoutesByFullPath {
   '/resources/add': typeof AuthenticatedResourcesAddRoute
   '/testimonials/$id': typeof AuthenticatedTestimonialsIdRoute
   '/testimonials/add': typeof AuthenticatedTestimonialsAddRoute
+  '/vacancies/$id': typeof AuthenticatedVacanciesIdRoute
+  '/vacancies/add': typeof AuthenticatedVacanciesAddRoute
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
@@ -1212,6 +1263,7 @@ export interface FileRoutesByFullPath {
   '/subscribed-emails': typeof AuthenticatedSubscribedEmailsIndexRoute
   '/testimonials': typeof AuthenticatedTestimonialsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/vacancies': typeof AuthenticatedVacanciesIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
@@ -1261,6 +1313,8 @@ export interface FileRoutesByTo {
   '/resources/add': typeof AuthenticatedResourcesAddRoute
   '/testimonials/$id': typeof AuthenticatedTestimonialsIdRoute
   '/testimonials/add': typeof AuthenticatedTestimonialsAddRoute
+  '/vacancies/$id': typeof AuthenticatedVacanciesIdRoute
+  '/vacancies/add': typeof AuthenticatedVacanciesAddRoute
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
@@ -1276,6 +1330,7 @@ export interface FileRoutesByTo {
   '/subscribed-emails': typeof AuthenticatedSubscribedEmailsIndexRoute
   '/testimonials': typeof AuthenticatedTestimonialsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/vacancies': typeof AuthenticatedVacanciesIndexRoute
   '/login': typeof PublicLoginIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
@@ -1329,6 +1384,8 @@ export interface FileRoutesById {
   '/_authenticated/resources/add': typeof AuthenticatedResourcesAddRoute
   '/_authenticated/testimonials/$id': typeof AuthenticatedTestimonialsIdRoute
   '/_authenticated/testimonials/add': typeof AuthenticatedTestimonialsAddRoute
+  '/_authenticated/vacancies/$id': typeof AuthenticatedVacanciesIdRoute
+  '/_authenticated/vacancies/add': typeof AuthenticatedVacanciesAddRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
@@ -1344,6 +1401,7 @@ export interface FileRoutesById {
   '/_authenticated/subscribed-emails/': typeof AuthenticatedSubscribedEmailsIndexRoute
   '/_authenticated/testimonials/': typeof AuthenticatedTestimonialsIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/vacancies/': typeof AuthenticatedVacanciesIndexRoute
   '/_public/login/': typeof PublicLoginIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
@@ -1396,6 +1454,8 @@ export interface FileRouteTypes {
     | '/resources/add'
     | '/testimonials/$id'
     | '/testimonials/add'
+    | '/vacancies/$id'
+    | '/vacancies/add'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -1411,6 +1471,7 @@ export interface FileRouteTypes {
     | '/subscribed-emails'
     | '/testimonials'
     | '/users'
+    | '/vacancies'
     | '/login'
     | '/help-center'
     | '/settings/'
@@ -1459,6 +1520,8 @@ export interface FileRouteTypes {
     | '/resources/add'
     | '/testimonials/$id'
     | '/testimonials/add'
+    | '/vacancies/$id'
+    | '/vacancies/add'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -1474,6 +1537,7 @@ export interface FileRouteTypes {
     | '/subscribed-emails'
     | '/testimonials'
     | '/users'
+    | '/vacancies'
     | '/login'
     | '/help-center'
     | '/settings'
@@ -1525,6 +1589,8 @@ export interface FileRouteTypes {
     | '/_authenticated/resources/add'
     | '/_authenticated/testimonials/$id'
     | '/_authenticated/testimonials/add'
+    | '/_authenticated/vacancies/$id'
+    | '/_authenticated/vacancies/add'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
@@ -1540,6 +1606,7 @@ export interface FileRouteTypes {
     | '/_authenticated/subscribed-emails/'
     | '/_authenticated/testimonials/'
     | '/_authenticated/users/'
+    | '/_authenticated/vacancies/'
     | '/_public/login/'
     | '/_authenticated/help-center/'
     | '/_authenticated/settings/'
@@ -1637,6 +1704,8 @@ export const routeTree = rootRoute
         "/_authenticated/resources/add",
         "/_authenticated/testimonials/$id",
         "/_authenticated/testimonials/add",
+        "/_authenticated/vacancies/$id",
+        "/_authenticated/vacancies/add",
         "/_authenticated/activities/",
         "/_authenticated/ask-ai/",
         "/_authenticated/climate-champions/",
@@ -1648,6 +1717,7 @@ export const routeTree = rootRoute
         "/_authenticated/subscribed-emails/",
         "/_authenticated/testimonials/",
         "/_authenticated/users/",
+        "/_authenticated/vacancies/",
         "/_authenticated/help-center/",
         "/_authenticated/tasks/",
         "/_authenticated/blogs/$blogId/",
@@ -1779,6 +1849,14 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/testimonials/add.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/vacancies/$id": {
+      "filePath": "_authenticated/vacancies/$id.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/vacancies/add": {
+      "filePath": "_authenticated/vacancies/add.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/settings/account": {
       "filePath": "_authenticated/settings/account.lazy.tsx",
       "parent": "/_authenticated/settings"
@@ -1837,6 +1915,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/users/": {
       "filePath": "_authenticated/users/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/vacancies/": {
+      "filePath": "_authenticated/vacancies/index.tsx",
       "parent": "/_authenticated"
     },
     "/_public/login/": {
