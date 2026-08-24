@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -10,30 +10,40 @@ import {
 } from '@/ui/shadcn/dialog'
 import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
-import { Textarea } from '@/ui/shadcn/textarea'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/ui/shadcn/form'
 import {
-  vacancyApplyFormSchema,
+  buildDefaultAnswers,
+  buildVacancyApplySchema,
   VacancyApplyFormValues,
 } from '@/schemas/vacancy'
 import {
   useApplyVacancy,
+  useGetVacancy,
   VacancyResponseDto,
 } from '@/query/vacancies/use-vacancies'
 import { Badge } from '@/ui/shadcn/badge'
-import { Briefcase, Calendar, Clock, MapPin, Upload, FileCheck } from 'lucide-react'
+import {
+  Briefcase,
+  Calendar,
+  Clock,
+  MapPin,
+  Upload,
+  FileCheck,
+} from 'lucide-react'
 import { useGetIkAuthParams } from '@/query/imagekit/use-ik'
 import { getIkAuthParams } from '@/query/imagekit/ik-service'
 import IKContext from '@/ui/molecules/image-kit/IKContext'
 import IKUpload from '@/ui/molecules/image-kit/IKUpload'
 import { toast } from '@/hooks/use-toast'
+import { DynamicQuestionField } from './DynamicQuestionField'
 
 interface VacancyApplyModalProps {
   vacancy: VacancyResponseDto | null
@@ -41,26 +51,53 @@ interface VacancyApplyModalProps {
   onOpenChange: (open: boolean) => void
 }
 
+const CV_UPLOAD_ID = 'cv-upload'
+
 export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
   vacancy,
   open,
   onOpenChange,
 }) => {
   const applyMutation = useApplyVacancy()
-  const [isCVUploading, setIsCVUploading] = useState(false)
+  // Tracks which uploader (CV or a FILE question) is currently busy.
+  const [uploadingId, setUploadingId] = useState<string | null>(null)
 
-  const form = useForm<VacancyApplyFormValues>({
-    resolver: zodResolver(vacancyApplyFormSchema),
-    defaultValues: {
+  // The list endpoint may return a trimmed vacancy, so pull the full record
+  // (and therefore its question set) once the modal opens.
+  const { data: detail } = useGetVacancy(vacancy?.id || '', open)
+  const questionSource = detail?.data?.questions ?? vacancy?.questions
+
+  const questions = useMemo(
+    () =>
+      [...(questionSource || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+    [questionSource]
+  )
+
+  const emptyValues = useMemo<VacancyApplyFormValues>(
+    () => ({
       fullName: '',
       email: '',
+      confirmEmail: '',
       contact: '',
       currentAddress: '',
-      message: '',
       cvUrl: '',
       cvFileId: '',
-    },
+      answers: buildDefaultAnswers(questions),
+    }),
+    [questions]
+  )
+
+  const form = useForm<VacancyApplyFormValues>({
+    resolver: zodResolver(buildVacancyApplySchema(questions)),
+    defaultValues: emptyValues,
   })
+
+  // Reseed answers whenever a different vacancy (i.e. a different question
+  // set) is opened, so answer indices always line up with `questions`.
+  useEffect(() => {
+    if (open) form.reset(emptyValues)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, vacancy?.id, emptyValues])
 
   // ImageKit credentials
   const { data: ikData } = useGetIkAuthParams()
@@ -78,11 +115,20 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
     applyMutation.mutate(
       {
         vacancyId: vacancy.id,
-        data: values,
+        data: {
+          ...values,
+          // Re-snapshot label/type at submit time so the stored answer stays
+          // readable even if the question is later edited or deleted.
+          answers: values.answers.map((answer, index) => ({
+            ...answer,
+            label: questions[index]?.label ?? answer.label,
+            type: questions[index]?.type ?? answer.type,
+          })),
+        },
       },
       {
         onSuccess: () => {
-          form.reset()
+          form.reset(emptyValues)
           onOpenChange(false)
         },
       }
@@ -198,27 +244,6 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
 
                 <FormField
                   control={form.control}
-                  name='email'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Email <span className='text-red-500'>*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type='email'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                <FormField
-                  control={form.control}
                   name='contact'
                   render={({ field }) => (
                     <FormItem>
@@ -232,17 +257,37 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                     </FormItem>
                   )}
                 />
+              </div>
 
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 <FormField
                   control={form.control}
-                  name='currentAddress'
+                  name='email'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Current Address <span className='text-red-500'>*</span>
+                        Email <span className='text-red-500'>*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input type='email' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='confirmEmail'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Confirm Email <span className='text-red-500'>*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
+                          type='email'
+                          onPaste={(event) => event.preventDefault()}
                           {...field}
                         />
                       </FormControl>
@@ -254,17 +299,14 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
 
               <FormField
                 control={form.control}
-                name='message'
+                name='currentAddress'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Message / Cover Letter <span className='text-red-500'>*</span>
+                      Current Address <span className='text-red-500'>*</span>
                     </FormLabel>
                     <FormControl>
-                      <Textarea
-                        rows={4}
-                        {...field}
-                      />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -278,7 +320,8 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      CV Upload <span className='text-red-500'>*</span> (PDF/DOCX/Doc)
+                      Link to CV <span className='text-red-500'>*</span>{' '}
+                      (PDF/DOCX/Doc)
                     </FormLabel>
                     <FormControl>
                       <div className='rounded-lg border-2 border-dashed border-border bg-muted/30 p-4'>
@@ -289,7 +332,7 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                         >
                           <div className='flex flex-col items-center gap-2 text-center'>
                             {field.value ? (
-                              <div className='flex items-center gap-2 text-sm text-emerald-600 font-medium'>
+                              <div className='flex items-center gap-2 text-sm font-medium text-emerald-600'>
                                 <FileCheck className='h-5 w-5' />
                                 <span>CV Uploaded successfully</span>
                                 <Button
@@ -312,25 +355,33 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                                   Upload your CV (Max 10MB)
                                 </span>
                                 <IKUpload
-                                  isUploading={isCVUploading}
+                                  inputId={CV_UPLOAD_ID}
+                                  isUploading={uploadingId === CV_UPLOAD_ID}
                                   label='Select CV File'
                                   description='CV file size should not exceed 10MB'
                                   folder={folder}
                                   useUniqueFileName={true}
-                                  onUploadStart={() => setIsCVUploading(true)}
+                                  onUploadStart={() =>
+                                    setUploadingId(CV_UPLOAD_ID)
+                                  }
                                   onError={(err) => {
-                                    setIsCVUploading(false)
+                                    setUploadingId(null)
                                     toast({
                                       variant: 'destructive',
                                       title: 'Upload failed',
-                                      description: err?.message || 'Could not upload file.',
+                                      description:
+                                        err?.message || 'Could not upload file.',
                                     })
                                   }}
-                                  onSuccess={(res: { url?: string; fileId?: string }) => {
-                                    setIsCVUploading(false)
+                                  onSuccess={(res: {
+                                    url?: string
+                                    fileId?: string
+                                  }) => {
+                                    setUploadingId(null)
                                     if (res?.url) {
                                       form.setValue('cvUrl', res.url)
-                                      if (res.fileId) form.setValue('cvFileId', res.fileId)
+                                      if (res.fileId)
+                                        form.setValue('cvFileId', res.fileId)
                                       toast({
                                         title: 'CV uploaded',
                                       })
@@ -358,6 +409,35 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                 )}
               />
 
+              {/* Role-specific questions */}
+              {questions.length > 0 && (
+                <div className='space-y-4 border-t pt-6'>
+                  <div>
+                    <h4 className='text-base font-semibold text-foreground'>
+                      A few questions about this role
+                    </h4>
+                    <FormDescription className='text-xs'>
+                      These are set by the hiring team for {vacancy.title}.
+                    </FormDescription>
+                  </div>
+
+                  {questions.map((question, index) => (
+                    <DynamicQuestionField
+                      key={question.id}
+                      form={form}
+                      question={question}
+                      index={index}
+                      publicKey={publicKey}
+                      endpoint={endpoint}
+                      folder={folder}
+                      authenticator={authenticator}
+                      uploadingId={uploadingId}
+                      onUploadingChange={setUploadingId}
+                    />
+                  ))}
+                </div>
+              )}
+
               <div className='flex justify-end gap-2 pt-4'>
                 <Button
                   type='button'
@@ -368,9 +448,11 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                 </Button>
                 <Button
                   type='submit'
-                  disabled={applyMutation.isPending || isCVUploading}
+                  disabled={applyMutation.isPending || uploadingId !== null}
                 >
-                  {applyMutation.isPending ? 'Submitting...' : 'Submit Application'}
+                  {applyMutation.isPending
+                    ? 'Submitting...'
+                    : 'Submit Application'}
                 </Button>
               </div>
             </form>
