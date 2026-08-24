@@ -1,11 +1,14 @@
 import { FC } from 'react'
-import { useNavigate, useParams } from '@tanstack/react-router'
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import { VacancyForm } from '../shared/VacancyForm'
 import { useGetVacancy, useUpdateVacancy } from '@/query/vacancies/use-vacancies'
 import { VacancyFormValues } from '@/schemas/vacancy'
 
 const EditVacancy: FC = () => {
   const { id } = useParams({ from: '/_authenticated/vacancies/$id' })
+  const { applicationForm } = useSearch({
+    from: '/_authenticated/vacancies/$id',
+  })
   const navigate = useNavigate()
   const { data, isLoading } = useGetVacancy(id)
   const updateVacancyMutation = useUpdateVacancy()
@@ -58,6 +61,7 @@ const EditVacancy: FC = () => {
         isDraft: vacancy.isDraft,
         questions: vacancy.questions || [],
       }}
+      openApplicationForm={applicationForm}
       onSubmit={handleSubmit}
       isLoading={updateVacancyMutation.isPending}
     />
