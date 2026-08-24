@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { VacancyFormValues, VacancyApplyFormValues } from '@/schemas/vacancy'
+import {
+  VacancyFormValues,
+  VacancyApplyFormValues,
+  VacancyQuestion,
+  VacancyAnswer,
+} from '@/schemas/vacancy'
 import { Meta } from '@/schemas/shared'
 import { toast } from 'sonner'
 import { client } from '@/api/client.gen'
@@ -11,7 +16,9 @@ export interface VacancyApplicationResponseDto {
   email: string
   contact: string
   currentAddress?: string
+  /** Legacy free-text cover letter — no longer collected, still rendered if present. */
   message?: string
+  answers?: VacancyAnswer[]
   cvUrl: string
   cvFileId?: string
   status: string
@@ -33,6 +40,7 @@ export interface VacancyResponseDto {
   deadline?: string
   isActive: boolean
   isDraft: boolean
+  questions?: VacancyQuestion[]
   createdAt: string
   updatedAt: string
   _count?: {
@@ -150,9 +158,11 @@ export const useApplyVacancy = () => {
       vacancyId: string
       data: VacancyApplyFormValues
     }) => {
+      // confirmEmail is a client-side guard only.
+      const { confirmEmail: _confirmEmail, ...payload } = data
       const response = await client.post({
         url: `/api/v1/vacancies/${vacancyId}/apply`,
-        body: data,
+        body: payload,
       })
       return response.data
     },
