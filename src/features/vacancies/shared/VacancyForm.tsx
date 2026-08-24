@@ -16,8 +16,25 @@ import {
   FormLabel,
   FormMessage,
 } from '@/ui/shadcn/form'
-import { vacancyFormSchema, VacancyFormValues } from '@/schemas/vacancy'
+import {
+  vacancyFormSchema,
+  VacancyFormValues,
+  VacancyQuestion,
+} from '@/schemas/vacancy'
+import { ApplicationQuestionsBuilder } from './ApplicationQuestionsBuilder'
 import { Plus, Trash2, ArrowLeft } from 'lucide-react'
+
+/** Backfills ids/order for questions coming from the API. */
+const normalizeInitialQuestions = (
+  questions: VacancyQuestion[] = []
+): VacancyQuestion[] =>
+  questions.map((question, index) => ({
+    ...question,
+    id: question.id || crypto.randomUUID(),
+    required: question.required ?? false,
+    options: question.options || [],
+    order: question.order ?? index,
+  }))
 
 interface VacancyFormProps {
   initialValues?: Partial<VacancyFormValues>
@@ -49,8 +66,20 @@ export const VacancyForm: FC<VacancyFormProps> = ({
       deadline: initialValues?.deadline || null,
       isActive: initialValues?.isActive ?? true,
       isDraft: initialValues?.isDraft ?? false,
+      questions: normalizeInitialQuestions(initialValues?.questions),
     },
   })
+
+  const handleSubmit = (values: VacancyFormValues) => {
+    onSubmit({
+      ...values,
+      questions: values.questions.map((question, index) => ({
+        ...question,
+        order: index,
+        options: question.options.filter((option) => option.trim() !== ''),
+      })),
+    })
+  }
 
   const {
     fields: respFields,
@@ -86,7 +115,7 @@ export const VacancyForm: FC<VacancyFormProps> = ({
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
           {/* Basic Details Card */}
           <Card className='border-border/50 bg-card/60 backdrop-blur shadow-sm'>
             <CardHeader>
@@ -371,6 +400,9 @@ export const VacancyForm: FC<VacancyFormProps> = ({
               ))}
             </CardContent>
           </Card>
+
+          {/* Application Questions Card */}
+          <ApplicationQuestionsBuilder form={form} />
 
           {/* Action Buttons */}
           <div className='flex items-center justify-end gap-3 pt-2'>

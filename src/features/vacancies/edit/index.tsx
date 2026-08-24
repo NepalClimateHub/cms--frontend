@@ -56,6 +56,7 @@ const EditVacancy: FC = () => {
         deadline: vacancy.deadline || null,
         isActive: vacancy.isActive,
         isDraft: vacancy.isDraft,
+        questions: vacancy.questions || [],
       }}
       onSubmit={handleSubmit}
       isLoading={updateVacancyMutation.isPending}
