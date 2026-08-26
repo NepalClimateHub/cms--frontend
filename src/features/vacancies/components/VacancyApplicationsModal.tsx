@@ -15,6 +15,7 @@ import {
   VacancyResponseDto,
 } from '@/query/vacancies/use-vacancies'
 import { Download, ExternalLink, Mail, MapPin, Phone, Trash2 } from 'lucide-react'
+import { VacancyAnswer } from '@/schemas/vacancy'
 import {
   Select,
   SelectContent,
@@ -40,6 +41,38 @@ export const VacancyApplicationsModal: FC<VacancyApplicationsModalProps> = ({
   const deleteMutation = useDeleteApplication()
 
   const applications = data?.data || []
+
+  const renderAnswer = (answer: VacancyAnswer) => {
+    const { value, type } = answer
+
+    if (value === null || value === undefined || value === '') {
+      return <span className='text-muted-foreground'>Not answered</span>
+    }
+
+    if (typeof value === 'boolean') return value ? 'Yes' : 'No'
+
+    if (Array.isArray(value)) {
+      return value.length ? value.join(', ') : (
+        <span className='text-muted-foreground'>Not answered</span>
+      )
+    }
+
+    if (type === 'FILE' || type === 'URL') {
+      return (
+        <a
+          href={String(value)}
+          target='_blank'
+          rel='noreferrer'
+          className='inline-flex items-center gap-1 text-primary underline underline-offset-2'
+        >
+          {type === 'FILE' ? 'View file' : String(value)}
+          <ExternalLink className='h-3 w-3' />
+        </a>
+      )
+    }
+
+    return String(value)
+  }
 
   const getStatusBadge = (status: string) => {
     switch (status?.toUpperCase()) {
@@ -129,6 +162,26 @@ export const VacancyApplicationsModal: FC<VacancyApplicationsModalProps> = ({
                       </Select>
                     </div>
                   </div>
+
+                  {app.answers && app.answers.length > 0 && (
+                    <div className='space-y-2 rounded bg-muted/40 p-3 text-xs'>
+                      <span className='font-semibold'>
+                        Application Questions
+                      </span>
+                      <dl className='space-y-2'>
+                        {app.answers.map((answer) => (
+                          <div key={answer.questionId}>
+                            <dt className='font-medium text-foreground/80'>
+                              {answer.label}
+                            </dt>
+                            <dd className='mt-0.5 whitespace-pre-wrap leading-relaxed text-foreground/90'>
+                              {renderAnswer(answer)}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  )}
 
                   {app.message && (
                     <div className='rounded bg-muted/40 p-3 text-xs text-foreground/90'>

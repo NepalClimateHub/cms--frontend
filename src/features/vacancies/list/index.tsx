@@ -33,6 +33,7 @@ import {
   Briefcase,
   Clock,
   Calendar,
+  ClipboardList,
 } from 'lucide-react'
 import { VacancyApplyModal } from '../components/VacancyApplyModal'
 import { VacancyApplicationsModal } from '../components/VacancyApplicationsModal'
@@ -184,6 +185,18 @@ export const VacanciesList: FC = () => {
                           className='gap-2'
                         >
                           <Eye className='h-4 w-4' /> View & Apply Form
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            navigate({
+                              to: '/vacancies/$id',
+                              params: { id: v.id },
+                              search: { applicationForm: true },
+                            })
+                          }
+                          className='gap-2'
+                        >
+                          <ClipboardList className='h-4 w-4' /> Application Form
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => setSelectedVacancyForApps(v)}
