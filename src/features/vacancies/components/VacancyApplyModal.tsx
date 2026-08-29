@@ -30,19 +30,9 @@ import {
   VacancyResponseDto,
 } from '@/query/vacancies/use-vacancies'
 import { Badge } from '@/ui/shadcn/badge'
-import {
-  Briefcase,
-  Calendar,
-  Clock,
-  MapPin,
-  Upload,
-  FileCheck,
-} from 'lucide-react'
+import { Briefcase, Calendar, Clock, MapPin } from 'lucide-react'
 import { useGetIkAuthParams } from '@/query/imagekit/use-ik'
 import { getIkAuthParams } from '@/query/imagekit/ik-service'
-import IKContext from '@/ui/molecules/image-kit/IKContext'
-import IKUpload from '@/ui/molecules/image-kit/IKUpload'
-import { toast } from '@/hooks/use-toast'
 import { DynamicQuestionField } from './DynamicQuestionField'
 
 interface VacancyApplyModalProps {
@@ -51,15 +41,13 @@ interface VacancyApplyModalProps {
   onOpenChange: (open: boolean) => void
 }
 
-const CV_UPLOAD_ID = 'cv-upload'
-
 export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
   vacancy,
   open,
   onOpenChange,
 }) => {
   const applyMutation = useApplyVacancy()
-  // Tracks which uploader (CV or a FILE question) is currently busy.
+  // Tracks which FILE question uploader is currently busy.
   const [uploadingId, setUploadingId] = useState<string | null>(null)
 
   // The list endpoint may return a trimmed vacancy, so pull the full record
@@ -76,13 +64,11 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
   const emptyValues = useMemo<VacancyApplyFormValues>(
     () => ({
       fullName: '',
+      currentAddress: '',
       email: '',
       confirmEmail: '',
-      contact: '',
-      currentAddress: '',
-      cvUrl: '',
-      cvFileId: '',
       answers: buildDefaultAnswers(questions),
+      cvUrl: '',
     }),
     [questions]
   )
@@ -99,7 +85,7 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, vacancy?.id, emptyValues])
 
-  // ImageKit credentials
+  // ImageKit credentials — used only by FILE-type questions.
   const { data: ikData } = useGetIkAuthParams()
   const endpoint = ikData?.data?.endpoint
   const publicKey = ikData?.data?.publicKey
@@ -232,7 +218,7 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Full Name <span className='text-red-500'>*</span>
+                        Name <span className='text-red-500'>*</span>
                       </FormLabel>
                       <FormControl>
                         <Input {...field} />
@@ -244,14 +230,14 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
 
                 <FormField
                   control={form.control}
-                  name='contact'
+                  name='currentAddress'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Contact Number <span className='text-red-500'>*</span>
+                        Current Address <span className='text-red-500'>*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder='+977 98XXXXXXXX' {...field} />
+                        <Input placeholder='City, Country' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -297,118 +283,6 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name='currentAddress'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Current Address <span className='text-red-500'>*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* CV Upload */}
-              <FormField
-                control={form.control}
-                name='cvUrl'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Link to CV <span className='text-red-500'>*</span>{' '}
-                      (PDF/DOCX/Doc)
-                    </FormLabel>
-                    <FormControl>
-                      <div className='rounded-lg border-2 border-dashed border-border bg-muted/30 p-4'>
-                        <IKContext
-                          publicKey={publicKey}
-                          urlEndpoint={endpoint}
-                          authenticator={authenticator}
-                        >
-                          <div className='flex flex-col items-center gap-2 text-center'>
-                            {field.value ? (
-                              <div className='flex items-center gap-2 text-sm font-medium text-emerald-600'>
-                                <FileCheck className='h-5 w-5' />
-                                <span>CV Uploaded successfully</span>
-                                <Button
-                                  type='button'
-                                  variant='ghost'
-                                  size='sm'
-                                  className='h-auto p-1 text-xs text-destructive'
-                                  onClick={() => {
-                                    form.setValue('cvUrl', '')
-                                    form.setValue('cvFileId', '')
-                                  }}
-                                >
-                                  Remove
-                                </Button>
-                              </div>
-                            ) : (
-                              <>
-                                <Upload className='h-6 w-6 text-muted-foreground' />
-                                <span className='text-xs text-muted-foreground'>
-                                  Upload your CV (Max 10MB)
-                                </span>
-                                <IKUpload
-                                  inputId={CV_UPLOAD_ID}
-                                  isUploading={uploadingId === CV_UPLOAD_ID}
-                                  label='Select CV File'
-                                  description='CV file size should not exceed 10MB'
-                                  folder={folder}
-                                  useUniqueFileName={true}
-                                  onUploadStart={() =>
-                                    setUploadingId(CV_UPLOAD_ID)
-                                  }
-                                  onError={(err) => {
-                                    setUploadingId(null)
-                                    toast({
-                                      variant: 'destructive',
-                                      title: 'Upload failed',
-                                      description:
-                                        err?.message || 'Could not upload file.',
-                                    })
-                                  }}
-                                  onSuccess={(res: {
-                                    url?: string
-                                    fileId?: string
-                                  }) => {
-                                    setUploadingId(null)
-                                    if (res?.url) {
-                                      form.setValue('cvUrl', res.url)
-                                      if (res.fileId)
-                                        form.setValue('cvFileId', res.fileId)
-                                      toast({
-                                        title: 'CV uploaded',
-                                      })
-                                    }
-                                  }}
-                                />
-                              </>
-                            )}
-                          </div>
-                        </IKContext>
-                        {/* Fallback URL input option */}
-                        <div className='mt-3 border-t pt-3'>
-                          <Input
-                            type='url'
-                            placeholder='Or paste a direct CV URL (Google Drive/Dropbox)'
-                            value={field.value}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            className='text-xs'
-                          />
-                        </div>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               {/* Role-specific questions */}
               {questions.length > 0 && (
                 <div className='space-y-4 border-t pt-6'>
@@ -437,6 +311,31 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
                   ))}
                 </div>
               )}
+
+              {/* Link to CV / Resume — always the last field */}
+              <FormField
+                control={form.control}
+                name='cvUrl'
+                render={({ field }) => (
+                  <FormItem className='border-t pt-6'>
+                    <FormLabel>
+                      Link to CV / Resume <span className='text-red-500'>*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type='url'
+                        placeholder='https://drive.google.com/...'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription className='text-xs'>
+                      Paste a shareable link (Google Drive, Dropbox, OneDrive).
+                      Make sure the link is viewable by anyone.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <div className='flex justify-end gap-2 pt-4'>
                 <Button

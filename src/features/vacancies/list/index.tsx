@@ -35,6 +35,8 @@ import {
   Calendar,
   ClipboardList,
 } from 'lucide-react'
+import { Main } from '@/ui/layouts/main'
+import PageHeader from '@/ui/page-header'
 import { VacancyApplyModal } from '../components/VacancyApplyModal'
 import { VacancyApplicationsModal } from '../components/VacancyApplicationsModal'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
@@ -64,22 +66,19 @@ export const VacanciesList: FC = () => {
   }
 
   return (
-    <div className='p-6 space-y-6'>
-      {/* Page Header */}
-      <div className='flex flex-wrap items-center justify-between gap-4'>
-        <div>
-          <h1 className='text-2xl font-bold tracking-tight'>Vacancies & Careers</h1>
-          <p className='text-sm text-muted-foreground'>
-            Manage career opportunities, job postings, and review candidate applications.
-          </p>
-        </div>
-        <Button
-          onClick={() => navigate({ to: '/vacancies/add' })}
-          className='gap-2'
-        >
-          <Plus className='h-4 w-4' /> Add New Vacancy
-        </Button>
-      </div>
+    <Main className='flex flex-col gap-6'>
+      <PageHeader
+        title='Vacancies & Careers'
+        description='Manage career opportunities, job postings, and review candidate applications.'
+        actions={
+          <Button
+            onClick={() => navigate({ to: '/vacancies/add' })}
+            className='gap-2'
+          >
+            <Plus className='h-4 w-4' /> Add New Vacancy
+          </Button>
+        }
+      />
 
       {/* Toolbar */}
       <div className='flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-card p-4 shadow-sm'>
@@ -95,7 +94,7 @@ export const VacanciesList: FC = () => {
       </div>
 
       {/* Table Content */}
-      <div className='rounded-lg border bg-card shadow-sm'>
+      <div className='overflow-x-auto rounded-lg border bg-card shadow-sm'>
         {isLoading ? (
           <div className='py-12 text-center text-muted-foreground'>
             Loading vacancies...
@@ -262,7 +261,7 @@ export const VacanciesList: FC = () => {
         destructive
         handleConfirm={handleDeleteConfirm}
       />
-    </div>
+    </Main>
   )
 }
 

@@ -47,29 +47,17 @@ interface ApplicationFormModalProps extends BuilderProps {
   vacancyTitle?: string
 }
 
-/** Fields every applicant fills, regardless of the role. Not editable. */
+/** Fields every applicant fills before the role-specific questions. */
 const COMMON_FIELDS: {
   label: string
   placeholder: string
   type: string
   full?: boolean
 }[] = [
-  { label: 'Full Name', placeholder: 'Applicant full name', type: 'text' },
-  { label: 'Contact Number', placeholder: '+977 98XXXXXXXX', type: 'text' },
+  { label: 'Name', placeholder: 'Applicant full name', type: 'text' },
+  { label: 'Current Address', placeholder: 'City, Country', type: 'text' },
   { label: 'Email', placeholder: 'name@example.com', type: 'email' },
   { label: 'Confirm Email', placeholder: 'Re-enter email', type: 'email' },
-  {
-    label: 'Current Address',
-    placeholder: 'City, Country',
-    type: 'text',
-    full: true,
-  },
-  {
-    label: 'Link to CV',
-    placeholder: 'Upload or paste a CV link (PDF/DOCX/Doc)',
-    type: 'text',
-    full: true,
-  },
 ]
 
 const OptionsEditor: FC<BuilderProps & { index: number }> = ({
@@ -335,8 +323,9 @@ export const ApplicationFormModal: FC<ApplicationFormModalProps> = ({
           </DialogTitle>
           <DialogDescription>
             This is the form applicants fill in
-            {vacancyTitle ? ` for ${vacancyTitle}` : ''}. The common fields are
-            fixed — add role-specific questions below them.
+            {vacancyTitle ? ` for ${vacancyTitle}` : ''}, in order. The common
+            fields and the CV link are fixed — add role-specific questions in
+            between.
           </DialogDescription>
         </DialogHeader>
 
@@ -420,6 +409,34 @@ export const ApplicationFormModal: FC<ApplicationFormModalProps> = ({
               />
             ))
           )}
+        </div>
+
+        {/* Link to CV / Resume — always rendered last on the apply form */}
+        <div className='space-y-3 border-t pt-4'>
+          <div className='flex items-center gap-2'>
+            <Lock className='h-3.5 w-3.5 text-muted-foreground' />
+            <h4 className='text-sm font-semibold text-foreground'>
+              Link to CV / Resume
+            </h4>
+            <Badge variant='secondary' className='text-[10px]'>
+              Always last
+            </Badge>
+          </div>
+
+          <div className='rounded-lg border bg-muted/20 p-4'>
+            <label className='text-sm font-medium text-foreground'>
+              Link to CV / Resume <span className='text-red-500'>*</span>
+            </label>
+            <Input
+              type='url'
+              className='mt-1.5 cursor-not-allowed bg-background'
+              placeholder='https://drive.google.com/...'
+              disabled
+            />
+            <p className='mt-1.5 text-xs text-muted-foreground'>
+              Applicants paste a shareable Drive/Dropbox link — no file upload.
+            </p>
+          </div>
         </div>
 
         <DialogFooter className='border-t pt-4'>

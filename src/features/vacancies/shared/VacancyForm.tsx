@@ -21,6 +21,7 @@ import {
   VacancyFormValues,
   VacancyQuestion,
 } from '@/schemas/vacancy'
+import { Main } from '@/ui/layouts/main'
 import { ApplicationFormModal } from './ApplicationFormModal'
 import { Badge } from '@/ui/shadcn/badge'
 import {
@@ -122,8 +123,8 @@ export const VacancyForm: FC<VacancyFormProps> = ({
   })
 
   return (
-    <div className='p-6 space-y-6 max-w-6xl mx-auto'>
-      <div className='flex items-center justify-between'>
+    <Main className='flex flex-col gap-6'>
+      <div className='flex flex-wrap items-center justify-between gap-4'>
         <div className='flex items-center gap-3'>
           <Button
             variant='outline'
@@ -468,8 +469,8 @@ export const VacancyForm: FC<VacancyFormProps> = ({
                         : `Common fields + ${questionCount} question${questionCount === 1 ? '' : 's'}`}
                     </p>
                     <p className='text-xs text-muted-foreground'>
-                      Full name, contact, email, confirm email, current address
-                      and link to CV are always asked.
+                      Name, current address, email and confirm email are asked
+                      first; the link to CV / resume is always asked last.
                     </p>
                   </div>
                 </div>
@@ -508,6 +509,6 @@ export const VacancyForm: FC<VacancyFormProps> = ({
           </div>
         </form>
       </Form>
-    </div>
+    </Main>
   )
 }
