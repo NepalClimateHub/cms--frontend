@@ -121,15 +121,18 @@ export const vacancyAnswerSchema = z.object({
 
 export type VacancyAnswer = z.infer<typeof vacancyAnswerSchema>
 
+// Field order mirrors the apply form: name, address, email, confirm email,
+// role-specific answers, then the CV link last.
 const vacancyApplyBaseSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
+  currentAddress: z.string().min(1, 'Current address is required'),
   email: z.string().email('Invalid email address'),
   confirmEmail: z.string().min(1, 'Please confirm your email'),
-  contact: z.string().min(1, 'Contact number is required'),
-  currentAddress: z.string().min(1, 'Current address is required'),
-  cvUrl: z.string().min(1, 'CV upload is required'),
-  cvFileId: z.string().optional().nullable(),
   answers: z.array(vacancyAnswerSchema).default([]),
+  cvUrl: z
+    .string()
+    .min(1, 'CV / Resume link is required')
+    .url('Enter a valid link (e.g. a Google Drive or Dropbox URL)'),
 })
 
 const isBlank = (value: VacancyAnswerValue) =>

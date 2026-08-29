@@ -14,13 +14,10 @@ export interface VacancyApplicationResponseDto {
   vacancyId: string
   fullName: string
   email: string
-  contact: string
   currentAddress?: string
-  /** Legacy free-text cover letter — no longer collected, still rendered if present. */
-  message?: string
   answers?: VacancyAnswer[]
+  /** Shareable link to the applicant's CV / resume. */
   cvUrl: string
-  cvFileId?: string
   status: string
   createdAt: string
   updatedAt: string

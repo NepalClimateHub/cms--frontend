@@ -14,7 +14,7 @@ import {
   useDeleteApplication,
   VacancyResponseDto,
 } from '@/query/vacancies/use-vacancies'
-import { Download, ExternalLink, Mail, MapPin, Phone, Trash2 } from 'lucide-react'
+import { Download, ExternalLink, Mail, MapPin, Trash2 } from 'lucide-react'
 import { VacancyAnswer } from '@/schemas/vacancy'
 import {
   Select,
@@ -127,9 +127,6 @@ export const VacancyApplicationsModal: FC<VacancyApplicationsModalProps> = ({
                         <span className='flex items-center gap-1'>
                           <Mail className='h-3.5 w-3.5' /> {app.email}
                         </span>
-                        <span className='flex items-center gap-1'>
-                          <Phone className='h-3.5 w-3.5' /> {app.contact}
-                        </span>
                         {app.currentAddress && (
                           <span className='flex items-center gap-1'>
                             <MapPin className='h-3.5 w-3.5' /> {app.currentAddress}
@@ -183,15 +180,6 @@ export const VacancyApplicationsModal: FC<VacancyApplicationsModalProps> = ({
                     </div>
                   )}
 
-                  {app.message && (
-                    <div className='rounded bg-muted/40 p-3 text-xs text-foreground/90'>
-                      <span className='font-semibold'>Message / Cover Letter:</span>
-                      <p className='mt-1 whitespace-pre-wrap leading-relaxed'>
-                        {app.message}
-                      </p>
-                    </div>
-                  )}
-
                   <div className='flex flex-wrap items-center justify-between gap-2 pt-2 text-xs text-muted-foreground'>
                     <span>
                       Applied on: {new Date(app.createdAt).toLocaleDateString()}
@@ -211,7 +199,7 @@ export const VacancyApplicationsModal: FC<VacancyApplicationsModalProps> = ({
                             rel='noreferrer'
                             download
                           >
-                            <Download className='h-3.5 w-3.5' /> View CV
+                            <Download className='h-3.5 w-3.5' /> View CV / Resume
                             <ExternalLink className='h-3 w-3 ml-0.5' />
                           </a>
                         </Button>
