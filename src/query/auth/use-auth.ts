@@ -49,8 +49,8 @@ export const useGetProfile = (enabled = true) => {
   return useQuery({
     queryKey: [auth.profile.key],
     queryFn: getProfile,
-    staleTime: 0,
-    refetchOnMount: true,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
     enabled,
   })
 }

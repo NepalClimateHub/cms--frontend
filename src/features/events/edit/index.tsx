@@ -11,6 +11,8 @@ import { BoxLoader } from '@/ui/loader'
 import PageHeader from '@/ui/page-header'
 import EventForm from '../shared/EventForm'
 
+import { parseISOTolocalDate, formatLocalDateTimeToISO } from '@/utils/date-utils'
+
 const EditEvent = () => {
   const { eventId } = useParams({
     from: '/_authenticated/events/$eventId/',
@@ -48,10 +50,10 @@ const EditEvent = () => {
           city: typedEventData?.address?.city ?? '',
         },
         startDate: typedEventData?.startDate
-          ? new Date(typedEventData?.startDate)
+          ? parseISOTolocalDate(typedEventData?.startDate)
           : new Date(),
         registrationDeadline: typedEventData?.registrationDeadline
-          ? new Date(typedEventData?.registrationDeadline)
+          ? parseISOTolocalDate(typedEventData?.registrationDeadline)
           : new Date(),
         tagIds:
           // @ts-expect-error: fix later
@@ -74,9 +76,14 @@ const EditEvent = () => {
   }
 
   const handleFormSubmit = async (values: EventFormValues) => {
+    const formattedPayload = {
+      ...values,
+      startDate: values.startDate ? formatLocalDateTimeToISO(values.startDate) : undefined,
+      registrationDeadline: values.registrationDeadline ? formatLocalDateTimeToISO(values.registrationDeadline) : undefined,
+    }
     await eventMutation.mutateAsync({
       eventId,
-      payload: values,
+      payload: formattedPayload as unknown as EventFormValues,
     })
     navigate({
       to: '/events/list',

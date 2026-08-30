@@ -8,6 +8,8 @@ import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
 import EventForm from '../shared/EventForm'
 
+import { formatLocalDateTimeToISO } from '@/utils/date-utils'
+
 const AddEvent = () => {
   const eventMutation = useAddEvents()
   const navigate = useNavigate()
@@ -37,7 +39,12 @@ const AddEvent = () => {
   }
 
   const handleFormSubmit = async (values: EventFormValues) => {
-    await eventMutation.mutateAsync(values)
+    const formattedPayload = {
+      ...values,
+      startDate: values.startDate ? formatLocalDateTimeToISO(values.startDate) : undefined,
+      registrationDeadline: values.registrationDeadline ? formatLocalDateTimeToISO(values.registrationDeadline) : undefined,
+    }
+    await eventMutation.mutateAsync(formattedPayload as unknown as EventFormValues)
     navigate({
       to: '/events/list',
     })

@@ -156,6 +156,14 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
     }
   },
 
+  parseHTML() {
+    return [
+      {
+        tag: 'img[src]',
+      },
+    ]
+  },
+
   addAttributes() {
     return {
       src: {
@@ -168,7 +176,32 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
         default: null
       },
       caption: {
-        default: null
+        default: null,
+        parseHTML: element => {
+          const attrCaption = element.getAttribute('caption') || element.getAttribute('data-caption')
+          if (attrCaption) return attrCaption
+
+          const figcaption = element.closest('figure')?.querySelector('figcaption')
+          if (figcaption?.textContent) return figcaption.textContent
+
+          const nextSibling = element.nextElementSibling
+          if (nextSibling && (nextSibling.tagName === 'FIGCAPTION' || nextSibling.classList.contains('image-caption'))) {
+            return nextSibling.textContent
+          }
+
+          const parentCaption = element.parentElement?.querySelector('.image-caption, figcaption')
+          if (parentCaption?.textContent) return parentCaption.textContent
+
+          return null
+        },
+        renderHTML: attributes => {
+          if (!attributes.caption) {
+            return {}
+          }
+          return {
+            caption: attributes.caption
+          }
+        }
       },
       id: {
         default: null

@@ -53,6 +53,8 @@ export const useSideBarData = (): SidebarData => {
 
   const { data: adminDashboardResponse } = useQuery({
     ...analyticsControllerGetAdminAnalyticsOptions(),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
     enabled: isAdminLevel,
   })
 

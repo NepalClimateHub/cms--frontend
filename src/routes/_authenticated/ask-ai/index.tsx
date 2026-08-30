@@ -65,11 +65,12 @@ interface Message {
 }
 
 
-function parseContentAndSources(content: string, existing?: Source[]) {
+function parseContentAndSources(content?: string, existing?: Source[]) {
+  const text = content || ''
   // Strip any trailing "Sources:" section the LLM appends to the answer text
   const re = /\n*(?:\*{0,2}Sources:?\*{0,2})\s*\n([\s\S]*?)$/i
-  const m = content.match(re)
-  const cleaned = m ? content.slice(0, m.index).trimEnd() : content
+  const m = text.match(re)
+  const cleaned = m ? text.slice(0, m.index).trimEnd() : text
 
   // Use structured API sources if available
   if (existing && existing.length > 0) {
@@ -95,12 +96,11 @@ function parseContentAndSources(content: string, existing?: Source[]) {
 
         return { source: text, page }
       })
-      // Filter out garbage: reject entries that look malformed
+      // Filter out garbage: reject entries that look malformed or long text sentences
       .filter(s => {
         if (!s.source) return false
-        // Reject obvious garbage like "Sources:**"
         if (s.source.includes('**') || s.source.includes('Sources:')) return false
-        // Accept anything else (LLM writes clean names without .pdf)
+        if (s.source.length > 90 || s.source.includes(',')) return false
         return true
       })
 
@@ -137,7 +137,7 @@ function AskAI() {
           return {
             id: crypto.randomUUID(),
             role: msg.role as 'user' | 'assistant',
-            content: msg.content,
+            content: msg.content || '',
             sources: msg.sources,
             ...visualMetadata,
             timestamp: new Date(msg.createdAt),
@@ -460,9 +460,10 @@ function ChatMessage({
   showVisualDecision: boolean
 }) {
   const isUser = message.role === 'user'
+  const messageContent = message?.content || ''
   const { cleaned, sources } = isUser
-    ? { cleaned: message.content, sources: [] as Source[] }
-    : parseContentAndSources(message.content, message.sources)
+    ? { cleaned: messageContent, sources: [] as Source[] }
+    : parseContentAndSources(messageContent, message.sources)
 
   const [collapsed, setCollapsed] = useState(false)
   const [copied, setCopied] = useState(false)
