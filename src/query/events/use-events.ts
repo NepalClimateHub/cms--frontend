@@ -90,8 +90,10 @@ export const useUpdateEvent = () => {
 export const useUpdateEventStatus = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (payload: { eventId: string; isDraft: boolean }) =>
-      updateEventStatus(payload.eventId, payload.isDraft),
+    mutationFn: (payload: {
+      eventId: string
+      publicationStatus: 'DRAFT' | 'PUBLISHED'
+    }) => updateEventStatus(payload.eventId, payload.publicationStatus),
     mutationKey: [events.update.key],
     onSuccess: () => {
       queryClient.invalidateQueries({

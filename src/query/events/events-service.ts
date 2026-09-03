@@ -39,13 +39,14 @@ export const getEventById = async (
 
 export const updateEventStatus = async (
   eventId: string,
-  isDraft: boolean
+  publicationStatus: 'DRAFT' | 'PUBLISHED'
 ): Promise<{
   data: unknown
   meta: Meta
 }> => {
   const response = await apiClient.patch(`${events.update.path}/${eventId}`, {
-    isDraft,
+    publicationStatus,
+    isDraft: publicationStatus === 'DRAFT',
   })
   return response?.data
 }

@@ -25,8 +25,11 @@ const AddEvent = () => {
     resolver: zodResolver(eventFormSchema),
     defaultValues: {
       description: '',
+      status: 'OPEN',
+      publicationStatus: 'DRAFT',
       bannerImageId: null,
       bannerImageUrl: null,
+      registrationDeadline: null,
     },
   })
 
@@ -41,8 +44,11 @@ const AddEvent = () => {
   const handleFormSubmit = async (values: EventFormValues) => {
     const formattedPayload = {
       ...values,
+      status: values.status || 'OPEN',
+      publicationStatus: values.publicationStatus || 'DRAFT',
+      isDraft: values.publicationStatus === 'DRAFT',
       startDate: values.startDate ? formatLocalDateTimeToISO(values.startDate) : undefined,
-      registrationDeadline: values.registrationDeadline ? formatLocalDateTimeToISO(values.registrationDeadline) : undefined,
+      registrationDeadline: values.registrationDeadline ? formatLocalDateTimeToISO(values.registrationDeadline) : null,
     }
     await eventMutation.mutateAsync(formattedPayload as unknown as EventFormValues)
     navigate({
