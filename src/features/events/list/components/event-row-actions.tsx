@@ -31,7 +31,8 @@ import {
 
 type EventCols = EventFormValues & {
   id: string
-  isDraft: boolean
+  publicationStatus?: 'DRAFT' | 'PUBLISHED'
+  isDraft?: boolean
   address?: {
     street: string
     country: string
@@ -56,10 +57,20 @@ const EventRowAction: FC<EventRowActionProps> = ({ row }) => {
   const updateStatusMutation = useUpdateEventStatus()
   const deleteEventMutation = useDeleteEvent()
 
-  const handleStatusToggle = (eventId: string, isDraft: boolean) => {
+  const handlePublicationToggle = (
+    eventId: string,
+    currentPublicationStatus?: string,
+    isDraft?: boolean
+  ) => {
+    const isCurrentlyDraft = currentPublicationStatus
+      ? currentPublicationStatus === 'DRAFT'
+      : !!isDraft
+    const nextStatus: 'DRAFT' | 'PUBLISHED' = isCurrentlyDraft
+      ? 'PUBLISHED'
+      : 'DRAFT'
     updateStatusMutation.mutateAsync({
       eventId,
-      isDraft,
+      publicationStatus: nextStatus,
     })
   }
 
@@ -253,16 +264,27 @@ const EventRowAction: FC<EventRowActionProps> = ({ row }) => {
         </DialogContent>
       </Dialog>
 
-      {/* status trigger */}
-      <Button
-        onClick={() =>
-          handleStatusToggle(row.original.id, !row.original.isDraft)
-        }
-        size={'sm'}
-        className='h-6 bg-blue-500 px-2'
-      >
-        {row.original.isDraft ? 'Publish' : 'Conceal'}
-      </Button>
+      {/* publication status toggle trigger */}
+      {(() => {
+        const isDraft = row.original.publicationStatus
+          ? row.original.publicationStatus === 'DRAFT'
+          : !!row.original.isDraft
+        return (
+          <Button
+            onClick={() =>
+              handlePublicationToggle(
+                row.original.id,
+                row.original.publicationStatus,
+                row.original.isDraft
+              )
+            }
+            size={'sm'}
+            className='h-6 bg-blue-500 px-2'
+          >
+            {isDraft ? 'Publish' : 'Conceal'}
+          </Button>
+        )
+      })()}
       <Button
         onClick={() => handleEditEvent(row.original.id)}
         size={'sm'}

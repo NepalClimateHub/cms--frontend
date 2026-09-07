@@ -62,12 +62,13 @@ const EventsFilters: FC<EventsFiltersProps> = ({ setPage, filterOptions }) => {
           }
         >
           <SelectTrigger className='h-8 w-[150px]'>
-            <SelectValue placeholder='Status' />
+            <SelectValue placeholder='Event Status' />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value='ALL'>All Statuses</SelectItem>
-            <SelectItem value='OPEN'>Opening</SelectItem>
-            <SelectItem value='CLOSE'>Close</SelectItem>
+            <SelectItem value='OPEN'>Open</SelectItem>
+            <SelectItem value='UPCOMING'>Upcoming</SelectItem>
+            <SelectItem value='CLOSED'>Closed</SelectItem>
           </SelectContent>
         </Select>
         {isFilterApplied && (

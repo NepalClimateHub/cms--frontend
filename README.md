@@ -18,6 +18,17 @@
 - Node.js ≥ 18
 - npm
 
+### Features & Updates
+- **Events Management**:
+  - Refactored event status terminology: separated **Publication Status** (`Draft`, `Published`) from **Event Status** (`Open`, `Upcoming`, `Closed`).
+  - Added an operational status badge directly next to the event title in the dashboard event table.
+  - Aligned dashboard status filter dropdown to filter accurately by the operational event status (`Open`, `Upcoming`, `Closed`).
+  - Added clear option for registration deadline in event forms.
+
+
+<!-- screenshot of CMS -->
+![CMS](https://github.com/NepalClimateHub/cms--frontend/blob/develop/public/images/cms_screenshot.png)
+
 ## Local Setup
 
 ### 1. Clone and install
