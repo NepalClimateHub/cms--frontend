@@ -7,7 +7,8 @@ import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 
 type EventCols = EventFormValues & {
   id: string
-  isDraft: boolean
+  publicationStatus?: 'DRAFT' | 'PUBLISHED'
+  isDraft?: boolean
 }
 
 export const useEventsColumns = () => {
@@ -39,13 +40,57 @@ export const useEventsColumns = () => {
       enableHiding: true,
     },
     {
-      accessorKey: 'id',
+      accessorKey: 'title',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Title' />
       ),
       cell: ({ row }) => {
-        const { title } = row.original
-        return <div className='flex space-x-2'>{title}</div>
+        const { title, status } = row.original
+
+        const renderStatusBadge = (s?: string) => {
+          switch (s?.toUpperCase()) {
+            case 'OPEN':
+              return (
+                <Badge
+                  variant='outline'
+                  className='border-emerald-300 bg-emerald-50 px-1.5 py-0 text-[10px] font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                >
+                  Open
+                </Badge>
+              )
+            case 'UPCOMING':
+              return (
+                <Badge
+                  variant='outline'
+                  className='border-blue-300 bg-blue-50 px-1.5 py-0 text-[10px] font-medium text-blue-700 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300'
+                >
+                  Upcoming
+                </Badge>
+              )
+            case 'CLOSED':
+              return (
+                <Badge
+                  variant='outline'
+                  className='border-slate-300 bg-slate-100 px-1.5 py-0 text-[10px] font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
+                >
+                  Closed
+                </Badge>
+              )
+            default:
+              return s ? (
+                <Badge variant='outline' className='px-1.5 py-0 text-[10px] font-medium'>
+                  {s}
+                </Badge>
+              ) : null
+          }
+        }
+
+        return (
+          <div className='flex flex-wrap items-center gap-2'>
+            <span className='font-medium'>{title}</span>
+            {renderStatusBadge(status)}
+          </div>
+        )
       },
       enableSorting: false,
       enableHiding: true,
@@ -87,17 +132,26 @@ export const useEventsColumns = () => {
       enableHiding: true,
     },
     {
-      accessorKey: 'isDraft',
+      accessorKey: 'publicationStatus',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Status' />
+        <DataTableColumnHeader column={column} title='Publication Status' />
       ),
       cell: ({ row }) => {
+        const pubStatus =
+          row.original.publicationStatus ??
+          (row.original.isDraft ? 'DRAFT' : 'PUBLISHED')
+        const isDraft = pubStatus === 'DRAFT'
+
         return (
-          <div className='min-w-[100px] max-w-[100px]'>
-            {row.getValue('isDraft') ? (
-              <Badge className='bg-yellow-500'>Draft</Badge>
+          <div className='min-w-[100px] max-w-[120px]'>
+            {isDraft ? (
+              <Badge className='border-amber-200 bg-amber-500 text-white'>
+                Draft
+              </Badge>
             ) : (
-              <Badge className='bg-green-500'>Published</Badge>
+              <Badge className='bg-green-600 text-white'>
+                Published
+              </Badge>
             )}
           </div>
         )

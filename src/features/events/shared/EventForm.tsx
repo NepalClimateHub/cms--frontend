@@ -262,13 +262,13 @@ const EventForm: FC<Props> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Status <span className='text-red-500'>*</span>
+                    Event Status <span className='text-red-500'>*</span>
                   </FormLabel>
-                  <FormDescription>Current status of the event</FormDescription>
+                  <FormDescription>Operational status of the event</FormDescription>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className='w-full'>
-                        <SelectValue placeholder='Select status' />
+                        <SelectValue placeholder='Select event status' />
                       </SelectTrigger>
                       <SelectContent>
                         {EVENT_STATUS.map(({ value, label }) => (
@@ -339,7 +339,13 @@ const EventForm: FC<Props> = ({
                     Last date to register for the event
                   </FormDescription>
                   <FormControl>
-                    <DateTimePicker {...field} placeholder='Pick registration deadline' />
+                    <DateTimePicker
+                      {...field}
+                      value={field.value ?? null}
+                      onChange={(date) => field.onChange(date ?? null)}
+                      clearable
+                      placeholder='Pick registration deadline'
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -486,23 +492,32 @@ const EventForm: FC<Props> = ({
           </CardContent>
         </Card>
 
-        {/* Draft Status at the end of the form */}
+        {/* Publication Status at the end of the form */}
         <FormField
           control={form.control}
-          name='isDraft'
+          name='publicationStatus'
           render={({ field }) => (
             <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
               <div className='space-y-0.5'>
-                <FormLabel className='text-base'>Draft Status</FormLabel>
+                <FormLabel className='text-base'>Publication Status</FormLabel>
                 <FormDescription>
-                  Save as draft or publish immediately
+                  {field.value === 'PUBLISHED'
+                    ? 'Published - Visible to public'
+                    : 'Draft - Hidden from public view'}
                 </FormDescription>
               </div>
               <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <div className='flex items-center space-x-3'>
+                  <span className='text-sm font-medium'>
+                    {field.value === 'PUBLISHED' ? 'Published' : 'Draft'}
+                  </span>
+                  <Switch
+                    checked={field.value === 'PUBLISHED'}
+                    onCheckedChange={(checked) =>
+                      field.onChange(checked ? 'PUBLISHED' : 'DRAFT')
+                    }
+                  />
+                </div>
               </FormControl>
             </FormItem>
           )}

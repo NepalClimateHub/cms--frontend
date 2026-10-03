@@ -41,8 +41,14 @@ const EditEvent = () => {
     if (eventData && !hasReset.current) {
       // @ts-expect-error: fix later
       const typedEventData = eventData as EventResponseDto
+      const pubStatus =
+        (typedEventData as any).publicationStatus ??
+        (typedEventData.isDraft ? 'DRAFT' : 'PUBLISHED')
+
       form.reset({
         ...typedEventData,
+        status: (typedEventData.status as any) || 'OPEN',
+        publicationStatus: pubStatus,
         location: typedEventData.location ?? '',
         registrationLink: typedEventData.registrationLink ?? '',
         address: {
@@ -54,7 +60,7 @@ const EditEvent = () => {
           : new Date(),
         registrationDeadline: typedEventData?.registrationDeadline
           ? parseISOTolocalDate(typedEventData?.registrationDeadline)
-          : new Date(),
+          : null,
         tagIds:
           // @ts-expect-error: fix later
           typedEventData?.tags?.map((tag: { id: string }) => tag?.id) || [],
@@ -78,8 +84,11 @@ const EditEvent = () => {
   const handleFormSubmit = async (values: EventFormValues) => {
     const formattedPayload = {
       ...values,
+      status: values.status || 'OPEN',
+      publicationStatus: values.publicationStatus || 'DRAFT',
+      isDraft: values.publicationStatus === 'DRAFT',
       startDate: values.startDate ? formatLocalDateTimeToISO(values.startDate) : undefined,
-      registrationDeadline: values.registrationDeadline ? formatLocalDateTimeToISO(values.registrationDeadline) : undefined,
+      registrationDeadline: values.registrationDeadline ? formatLocalDateTimeToISO(values.registrationDeadline) : null,
     }
     await eventMutation.mutateAsync({
       eventId,

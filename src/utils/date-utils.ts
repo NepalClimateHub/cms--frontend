@@ -32,3 +32,10 @@ export const formatLocalDateTimeToISO = (date?: Date | string | null): string | 
 
   return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}.000Z`
 }
+
+export const parseDate = (val?: Date | string | null): Date | undefined => {
+  if (!val) return undefined
+  if (val instanceof Date) return isNaN(val.getTime()) ? undefined : val
+  const d = new Date(val)
+  return isNaN(d.getTime()) ? undefined : d
+}

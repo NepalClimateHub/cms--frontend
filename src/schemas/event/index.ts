@@ -7,14 +7,14 @@ export const eventFormSchema = z.object({
   type: z.string().min(1, 'Type is required'),
   format: z.string().min(1, 'Format is required'),
   cost: z.string().min(1, 'Cost is required'),
-  status: z.string().min(1, 'Status is required'),
+  status: z.enum(['OPEN', 'UPCOMING', 'CLOSED']).default('OPEN'),
   locationType: z.string().min(1, 'Location Type is required'),
   description: z.string().min(1, 'Description is required'),
   tagIds: z.array(z.string()).optional(),
 
   location: z.string().optional(),
-  startDate: z.date().optional(),
-  registrationDeadline: z.date().optional(),
+  startDate: z.date().optional().nullable(),
+  registrationDeadline: z.date().optional().nullable(),
   registrationLink: z.string().optional(),
   contactEmail: z.string().optional().nullable(),
   website: z.string().optional().nullable(),
@@ -22,10 +22,18 @@ export const eventFormSchema = z.object({
   bannerImageUrl: z.string().nullable().optional(),
   address: addressSchema.optional(),
   socials: socialSchema,
-  isDraft: z.boolean().optional().default(false),
+  publicationStatus: z.enum(['DRAFT', 'PUBLISHED']).default('DRAFT'),
+  isDraft: z.boolean().optional(),
 })
 
 export type EventFormValues = z.infer<typeof eventFormSchema>
+
+export const PUBLICATION_STATUS = [
+  { label: 'Draft', value: 'DRAFT' },
+  { label: 'Published', value: 'PUBLISHED' },
+] as const
+export const PublicationStatusSchema = z.enum(['DRAFT', 'PUBLISHED'])
+export type PublicationStatus = z.infer<typeof PublicationStatusSchema>
 
 export const EVENT_FORMAT_TYPE = [
   { label: 'In-Person', value: 'IN_PERSON' },

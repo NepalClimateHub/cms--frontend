@@ -373,8 +373,12 @@ const PREVIEW_CSS = `
   .html-rendered ol li::marker{ color:#374151!important; font-weight:700!important; }
   .html-rendered li>p,.html-rendered li>.text-node{ display:inline!important; margin:0!important; }
   .html-rendered h1,.html-rendered h2,.html-rendered h3,.html-rendered h4,.html-rendered h5,.html-rendered h6,.html-rendered .heading-node{ font-weight:700!important; color:#111827!important; margin-top:1.5rem!important; margin-bottom:1rem!important; }
+  .html-rendered h1{ font-size:2rem!important; }
   .html-rendered h2{ font-size:1.5rem!important; }
   .html-rendered h3{ font-size:1.25rem!important; }
+  .html-rendered h4{ font-size:1.125rem!important; }
+  .html-rendered h5{ font-size:1rem!important; }
+  .html-rendered h6{ font-size:.875rem!important; }
   .html-rendered p,.html-rendered .text-node{ margin-bottom:12px!important; line-height:1.7!important; white-space:pre-line!important; color:#1a1b1e; font-size:16px; }
   .html-rendered li{ white-space:pre-line!important; }
   .html-rendered a,.html-rendered .link{ color:#2563eb!important; text-decoration:none!important; }
