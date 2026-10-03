@@ -9,6 +9,7 @@ const getEnvVar = (key: string): string | undefined => {
 export const env = {
   VITE_API_URL: getEnvVar('VITE_API_URL'),
   VITE_RAG_API_URL: getEnvVar('VITE_RAG_API_URL') || 'http://localhost:8000',
+  VITE_MAP_STYLE_URL: getEnvVar('VITE_MAP_STYLE_URL'),
   MODE: import.meta.env.MODE,
 };
 

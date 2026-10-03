@@ -8,7 +8,21 @@ import {
 import {
   aiAssistantControllerDeleteSession,
   aiAssistantControllerChat,
+  aiAssistantControllerUpdateSession,
 } from '@/api/sdk.gen';
+import type { ChatRequestDto as ApiChatRequestDto } from '@/api/types.gen';
+export { buildRecentConversationHistory } from './conversation-history';
+export {
+  parseVisualDecision,
+  parseVisualMetadata,
+  parseVisualSpec,
+  visualDecisionCategorySchema,
+  visualDecisionReasonSchema,
+  visualDecisionSchema,
+  visualDecisionStatusSchema,
+  visualSpecSchema,
+} from './visual-contracts';
+export type { VisualDecision, VisualSpec } from './visual-contracts';
 
 // Constants
 const RAG_API_URL = env.VITE_RAG_API_URL;
@@ -26,14 +40,25 @@ export interface ChatRequest {
   top_k?: number;
 }
 
+export interface ChatSource {
+  sourceType?: 'document' | 'dataset' | 'graph'
+  source?: string;
+  title?: string;
+  url?: string;
+  documentId?: string;
+  chunkId?: string;
+  page?: number;
+  score?: number;
+  datasetId?: string;
+  coverageStart?: string;
+  coverageEnd?: string;
+  synchronizedAt?: string | null;
+}
+
 export interface ChatResponse {
   response: string;
   conversation_id?: string;
-  sources?: Array<{
-    source?: string;
-    page?: number;
-    score?: number;
-  }>;
+  sources?: ChatSource[];
   user_id?: string;
   metadata?: Record<string, unknown>;
   createdAt?: string;
@@ -56,6 +81,8 @@ export interface ChatSessionMessagesResponse {
   messages: Array<{
     role: string;
     content: string;
+    sources?: ChatSource[];
+    metadata?: Record<string, unknown>;
     createdAt: string;
   }>;
 }
@@ -66,6 +93,44 @@ export interface HealthResponse {
   vector_store_loaded: boolean;
 }
 
+export async function reportClimateClientMetric(event: 'map_fallback') {
+  const token = getAccessToken()
+  const baseUrl = (env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
+  if (!token) return
+  await fetch(`${baseUrl}/api/v1/ai-assistant/climate-data/metrics`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ event }),
+    keepalive: true,
+  }).catch(() => undefined)
+}
+
+function apiErrorMessage(error: unknown, fallback: string) {
+  if (
+    error &&
+    typeof error === 'object' &&
+    'message' in error &&
+    typeof error.message === 'string'
+  ) {
+    return error.message;
+  }
+  return fallback;
+}
+
+function envelopeData(value: unknown): unknown {
+  if (value && typeof value === 'object' && 'data' in value) {
+    return value.data;
+  }
+  return undefined;
+}
+
+function unwrapApiData<T>(value: unknown): T {
+  return (envelopeData(value) ?? value) as T;
+}
+
 // ============ React Query Hooks (Refactored to SDK) ============
 
 export const useClimateChat = () => {
@@ -74,13 +139,12 @@ export const useClimateChat = () => {
   return useMutation({
     mutationFn: async (request: ChatRequest) => {
       const response = await aiAssistantControllerChat({
-        body: request as any,
+        body: request as ApiChatRequestDto,
       });
       if (response.error) {
-        throw new Error((response.error as any)?.message || 'Failed to communicate with AI');
+        throw new Error(apiErrorMessage(response.error, 'Failed to communicate with AI'));
       }
-      const raw = response.data as any;
-      return (raw?.data || raw) as ChatResponse;
+      return unwrapApiData<ChatResponse>(response.data);
     },
     onSuccess: () => {
       // Invalidate chat history so list updates with new session/timestamp
@@ -93,13 +157,12 @@ export const useClimateQuery = () => {
   return useMutation({
     mutationFn: async (query: string) => {
       const response = await aiAssistantControllerChat({
-        body: { query, top_k: 5 } as any,
+        body: { query, top_k: 5 },
       });
       if (response.error) {
-        throw new Error((response.error as any)?.message || 'Failed to query AI');
+        throw new Error(apiErrorMessage(response.error, 'Failed to query AI'));
       }
-      const raw = response.data as any;
-      return (raw?.data || raw) as ChatResponse;
+      return unwrapApiData<ChatResponse>(response.data);
     },
   });
 };
@@ -120,14 +183,10 @@ export const useChatHistory = () => {
   return useQuery({
     ...aiAssistantControllerGetSessionsOptions(),
     enabled: !!token,
-    select: (sessions: any) => {
-      const raw = sessions?.data as any;
-      const list = Array.isArray(raw?.data) ? raw.data : Array.isArray(raw) ? raw : [];
-      return {
-        user_id: '',
-        conversations: list as ChatSession[],
-      };
-    },
+    select: (sessions) => ({
+      user_id: '',
+      conversations: (envelopeData(sessions) || []) as ChatSession[],
+    }),
     meta: { ignoreGlobalError: true },
   });
 };
@@ -142,14 +201,10 @@ export const useChatSession = (sessionId?: string) => {
       },
     }),
     enabled: !!token && !!sessionId,
-    select: (messages: any) => {
-      const raw = messages?.data as any;
-      const list = Array.isArray(raw?.data) ? raw.data : Array.isArray(raw) ? raw : [];
-      return {
-        session_id: sessionId,
-        messages: list as ChatSessionMessagesResponse['messages'],
-      };
-    },
+    select: (messages) => ({
+      session_id: sessionId,
+      messages: (envelopeData(messages) || []) as ChatSessionMessagesResponse['messages'],
+    }),
     meta: { ignoreGlobalError: true },
   });
 };
@@ -165,9 +220,29 @@ export const useDeleteSession = () => {
         },
       });
       if (response.error) {
-        throw new Error((response.error as any)?.message || 'Failed to delete session');
+        throw new Error(apiErrorMessage(response.error, 'Failed to delete session'));
       }
-      return response.data as { message: string };
+      return unwrapApiData<{ message: string }>(response.data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['aiAssistantControllerGetSessions'] });
+    },
+  });
+};
+
+export const useRenameSession = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ sessionId, title }: { sessionId: string; title: string }) => {
+      const response = await aiAssistantControllerUpdateSession({
+        path: { sessionId },
+        body: { title },
+      });
+      if (response.error) {
+        throw new Error(apiErrorMessage(response.error, 'Failed to rename session'));
+      }
+      return envelopeData(response.data) ?? response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['aiAssistantControllerGetSessions'] });
