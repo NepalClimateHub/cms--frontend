@@ -264,7 +264,10 @@ const EventForm: FC<Props> = ({
                   <FormLabel>
                     Event Status <span className='text-red-500'>*</span>
                   </FormLabel>
-                  <FormDescription>Operational status of the event</FormDescription>
+                  <FormDescription>
+                    Operational status of the event. Closes automatically once
+                    the registration deadline (or start date, if none) passes.
+                  </FormDescription>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className='w-full'>

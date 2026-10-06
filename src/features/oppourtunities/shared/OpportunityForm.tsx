@@ -228,7 +228,8 @@ const OpportunityForm: FC<Props> = ({
                     Status <span className='text-red-500'>*</span>
                   </FormLabel>
                   <FormDescription>
-                    Current status of the opportunity
+                    Current status of the opportunity. Closes automatically once
+                    the application deadline passes.
                   </FormDescription>
                   <FormControl>
                     <Select
