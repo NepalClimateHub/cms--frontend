@@ -30,6 +30,8 @@ import {
   ArrowLeft,
   ClipboardList,
   AlertCircle,
+  ExternalLink,
+  FileText,
 } from 'lucide-react'
 
 /** Backfills ids/order for questions coming from the API. */
@@ -80,6 +82,7 @@ export const VacancyForm: FC<VacancyFormProps> = ({
       isActive: initialValues?.isActive ?? true,
       isDraft: initialValues?.isDraft ?? false,
       questions: normalizeInitialQuestions(initialValues?.questions),
+      googleFormLink: initialValues?.googleFormLink || '',
     },
   })
 
@@ -493,6 +496,60 @@ export const VacancyForm: FC<VacancyFormProps> = ({
             onOpenChange={setIsApplicationFormOpen}
             vacancyTitle={watchedTitle}
           />
+
+          {/* Application Method Card */}
+          <Card className='border-border/50 bg-card/60 backdrop-blur shadow-sm'>
+            <CardHeader>
+              <CardTitle className='flex items-center gap-2 text-lg font-semibold'>
+                <FileText className='h-4 w-4' /> Application Method
+              </CardTitle>
+              <CardDescription>
+                Optionally collect applications through a Google Form. When a link is set,
+                the website's "Apply" button opens the form instead of the built-in
+                application form.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FormField
+                control={form.control}
+                name='googleFormLink'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Google Form Link</FormLabel>
+                    <div className='flex items-center gap-2'>
+                      <FormControl>
+                        <Input
+                          type='url'
+                          placeholder='https://forms.gle/...'
+                          className='w-full'
+                          {...field}
+                          value={field.value ?? ''}
+                        />
+                      </FormControl>
+                      <Button
+                        type='button'
+                        variant='outline'
+                        size='icon'
+                        className='shrink-0'
+                        disabled={!field.value}
+                        title='Open form in new tab'
+                        onClick={() =>
+                          field.value &&
+                          window.open(field.value, '_blank', 'noopener,noreferrer')
+                        }
+                      >
+                        <ExternalLink className='h-4 w-4' />
+                      </Button>
+                    </div>
+                    <FormDescription>
+                      Leave empty to use the built-in application form above.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
 
           {/* Action Buttons */}
           <div className='flex items-center justify-end gap-3 pt-2'>

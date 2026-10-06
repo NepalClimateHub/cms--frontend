@@ -12,7 +12,9 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "knip": "knip",
-    "prepare": "husky"
+    "prepare": "husky",
+    "cf:deploy": "pnpm run build && wrangler deploy",
+    "cf:preview": "pnpm run build && wrangler dev"
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.10.2",
@@ -115,7 +117,8 @@
     "tailwindcss": "^3.4.17",
     "typescript": "~5.7.3",
     "typescript-eslint": "^8.33.1",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "wrangler": "^4.130.0"
   },
   "packageManager": "pnpm@10.11.1"
 }

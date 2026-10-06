@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { env } from '@/config/env.config'
 import { createFileRoute } from '@tanstack/react-router'
 import { Main } from '@/ui/layouts/main'
 import { Button } from '@/ui/shadcn/button'
@@ -333,8 +334,8 @@ function getSourceDetails(source: Source) {
   let filename = rawTitle.split('/').pop() || ''
   if (filename && !filename.includes('.')) filename += '.pdf'
 
-  const ragApiUrl = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000'
-  const cmsBackendUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1').replace(/\/api\/v1\/?$/, '')
+  const ragApiUrl = env.VITE_RAG_API_URL
+  const cmsBackendUrl = (env.VITE_API_URL || 'http://localhost:8080/api/v1').replace(/\/api\/v1\/?$/, '')
 
   let documentUrl = ''
   if (source.documentId) {

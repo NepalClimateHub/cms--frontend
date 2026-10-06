@@ -70,6 +70,7 @@ const OpportunitiesFilters: FC<OpportunitiesFiltersProps> = ({
           <SelectContent>
             <SelectItem value='ALL'>All Statuses</SelectItem>
             <SelectItem value='OPEN'>Open</SelectItem>
+            <SelectItem value='UPCOMING'>Upcoming</SelectItem>
             <SelectItem value='CLOSED'>Closed</SelectItem>
           </SelectContent>
         </Select>

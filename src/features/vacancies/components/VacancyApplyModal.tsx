@@ -1,6 +1,20 @@
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { getIkAuthParams } from '@/query/imagekit/ik-service'
+import { useGetIkAuthParams } from '@/query/imagekit/use-ik'
+import {
+  useApplyVacancy,
+  useGetVacancy,
+  VacancyResponseDto,
+} from '@/query/vacancies/use-vacancies'
+import {
+  buildDefaultAnswers,
+  buildVacancyApplySchema,
+  VacancyApplyFormValues,
+} from '@/schemas/vacancy'
+import { Badge } from '@/ui/shadcn/badge'
+import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
@@ -8,8 +22,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/ui/shadcn/dialog'
-import { Button } from '@/ui/shadcn/button'
-import { Input } from '@/ui/shadcn/input'
 import {
   Form,
   FormControl,
@@ -19,20 +31,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/ui/shadcn/form'
-import {
-  buildDefaultAnswers,
-  buildVacancyApplySchema,
-  VacancyApplyFormValues,
-} from '@/schemas/vacancy'
-import {
-  useApplyVacancy,
-  useGetVacancy,
-  VacancyResponseDto,
-} from '@/query/vacancies/use-vacancies'
-import { Badge } from '@/ui/shadcn/badge'
-import { Briefcase, Calendar, Clock, MapPin } from 'lucide-react'
-import { useGetIkAuthParams } from '@/query/imagekit/use-ik'
-import { getIkAuthParams } from '@/query/imagekit/ik-service'
+import { Input } from '@/ui/shadcn/input'
+import { Briefcase, Calendar, Clock, MapPin, ExternalLink } from 'lucide-react'
 import { DynamicQuestionField } from './DynamicQuestionField'
 
 interface VacancyApplyModalProps {
@@ -57,7 +57,9 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
 
   const questions = useMemo(
     () =>
-      [...(questionSource || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+      [...(questionSource || [])].sort(
+        (a, b) => (a.order ?? 0) - (b.order ?? 0)
+      ),
     [questionSource]
   )
 
@@ -209,153 +211,178 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
             Apply for this Position
           </h3>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                <FormField
-                  control={form.control}
-                  name='fullName'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Name <span className='text-red-500'>*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          {vacancy.googleFormLink ? (
+            <div className='flex flex-col items-center gap-3 rounded-lg border bg-muted/30 p-6 text-center'>
+              <p className='text-sm text-muted-foreground'>
+                Applications for this role are collected through a Google Form.
+              </p>
+              <Button asChild className='gap-2'>
+                <a
+                  href={vacancy.googleFormLink}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  Apply via Google Form <ExternalLink className='h-4 w-4' />
+                </a>
+              </Button>
+              <p className='break-all text-xs text-muted-foreground'>
+                {vacancy.googleFormLink}
+              </p>
+            </div>
+          ) : (
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className='space-y-4'
+              >
+                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                  <FormField
+                    control={form.control}
+                    name='fullName'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Name <span className='text-red-500'>*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <FormField
-                  control={form.control}
-                  name='currentAddress'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Current Address <span className='text-red-500'>*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder='City, Country' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                  <FormField
+                    control={form.control}
+                    name='currentAddress'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Current Address{' '}
+                          <span className='text-red-500'>*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder='City, Country' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                <FormField
-                  control={form.control}
-                  name='email'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Email <span className='text-red-500'>*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input type='email' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                  <FormField
+                    control={form.control}
+                    name='email'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Email <span className='text-red-500'>*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input type='email' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
+                  <FormField
+                    control={form.control}
+                    name='confirmEmail'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Confirm Email <span className='text-red-500'>*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type='email'
+                            onPaste={(event) => event.preventDefault()}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Role-specific questions */}
+                {questions.length > 0 && (
+                  <div className='space-y-4 border-t pt-6'>
+                    <div>
+                      <h4 className='text-base font-semibold text-foreground'>
+                        A few questions about this role
+                      </h4>
+                      <FormDescription className='text-xs'>
+                        These are set by the hiring team for {vacancy.title}.
+                      </FormDescription>
+                    </div>
+
+                    {questions.map((question, index) => (
+                      <DynamicQuestionField
+                        key={question.id}
+                        form={form}
+                        question={question}
+                        index={index}
+                        publicKey={publicKey}
+                        endpoint={endpoint}
+                        folder={folder}
+                        authenticator={authenticator}
+                        uploadingId={uploadingId}
+                        onUploadingChange={setUploadingId}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Link to CV / Resume — always the last field */}
                 <FormField
                   control={form.control}
-                  name='confirmEmail'
+                  name='cvUrl'
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className='border-t pt-6'>
                       <FormLabel>
-                        Confirm Email <span className='text-red-500'>*</span>
+                        Link to CV / Resume{' '}
+                        <span className='text-red-500'>*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
-                          type='email'
-                          onPaste={(event) => event.preventDefault()}
+                          type='url'
+                          placeholder='https://drive.google.com/...'
                           {...field}
                         />
                       </FormControl>
+                      <FormDescription className='text-xs'>
+                        Paste a shareable link (Google Drive, Dropbox,
+                        OneDrive). Make sure the link is viewable by anyone.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
 
-              {/* Role-specific questions */}
-              {questions.length > 0 && (
-                <div className='space-y-4 border-t pt-6'>
-                  <div>
-                    <h4 className='text-base font-semibold text-foreground'>
-                      A few questions about this role
-                    </h4>
-                    <FormDescription className='text-xs'>
-                      These are set by the hiring team for {vacancy.title}.
-                    </FormDescription>
-                  </div>
-
-                  {questions.map((question, index) => (
-                    <DynamicQuestionField
-                      key={question.id}
-                      form={form}
-                      question={question}
-                      index={index}
-                      publicKey={publicKey}
-                      endpoint={endpoint}
-                      folder={folder}
-                      authenticator={authenticator}
-                      uploadingId={uploadingId}
-                      onUploadingChange={setUploadingId}
-                    />
-                  ))}
+                <div className='flex justify-end gap-2 pt-4'>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => onOpenChange(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type='submit'
+                    disabled={applyMutation.isPending || uploadingId !== null}
+                  >
+                    {applyMutation.isPending
+                      ? 'Submitting...'
+                      : 'Submit Application'}
+                  </Button>
                 </div>
-              )}
-
-              {/* Link to CV / Resume — always the last field */}
-              <FormField
-                control={form.control}
-                name='cvUrl'
-                render={({ field }) => (
-                  <FormItem className='border-t pt-6'>
-                    <FormLabel>
-                      Link to CV / Resume <span className='text-red-500'>*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type='url'
-                        placeholder='https://drive.google.com/...'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription className='text-xs'>
-                      Paste a shareable link (Google Drive, Dropbox, OneDrive).
-                      Make sure the link is viewable by anyone.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className='flex justify-end gap-2 pt-4'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={() => onOpenChange(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type='submit'
-                  disabled={applyMutation.isPending || uploadingId !== null}
-                >
-                  {applyMutation.isPending
-                    ? 'Submitting...'
-                    : 'Submit Application'}
-                </Button>
-              </div>
-            </form>
-          </Form>
+              </form>
+            </Form>
+          )}
         </div>
       </DialogContent>
     </Dialog>

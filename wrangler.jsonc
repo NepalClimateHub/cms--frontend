@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nch-cms-frontend",
+  "compatibility_date": "2026-09-10",
+  "assets": {
+    "directory": "./dist",
+    // Replaces the Netlify /* -> /index.html 200 rewrite so TanStack Router
+    // client-side routes resolve on hard refresh / direct link.
+    "not_found_handling": "single-page-application"
+  }
+}
