@@ -92,6 +92,14 @@ export const vacancyFormSchema = z.object({
   isActive: z.boolean().default(true),
   isDraft: z.boolean().default(false),
   questions: z.array(vacancyQuestionSchema).default([]),
+  googleFormLink: z
+    .string()
+    .trim()
+    .max(2048, 'Link is too long')
+    .url('Enter a valid URL (e.g. https://forms.gle/...)')
+    .or(z.literal(''))
+    .optional()
+    .nullable(),
 })
 
 export type VacancyFormValues = z.infer<typeof vacancyFormSchema>

@@ -14,6 +14,8 @@ const AddVacancy: FC = () => {
       ...values,
       responsibilities: (values.responsibilities || []).filter((r) => r.trim() !== ''),
       requirements: (values.requirements || []).filter((r) => r.trim() !== ''),
+      // Send null (not '') so the backend's URL validation passes and clearing the field removes the link
+      googleFormLink: values.googleFormLink?.trim() || null,
     }
 
     createVacancyMutation.mutate(cleanedValues, {
