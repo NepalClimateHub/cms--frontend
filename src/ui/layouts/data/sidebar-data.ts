@@ -17,6 +17,7 @@ import {
   FileText,
   MessageSquareQuote,
   UserCheck,
+  Award,
 } from 'lucide-react'
 import { NavGroup } from '../types'
 
@@ -118,6 +119,12 @@ export const sidebarMenus: NavGroup[] = [
         title: 'Minutes',
         url: '/minutes',
         icon: FileText,
+        roles: [Roles.SUPER_ADMIN, Roles.ADMIN, Roles.CONTENT_ADMIN],
+      },
+      {
+        title: 'Certificates',
+        url: '/certificates',
+        icon: Award,
         roles: [Roles.SUPER_ADMIN, Roles.ADMIN, Roles.CONTENT_ADMIN],
       },
 

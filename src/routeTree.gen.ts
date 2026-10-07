@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as VerifyImport } from './routes/verify'
 import { Route as PublicRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
@@ -31,6 +32,7 @@ import { Route as AuthenticatedProjectsIndexImport } from './routes/_authenticat
 import { Route as AuthenticatedMinutesIndexImport } from './routes/_authenticated/minutes/index'
 import { Route as AuthenticatedMembersIndexImport } from './routes/_authenticated/members/index'
 import { Route as AuthenticatedClimateChampionsIndexImport } from './routes/_authenticated/climate-champions/index'
+import { Route as AuthenticatedCertificatesIndexImport } from './routes/_authenticated/certificates/index'
 import { Route as AuthenticatedAskAiIndexImport } from './routes/_authenticated/ask-ai/index'
 import { Route as AuthenticatedActivitiesIndexImport } from './routes/_authenticated/activities/index'
 import { Route as AuthenticatedVacanciesAddImport } from './routes/_authenticated/vacancies/add'
@@ -103,6 +105,12 @@ const AuthenticatedSettingsAccountLazyImport = createFileRoute(
 )()
 
 // Create/Update Routes
+
+const VerifyRoute = VerifyImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const PublicRouteRoute = PublicRouteImport.update({
   id: '/_public',
@@ -312,6 +320,13 @@ const AuthenticatedClimateChampionsIndexRoute =
   AuthenticatedClimateChampionsIndexImport.update({
     id: '/climate-champions/',
     path: '/climate-champions/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedCertificatesIndexRoute =
+  AuthenticatedCertificatesIndexImport.update({
+    id: '/certificates/',
+    path: '/certificates/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -604,6 +619,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicRouteImport
       parentRoute: typeof rootRoute
     }
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyImport
+      parentRoute: typeof rootRoute
+    }
     '/(auth)/500': {
       id: '/(auth)/500'
       path: '/500'
@@ -847,6 +869,13 @@ declare module '@tanstack/react-router' {
       path: '/ask-ai'
       fullPath: '/ask-ai'
       preLoaderRoute: typeof AuthenticatedAskAiIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/certificates/': {
+      id: '/_authenticated/certificates/'
+      path: '/certificates'
+      fullPath: '/certificates'
+      preLoaderRoute: typeof AuthenticatedCertificatesIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/climate-champions/': {
@@ -1112,6 +1141,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVacanciesAddRoute: typeof AuthenticatedVacanciesAddRoute
   AuthenticatedActivitiesIndexRoute: typeof AuthenticatedActivitiesIndexRoute
   AuthenticatedAskAiIndexRoute: typeof AuthenticatedAskAiIndexRoute
+  AuthenticatedCertificatesIndexRoute: typeof AuthenticatedCertificatesIndexRoute
   AuthenticatedClimateChampionsIndexRoute: typeof AuthenticatedClimateChampionsIndexRoute
   AuthenticatedMembersIndexRoute: typeof AuthenticatedMembersIndexRoute
   AuthenticatedMinutesIndexRoute: typeof AuthenticatedMinutesIndexRoute
@@ -1165,6 +1195,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVacanciesAddRoute: AuthenticatedVacanciesAddRoute,
   AuthenticatedActivitiesIndexRoute: AuthenticatedActivitiesIndexRoute,
   AuthenticatedAskAiIndexRoute: AuthenticatedAskAiIndexRoute,
+  AuthenticatedCertificatesIndexRoute: AuthenticatedCertificatesIndexRoute,
   AuthenticatedClimateChampionsIndexRoute:
     AuthenticatedClimateChampionsIndexRoute,
   AuthenticatedMembersIndexRoute: AuthenticatedMembersIndexRoute,
@@ -1220,6 +1251,7 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '': typeof PublicRouteRouteWithChildren
+  '/verify': typeof VerifyRoute
   '/500': typeof errors500LazyRoute
   '/sign-in': typeof authSignInRoute
   '/verify-email': typeof authVerifyEmailRoute
@@ -1254,6 +1286,7 @@ export interface FileRoutesByFullPath {
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/activities': typeof AuthenticatedActivitiesIndexRoute
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
+  '/certificates': typeof AuthenticatedCertificatesIndexRoute
   '/climate-champions': typeof AuthenticatedClimateChampionsIndexRoute
   '/members': typeof AuthenticatedMembersIndexRoute
   '/minutes': typeof AuthenticatedMinutesIndexRoute
@@ -1288,6 +1321,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '': typeof PublicRouteRouteWithChildren
+  '/verify': typeof VerifyRoute
   '/500': typeof errors500LazyRoute
   '/sign-in': typeof authSignInRoute
   '/verify-email': typeof authVerifyEmailRoute
@@ -1321,6 +1355,7 @@ export interface FileRoutesByTo {
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/activities': typeof AuthenticatedActivitiesIndexRoute
   '/ask-ai': typeof AuthenticatedAskAiIndexRoute
+  '/certificates': typeof AuthenticatedCertificatesIndexRoute
   '/climate-champions': typeof AuthenticatedClimateChampionsIndexRoute
   '/members': typeof AuthenticatedMembersIndexRoute
   '/minutes': typeof AuthenticatedMinutesIndexRoute
@@ -1357,6 +1392,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
+  '/verify': typeof VerifyRoute
   '/(auth)/500': typeof auth500Route
   '/(auth)/sign-in': typeof authSignInRoute
   '/(auth)/verify-email': typeof authVerifyEmailRoute
@@ -1392,6 +1428,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/_authenticated/activities/': typeof AuthenticatedActivitiesIndexRoute
   '/_authenticated/ask-ai/': typeof AuthenticatedAskAiIndexRoute
+  '/_authenticated/certificates/': typeof AuthenticatedCertificatesIndexRoute
   '/_authenticated/climate-champions/': typeof AuthenticatedClimateChampionsIndexRoute
   '/_authenticated/members/': typeof AuthenticatedMembersIndexRoute
   '/_authenticated/minutes/': typeof AuthenticatedMinutesIndexRoute
@@ -1428,6 +1465,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
+    | '/verify'
     | '/500'
     | '/sign-in'
     | '/verify-email'
@@ -1462,6 +1500,7 @@ export interface FileRouteTypes {
     | '/settings/notifications'
     | '/activities'
     | '/ask-ai'
+    | '/certificates'
     | '/climate-champions'
     | '/members'
     | '/minutes'
@@ -1495,6 +1534,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
+    | '/verify'
     | '/500'
     | '/sign-in'
     | '/verify-email'
@@ -1528,6 +1568,7 @@ export interface FileRouteTypes {
     | '/settings/notifications'
     | '/activities'
     | '/ask-ai'
+    | '/certificates'
     | '/climate-champions'
     | '/members'
     | '/minutes'
@@ -1562,6 +1603,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/_public'
+    | '/verify'
     | '/(auth)/500'
     | '/(auth)/sign-in'
     | '/(auth)/verify-email'
@@ -1597,6 +1639,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/notifications'
     | '/_authenticated/activities/'
     | '/_authenticated/ask-ai/'
+    | '/_authenticated/certificates/'
     | '/_authenticated/climate-champions/'
     | '/_authenticated/members/'
     | '/_authenticated/minutes/'
@@ -1633,6 +1676,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
+  VerifyRoute: typeof VerifyRoute
   auth500Route: typeof auth500Route
   authSignInRoute: typeof authSignInRoute
   authVerifyEmailRoute: typeof authVerifyEmailRoute
@@ -1648,6 +1692,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
+  VerifyRoute: VerifyRoute,
   auth500Route: auth500Route,
   authSignInRoute: authSignInRoute,
   authVerifyEmailRoute: authVerifyEmailRoute,
@@ -1672,6 +1717,7 @@ export const routeTree = rootRoute
       "children": [
         "/_authenticated",
         "/_public",
+        "/verify",
         "/(auth)/500",
         "/(auth)/sign-in",
         "/(auth)/verify-email",
@@ -1708,6 +1754,7 @@ export const routeTree = rootRoute
         "/_authenticated/vacancies/add",
         "/_authenticated/activities/",
         "/_authenticated/ask-ai/",
+        "/_authenticated/certificates/",
         "/_authenticated/climate-champions/",
         "/_authenticated/members/",
         "/_authenticated/minutes/",
@@ -1743,6 +1790,9 @@ export const routeTree = rootRoute
       "children": [
         "/_public/login/"
       ]
+    },
+    "/verify": {
+      "filePath": "verify.tsx"
     },
     "/(auth)/500": {
       "filePath": "(auth)/500.tsx"
@@ -1879,6 +1929,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/ask-ai/": {
       "filePath": "_authenticated/ask-ai/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/certificates/": {
+      "filePath": "_authenticated/certificates/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/climate-champions/": {
