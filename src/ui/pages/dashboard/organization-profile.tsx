@@ -260,6 +260,8 @@ export default function OrganizationProfilePage({
   const pendingVerification =
     !user.isVerifiedByAdmin &&
     Boolean(org.verificationRequestedAt || org.verificationDocumentUrl)
+  const verificationAdminMessage = nullableString(org.verificationAdminMessage)
+  const verificationNeedsChanges = Boolean(verificationAdminMessage)
 
   const orgSocials = formatSocialsFromUser(user.socials)
 
@@ -322,6 +324,11 @@ export default function OrganizationProfilePage({
                   <CheckCircle2 className='mr-1 h-3 w-3' />
                   Verified organization
                 </Badge>
+              ) : verificationNeedsChanges ? (
+                <Badge variant='destructive' className='shrink-0'>
+                  <ShieldAlert className='mr-1 h-3 w-3' />
+                  Changes requested
+                </Badge>
               ) : pendingVerification ? (
                 <Badge variant='secondary' className='shrink-0'>
                   <Clock className='mr-1 h-3 w-3' />
@@ -336,6 +343,17 @@ export default function OrganizationProfilePage({
             <div className='flex shrink-0 flex-wrap items-center justify-end gap-2'>
               {!user.isVerifiedByAdmin &&
                 (pendingVerification ? (
+                  verificationNeedsChanges ? (
+                    <Button
+                      type='button'
+                      size='sm'
+                      variant='secondary'
+                      onClick={() => setIsVerifyDialogOpen(true)}
+                    >
+                      <Pencil className='mr-2 h-3.5 w-3.5' />
+                      Update application
+                    </Button>
+                  ) : (
                   <Button
                     type='button'
                     size='sm'
@@ -345,6 +363,7 @@ export default function OrganizationProfilePage({
                     <ClipboardList className='mr-2 h-3.5 w-3.5' />
                     View application
                   </Button>
+                  )
                 ) : (
                   <Button
                     type='button'
@@ -358,6 +377,14 @@ export default function OrganizationProfilePage({
             </div>
           </div>
         </div>
+        {verificationNeedsChanges ? (
+          <div className='mx-4 mt-4 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 sm:mx-6'>
+            <p className='font-semibold'>Message from the verification team</p>
+            <p className='mt-1 whitespace-pre-wrap'>
+              {verificationAdminMessage}
+            </p>
+          </div>
+        ) : null}
         {/* Cover — LinkedIn-style header */}
         <div className='relative h-[min(28vw,200px)] min-h-[140px] w-full sm:min-h-[160px]'>
           <ImagePreviewDialog

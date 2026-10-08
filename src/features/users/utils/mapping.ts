@@ -84,6 +84,15 @@ export const mapUserOutputToUser = (user: UserOutput): User => {
             : org.verificationDocumentId
               ? String(org.verificationDocumentId)
               : null,
+        verificationDocuments: Array.isArray(org.verificationDocuments)
+          ? org.verificationDocuments.filter(
+              (document): document is { id: string; url: string } =>
+                !!document &&
+                typeof document === 'object' &&
+                typeof (document as { id?: unknown }).id === 'string' &&
+                typeof (document as { url?: unknown }).url === 'string'
+            )
+          : null,
         verificationRequestRemarks:
           typeof org.verificationRequestRemarks === 'string'
             ? org.verificationRequestRemarks
@@ -96,6 +105,14 @@ export const mapUserOutputToUser = (user: UserOutput): User => {
             : org.verificationRequestedAt
               ? String(org.verificationRequestedAt)
               : null,
+        verificationAdminMessage:
+          typeof org.verificationAdminMessage === 'string'
+            ? org.verificationAdminMessage
+            : null,
+        verificationMessageSentAt:
+          typeof org.verificationMessageSentAt === 'string'
+            ? org.verificationMessageSentAt
+            : null,
       }
     : null
 

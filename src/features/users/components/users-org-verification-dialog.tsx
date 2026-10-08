@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { isVerificationAdmin } from '@/utils/role-check.util'
 import { Loader2 } from 'lucide-react'
+import { Textarea } from '@/ui/shadcn/textarea'
 import type { User } from '../data/schema'
 
 type Props = {
@@ -26,8 +27,11 @@ function toOrgProfile(user: User) {
     logoImageId: org.logoImageId ?? null,
     verificationDocumentUrl: org.verificationDocumentUrl ?? null,
     verificationDocumentId: org.verificationDocumentId ?? null,
+    verificationDocuments: org.verificationDocuments ?? null,
     verificationRequestRemarks: org.verificationRequestRemarks ?? null,
     verificationRequestedAt: org.verificationRequestedAt ?? null,
+    verificationAdminMessage: org.verificationAdminMessage ?? null,
+    verificationMessageSentAt: org.verificationMessageSentAt ?? null,
   }
 }
 
@@ -39,6 +43,7 @@ export function UsersOrgVerificationDialog({
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const [isVerifying, setIsVerifying] = useState(false)
+  const [feedback, setFeedback] = useState('')
   const role = getRoleFromToken()
   const canVerify = isVerificationAdmin(role)
   const orgProfile = user ? toOrgProfile(user) : null
@@ -77,6 +82,24 @@ export function UsersOrgVerificationDialog({
     }
   }
 
+  const handleSendFeedback = async () => {
+    if (!orgId || !feedback.trim()) {
+      toast({ title: 'Message required', description: 'Explain what information or documents are needed.', variant: 'destructive' })
+      return
+    }
+    setIsVerifying(true)
+    try {
+      await apiClient.patch(`/api/v1/organizations/${orgId}/verify`, { isVerified: false, message: feedback.trim() })
+      toast({ title: 'Message sent', description: 'The organization has been notified.' })
+      await queryClient.invalidateQueries({ predicate: (q) => q.queryKey[0] === 'userControllerGetUsers' })
+      onOpenChange(false)
+    } catch {
+      toast({ title: 'Message could not be sent', variant: 'destructive' })
+    } finally {
+      setIsVerifying(false)
+    }
+  }
+
   if (!orgProfile) {
     return null
   }
@@ -90,6 +113,15 @@ export function UsersOrgVerificationDialog({
       footer={
         showVerify ? (
           <DialogFooter className='gap-2 sm:justify-end'>
+            <Textarea value={feedback} onChange={(event) => setFeedback(event.target.value)} placeholder='Explain what is incomplete or incorrect…' rows={3} disabled={isVerifying} />
+            <Button
+              type='button'
+              variant='secondary'
+              onClick={handleSendFeedback}
+              disabled={isVerifying || !feedback.trim()}
+            >
+              Send message
+            </Button>
             <Button
               type='button'
               variant='outline'
