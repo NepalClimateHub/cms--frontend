@@ -13,6 +13,15 @@ export function mapOrganizationProfileDto(
   org: OrganizationProfileOutputDto | null | undefined
 ): OrganizationProfile | null {
   if (!org) return null
+  const documents = Array.isArray(org.verificationDocuments)
+    ? org.verificationDocuments.filter(
+        (document): document is { id: string; url: string } =>
+          !!document &&
+          typeof document === 'object' &&
+          typeof (document as { id?: unknown }).id === 'string' &&
+          typeof (document as { url?: unknown }).url === 'string'
+      )
+    : null
   return {
     id: org.id,
     name: org.name,
@@ -21,8 +30,11 @@ export function mapOrganizationProfileDto(
     logoImageId: nullableString(org.logoImageId),
     verificationDocumentUrl: nullableString(org.verificationDocumentUrl),
     verificationDocumentId: nullableString(org.verificationDocumentId),
+    verificationDocuments: documents,
     verificationRequestRemarks: nullableString(org.verificationRequestRemarks),
     verificationRequestedAt: nullableString(org.verificationRequestedAt),
+    verificationAdminMessage: nullableString(org.verificationAdminMessage),
+    verificationMessageSentAt: nullableString(org.verificationMessageSentAt),
   }
 }
 

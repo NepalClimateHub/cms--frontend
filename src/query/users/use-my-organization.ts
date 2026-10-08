@@ -22,6 +22,7 @@ export type UpdateMyOrganizationBody = {
   socials?: SocialType
   verificationDocumentUrl?: string
   verificationDocumentId?: string
+  verificationDocuments?: Array<{ id: string; url: string }>
   verificationRequestRemarks?: string
 }
 

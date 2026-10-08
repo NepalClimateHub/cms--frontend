@@ -39,10 +39,20 @@ export type OrganizationProfileOutputDto = {
     verificationDocumentId?: {
         [key: string]: unknown;
     };
+    verificationDocuments?: Array<{
+        id: string;
+        url: string;
+    }>;
     verificationRequestRemarks?: {
         [key: string]: unknown;
     };
     verificationRequestedAt?: {
+        [key: string]: unknown;
+    };
+    verificationAdminMessage?: {
+        [key: string]: unknown;
+    };
+    verificationMessageSentAt?: {
         [key: string]: unknown;
     };
 };
@@ -191,6 +201,10 @@ export type UpdateMyOrganizationInput = {
      * Verification document file id
      */
     verificationDocumentId?: string;
+    verificationDocuments?: Array<{
+        id: string;
+        url: string;
+    }>;
     /**
      * Message to admins with the verification request
      */

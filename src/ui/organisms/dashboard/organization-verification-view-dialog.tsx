@@ -50,7 +50,11 @@ export default function OrganizationVerificationViewDialog({
     ? new Date(organization.verificationRequestedAt).toLocaleString()
     : null
 
-  const docUrl = organization.verificationDocumentUrl
+  const documents = organization.verificationDocuments?.length
+    ? organization.verificationDocuments
+    : organization.verificationDocumentUrl
+      ? [{ id: organization.verificationDocumentId ?? '', url: organization.verificationDocumentUrl }]
+      : []
   const remarks = organization.verificationRequestRemarks?.trim()
 
   return (
@@ -76,28 +80,27 @@ export default function OrganizationVerificationViewDialog({
             </div>
           ) : null}
 
-          {docUrl ? (
+          {documents.length ? (
             <div className='space-y-2'>
-              <p className='font-medium text-foreground'>Supporting document</p>
-              {open ? <DocumentPreview url={docUrl} /> : null}
-              <a
-                href={docUrl}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='inline-flex items-center gap-1.5 text-primary underline-offset-4 hover:underline'
-              >
-                Open document link
-                <ExternalLink className='h-3.5 w-3.5' />
-              </a>
-              {organization.verificationDocumentId ? (
-                <p className='text-xs text-muted-foreground'>
-                  File ID: {organization.verificationDocumentId}
-                </p>
-              ) : null}
+              <p className='font-medium text-foreground'>Supporting documents</p>
+              {documents.map((document, index) => (
+                <div key={`${document.id}-${index}`} className='space-y-1'>
+                  {open ? <DocumentPreview url={document.url} /> : null}
+                  <a href={document.url} target='_blank' rel='noopener noreferrer' className='inline-flex items-center gap-1.5 text-primary underline-offset-4 hover:underline'>
+                    Open document {index + 1}<ExternalLink className='h-3.5 w-3.5' />
+                  </a>
+                </div>
+              ))}
             </div>
           ) : (
             <p className='text-muted-foreground'>No document URL on file.</p>
           )}
+          {organization.verificationAdminMessage ? (
+            <div className='space-y-2'>
+              <p className='font-medium text-foreground'>Message from administrator</p>
+              <div className='whitespace-pre-wrap rounded-md border border-amber-200 bg-amber-50 p-3 text-amber-950'>{organization.verificationAdminMessage}</div>
+            </div>
+          ) : null}
 
           {remarks ? (
             <div className='space-y-2'>
