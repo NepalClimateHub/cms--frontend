@@ -1,14 +1,13 @@
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
+import { useForm } from 'react-hook-form'
 import { useAddEvents } from '@/query/events/use-events'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
-import { eventFormSchema, EventFormValues } from '@/schemas/event'
+import { type EventFormValues, eventFormSchema } from '@/schemas/event'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
-import EventForm from '../shared/EventForm'
-
 import { formatLocalDateTimeToISO } from '@/utils/date-utils'
+import EventForm from '../shared/EventForm'
 
 const AddEvent = () => {
   const eventMutation = useAddEvents()
@@ -16,10 +15,11 @@ const AddEvent = () => {
 
   const { data, isLoading } = useGetTagsByType('EVENT')
 
-  const tagsOptions = data?.data?.map((tag) => ({
-    value: tag.id,
-    label: tag.tag,
-  })) ?? []
+  const tagsOptions =
+    data?.data?.map((tag) => ({
+      value: tag.id,
+      label: tag.tag,
+    })) ?? []
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventFormSchema),
@@ -47,10 +47,16 @@ const AddEvent = () => {
       status: values.status || 'OPEN',
       publicationStatus: values.publicationStatus || 'DRAFT',
       isDraft: values.publicationStatus === 'DRAFT',
-      startDate: values.startDate ? formatLocalDateTimeToISO(values.startDate) : undefined,
-      registrationDeadline: values.registrationDeadline ? formatLocalDateTimeToISO(values.registrationDeadline) : null,
+      startDate: values.startDate
+        ? formatLocalDateTimeToISO(values.startDate)
+        : undefined,
+      registrationDeadline: values.registrationDeadline
+        ? formatLocalDateTimeToISO(values.registrationDeadline)
+        : null,
     }
-    await eventMutation.mutateAsync(formattedPayload as unknown as EventFormValues)
+    await eventMutation.mutateAsync(
+      formattedPayload as unknown as EventFormValues
+    )
     navigate({
       to: '/events/list',
     })

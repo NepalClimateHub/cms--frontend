@@ -1,10 +1,10 @@
-import { FC, useEffect, useState } from 'react'
-import { Input } from '@/ui/shadcn/input'
+import { type FC, useEffect, useState } from 'react'
+import type { useFilters } from '@/hooks/use-filters'
+import { useIsFirstRender } from '@/hooks/use-first-render'
 import { Checkbox } from '@/ui/shadcn/checkbox'
+import { Input } from '@/ui/shadcn/input'
 import { Label } from '@/ui/shadcn/label'
 import { Separator } from '@/ui/shadcn/separator'
-import { useFilters } from '@/hooks/use-filters'
-import { useIsFirstRender } from '@/hooks/use-first-render'
 
 type BlogsFiltersProps = {
   setPage: (page: number | string) => void
@@ -22,7 +22,7 @@ const BlogsFilters: FC<BlogsFiltersProps> = ({ setPage, filterOptions }) => {
     if (!isFirstRender) {
       setPage(1)
     }
-  }, [filters])
+  }, [setPage, isFirstRender])
 
   useEffect(() => {
     setSearch((filters?.title as string) ?? '')

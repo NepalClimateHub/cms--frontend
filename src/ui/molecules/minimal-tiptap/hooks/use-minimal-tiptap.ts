@@ -1,25 +1,24 @@
-import * as React from 'react'
-import { cn } from '@/ui/shadcn/lib/utils'
 import { Placeholder } from '@tiptap/extension-placeholder'
 import { TextAlign } from '@tiptap/extension-text-align'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { Typography } from '@tiptap/extension-typography'
 import { Underline } from '@tiptap/extension-underline'
-import type { Editor } from '@tiptap/react'
-import type { Content, UseEditorOptions } from '@tiptap/react'
+import type { Content, Editor, UseEditorOptions } from '@tiptap/react'
 import { useEditor } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
+import * as React from 'react'
 import { toast } from 'sonner'
+import { cn } from '@/ui/shadcn/lib/utils'
 import {
-  Link,
-  Image,
-  HorizontalRule,
   CodeBlockLowlight,
-  Selection,
   Color,
-  UnsetAllMarks,
-  ResetMarksOnEnter,
   FileHandler,
+  HorizontalRule,
+  Image,
+  Link,
+  ResetMarksOnEnter,
+  Selection,
+  UnsetAllMarks,
 } from '../extensions'
 import { fileToBase64, getOutput, randomId } from '../utils'
 import { useThrottle } from './use-throttle'
@@ -93,7 +92,7 @@ const createExtensions = (placeholder: string) => [
         })
       )
     },
-    onImageRemoved() { },
+    onImageRemoved() {},
     onValidationError(errors) {
       errors.forEach((error) => {
         toast.error('Image validation error', {

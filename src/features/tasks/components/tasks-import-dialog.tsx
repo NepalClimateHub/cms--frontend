@@ -1,6 +1,7 @@
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { toast } from '@/hooks/use-toast'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
@@ -20,7 +21,6 @@ import {
   FormMessage,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
-import { toast } from '@/hooks/use-toast'
 
 const formSchema = z.object({
   file: z
@@ -50,7 +50,7 @@ export function TasksImportDialog({ open, onOpenChange }: Props) {
   const onSubmit = () => {
     const file = form.getValues('file')
 
-    if (file && file[0]) {
+    if (file?.[0]) {
       const fileDetails = {
         name: file[0].name,
         size: file[0].size,

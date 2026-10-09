@@ -1,4 +1,12 @@
 import { Link } from '@tanstack/react-router'
+import {
+  BadgeCheck,
+  Bell,
+  ChevronsUpDown,
+  CreditCard,
+  LogOut,
+  Sparkles,
+} from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import {
   DropdownMenu,
@@ -15,14 +23,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/ui/shadcn/sidebar'
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from 'lucide-react'
 
 export function NavUser({
   user,

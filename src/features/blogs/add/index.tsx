@@ -1,8 +1,8 @@
-import { FC, useEffect, useMemo } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { type FC, useEffect, useMemo } from 'react'
+import { useForm } from 'react-hook-form'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
-import { BlogFormValues, blogSchema } from '@/schemas/blog'
+import { type BlogFormValues, blogSchema } from '@/schemas/blog'
 import { useAuthStore } from '@/stores/authStore'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
@@ -95,7 +95,9 @@ const AddBlog: FC = () => {
       }
 
       addBlog({
-        body: formattedValues as unknown as Parameters<typeof addBlog>[0]['body'],
+        body: formattedValues as unknown as Parameters<
+          typeof addBlog
+        >[0]['body'],
       })
     } catch (_error) {
       // Error handling is done by the mutation

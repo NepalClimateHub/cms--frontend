@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { MemberFormValues } from '@/schemas/member'
-import { Meta } from '@/schemas/shared'
 import { toast } from 'sonner'
 import { client } from '@/api/client.gen'
+import type { MemberFormValues } from '@/schemas/member'
+import type { Meta } from '@/schemas/shared'
 
 export interface MemberResponseDto {
   id: string
@@ -58,7 +58,10 @@ export const useCreateMember = () => {
 
   return useMutation({
     mutationFn: async (data: MemberFormValues) => {
-      const response = await client.post({ url: '/api/v1/members', body: data })
+      const response = await client.post({
+        url: '/api/v1/members',
+        body: data,
+      })
       return response.data
     },
     onSuccess: () => {

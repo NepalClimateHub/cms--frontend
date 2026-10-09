@@ -1,5 +1,7 @@
-import { FC, useState } from 'react'
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons'
+import type { Values } from 'nuqs'
+import { type FC, useState } from 'react'
+import type { FilterValues, InitFilters } from '@/hooks/use-filters'
 import { useGetOrganizations } from '@/query/organizations/use-organization'
 import { Button } from '@/ui/shadcn/button'
 import {
@@ -11,8 +13,6 @@ import {
 } from '@/ui/shadcn/command'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { Popover, PopoverContent, PopoverTrigger } from '@/ui/shadcn/popover'
-import { Values } from 'nuqs'
-import { FilterValues, InitFilters } from '@/hooks/use-filters'
 import { Badge } from '../../shadcn/badge'
 import { Input } from '../../shadcn/input'
 import { Separator } from '../../shadcn/separator'

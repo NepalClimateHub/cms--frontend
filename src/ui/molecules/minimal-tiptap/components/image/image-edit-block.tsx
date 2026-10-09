@@ -1,15 +1,20 @@
+import type { Editor } from '@tiptap/react'
 import * as React from 'react'
+import { toast } from '@/hooks/use-toast'
+import { useGetIkAuthParams } from '@/query/imagekit/use-ik'
+import { MiniLoader } from '@/ui/loader'
+import IKContext from '@/ui/molecules/image-kit/IKContext'
+import IKUpload from '@/ui/molecules/image-kit/IKUpload'
 import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
 import { Label } from '@/ui/shadcn/label'
-import type { Editor } from '@tiptap/react'
-import { useGetIkAuthParams } from '@/query/imagekit/use-ik'
-import IKContext from '@/ui/molecules/image-kit/IKContext'
-import IKUpload from '@/ui/molecules/image-kit/IKUpload'
-import { MiniLoader } from '@/ui/loader'
-import { toast } from '@/hooks/use-toast'
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+const ALLOWED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+]
 
 interface ImageEditBlockProps {
   editor: Editor
@@ -36,7 +41,9 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
       e.stopPropagation()
 
       if (link) {
-        editor.commands.setImages([{ src: link, caption: caption || undefined }])
+        editor.commands.setImages([
+          { src: link, caption: caption || undefined },
+        ])
         close()
       }
     },
@@ -111,7 +118,9 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
           <IKContext
             publicKey={publicKey}
             urlEndpoint={endpoint}
-            authenticator={() => new Promise((resolve) => resolve(ikAuthParams))}
+            authenticator={() =>
+              new Promise((resolve) => resolve(ikAuthParams))
+            }
           >
             <IKUpload
               disabled={isUploading}

@@ -1,5 +1,6 @@
-import { ReactNode } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
+import { ChevronRight } from 'lucide-react'
+import type { ReactNode } from 'react'
 import {
   Collapsible,
   CollapsibleContent,
@@ -16,7 +17,6 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@/ui/shadcn/sidebar'
-import { ChevronRight } from 'lucide-react'
 import { Badge } from '../shadcn/badge'
 import {
   DropdownMenu,
@@ -26,7 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../shadcn/dropdown-menu'
-import { NavCollapsible, NavItem, NavLink, type NavGroup } from './types'
+import type { NavCollapsible, NavGroup, NavItem, NavLink } from './types'
 
 export function NavGroup({ items }: NavGroup) {
   const { state } = useSidebar()

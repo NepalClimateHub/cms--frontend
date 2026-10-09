@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { EventFormValues } from '@/schemas/event'
-import { cleanObj } from '@/utils/obj-utils'
 import { toast } from '@/hooks/use-toast'
+import type { EventFormValues } from '@/schemas/event'
+import { cleanObj } from '@/utils/obj-utils'
 import { events } from '../shared/routes'
 import {
   addEvent,
@@ -60,12 +60,12 @@ export const useGetEvents = (
 }
 
 export const useGetEventById = (eventId: string) => {
-      return useQuery({
+  return useQuery({
     queryKey: [events.getall.key, eventId],
-        queryFn: () => getEventById(eventId),
-        select: (data) => data.data,
+    queryFn: () => getEventById(eventId),
+    select: (data) => data.data,
     enabled: !!eventId,
-      })
+  })
 }
 
 export const useUpdateEvent = () => {

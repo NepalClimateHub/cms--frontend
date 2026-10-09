@@ -1,13 +1,40 @@
-import { useMemo, useState } from 'react'
+import { IconArticle } from '@tabler/icons-react'
 import { useQueries, useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { IconArticle } from '@tabler/icons-react'
+import {
+  ArrowRight,
+  Bot,
+  Briefcase,
+  Building2,
+  Calendar,
+  FileText,
+  Mail,
+  MessageCircle,
+  MessageSquare,
+  Newspaper,
+  Plus,
+  Quote,
+  Users,
+} from 'lucide-react'
+import { useMemo, useState } from 'react'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import { emailSubscriptionControllerFindAll } from '@/api'
+import type { AdminAnalyticsOutput } from '@/api/types.gen'
 import { climateQuotes } from '@/data/climate-quotes'
+import { UsersViewDialog } from '@/features/users/components/users-view-dialog'
+import { mapUserOutputToUser } from '@/features/users/utils/mapping'
 import {
   useAnalyticsAPI,
-  useTopBlogAuthors,
   useNewJoinedUsers,
+  useTopBlogAuthors,
 } from '@/query/analytics/use-analytics'
 import apiClient from '@/query/apiClient'
 import { Main } from '@/ui/layouts/main'
@@ -17,45 +44,19 @@ import { Card, CardTitle } from '@/ui/shadcn/card'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/ui/shadcn/dialog'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { ScrollArea } from '@/ui/shadcn/scroll-area'
-import {
-  Calendar,
-  Users,
-  Quote,
-  Briefcase,
-  Newspaper,
-  Mail,
-  Plus,
-  FileText,
-  Building2,
-  ArrowRight,
-  MessageSquare,
-  Bot,
-  MessageCircle,
-} from 'lucide-react'
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts'
-import type { AdminAnalyticsOutput } from '@/api/types.gen'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { canAccessUserDirectoryAndDatabaseExport } from '@/utils/role-check.util'
-import { UsersViewDialog } from '@/features/users/components/users-view-dialog'
-import { mapUserOutputToUser } from '@/features/users/utils/mapping'
 
 export default function AdminDashboardHomePage() {
-  const canViewAllUsers =
-    canAccessUserDirectoryAndDatabaseExport(getRoleFromToken())
+  const canViewAllUsers = canAccessUserDirectoryAndDatabaseExport(
+    getRoleFromToken()
+  )
 
   const { data: analyticsData, isLoading } =
     useAnalyticsAPI().getAnalyticsForAdmin

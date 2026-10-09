@@ -1,14 +1,16 @@
-import { FC, useEffect, useState, useRef } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useParams, useNavigate } from '@tanstack/react-router'
+import { useNavigate, useParams } from '@tanstack/react-router'
+import { type FC, useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import {
   useGetOpportunityById,
   useOpportunityAPI,
 } from '@/query/opportunities/use-opportunities'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
-import { OpportunityFormValues } from '@/schemas/opportunities/opportunity'
-import { opportunitySchema } from '@/schemas/opportunities/opportunity'
+import {
+  type OpportunityFormValues,
+  opportunitySchema,
+} from '@/schemas/opportunities/opportunity'
 import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/ui/loader'
 import PageHeader from '@/ui/page-header'
@@ -69,7 +71,7 @@ const EditOpportunity: FC = () => {
       hasReset.current = true
       setIsFormReady(true)
     }
-  }, [opportunityData])
+  }, [opportunityData, form.reset])
 
   const handleFormSubmit = async (values: OpportunityFormValues) => {
     try {

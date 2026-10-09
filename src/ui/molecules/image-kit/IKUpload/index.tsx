@@ -1,11 +1,12 @@
-import React, { forwardRef, useContext, useEffect, useState } from 'react'
+import { UploadCloud } from 'lucide-react'
+import type React from 'react'
+import { forwardRef, useContext, useEffect, useState } from 'react'
 import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
-import { UploadCloud } from 'lucide-react'
 import { ImageKitContext } from '../IKContext'
-import { IKContextBaseProps } from '../IKContext/props'
+import type { IKContextBaseProps } from '../IKContext/props'
 import useImageKitComponent from '../ImageKitComponent'
-import { IKUploadProps, OverrideValues } from './props'
+import type { IKUploadProps, OverrideValues } from './props'
 
 type IKUploadState = {
   xhr?: XMLHttpRequest
@@ -193,9 +194,9 @@ const IKUpload = forwardRef<
 
     authPromise
       .then(({ signature, token, expire }) => {
-        params['signature'] = signature
-        params['expire'] = expire
-        params['token'] = token
+        params.signature = signature
+        params.expire = expire
+        params.token = token
         ikClient.upload(
           params,
           (err: Error | null, result: unknown | null) => {
@@ -218,7 +219,7 @@ const IKUpload = forwardRef<
       })
       .catch((data) => {
         let error
-        if (data instanceof Array) {
+        if (Array.isArray(data)) {
           error = data[0]
         } else {
           error = data

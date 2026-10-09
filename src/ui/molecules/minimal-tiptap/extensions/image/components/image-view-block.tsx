@@ -1,8 +1,8 @@
-import * as React from 'react'
 import { InfoCircledIcon, TrashIcon } from '@radix-ui/react-icons'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
+import { type NodeViewProps, NodeViewWrapper } from '@tiptap/react'
+import * as React from 'react'
 import { Controlled as ControlledZoom } from 'react-medium-image-zoom'
+import { cn } from '@/ui/shadcn/lib/utils'
 import { Spinner } from '../../../components/spinner'
 import { blobUrlToBase64, randomId } from '../../../utils'
 import type { ElementDimensions } from '../hooks/use-drag-resize'
@@ -147,7 +147,10 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
       })
 
       if (!initialWidth) {
-        updateDimensions((state) => ({ ...state, width: newNaturalSize.width }))
+        updateDimensions((state) => ({
+          ...state,
+          width: newNaturalSize.width,
+        }))
       }
     },
     [initialWidth, updateAttributes, updateDimensions]
@@ -346,7 +349,8 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
                     className={cn(
                       'h-auto rounded object-contain transition-shadow',
                       {
-                        'opacity-0': !imageState.imageLoaded || imageState.error,
+                        'opacity-0':
+                          !imageState.imageLoaded || imageState.error,
                       }
                     )}
                     style={{

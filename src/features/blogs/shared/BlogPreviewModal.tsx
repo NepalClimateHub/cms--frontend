@@ -1,8 +1,8 @@
-import { useCallback } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { Button } from '@/ui/shadcn/button'
 import { X } from 'lucide-react'
-import { BlogFormValues } from '@/schemas/blog'
+import { useCallback } from 'react'
+import type { BlogFormValues } from '@/schemas/blog'
+import { Button } from '@/ui/shadcn/button'
 
 /* ─────────────────────────────────────────────────────────────
    Utility: estimate reading time (avg 200 wpm on plain text)
@@ -114,7 +114,11 @@ interface BlogPreviewModalProps {
   values: BlogFormValues
 }
 
-export function BlogPreviewModal({ open, onClose, values }: BlogPreviewModalProps) {
+export function BlogPreviewModal({
+  open,
+  onClose,
+  values,
+}: BlogPreviewModalProps) {
   // Callback ref: fires as soon as the div is attached to the DOM (or detached when null).
   // This bypasses any Radix/animation timing issues that prevent useEffect from seeing the element.
   const contentCallbackRef = useCallback(
@@ -123,8 +127,7 @@ export function BlogPreviewModal({ open, onClose, values }: BlogPreviewModalProp
       el.innerHTML = values.content ?? ''
       runImagePostProcessor(el)
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [open, values.content]
+    [values.content]
   )
 
   const authorName = values.author || 'Unknown Author'
@@ -164,7 +167,12 @@ export function BlogPreviewModal({ open, onClose, values }: BlogPreviewModalProp
               </span>
             </div>
             <DialogPrimitive.Close asChild>
-              <Button type='button' size='icon' variant='ghost' className='shrink-0'>
+              <Button
+                type='button'
+                size='icon'
+                variant='ghost'
+                className='shrink-0'
+              >
                 <X className='h-5 w-5' />
               </Button>
             </DialogPrimitive.Close>
@@ -199,7 +207,9 @@ export function BlogPreviewModal({ open, onClose, values }: BlogPreviewModalProp
                             className='preview-author-img'
                           />
                         </div>
-                        <span className='preview-author-name'>By {authorName}</span>
+                        <span className='preview-author-name'>
+                          By {authorName}
+                        </span>
                       </figcaption>
                       {dateStr && (
                         <>
@@ -215,20 +225,61 @@ export function BlogPreviewModal({ open, onClose, values }: BlogPreviewModalProp
                     <div className='preview-share-container'>
                       <span className='preview-share-label'>Share:</span>
                       <div className='preview-share-icons'>
-                        <button type='button' aria-label='Copy link' className='preview-icon'>
-                          <svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                        <button
+                          type='button'
+                          aria-label='Copy link'
+                          className='preview-icon'
+                        >
+                          <svg
+                            width='24'
+                            height='24'
+                            viewBox='0 0 24 24'
+                            fill='none'
+                            stroke='currentColor'
+                            strokeWidth='2'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                          >
                             <path d='M16 8V6C16 4.89543 15.1046 4 14 4H6C4.89543 4 4 4.89543 4 6V14C4 15.1046 4.89543 16 6 16H8' />
                             <rect x='8' y='8' width='12' height='12' rx='2' />
                           </svg>
                         </button>
-                        <button type='button' aria-label='Share on LinkedIn' className='preview-icon'>
-                          <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                        <button
+                          type='button'
+                          aria-label='Share on LinkedIn'
+                          className='preview-icon'
+                        >
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            width='24'
+                            height='24'
+                            viewBox='0 0 24 24'
+                            fill='none'
+                            stroke='currentColor'
+                            strokeWidth='2'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                          >
                             <path d='M3 7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z' />
                             <path d='M8 11v5M8 8v.01M12 16v-5M16 16v-3a2 2 0 1 0-4 0' />
                           </svg>
                         </button>
-                        <button type='button' aria-label='Share on Facebook' className='preview-icon'>
-                          <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                        <button
+                          type='button'
+                          aria-label='Share on Facebook'
+                          className='preview-icon'
+                        >
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            width='24'
+                            height='24'
+                            viewBox='0 0 24 24'
+                            fill='none'
+                            stroke='currentColor'
+                            strokeWidth='2'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                          >
                             <path d='M7 10v4h3v7h4v-7h3l1-4h-4v-2a1 1 0 0 1 1-1h3v-4h-3a5 5 0 0 0-5 5v2h-3' />
                           </svg>
                         </button>
@@ -272,9 +323,13 @@ export function BlogPreviewModal({ open, onClose, values }: BlogPreviewModalProp
                           />
                         </div>
                         <div>
-                          <div className='preview-author-name-lg'>{authorName}</div>
+                          <div className='preview-author-name-lg'>
+                            {authorName}
+                          </div>
                           {values.category && (
-                            <div className='preview-author-role'>{values.category}</div>
+                            <div className='preview-author-role'>
+                              {values.category}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -291,7 +346,11 @@ export function BlogPreviewModal({ open, onClose, values }: BlogPreviewModalProp
                           disabled
                           className='preview-email-input'
                         />
-                        <button type='button' disabled className='preview-email-btn'>
+                        <button
+                          type='button'
+                          disabled
+                          className='preview-email-btn'
+                        >
                           Submit
                         </button>
                       </div>

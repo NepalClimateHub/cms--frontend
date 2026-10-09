@@ -1,31 +1,37 @@
-
+import {
+  useGetCategory,
+  useUpdateCategory,
+} from '@/query/categories/use-categories'
+import { BoxLoader } from '@/ui/loader'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/ui/shadcn/dialog';
-import { CategoryForm, CategoryFormValues } from './category-form';
-import { useGetCategory, useUpdateCategory } from '@/query/categories/use-categories';
-import { BoxLoader } from '@/ui/loader';
+} from '@/ui/shadcn/dialog'
+import { CategoryForm, type CategoryFormValues } from './category-form'
 
 interface EditCategoryDialogProps {
-  id: string;
-  open: boolean;
-  onClose: () => void;
+  id: string
+  open: boolean
+  onClose: () => void
 }
 
-export function EditCategoryDialog({ id, open, onClose }: EditCategoryDialogProps) {
-  const { data: category, isLoading } = useGetCategory(id);
-  const { mutate: updateCategory, isPending } = useUpdateCategory(id);
+export function EditCategoryDialog({
+  id,
+  open,
+  onClose,
+}: EditCategoryDialogProps) {
+  const { data: category, isLoading } = useGetCategory(id)
+  const { mutate: updateCategory, isPending } = useUpdateCategory(id)
 
   const handleSubmit = (values: CategoryFormValues) => {
     updateCategory(values, {
       onSuccess: () => {
-        onClose();
+        onClose()
       },
-    });
-  };
+    })
+  }
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -36,13 +42,13 @@ export function EditCategoryDialog({ id, open, onClose }: EditCategoryDialogProp
         {isLoading ? (
           <BoxLoader />
         ) : (
-          <CategoryForm 
-            initialValues={category} 
-            onSubmit={handleSubmit} 
-            isLoading={isPending} 
+          <CategoryForm
+            initialValues={category}
+            onSubmit={handleSubmit}
+            isLoading={isPending}
           />
         )}
       </DialogContent>
     </Dialog>
-  );
+  )
 }

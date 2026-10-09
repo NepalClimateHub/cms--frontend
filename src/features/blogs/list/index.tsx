@@ -1,24 +1,22 @@
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { getCoreRowModel } from '@tanstack/react-table'
-import { useReactTable } from '@tanstack/react-table'
-import { useGetBlogs } from '@/query/blogs/use-blogs'
-import { BlogResponseDto } from '@/query/blogs/use-blogs'
-import { Meta } from '@/schemas/shared'
-import { DataTable } from '@/ui/molecules/data-table/data-table'
-import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination'
-import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
-import { Main } from '@/ui/layouts/main'
-import { BoxLoader } from '@/ui/loader'
-import PageHeader from '@/ui/page-header'
-import { Button } from '@/ui/shadcn/button'
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { PlusIcon } from 'lucide-react'
+import { useState } from 'react'
+import { UsersViewDialog } from '@/features/users/components/users-view-dialog'
+import { mapUserOutputToUser } from '@/features/users/utils/mapping'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import apiClient from '@/query/apiClient'
-import { UsersViewDialog } from '@/features/users/components/users-view-dialog'
-import { mapUserOutputToUser } from '@/features/users/utils/mapping'
+import { type BlogResponseDto, useGetBlogs } from '@/query/blogs/use-blogs'
+import type { Meta } from '@/schemas/shared'
+import { Main } from '@/ui/layouts/main'
+import { BoxLoader } from '@/ui/loader'
+import { DataTable } from '@/ui/molecules/data-table/data-table'
+import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination'
+import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
+import PageHeader from '@/ui/page-header'
+import { Button } from '@/ui/shadcn/button'
 import { blogsFilterOptions } from './blogs-filter-options'
 import BlogsFilters from './components/blogs-filters'
 import { useBlogsColumns } from './hooks/use-blog-columns'
@@ -26,7 +24,9 @@ import { useBlogsColumns } from './hooks/use-blog-columns'
 const ListBlog = () => {
   const navigate = useNavigate()
 
-  const [viewProfileUserId, setViewProfileUserId] = useState<string | null>(null)
+  const [viewProfileUserId, setViewProfileUserId] = useState<string | null>(
+    null
+  )
   const [isViewProfileDialogOpen, setIsViewProfileDialogOpen] = useState(false)
 
   const { data: selectedUserDetails } = useQuery({
@@ -44,7 +44,9 @@ const ListBlog = () => {
     setIsViewProfileDialogOpen(true)
   }
 
-  const blogsColumns = useBlogsColumns({ onViewAuthorProfile: handleViewAuthorProfile })
+  const blogsColumns = useBlogsColumns({
+    onViewAuthorProfile: handleViewAuthorProfile,
+  })
   const paginationOptions = usePagination()
   const filterOptions = useFilters(blogsFilterOptions)
 

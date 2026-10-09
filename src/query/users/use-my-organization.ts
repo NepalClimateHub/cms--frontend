@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { UserOutput } from '@/api/types.gen'
 import apiClient from '@/query/apiClient'
 import { auth } from '@/query/shared/routes'
-import { SocialType } from '@/schemas/shared'
+import type { SocialType } from '@/schemas/shared'
 
 export type UpdateMyOrganizationBody = {
   name?: string

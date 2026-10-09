@@ -1,0 +1,74 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": [
+      "**",
+      "!**/dist",
+      "!src/api",
+      "!src/routeTree.gen.ts",
+      "!src/ui/shadcn",
+      "!lint-results.json"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 80
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "single",
+      "semicolons": "asNeeded",
+      "trailingCommas": "es5"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off",
+        "useIterableCallbackReturn": "warn",
+        "noRedeclare": "warn",
+        "noImplicitAnyLet": "warn",
+        "noDuplicateProperties": "warn",
+        "noUnknownAtRules": {
+          "level": "error",
+          "options": {
+            "ignore": ["tailwind", "apply", "layer"]
+          }
+        }
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
+      },
+      "a11y": "warn",
+      "security": {
+        "noDangerouslySetInnerHtml": "warn"
+      }
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}

@@ -1,7 +1,8 @@
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { toast } from '@/hooks/use-toast'
 import { Button } from '@/ui/shadcn/button'
 import { Checkbox } from '@/ui/shadcn/checkbox'
 import {
@@ -15,7 +16,6 @@ import {
 } from '@/ui/shadcn/form'
 import { RadioGroup, RadioGroupItem } from '@/ui/shadcn/radio-group'
 import { Switch } from '@/ui/shadcn/switch'
-import { toast } from '@/hooks/use-toast'
 
 const notificationsFormSchema = z.object({
   type: z.enum(['all', 'mentions', 'none'], {

@@ -1,22 +1,20 @@
-
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { Button } from '@/ui/shadcn/button'
 import { ArrowLeft } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useCreateProject } from '@/query/projects/use-projects'
-import { ProjectFormValues, projectSchema } from '@/schemas/project'
+import { toast } from '@/hooks/use-toast'
+import { type Tag, useCreateProject } from '@/query/projects/use-projects'
+import { useGetTags } from '@/query/tags/use-tags'
+import { type ProjectFormValues, projectSchema } from '@/schemas/project'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
+import { Button } from '@/ui/shadcn/button'
 import ProjectForm from '../shared/ProjectForm'
-import { useGetTags } from '@/query/tags/use-tags'
-import { Tag } from '@/query/projects/use-projects'
-import { toast } from '@/hooks/use-toast'
 
 export default function AddProject() {
   const createProjectMutation = useCreateProject()
   const navigate = useNavigate()
-  
+
   // Fetch tags for selection
   const { data: tagsData } = useGetTags({ query: { limit: 100 } })
   const tagsOptions = ((tagsData?.data as unknown as Tag[]) || [])
@@ -38,7 +36,10 @@ export default function AddProject() {
     },
   })
 
-  const handleImageUpload = (assetId: string | null, assetURL: string | null) => {
+  const handleImageUpload = (
+    assetId: string | null,
+    assetURL: string | null
+  ) => {
     form.setValue('bannerImageId', assetId || undefined)
     form.setValue('bannerImageUrl', assetURL || undefined)
   }
@@ -70,7 +71,10 @@ export default function AddProject() {
         title='Create Project'
         description='Add a new project to your portfolio'
         actions={
-          <Button variant='outline' onClick={() => navigate({ to: '/projects' })}>
+          <Button
+            variant='outline'
+            onClick={() => navigate({ to: '/projects' })}
+          >
             <ArrowLeft className='mr-2 h-4 w-4' /> Back
           </Button>
         }

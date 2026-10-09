@@ -1,15 +1,15 @@
-import React, { Suspense, useState } from 'react'
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { X } from 'lucide-react'
+import React, { Suspense, useState } from 'react'
 import {
   emailSubscriptionControllerFindAll,
   emailSubscriptionControllerRemove,
 } from '@/api'
+import { useToast } from '@/hooks/use-toast'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
 import { Avatar, AvatarFallback } from '@/ui/shadcn/avatar'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { X } from 'lucide-react'
 import { handleServerError } from '@/utils/handle-server-error'
-import { useToast } from '@/hooks/use-toast'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { canAccessOrganizationContentRoutes } from '@/utils/role-check.util'
 

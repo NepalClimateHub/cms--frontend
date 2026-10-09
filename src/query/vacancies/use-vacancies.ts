@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {
-  VacancyFormValues,
-  VacancyApplyFormValues,
-  VacancyQuestion,
-  VacancyAnswer,
-} from '@/schemas/vacancy'
-import { Meta } from '@/schemas/shared'
 import { toast } from 'sonner'
 import { client } from '@/api/client.gen'
+import type { Meta } from '@/schemas/shared'
+import type {
+  VacancyAnswer,
+  VacancyApplyFormValues,
+  VacancyFormValues,
+  VacancyQuestion,
+} from '@/schemas/vacancy'
 
 export interface VacancyApplicationResponseDto {
   id: string
@@ -165,7 +165,9 @@ export const useApplyVacancy = () => {
       return response.data
     },
     onSuccess: (_, { vacancyId }) => {
-      queryClient.invalidateQueries({ queryKey: ['vacancy-applications', vacancyId] })
+      queryClient.invalidateQueries({
+        queryKey: ['vacancy-applications', vacancyId],
+      })
       queryClient.invalidateQueries({ queryKey: ['vacancies'] })
       toast.success('Application submitted successfully!')
     },
@@ -220,7 +222,9 @@ export const useUpdateApplicationStatus = () => {
     },
     onError: (error: unknown) => {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to update application status'
+        error instanceof Error
+          ? error.message
+          : 'Failed to update application status'
       )
     },
   })

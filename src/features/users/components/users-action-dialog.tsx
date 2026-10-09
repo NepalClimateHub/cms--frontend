@@ -1,8 +1,13 @@
 'use client'
 
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { toast } from '@/hooks/use-toast'
+import { useUpdateUserByAdmin } from '@/query/users/use-users'
+import { useAuthStore } from '@/stores/authStore'
+import { PasswordInput } from '@/ui/password-input'
+import { SelectDropdown } from '@/ui/select-dropdown'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
@@ -22,13 +27,8 @@ import {
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
 import { ScrollArea } from '@/ui/shadcn/scroll-area'
-import { toast } from '@/hooks/use-toast'
-import { PasswordInput } from '@/ui/password-input'
-import { SelectDropdown } from '@/ui/select-dropdown'
-import { useAuthStore } from '@/stores/authStore'
-import { useUpdateUserByAdmin } from '@/query/users/use-users'
 import { userTypes } from '../data/data'
-import { User } from '../data/schema'
+import type { User } from '../data/schema'
 
 function formRoleToApiPayload(role: User['role']) {
   switch (role) {
@@ -40,7 +40,6 @@ function formRoleToApiPayload(role: User['role']) {
       return { role: 'CONTENT_ADMIN' as const }
     case 'organization':
       return { role: 'ORGANIZATION' as const }
-    case 'individual':
     default:
       return { role: 'INDIVIDUAL' as const }
   }

@@ -1,21 +1,21 @@
-import { FC } from 'react'
+import { Download, ExternalLink, Mail, MapPin, Trash2 } from 'lucide-react'
+import type { FC } from 'react'
+import {
+  useDeleteApplication,
+  useGetVacancyApplications,
+  useUpdateApplicationStatus,
+  type VacancyResponseDto,
+} from '@/query/vacancies/use-vacancies'
+import type { VacancyAnswer } from '@/schemas/vacancy'
+import { Badge } from '@/ui/shadcn/badge'
+import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/ui/shadcn/dialog'
-import { Button } from '@/ui/shadcn/button'
-import { Badge } from '@/ui/shadcn/badge'
-import {
-  useGetVacancyApplications,
-  useUpdateApplicationStatus,
-  useDeleteApplication,
-  VacancyResponseDto,
-} from '@/query/vacancies/use-vacancies'
-import { Download, ExternalLink, Mail, MapPin, Trash2 } from 'lucide-react'
-import { VacancyAnswer } from '@/schemas/vacancy'
 import {
   Select,
   SelectContent,
@@ -52,7 +52,9 @@ export const VacancyApplicationsModal: FC<VacancyApplicationsModalProps> = ({
     if (typeof value === 'boolean') return value ? 'Yes' : 'No'
 
     if (Array.isArray(value)) {
-      return value.length ? value.join(', ') : (
+      return value.length ? (
+        value.join(', ')
+      ) : (
         <span className='text-muted-foreground'>Not answered</span>
       )
     }
@@ -77,7 +79,11 @@ export const VacancyApplicationsModal: FC<VacancyApplicationsModalProps> = ({
   const getStatusBadge = (status: string) => {
     switch (status?.toUpperCase()) {
       case 'SHORTLISTED':
-        return <Badge className='bg-emerald-500 hover:bg-emerald-600'>Shortlisted</Badge>
+        return (
+          <Badge className='bg-emerald-500 hover:bg-emerald-600'>
+            Shortlisted
+          </Badge>
+        )
       case 'REVIEWED':
         return <Badge className='bg-blue-500 hover:bg-blue-600'>Reviewed</Badge>
       case 'REJECTED':
@@ -129,7 +135,8 @@ export const VacancyApplicationsModal: FC<VacancyApplicationsModalProps> = ({
                         </span>
                         {app.currentAddress && (
                           <span className='flex items-center gap-1'>
-                            <MapPin className='h-3.5 w-3.5' /> {app.currentAddress}
+                            <MapPin className='h-3.5 w-3.5' />{' '}
+                            {app.currentAddress}
                           </span>
                         )}
                       </div>
@@ -153,7 +160,9 @@ export const VacancyApplicationsModal: FC<VacancyApplicationsModalProps> = ({
                         <SelectContent>
                           <SelectItem value='PENDING'>Pending</SelectItem>
                           <SelectItem value='REVIEWED'>Reviewed</SelectItem>
-                          <SelectItem value='SHORTLISTED'>Shortlisted</SelectItem>
+                          <SelectItem value='SHORTLISTED'>
+                            Shortlisted
+                          </SelectItem>
                           <SelectItem value='REJECTED'>Rejected</SelectItem>
                         </SelectContent>
                       </Select>
@@ -199,7 +208,8 @@ export const VacancyApplicationsModal: FC<VacancyApplicationsModalProps> = ({
                             rel='noreferrer'
                             download
                           >
-                            <Download className='h-3.5 w-3.5' /> View CV / Resume
+                            <Download className='h-3.5 w-3.5' /> View CV /
+                            Resume
                             <ExternalLink className='h-3 w-3 ml-0.5' />
                           </a>
                         </Button>
@@ -211,7 +221,9 @@ export const VacancyApplicationsModal: FC<VacancyApplicationsModalProps> = ({
                         className='h-8 text-destructive hover:bg-destructive/10 hover:text-destructive'
                         onClick={() => {
                           if (
-                            confirm('Are you sure you want to delete this application?')
+                            confirm(
+                              'Are you sure you want to delete this application?'
+                            )
                           ) {
                             deleteMutation.mutate({
                               applicationId: app.id,

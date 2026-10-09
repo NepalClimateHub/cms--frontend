@@ -1,7 +1,6 @@
-
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { client } from '@/api/client.gen';
-import { toast } from 'sonner';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { client } from '@/api/client.gen'
 
 export enum CategoryType {
   BLOG = 'BLOG',
@@ -10,24 +9,24 @@ export enum CategoryType {
   OPPORTUNITY = 'OPPORTUNITY',
   PROJECT = 'PROJECT',
   RESOURCE = 'RESOURCE',
-  ORGANIZATION = 'ORGANIZATION'
+  ORGANIZATION = 'ORGANIZATION',
 }
 
 export interface Category {
-  id: string;
-  name: string;
-  description?: string;
-  type: CategoryType;
-  createdAt: string;
-  updatedAt: string;
+  id: string
+  name: string
+  description?: string
+  type: CategoryType
+  createdAt: string
+  updatedAt: string
 }
 
 export interface CategorySearchParams {
-  offset?: number;
-  limit?: number;
-  name?: string;
-  type?: CategoryType;
-  [key: string]: unknown;
+  offset?: number
+  limit?: number
+  name?: string
+  type?: CategoryType
+  [key: string]: unknown
 }
 
 export type CategoriesListApiResult = {
@@ -36,9 +35,9 @@ export type CategoriesListApiResult = {
 }
 
 export interface CreateCategoryDto {
-  name: string;
-  description?: string;
-  type: CategoryType;
+  name: string
+  description?: string
+  type: CategoryType
 }
 
 export type UpdateCategoryDto = Partial<CreateCategoryDto>
@@ -50,11 +49,11 @@ export const useGetCategories = (params: CategorySearchParams) => {
       const { data } = await client.get({
         url: '/api/v1/categories',
         query: params,
-      });
-      return data as CategoriesListApiResult;
+      })
+      return data as CategoriesListApiResult
     },
-  });
-};
+  })
+}
 
 export const useGetCategory = (id: string) => {
   return useQuery({
@@ -62,73 +61,73 @@ export const useGetCategory = (id: string) => {
     queryFn: async (): Promise<Category> => {
       const { data } = await client.get({
         url: `/api/v1/categories/${id}`,
-      });
-      return (data as { data: Category }).data;
+      })
+      return (data as { data: Category }).data
     },
     enabled: !!id,
-  });
-};
+  })
+}
 
 export const useCreateCategory = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (category: CreateCategoryDto) => {
       const { data } = await client.post({
         url: '/api/v1/categories',
         body: category,
-      });
-      return data;
+      })
+      return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-      toast.success('Category created successfully');
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      toast.success('Category created successfully')
     },
     onError: (error: unknown) => {
       toast.error(
         error instanceof Error ? error.message : 'Failed to create category'
-      );
+      )
     },
-  });
-};
+  })
+}
 
 export const useUpdateCategory = (id: string) => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (category: UpdateCategoryDto) => {
       const { data } = await client.patch({
         url: `/api/v1/categories/${id}`,
         body: category,
-      });
-      return data;
+      })
+      return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-      toast.success('Category updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      toast.success('Category updated successfully')
     },
     onError: (error: unknown) => {
       toast.error(
         error instanceof Error ? error.message : 'Failed to update category'
-      );
+      )
     },
-  });
-};
+  })
+}
 
 export const useDeleteCategory = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
       await client.delete({
         url: `/api/v1/categories/${id}`,
-      });
+      })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-      toast.success('Category deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      toast.success('Category deleted successfully')
     },
     onError: (error: unknown) => {
       toast.error(
         error instanceof Error ? error.message : 'Failed to delete category'
-      );
+      )
     },
-  });
-};
+  })
+}

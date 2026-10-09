@@ -1,13 +1,13 @@
 import * as React from 'react'
+import Cropper, { type Area, type Point } from 'react-easy-crop'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/ui/shadcn/dialog'
-import Cropper, { type Point, type Area } from 'react-easy-crop'
 import { getCroppedImg } from '../../../utils'
 
 interface ImageCropperProps {

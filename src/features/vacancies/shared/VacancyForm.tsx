@@ -1,12 +1,31 @@
-import { FC, useState } from 'react'
-import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
+import {
+  AlertCircle,
+  ArrowLeft,
+  ClipboardList,
+  ExternalLink,
+  FileText,
+  Plus,
+  Trash2,
+} from 'lucide-react'
+import { type FC, useState } from 'react'
+import { useFieldArray, useForm } from 'react-hook-form'
+import {
+  type VacancyFormValues,
+  type VacancyQuestion,
+  vacancyFormSchema,
+} from '@/schemas/vacancy'
+import { Main } from '@/ui/layouts/main'
+import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
-import { Input } from '@/ui/shadcn/input'
-import { Textarea } from '@/ui/shadcn/textarea'
-import { Switch } from '@/ui/shadcn/switch'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/ui/shadcn/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
@@ -16,23 +35,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@/ui/shadcn/form'
-import {
-  vacancyFormSchema,
-  VacancyFormValues,
-  VacancyQuestion,
-} from '@/schemas/vacancy'
-import { Main } from '@/ui/layouts/main'
+import { Input } from '@/ui/shadcn/input'
+import { Switch } from '@/ui/shadcn/switch'
+import { Textarea } from '@/ui/shadcn/textarea'
 import { ApplicationFormModal } from './ApplicationFormModal'
-import { Badge } from '@/ui/shadcn/badge'
-import {
-  Plus,
-  Trash2,
-  ArrowLeft,
-  ClipboardList,
-  AlertCircle,
-  ExternalLink,
-  FileText,
-} from 'lucide-react'
 
 /** Backfills ids/order for questions coming from the API. */
 const normalizeInitialQuestions = (
@@ -162,9 +168,12 @@ export const VacancyForm: FC<VacancyFormProps> = ({
           {/* Basic Details Card */}
           <Card className='border-border/50 bg-card/60 backdrop-blur shadow-sm'>
             <CardHeader>
-              <CardTitle className='text-lg font-semibold'>Basic Details</CardTitle>
+              <CardTitle className='text-lg font-semibold'>
+                Basic Details
+              </CardTitle>
               <CardDescription>
-                General information about the vacancy role and opening requirements.
+                General information about the vacancy role and opening
+                requirements.
               </CardDescription>
             </CardHeader>
             <CardContent className='space-y-6'>
@@ -179,7 +188,11 @@ export const VacancyForm: FC<VacancyFormProps> = ({
                           Job Title <span className='text-red-500'>*</span>
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder='e.g. QA Engineer' className='w-full' {...field} />
+                          <Input
+                            placeholder='e.g. QA Engineer'
+                            className='w-full'
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -196,7 +209,12 @@ export const VacancyForm: FC<VacancyFormProps> = ({
                         Openings Count <span className='text-red-500'>*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input type='number' min={1} className='w-full' {...field} />
+                        <Input
+                          type='number'
+                          min={1}
+                          className='w-full'
+                          {...field}
+                        />
                       </FormControl>
                       <FormDescription>Number of positions</FormDescription>
                       <FormMessage />
@@ -231,7 +249,11 @@ export const VacancyForm: FC<VacancyFormProps> = ({
                     <FormItem>
                       <FormLabel>Duration</FormLabel>
                       <FormControl>
-                        <Input placeholder='e.g. 6 months' className='w-full' {...field} />
+                        <Input
+                          placeholder='e.g. 6 months'
+                          className='w-full'
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -245,7 +267,11 @@ export const VacancyForm: FC<VacancyFormProps> = ({
                     <FormItem>
                       <FormLabel>Commitment</FormLabel>
                       <FormControl>
-                        <Input placeholder='e.g. 5 hours/week' className='w-full' {...field} />
+                        <Input
+                          placeholder='e.g. 5 hours/week'
+                          className='w-full'
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -259,7 +285,11 @@ export const VacancyForm: FC<VacancyFormProps> = ({
                     <FormItem>
                       <FormLabel>Location</FormLabel>
                       <FormControl>
-                        <Input placeholder='e.g. Kathmandu / Remote' className='w-full' {...field} />
+                        <Input
+                          placeholder='e.g. Kathmandu / Remote'
+                          className='w-full'
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -280,12 +310,16 @@ export const VacancyForm: FC<VacancyFormProps> = ({
                           className='w-full'
                           value={
                             field.value
-                              ? new Date(field.value).toISOString().split('T')[0]
+                              ? new Date(field.value)
+                                  .toISOString()
+                                  .split('T')[0]
                               : ''
                           }
                           onChange={(e) =>
                             field.onChange(
-                              e.target.value ? new Date(e.target.value).toISOString() : null
+                              e.target.value
+                                ? new Date(e.target.value).toISOString()
+                                : null
                             )
                           }
                         />
@@ -301,7 +335,9 @@ export const VacancyForm: FC<VacancyFormProps> = ({
                   render={({ field }) => (
                     <FormItem className='flex items-center justify-between rounded-lg border p-3.5 mt-2'>
                       <div className='space-y-0.5'>
-                        <FormLabel className='text-sm font-medium'>Active Status</FormLabel>
+                        <FormLabel className='text-sm font-medium'>
+                          Active Status
+                        </FormLabel>
                         <FormDescription className='text-xs'>
                           Candidates can apply when active.
                         </FormDescription>
@@ -342,7 +378,9 @@ export const VacancyForm: FC<VacancyFormProps> = ({
           <Card className='border-border/50 bg-card/60 backdrop-blur shadow-sm'>
             <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-4'>
               <div>
-                <CardTitle className='text-lg font-semibold'>What you'll do</CardTitle>
+                <CardTitle className='text-lg font-semibold'>
+                  What you'll do
+                </CardTitle>
                 <CardDescription className='text-xs mt-1'>
                   Key duties and responsibilities for this role
                 </CardDescription>
@@ -395,7 +433,9 @@ export const VacancyForm: FC<VacancyFormProps> = ({
           <Card className='border-border/50 bg-card/60 backdrop-blur shadow-sm'>
             <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-4'>
               <div>
-                <CardTitle className='text-lg font-semibold'>What we're looking for</CardTitle>
+                <CardTitle className='text-lg font-semibold'>
+                  What we're looking for
+                </CardTitle>
                 <CardDescription className='text-xs mt-1'>
                   Key qualifications, skills, and experience needed
                 </CardDescription>
@@ -504,9 +544,9 @@ export const VacancyForm: FC<VacancyFormProps> = ({
                 <FileText className='h-4 w-4' /> Application Method
               </CardTitle>
               <CardDescription>
-                Optionally collect applications through a Google Form. When a link is set,
-                the website's "Apply" button opens the form instead of the built-in
-                application form.
+                Optionally collect applications through a Google Form. When a
+                link is set, the website's "Apply" button opens the form instead
+                of the built-in application form.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -535,7 +575,11 @@ export const VacancyForm: FC<VacancyFormProps> = ({
                         title='Open form in new tab'
                         onClick={() =>
                           field.value &&
-                          window.open(field.value, '_blank', 'noopener,noreferrer')
+                          window.open(
+                            field.value,
+                            '_blank',
+                            'noopener,noreferrer'
+                          )
                         }
                       >
                         <ExternalLink className='h-4 w-4' />

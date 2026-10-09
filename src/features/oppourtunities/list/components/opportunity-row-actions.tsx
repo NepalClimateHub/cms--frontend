@@ -1,7 +1,12 @@
-import { useState } from 'react'
-import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
 import type { Row } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import { LucideEye, Pencil, Trash } from 'lucide-react'
+import { useState } from 'react'
+import type {
+  OpportunityResponseDto,
+  UpdateOpportunityDto,
+} from '@/api/types.gen'
 import {
   useDeleteOpportunity,
   useOpportunityAPI,
@@ -18,11 +23,6 @@ import {
   DialogTrigger,
 } from '@/ui/shadcn/dialog'
 import { Separator } from '@/ui/shadcn/separator'
-import { LucideEye, Pencil, Trash } from 'lucide-react'
-import type {
-  OpportunityResponseDto,
-  UpdateOpportunityDto,
-} from '@/api/types.gen'
 
 type OpportunityTableRow = OpportunityResponseDto & {
   createdAt?: string

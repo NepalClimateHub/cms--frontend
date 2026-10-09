@@ -1,21 +1,21 @@
 import { useNavigate } from '@tanstack/react-router'
 import {
-  ColumnDef,
+  type ColumnDef,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { useGetEvents } from '@/query/events/use-events'
-import { Main } from '@/ui/layouts/main'
-import { Button } from '@/ui/shadcn/button'
 import { PlusIcon } from 'lucide-react'
-import { EventResponseDto } from '@/api/types.gen'
+import type { EventResponseDto } from '@/api/types.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
-import { DataTable } from '@/ui/molecules/data-table/data-table'
+import { useGetEvents } from '@/query/events/use-events'
+import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/ui/loader'
-import PageHeader from '@/ui/page-header'
+import { DataTable } from '@/ui/molecules/data-table/data-table'
 import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination'
 import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
+import PageHeader from '@/ui/page-header'
+import { Button } from '@/ui/shadcn/button'
 import EventsFilters from './components/event-filters'
 import { eventsFilterOptions } from './events-filter-options'
 import { useEventsColumns } from './hooks/use-events-columns'
@@ -50,44 +50,42 @@ export default function ListEvents() {
   }
 
   return (
-    <>
-      <Main>
-        <PageHeader
-          title='Events'
-          description='Manage events !'
-          actions={
-            <div className='flex items-center space-x-2'>
-              <Button
-                onClick={() => {
-                  navigate({
-                    to: '/events/add',
-                  })
-                }}
-              >
-                {' '}
-                <PlusIcon /> Add Event
-              </Button>
-            </div>
+    <Main>
+      <PageHeader
+        title='Events'
+        description='Manage events !'
+        actions={
+          <div className='flex items-center space-x-2'>
+            <Button
+              onClick={() => {
+                navigate({
+                  to: '/events/add',
+                })
+              }}
+            >
+              {' '}
+              <PlusIcon /> Add Event
+            </Button>
+          </div>
+        }
+      />
+      <div className='mb-2 mt-4'>
+        <DataTableToolbar
+          table={table}
+          filterComponent={
+            <EventsFilters filterOptions={filterOptions} setPage={setPage} />
           }
         />
-        <div className='mb-2 mt-4'>
-          <DataTableToolbar
-            table={table}
-            filterComponent={
-              <EventsFilters filterOptions={filterOptions} setPage={setPage} />
-            }
-          />
-        </div>
-        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <DataTable loading={isLoading} table={table} />
-        </div>
-        <div className='mt-4'>
-          <DataTablePagination
-            totalCount={eventsMeta.count as unknown as number}
-            paginationOptions={paginationOptions}
-          />
-        </div>
-      </Main>
-    </>
+      </div>
+      <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+        <DataTable loading={isLoading} table={table} />
+      </div>
+      <div className='mt-4'>
+        <DataTablePagination
+          totalCount={eventsMeta.count as unknown as number}
+          paginationOptions={paginationOptions}
+        />
+      </div>
+    </Main>
   )
 }

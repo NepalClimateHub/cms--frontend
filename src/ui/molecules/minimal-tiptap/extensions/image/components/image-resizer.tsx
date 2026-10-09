@@ -1,15 +1,15 @@
 import * as React from 'react'
+import { Button } from '@/ui/shadcn/button'
+import { Checkbox } from '@/ui/shadcn/checkbox'
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/ui/shadcn/dialog'
-import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
 import { Label } from '@/ui/shadcn/label'
-import { Checkbox } from '@/ui/shadcn/checkbox'
 
 interface ImageResizerProps {
   open: boolean
@@ -44,7 +44,7 @@ export const ImageResizer: React.FC<ImageResizerProps> = ({
   const aspectRatio = naturalWidth / naturalHeight
 
   const handleWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newWidth = parseInt(e.target.value) || 0
+    const newWidth = parseInt(e.target.value, 10) || 0
     setWidth(newWidth)
     if (maintainAspectRatio) {
       setHeight(Math.round(newWidth / aspectRatio))
@@ -52,7 +52,7 @@ export const ImageResizer: React.FC<ImageResizerProps> = ({
   }
 
   const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newHeight = parseInt(e.target.value) || 0
+    const newHeight = parseInt(e.target.value, 10) || 0
     setHeight(newHeight)
     if (maintainAspectRatio) {
       setWidth(Math.round(newHeight * aspectRatio))
@@ -68,51 +68,54 @@ export const ImageResizer: React.FC<ImageResizerProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>Resize Image</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="width" className="text-right">
+        <div className='grid gap-4 py-4'>
+          <div className='grid grid-cols-4 items-center gap-4'>
+            <Label htmlFor='width' className='text-right'>
               Width
             </Label>
             <Input
-              id="width"
-              type="number"
+              id='width'
+              type='number'
               value={width}
               onChange={handleWidthChange}
-              className="col-span-3"
+              className='col-span-3'
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="height" className="text-right">
+          <div className='grid grid-cols-4 items-center gap-4'>
+            <Label htmlFor='height' className='text-right'>
               Height
             </Label>
             <Input
-              id="height"
-              type="number"
+              id='height'
+              type='number'
               value={height}
               onChange={handleHeightChange}
-              className="col-span-3"
+              className='col-span-3'
             />
           </div>
-          <div className="flex items-center space-x-2 pl-24">
+          <div className='flex items-center space-x-2 pl-24'>
             <Checkbox
-              id="aspect"
+              id='aspect'
               checked={maintainAspectRatio}
               onCheckedChange={(checked) => setMaintainAspectRatio(!!checked)}
             />
-            <Label htmlFor="aspect" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            <Label
+              htmlFor='aspect'
+              className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+            >
               Maintain aspect ratio
             </Label>
           </div>
-          <div className="flex justify-center gap-2 mt-2">
+          <div className='flex justify-center gap-2 mt-2'>
             {[25, 50, 75, 100].map((p) => (
               <Button
                 key={p}
-                variant="outline"
-                size="sm"
+                variant='outline'
+                size='sm'
                 onClick={() => setPreset(p)}
               >
                 {p}%

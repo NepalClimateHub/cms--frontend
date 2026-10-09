@@ -1,9 +1,13 @@
-import { useEffect, useState, useRef, useMemo } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { GripVertical, MapPin, PlusIcon, Trophy } from 'lucide-react'
+import { parseAsString } from 'nuqs'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useFilters } from '@/hooks/use-filters'
+import { usePagination } from '@/hooks/use-pagination'
 import {
+  type ClimateChampionResponseDto,
   useGetClimateChampions,
   useReorderClimateChampions,
-  ClimateChampionResponseDto,
 } from '@/query/climate-champions/use-climate-champions'
 import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/ui/loader'
@@ -13,10 +17,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
-import { PlusIcon, GripVertical, Trophy, MapPin } from 'lucide-react'
-import { parseAsString } from 'nuqs'
-import { useFilters } from '@/hooks/use-filters'
-import { usePagination } from '@/hooks/use-pagination'
 import ChampionRowActions from './components/champion-row-actions'
 
 const ClimateChampionList = () => {
@@ -50,7 +50,9 @@ const ClimateChampionList = () => {
   }, [championsList?.data])
   const totalCount = championsList?.meta?.count ?? 0
 
-  const [localChampions, setLocalChampions] = useState<ClimateChampionResponseDto[]>([])
+  const [localChampions, setLocalChampions] = useState<
+    ClimateChampionResponseDto[]
+  >([])
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const reorderChampionsMutation = useReorderClimateChampions()
 
@@ -184,7 +186,8 @@ const ClimateChampionList = () => {
                         </h3>
                         {champion.location && (
                           <span className='truncate text-xs font-medium text-muted-foreground flex items-center gap-0.5'>
-                            <MapPin className='h-3 w-3 inline-block' /> {champion.location}
+                            <MapPin className='h-3 w-3 inline-block' />{' '}
+                            {champion.location}
                           </span>
                         )}
                       </div>
@@ -209,10 +212,15 @@ const ClimateChampionList = () => {
                           </Badge>
                         ))
                       ) : (
-                        <span className='text-xs text-muted-foreground/50'>No tags</span>
+                        <span className='text-xs text-muted-foreground/50'>
+                          No tags
+                        </span>
                       )}
                       {champion.tags && champion.tags.length > 3 && (
-                        <Badge variant='outline' className='text-[10px] font-normal px-1.5 py-0'>
+                        <Badge
+                          variant='outline'
+                          className='text-[10px] font-normal px-1.5 py-0'
+                        >
                           +{champion.tags.length - 3} more
                         </Badge>
                       )}

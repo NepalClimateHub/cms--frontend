@@ -1,13 +1,36 @@
-import { FC, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import {
-  useGetVacancies,
+  Briefcase,
+  Calendar,
+  ClipboardList,
+  Clock,
+  Edit,
+  Eye,
+  FileText,
+  MoreVertical,
+  Plus,
+  Search,
+  Trash2,
+  Users,
+} from 'lucide-react'
+import { type FC, useState } from 'react'
+import {
   useDeleteVacancy,
-  VacancyResponseDto,
+  useGetVacancies,
+  type VacancyResponseDto,
 } from '@/query/vacancies/use-vacancies'
-import { Button } from '@/ui/shadcn/button'
-import { Input } from '@/ui/shadcn/input'
+import { ConfirmDialog } from '@/ui/confirm-dialog'
+import { Main } from '@/ui/layouts/main'
+import PageHeader from '@/ui/page-header'
 import { Badge } from '@/ui/shadcn/badge'
+import { Button } from '@/ui/shadcn/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/ui/shadcn/dropdown-menu'
+import { Input } from '@/ui/shadcn/input'
 import {
   Table,
   TableBody,
@@ -16,31 +39,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/ui/shadcn/table'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/ui/shadcn/dropdown-menu'
-import {
-  Plus,
-  Search,
-  MoreVertical,
-  Edit,
-  Trash2,
-  Eye,
-  Users,
-  Briefcase,
-  Clock,
-  Calendar,
-  ClipboardList,
-  FileText,
-} from 'lucide-react'
-import { Main } from '@/ui/layouts/main'
-import PageHeader from '@/ui/page-header'
-import { VacancyApplyModal } from '../components/VacancyApplyModal'
 import { VacancyApplicationsModal } from '../components/VacancyApplicationsModal'
-import { ConfirmDialog } from '@/ui/confirm-dialog'
+import { VacancyApplyModal } from '../components/VacancyApplyModal'
 
 export const VacanciesList: FC = () => {
   const navigate = useNavigate()
@@ -161,7 +161,9 @@ export const VacanciesList: FC = () => {
                   </TableCell>
                   <TableCell>
                     {v.isActive ? (
-                      <Badge className='bg-emerald-500 hover:bg-emerald-600'>Active</Badge>
+                      <Badge className='bg-emerald-500 hover:bg-emerald-600'>
+                        Active
+                      </Badge>
                     ) : (
                       <Badge variant='secondary'>Inactive</Badge>
                     )}
@@ -174,9 +176,7 @@ export const VacanciesList: FC = () => {
                       onClick={() => setSelectedVacancyForApps(v)}
                     >
                       <Users className='h-3.5 w-3.5' />
-                      <span>
-                        Applications ({v._count?.applications ?? 0})
-                      </span>
+                      <span>Applications ({v._count?.applications ?? 0})</span>
                     </Button>
                   </TableCell>
                   <TableCell className='text-xs text-muted-foreground'>

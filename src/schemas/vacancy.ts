@@ -153,7 +153,9 @@ const refineEmailMatch = (
   data: { email: string; confirmEmail: string },
   ctx: z.RefinementCtx
 ) => {
-  if (data.email.trim().toLowerCase() !== data.confirmEmail.trim().toLowerCase()) {
+  if (
+    data.email.trim().toLowerCase() !== data.confirmEmail.trim().toLowerCase()
+  ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ['confirmEmail'],
@@ -198,7 +200,10 @@ export const buildVacancyApplySchema = (questions: VacancyQuestion[] = []) =>
         })
       }
 
-      if (question.type === 'URL' && !z.string().url().safeParse(value).success) {
+      if (
+        question.type === 'URL' &&
+        !z.string().url().safeParse(value).success
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path,

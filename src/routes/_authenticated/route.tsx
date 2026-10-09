@@ -1,13 +1,13 @@
-import { useEffect } from 'react'
-import Cookies from 'js-cookie'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import Cookies from 'js-cookie'
+import { useEffect } from 'react'
 import { useGetProfile } from '@/query/auth/use-auth'
+import { getAccessToken, useAuthStore } from '@/stores/authStore'
 import { AppSidebar } from '@/ui/layouts/app-sidebar'
 import { BoxLoader } from '@/ui/loader'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { SidebarProvider } from '@/ui/shadcn/sidebar'
 import TopHeader from '@/ui/top-header'
-import { getAccessToken, useAuthStore } from '@/stores/authStore'
 import { mapUserOutputToAuthUser } from '@/utils/map-user-output'
 
 export const Route = createFileRoute('/_authenticated')({
@@ -27,14 +27,15 @@ function RouteComponent() {
   const defaultOpen = Cookies.get('sidebar:state') !== 'false'
   const { accessToken, setUser, user: authUser } = useAuthStore()
 
-  const { data: userData, isLoading: isLoadingProfile } =
-    useGetProfile(!!accessToken)
+  const { data: userData, isLoading: isLoadingProfile } = useGetProfile(
+    !!accessToken
+  )
 
   useEffect(() => {
     if (userData) {
       setUser(mapUserOutputToAuthUser(userData, authUser?.organization ?? null))
     }
-  }, [userData, setUser]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [userData, setUser, authUser?.organization])
 
   // Show loader if profile is loading OR if user data doesn't match auth store user
   // This prevents showing the wrong menu when switching users

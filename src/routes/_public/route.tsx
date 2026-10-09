@@ -1,5 +1,5 @@
-import { getAccessToken } from '@/stores/authStore'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { getAccessToken } from '@/stores/authStore'
 
 export const Route = createFileRoute('/_public')({
   component: RouteComponent,

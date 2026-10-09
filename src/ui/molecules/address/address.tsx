@@ -1,12 +1,12 @@
-import { FieldPath, UseFormReturn } from 'react-hook-form'
+import type { FieldPath, UseFormReturn } from 'react-hook-form'
 import { Card, CardContent, CardHeader, CardTitle } from '../../shadcn/card'
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '../../shadcn/form'
 import { Input } from '../../shadcn/input'
 import {

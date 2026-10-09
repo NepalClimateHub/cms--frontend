@@ -1,6 +1,10 @@
-import { FC } from 'react'
-import { UseFormReturn } from 'react-hook-form'
-import { TAG_TYPES, TagFormValues, TagsInitializer } from '@/schemas/tags/tags'
+import type { FC } from 'react'
+import type { UseFormReturn } from 'react-hook-form'
+import {
+  TAG_TYPES,
+  type TagFormValues,
+  type TagsInitializer,
+} from '@/schemas/tags/tags'
 import {
   Form,
   FormControl,

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { cleanObj } from '@/utils/obj-utils'
 import { toast } from '@/hooks/use-toast'
+import { cleanObj } from '@/utils/obj-utils'
 import {
   minutesControllerCreateMutation,
   minutesControllerFindAllOptions,
@@ -82,7 +82,11 @@ export function useMinutesAPI() {
   }
 }
 
-export const useGetMinutes = (params: { limit?: number; offset?: number; title?: string }) => {
+export const useGetMinutes = (params: {
+  limit?: number
+  offset?: number
+  title?: string
+}) => {
   const cleanedParams = cleanObj({
     limit: params.limit,
     offset: params.offset,

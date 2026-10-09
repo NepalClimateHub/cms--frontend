@@ -1,11 +1,13 @@
-import React from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import {
   IconArrowRightDashed,
   IconDeviceLaptop,
   IconMoon,
   IconSun,
 } from '@tabler/icons-react'
+import { useNavigate } from '@tanstack/react-router'
+import React from 'react'
+import { useSearch } from '@/context/search-context'
+import { useTheme } from '@/context/theme-context'
 import {
   CommandDialog,
   CommandEmpty,
@@ -15,8 +17,6 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/ui/shadcn/command'
-import { useSearch } from '@/context/search-context'
-import { useTheme } from '@/context/theme-context'
 import { useSideBarData } from './layouts/data/use-sidebar-data'
 import { ScrollArea } from './shadcn/scroll-area'
 

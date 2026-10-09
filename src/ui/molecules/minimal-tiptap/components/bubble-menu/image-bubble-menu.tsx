@@ -1,11 +1,11 @@
-import * as React from 'react'
 import type { Editor } from '@tiptap/react'
 import { BubbleMenu } from '@tiptap/react'
-import { X, Pencil } from 'lucide-react'
+import { Pencil, X } from 'lucide-react'
+import * as React from 'react'
 import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/ui/shadcn/popover'
 import { Label } from '@/ui/shadcn/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/ui/shadcn/popover'
 
 interface ImageBubbleMenuProps {
   editor: Editor
@@ -33,7 +33,11 @@ export const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ editor }) => {
 
   const handleSaveCaption = () => {
     const attrs = editor.getAttributes('image')
-    editor.chain().focus().setImage({ ...attrs, caption: caption || null }).run()
+    editor
+      .chain()
+      .focus()
+      .setImage({ ...attrs, caption: caption || null })
+      .run()
     setIsEditingCaption(false)
   }
 
@@ -104,5 +108,3 @@ export const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ editor }) => {
 }
 
 export default ImageBubbleMenu
-
-

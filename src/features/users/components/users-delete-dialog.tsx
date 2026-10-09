@@ -1,15 +1,15 @@
 'use client'
 
-import { useState } from 'react'
 import { IconAlertTriangle } from '@tabler/icons-react'
 import { isAxiosError } from 'axios'
+import { useState } from 'react'
+import { toast } from '@/hooks/use-toast'
 import { useDeleteUser } from '@/query/users/use-users'
+import { ConfirmDialog } from '@/ui/confirm-dialog'
 import { Alert, AlertDescription, AlertTitle } from '@/ui/shadcn/alert'
 import { Input } from '@/ui/shadcn/input'
 import { Label } from '@/ui/shadcn/label'
-import { toast } from '@/hooks/use-toast'
-import { ConfirmDialog } from '@/ui/confirm-dialog'
-import { User } from '../data/schema'
+import type { User } from '../data/schema'
 
 interface Props {
   open: boolean
@@ -81,18 +81,20 @@ export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
         <div className='space-y-4'>
           <p className='mb-2'>
             Are you sure you want to delete{' '}
-            <span className='font-bold'>{displayName}</span> ({currentRow.email})?
+            <span className='font-bold'>{displayName}</span> ({currentRow.email}
+            )?
             <br />
             This action will permanently remove the user with the role of{' '}
-            <span className='font-bold'>
-              {currentRow.serverRole}
-            </span>{' '}
-            from the system, so the email can be registered again. Any linked
-            organization record and content are kept. This action cannot be undone.
+            <span className='font-bold'>{currentRow.serverRole}</span> from the
+            system, so the email can be registered again. Any linked
+            organization record and content are kept. This action cannot be
+            undone.
           </p>
 
           <Label className='my-2'>
-            Type <span className='font-semibold'>{currentRow.username}</span> or <span className='font-semibold'>{currentRow.email}</span> to confirm:
+            Type <span className='font-semibold'>{currentRow.username}</span> or{' '}
+            <span className='font-semibold'>{currentRow.email}</span> to
+            confirm:
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}

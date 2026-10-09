@@ -1,4 +1,5 @@
-import { flexRender, Table as TableType } from '@tanstack/react-table'
+import { flexRender, type Table as TableType } from '@tanstack/react-table'
+import { BookDashed } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -7,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/ui/shadcn/table'
-import { BookDashed } from 'lucide-react'
 import { TableLoader } from '../../loader'
 
 interface DataTableProps<TData> {
