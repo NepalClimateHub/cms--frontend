@@ -95,7 +95,7 @@ export default function OrganizationVerifyDialog({
             const document = documents[index]
             return (
               <ImageUpload
-                key={index}
+                key={document?.id ?? `empty-${index}`}
                 label={`Supporting document ${index + 1}${index === 0 ? ' (required)' : ' (optional)'}`}
                 handleImage={(id, url) => {
                   setDocuments((current) => {
