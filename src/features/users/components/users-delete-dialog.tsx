@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { IconAlertTriangle } from '@tabler/icons-react'
+import { isAxiosError } from 'axios'
 import { useDeleteUser } from '@/query/users/use-users'
 import { Alert, AlertDescription, AlertTitle } from '@/ui/shadcn/alert'
 import { Input } from '@/ui/shadcn/input'
@@ -42,10 +43,11 @@ export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
           description: `${displayName} (${currentRow.email}) has been permanently deleted.`,
         })
       },
-      onError: (err: any) => {
+      onError: (err: unknown) => {
         const message =
-          err?.response?.data?.message ||
-          err?.message ||
+          (isAxiosError<{ message?: string }>(err) &&
+            err.response?.data?.message) ||
+          (err instanceof Error && err.message) ||
           'Failed to delete user.'
         toast({
           title: 'Error deleting user',
@@ -85,7 +87,8 @@ export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
             <span className='font-bold'>
               {currentRow.serverRole}
             </span>{' '}
-            and any linked organization details from the system. This action cannot be undone.
+            from the system, so the email can be registered again. Any linked
+            organization record and content are kept. This action cannot be undone.
           </p>
 
           <Label className='my-2'>
