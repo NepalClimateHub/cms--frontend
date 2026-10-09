@@ -38,6 +38,7 @@ export interface VacancyResponseDto {
   isActive: boolean
   isDraft: boolean
   questions?: VacancyQuestion[]
+  googleFormLink?: string | null
   createdAt: string
   updatedAt: string
   _count?: {

@@ -34,6 +34,7 @@ import {
   Clock,
   Calendar,
   ClipboardList,
+  FileText,
 } from 'lucide-react'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
@@ -126,6 +127,16 @@ export const VacanciesList: FC = () => {
                         <span className='inline-flex items-center gap-1 text-xs text-muted-foreground font-normal'>
                           <Briefcase className='h-3 w-3' /> {v.type}
                         </span>
+                      )}
+                      {v.googleFormLink && (
+                        <a
+                          href={v.googleFormLink}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='flex w-fit items-center gap-1 text-xs font-normal text-primary hover:underline'
+                        >
+                          <FileText className='h-3 w-3' /> Google Form
+                        </a>
                       )}
                     </div>
                   </TableCell>

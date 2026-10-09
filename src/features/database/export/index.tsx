@@ -4,6 +4,7 @@ import { Button } from '@/ui/shadcn/button'
 import { Database, Download, Loader2 } from 'lucide-react'
 import PageHeader from '@/ui/page-header'
 import { getAccessToken } from '@/stores/authStore'
+import { env } from '@/config/env.config'
 import { toast } from '@/hooks/use-toast'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/shadcn/card'
 
@@ -13,7 +14,7 @@ export default function DatabaseExport() {
   const handleExport = async () => {
     setIsExporting(true)
     const accessToken = getAccessToken()
-    const apiUrl = import.meta.env.VITE_API_URL
+    const apiUrl = env.VITE_API_URL
 
     try {
       const response = await fetch(`${apiUrl}/api/v1/database/export`, {
