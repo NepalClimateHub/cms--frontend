@@ -38,8 +38,8 @@ export default function ListEvents() {
   const eventsMeta = data?.meta ?? { count: 0 }
 
   const table = useReactTable({
-    data: eventsData,
     // @ts-expect-error: fix later - TODO: check type
+    data: eventsData,
     columns: eventsCols as ColumnDef<EventResponseDto>[],
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
