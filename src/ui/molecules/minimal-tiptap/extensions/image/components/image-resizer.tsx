@@ -110,7 +110,7 @@ export const ImageResizer: React.FC<ImageResizerProps> = ({
               Maintain aspect ratio
             </Label>
           </div>
-          <div className='flex justify-center gap-2 mt-2'>
+          <div className='mt-2 flex justify-center gap-2'>
             {[25, 50, 75, 100].map((p) => (
               <Button
                 key={p}
