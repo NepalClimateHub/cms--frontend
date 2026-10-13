@@ -32,10 +32,16 @@ function RouteComponent() {
   )
 
   useEffect(() => {
-    if (userData) {
-      setUser(mapUserOutputToAuthUser(userData, authUser?.organization ?? null))
-    }
-  }, [userData, setUser, authUser?.organization])
+    if (!userData) return
+
+    // Do not depend on authUser.organization here. Mapping the profile creates
+    // a new organization object, and including that object in the dependency
+    // list made this effect write to the store on every render after the query
+    // resolved. The resulting rerender loop surfaced through Radix's composed
+    // refs as a maximum update depth error.
+    const organization = useAuthStore.getState().user?.organization ?? null
+    setUser(mapUserOutputToAuthUser(userData, organization))
+  }, [userData, setUser])
 
   // Show loader if profile is loading OR if user data doesn't match auth store user
   // This prevents showing the wrong menu when switching users
