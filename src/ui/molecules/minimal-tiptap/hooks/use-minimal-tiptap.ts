@@ -20,7 +20,8 @@ import {
   Selection,
   UnsetAllMarks,
 } from '../extensions'
-import { fileToBase64, getOutput, randomId } from '../utils'
+import { imageKitUploader } from '../extensions/image/upload/imagekit-uploader'
+import { getOutput } from '../utils'
 import { useThrottle } from './use-throttle'
 
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
@@ -55,41 +56,11 @@ const createExtensions = (placeholder: string) => [
   Image.configure({
     allowedMimeTypes: ['image/*'],
     maxFileSize: 5 * 1024 * 1024,
-    allowBase64: true,
-    uploadFn: async (file) => {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error('Upload failed')
-      }
-
-      const data = await response.json()
-      return data.url
-    },
+    uploadImage: imageKitUploader,
     onToggle(editor, files, pos) {
-      editor.commands.insertContentAt(
-        pos,
-        files.map((image) => {
-          const blobUrl = URL.createObjectURL(image)
-          const id = randomId()
-
-          return {
-            type: 'image',
-            attrs: {
-              id,
-              src: blobUrl,
-              alt: image.name,
-              title: image.name,
-              fileName: image.name,
-            },
-          }
-        })
+      editor.commands.setImages(
+        files.map((file) => ({ src: file })),
+        pos
       )
     },
     onImageRemoved() {},
@@ -125,26 +96,17 @@ const createExtensions = (placeholder: string) => [
     },
   }),
   FileHandler.configure({
-    allowBase64: true,
+    allowBase64: false,
     allowedMimeTypes: ['image/*'],
     maxFileSize: 5 * 1024 * 1024,
     onDrop: (editor, files, pos) => {
-      files.forEach(async (file) => {
-        const src = await fileToBase64(file)
-        editor.commands.insertContentAt(pos, {
-          type: 'image',
-          attrs: { src },
-        })
-      })
+      editor.commands.setImages(
+        files.map((file) => ({ src: file })),
+        pos
+      )
     },
     onPaste: (editor, files) => {
-      files.forEach(async (file) => {
-        const src = await fileToBase64(file)
-        editor.commands.insertContent({
-          type: 'image',
-          attrs: { src },
-        })
-      })
+      editor.commands.setImages(files.map((file) => ({ src: file })))
     },
     onValidationError: (errors) => {
       errors.forEach((error) => {

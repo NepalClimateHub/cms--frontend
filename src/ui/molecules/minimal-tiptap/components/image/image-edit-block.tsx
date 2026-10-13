@@ -1,20 +1,12 @@
 import type { Editor } from '@tiptap/react'
+import { Upload } from 'lucide-react'
 import * as React from 'react'
-import { toast } from '@/hooks/use-toast'
-import { useGetIkAuthParams } from '@/query/imagekit/use-ik'
-import { MiniLoader } from '@/ui/loader'
-import IKContext from '@/ui/molecules/image-kit/IKContext'
-import IKUpload from '@/ui/molecules/image-kit/IKUpload'
 import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
 import { Label } from '@/ui/shadcn/label'
-
-const ALLOWED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp',
-]
+import { isAltValid } from '../../extensions/image/image-attrs'
+import { pickImageFile } from '../../extensions/image/upload/pick-image-file'
+import { type ImageMeta, ImageMetaFields } from './image-meta-fields'
 
 interface ImageEditBlockProps {
   editor: Editor
@@ -26,135 +18,69 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
   close,
 }) => {
   const [link, setLink] = React.useState('')
-  const [caption, setCaption] = React.useState('')
-  const [isUploading, setIsUploading] = React.useState(false)
-  const { data, isLoading } = useGetIkAuthParams()
+  const [meta, setMeta] = React.useState<ImageMeta>({
+    alt: '',
+    caption: '',
+    credit: '',
+  })
+  const altValid = isAltValid(meta.alt)
 
-  const endpoint = data?.data?.endpoint
-  const publicKey = data?.data?.publicKey
-  const ikAuthParams = data?.data?.ikAuthParams
-  const folder = data?.data?.folder
-
-  const handleSubmit = React.useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      if (link) {
-        editor.commands.setImages([
-          { src: link, caption: caption || undefined },
-        ])
-        close()
-      }
-    },
-    [editor, link, caption, close]
-  )
-
-  const handleUploadStart = () => {
-    setIsUploading(true)
-  }
-
-  const handleUploadError = () => {
-    setIsUploading(false)
-    toast({
-      variant: 'destructive',
-      title: 'Upload failed. Please try again.',
-    })
-  }
-
-  const handleUploadSuccess = (uploaded: { url?: string }) => {
-    setIsUploading(false)
-    const url = uploaded?.url
-    if (url) {
-      editor.commands.setImages([{ src: url, caption: caption || undefined }])
-      toast({
-        variant: 'default',
-        title: 'Image added to content',
-      })
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (link && altValid) {
+      editor.commands.setImages([{ src: link, ...meta }])
       close()
-    } else {
-      handleUploadError()
     }
+  }
+
+  const handleUpload = () => {
+    pickImageFile('image/*', (file) => {
+      editor.commands.setImages([{ src: file, ...meta }])
+      close()
+    })
   }
 
   return (
     <form onSubmit={handleSubmit} className='space-y-6'>
+      <ImageMetaFields
+        idPrefix='insert-image'
+        value={meta}
+        onChange={setMeta}
+      />
+
+      <div className='space-y-3'>
+        <Label>Upload from your computer</Label>
+        <Button
+          type='button'
+          variant='outline'
+          disabled={!altValid}
+          onClick={handleUpload}
+        >
+          <Upload className='mr-2 size-4' />
+          Choose image
+        </Button>
+        <p className='text-sm text-muted-foreground'>
+          Image size should not exceed 5MB.
+        </p>
+      </div>
+
       <div className='space-y-1'>
-        <Label htmlFor='image-link'>Attach an image link</Label>
+        <Label htmlFor='image-link'>Or attach an image link</Label>
         <div className='flex'>
           <Input
             id='image-link'
             type='url'
             required
-            placeholder='https://example.com'
+            placeholder='https://ik.imagekit.io/...'
             value={link}
             className='grow'
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setLink(e.target.value)
-            }
+            onChange={(e) => setLink(e.target.value)}
           />
-          <Button type='submit' className='ml-2'>
+          <Button type='submit' className='ml-2' disabled={!altValid}>
             Submit
           </Button>
         </div>
-      </div>
-
-      <div className='space-y-1'>
-        <Label htmlFor='image-caption'>Image Caption (optional)</Label>
-        <Input
-          id='image-caption'
-          type='text'
-          placeholder='Enter a caption for this image...'
-          value={caption}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setCaption(e.target.value)
-          }
-        />
-      </div>
-
-      <div className='space-y-3'>
-        <Label>Or upload from your computer</Label>
-        <MiniLoader isLoading={isLoading}>
-          <IKContext
-            publicKey={publicKey}
-            urlEndpoint={endpoint}
-            authenticator={() =>
-              new Promise((resolve) => resolve(ikAuthParams))
-            }
-          >
-            <IKUpload
-              disabled={isUploading}
-              isUploading={isUploading}
-              label='Upload image'
-              description='Image size should not exceed 5MB!'
-              folder={folder}
-              isPrivateFile={false}
-              useUniqueFileName={true}
-              onError={handleUploadError}
-              onSuccess={handleUploadSuccess}
-              onUploadStart={handleUploadStart}
-              validateFile={(file: File) => {
-                if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-                  toast({
-                    variant: 'destructive',
-                    title: 'Only jpg, png, and webp formats are supported.',
-                  })
-                  return false
-                }
-                const sizeInMb = Math.floor(file.size / 1000000)
-                if (sizeInMb > 5) {
-                  toast({
-                    variant: 'destructive',
-                    title: 'Image size cannot be greater than 5MB.',
-                  })
-                  return false
-                }
-                return true
-              }}
-              checks={`"file.size" < "5mb"`}
-            />
-          </IKContext>
-        </MiniLoader>
       </div>
     </form>
   )
