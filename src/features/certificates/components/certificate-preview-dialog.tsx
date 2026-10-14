@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -7,16 +7,20 @@ import {
 } from '@/ui/shadcn/dialog'
 import { Button } from '@/ui/shadcn/button'
 import { QRCodeSVG } from '@/ui/molecules/qr-code'
-import { Printer, ExternalLink } from 'lucide-react'
+import { Printer, Download, ExternalLink, Loader2 } from 'lucide-react'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 
 export interface CertificatePreviewData {
   certificateNumber: string
   verificationCode?: string
   name: string
   role: string
+  teamName?: string | null
   certificateType: string
   dateJoined: string
   dateEnded?: string | null
+  issuedAt?: string
   organization?: string
 }
 
@@ -32,6 +36,7 @@ export const CertificatePreviewDialog: React.FC<CertificatePreviewDialogProps> =
   data,
 }) => {
   const printRef = useRef<HTMLDivElement>(null)
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
 
   if (!data) return null
 
@@ -63,6 +68,34 @@ export const CertificatePreviewDialog: React.FC<CertificatePreviewDialogProps> =
     window.print()
   }
 
+  const handleDownloadPdf = async () => {
+    if (!printRef.current) return
+    try {
+      setIsGeneratingPdf(true)
+      const element = printRef.current
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+      })
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4',
+      })
+      const pdfWidth = 297
+      const pdfHeight = 210
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+      pdf.save(`${data.certificateNumber || 'certificate'}.pdf`)
+    } catch (err) {
+      console.error('Failed to generate PDF', err)
+    } finally {
+      setIsGeneratingPdf(false)
+    }
+  }
+
   const getCertificateTitle = (type: string) => {
     const upper = type.toUpperCase()
     if (upper === 'VOLUNTEER') return 'Certificate of Volunteering'
@@ -90,6 +123,25 @@ export const CertificatePreviewDialog: React.FC<CertificatePreviewDialogProps> =
             >
               <ExternalLink className='h-3.5 w-3.5' />
               Verify Link
+            </Button>
+            <Button
+              size='sm'
+              variant='outline'
+              onClick={handleDownloadPdf}
+              disabled={isGeneratingPdf}
+              className='text-xs gap-1.5 border-emerald-600/80 text-emerald-400 hover:bg-emerald-950/40 hover:text-emerald-300'
+            >
+              {isGeneratingPdf ? (
+                <>
+                  <Loader2 className='h-3.5 w-3.5 animate-spin' />
+                  Generating PDF...
+                </>
+              ) : (
+                <>
+                  <Download className='h-3.5 w-3.5' />
+                  Download PDF
+                </>
+              )}
             </Button>
             <Button
               size='sm'
@@ -155,11 +207,17 @@ export const CertificatePreviewDialog: React.FC<CertificatePreviewDialogProps> =
 
               <p className='text-xs sm:text-sm text-slate-700 max-w-md mx-auto leading-relaxed'>
                 for serving as{' '}
-                <span className='font-semibold text-slate-900'>{data.role}</span>{' '}
+                <span className='font-semibold text-slate-900'>{data.role}</span>
+                {data.teamName && (
+                  <>
+                    {' '}in the{' '}
+                    <span className='font-semibold text-slate-900'>{data.teamName}</span>
+                  </>
+                )}{' '}
                 with <span className='font-semibold text-slate-900'>Nepal Climate Hub</span>
               </p>
 
-              <div className='flex items-center justify-center gap-6 text-xs sm:text-sm text-slate-600 pt-1'>
+              <div className='flex items-center justify-center gap-5 text-xs sm:text-sm text-slate-600 pt-1'>
                 <div>
                   <span className='font-semibold text-slate-800'>Joined:</span>{' '}
                   {formatDate(data.dateJoined)}
@@ -169,6 +227,15 @@ export const CertificatePreviewDialog: React.FC<CertificatePreviewDialogProps> =
                   <span className='font-semibold text-slate-800'>Completed:</span>{' '}
                   {formatDate(data.dateEnded)}
                 </div>
+                {data.issuedAt && (
+                  <>
+                    <span>•</span>
+                    <div>
+                      <span className='font-semibold text-slate-800'>Issued:</span>{' '}
+                      {formatDate(data.issuedAt)}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 

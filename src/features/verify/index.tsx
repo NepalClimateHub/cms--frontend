@@ -21,6 +21,7 @@ import {
   Mail,
   Loader2,
   ExternalLink,
+  Users,
 } from 'lucide-react'
 
 interface VerifyPageProps {
@@ -158,7 +159,7 @@ export default function CertificateVerificationPage({
                   type='text'
                   value={code}
                   onChange={(e) => setCode(e.target.value.toUpperCase())}
-                  placeholder='e.g. 7F3A91C2-4D8E-4B71-A6F2-91C83E5D7A42'
+                  placeholder='e.g. 8K4N9M2P7X1V5Q3T'
                   className='font-mono text-center tracking-wider text-sm sm:text-base h-12 uppercase pr-10 border-slate-300 dark:border-slate-700 focus:border-emerald-500 focus:ring-emerald-500/20'
                   disabled={verifyMutation.isPending}
                   autoComplete='off'
@@ -176,7 +177,7 @@ export default function CertificateVerificationPage({
                 )}
               </div>
               <p className='text-xs text-slate-500 dark:text-slate-400 mt-2'>
-                Enter the unique 36-character UUID code printed on the NCH certificate or scanned via QR code.
+                Enter the unique 16-digit/character verification code printed on the NCH certificate or scanned via QR code.
               </p>
             </div>
 
@@ -293,6 +294,30 @@ export default function CertificateVerificationPage({
                   {result.certificate.certificateType}
                 </div>
               </div>
+
+              {result.certificate.teamName && (
+                <div className='p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60'>
+                  <div className='flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1'>
+                    <Users className='h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400' />
+                    Team Name
+                  </div>
+                  <div className='text-sm font-medium text-slate-800 dark:text-slate-200'>
+                    {result.certificate.teamName}
+                  </div>
+                </div>
+              )}
+
+              {result.certificate.issuedAt && (
+                <div className='p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60'>
+                  <div className='flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1'>
+                    <Calendar className='h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400' />
+                    Issue Date
+                  </div>
+                  <div className='text-sm font-medium text-slate-800 dark:text-slate-200'>
+                    {formatDate(result.certificate.issuedAt)}
+                  </div>
+                </div>
+              )}
 
               <div className='sm:col-span-2 p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between'>
                 <div>

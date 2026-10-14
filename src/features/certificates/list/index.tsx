@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { getRoleFromToken } from '@/utils/jwt.util'
 import {
   useGetCertificates,
   AdminCertificateResponse,
@@ -29,6 +30,8 @@ import {
   Search,
   MoreVertical,
   Printer,
+  Download,
+  ExternalLink,
   RefreshCw,
   Ban,
   History,
@@ -46,6 +49,7 @@ import { RegenerateCodeDialog } from '../components/regenerate-code-dialog'
 import { VerificationLogsDialog } from '../components/verification-logs-dialog'
 
 export default function CertificateList() {
+  const canIssueCertificates = getRoleFromToken() === 'SUPER_ADMIN'
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [typeFilter, setTypeFilter] = useState('ALL')
@@ -98,9 +102,11 @@ export default function CertificateList() {
       verificationCode: rawToken || cert.verificationCode,
       name: cert.volunteer.fullName,
       role: cert.role,
+      teamName: cert.teamName,
       certificateType: cert.certificateType,
       dateJoined: cert.dateJoined,
       dateEnded: cert.dateEnded,
+      issuedAt: cert.issuedAt,
       organization: 'Nepal Climate Hub',
     })
     setIsPreviewOpen(true)
@@ -122,15 +128,17 @@ export default function CertificateList() {
         title='Certificates'
         description='Generate, manage, and verify authentic Nepal Climate Hub certificates with cryptographic validation.'
         actions={
-          <div className='flex items-center gap-2'>
-            <Button
-              onClick={() => setIsIssueOpen(true)}
-              className='bg-emerald-600 hover:bg-emerald-700 text-white gap-2'
-            >
-              <Plus className='h-4 w-4' />
-              Issue Certificate
-            </Button>
-          </div>
+          canIssueCertificates ? (
+            <div className='flex items-center gap-2'>
+              <Button
+                onClick={() => setIsIssueOpen(true)}
+                className='bg-emerald-600 hover:bg-emerald-700 text-white gap-2'
+              >
+                <Plus className='h-4 w-4' />
+                Issue Certificate
+              </Button>
+            </div>
+          ) : undefined
         }
       />
 
@@ -233,6 +241,7 @@ export default function CertificateList() {
               <tr>
                 <th className='p-3.5'>Certificate No.</th>
                 <th className='p-3.5'>Volunteer</th>
+                <th className='p-3.5'>Team</th>
                 <th className='p-3.5'>Role</th>
                 <th className='p-3.5'>Type</th>
                 <th className='p-3.5'>Duration</th>
@@ -245,14 +254,16 @@ export default function CertificateList() {
             <tbody className='divide-y divide-slate-100 dark:divide-slate-800'>
               {isLoading ? (
                 <tr>
-                  <td colSpan={9} className='p-8 text-center text-slate-400'>
+                  <td colSpan={10} className='p-8 text-center text-slate-400'>
                     Loading certificates...
                   </td>
                 </tr>
               ) : certificates.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className='p-8 text-center text-slate-400'>
-                    No certificates found. Click &quot;Issue Certificate&quot; to create one.
+                  <td colSpan={10} className='p-8 text-center text-slate-400'>
+                    {canIssueCertificates
+                      ? 'No certificates found. Click "Issue Certificate" to create one.'
+                      : 'No certificates found.'}
                   </td>
                 </tr>
               ) : (
@@ -281,6 +292,9 @@ export default function CertificateList() {
                           {cert.volunteer.fullName}
                         </span>
                       </div>
+                    </td>
+                    <td className='p-3.5 text-slate-600 dark:text-slate-300 font-medium'>
+                      {cert.teamName || '—'}
                     </td>
                     <td className='p-3.5 text-slate-600 dark:text-slate-300'>
                       {cert.role}
@@ -332,7 +346,28 @@ export default function CertificateList() {
                             className='gap-2 cursor-pointer'
                           >
                             <Printer className='h-3.5 w-3.5 text-emerald-600' />
-                            Preview / Print
+                            Preview & Print
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            onClick={() => handlePreview(cert)}
+                            className='gap-2 cursor-pointer'
+                          >
+                            <Download className='h-3.5 w-3.5 text-emerald-600' />
+                            Download PDF
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            onClick={() => {
+                              const verifyUrl = cert.verificationCode
+                                ? `/verify?code=${encodeURIComponent(cert.verificationCode)}`
+                                : `/verify`
+                              window.open(verifyUrl, '_blank')
+                            }}
+                            className='gap-2 cursor-pointer'
+                          >
+                            <ExternalLink className='h-3.5 w-3.5 text-slate-500' />
+                            View Verification Page
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
@@ -383,13 +418,15 @@ export default function CertificateList() {
       </div>
 
       {/* Dialogs */}
-      <IssueCertificateDialog
-        open={isIssueOpen}
-        onOpenChange={setIsIssueOpen}
-        onSuccess={(cert, rawToken) => {
-          handlePreview(cert, rawToken)
-        }}
-      />
+      {canIssueCertificates && (
+        <IssueCertificateDialog
+          open={isIssueOpen}
+          onOpenChange={setIsIssueOpen}
+          onSuccess={(cert, rawToken) => {
+            handlePreview(cert, rawToken)
+          }}
+        />
+      )}
 
       <CertificatePreviewDialog
         open={isPreviewOpen}

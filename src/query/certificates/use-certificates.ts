@@ -7,11 +7,13 @@ export interface PublicCertificateDetails {
   certificateNumber: string
   name: string
   role: string
+  teamName?: string | null
   dateJoined: string
   dateEnded: string | null
   duration: string
   certificateType: string
   profilePicture: string | null
+  issuedAt?: string
   organization: string
 }
 
@@ -28,6 +30,7 @@ export interface AdminCertificateResponse {
   verificationCode?: string
   certificateType: string
   role: string
+  teamName?: string | null
   dateJoined: string
   dateEnded: string | null
   duration: string
@@ -60,8 +63,10 @@ export interface CreateCertificatePayload {
   profilePictureUrl?: string
   certificateType: string
   role: string
+  teamName?: string
   dateJoined: string
   dateEnded?: string
+  issuedAt?: string
 }
 
 export const useVerifyCertificate = () => {

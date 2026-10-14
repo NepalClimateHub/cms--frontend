@@ -47,9 +47,11 @@ export const IssueCertificateDialog: React.FC<IssueCertificateDialogProps> = ({
   const [email, setEmail] = useState('')
   const [profilePictureUrl, setProfilePictureUrl] = useState('')
   const [role, setRole] = useState('Volunteer')
+  const [teamName, setTeamName] = useState('')
   const [certificateType, setCertificateType] = useState('VOLUNTEER')
   const [dateJoined, setDateJoined] = useState('')
   const [dateEnded, setDateEnded] = useState('')
+  const [issuedAt, setIssuedAt] = useState(() => new Date().toISOString().split('T')[0])
 
   // Success state modal for the one-time verification token
   const [createdResult, setCreatedResult] = useState<{
@@ -71,6 +73,9 @@ export const IssueCertificateDialog: React.FC<IssueCertificateDialogProps> = ({
       setEmail(member.email || '')
       setProfilePictureUrl(member.photoUrl || '')
       setRole(member.role || 'Volunteer')
+      if ((member as any).team) {
+        setTeamName((member as any).team)
+      }
       if (member.startDate) {
         setDateJoined(member.startDate.split('T')[0])
       }
@@ -91,8 +96,10 @@ export const IssueCertificateDialog: React.FC<IssueCertificateDialogProps> = ({
         profilePictureUrl: profilePictureUrl || undefined,
         certificateType,
         role,
+        teamName: teamName || undefined,
         dateJoined,
         dateEnded: dateEnded || undefined,
+        issuedAt: issuedAt || undefined,
       },
       {
         onSuccess: (res: any) => {
@@ -117,8 +124,10 @@ export const IssueCertificateDialog: React.FC<IssueCertificateDialogProps> = ({
     setEmail('')
     setProfilePictureUrl('')
     setRole('Volunteer')
+    setTeamName('')
     setDateJoined('')
     setDateEnded('')
+    setIssuedAt(new Date().toISOString().split('T')[0])
     setSelectedMemberId('')
     onOpenChange(false)
   }
@@ -214,28 +223,41 @@ export const IssueCertificateDialog: React.FC<IssueCertificateDialogProps> = ({
                 </div>
               </div>
 
-              <div>
-                <label className='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>
-                  Certificate Type
-                </label>
-                <Select value={certificateType} onValueChange={setCertificateType}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CERTIFICATE_TYPES.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>
-                        {t.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                <div>
+                  <label className='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>
+                    Team Name (Admin entry)
+                  </label>
+                  <Input
+                    value={teamName}
+                    onChange={(e) => setTeamName(e.target.value)}
+                    placeholder='e.g. Advocacy & Communications'
+                  />
+                </div>
+
+                <div>
+                  <label className='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>
+                    Certificate Type
+                  </label>
+                  <Select value={certificateType} onValueChange={setCertificateType}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CERTIFICATE_TYPES.map((t) => (
+                        <SelectItem key={t.value} value={t.value}>
+                          {t.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
                 <div>
                   <label className='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>
-                    Date Joined *
+                    Start Date (Joined) *
                   </label>
                   <Input
                     required
@@ -247,7 +269,7 @@ export const IssueCertificateDialog: React.FC<IssueCertificateDialogProps> = ({
 
                 <div>
                   <label className='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>
-                    Date Completed
+                    End Date (Completed)
                   </label>
                   <Input
                     type='date'
@@ -260,6 +282,18 @@ export const IssueCertificateDialog: React.FC<IssueCertificateDialogProps> = ({
               <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
                 <div>
                   <label className='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>
+                    Issue Date *
+                  </label>
+                  <Input
+                    required
+                    type='date'
+                    value={issuedAt}
+                    onChange={(e) => setIssuedAt(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>
                     Email (Private)
                   </label>
                   <Input
@@ -269,17 +303,17 @@ export const IssueCertificateDialog: React.FC<IssueCertificateDialogProps> = ({
                     placeholder='volunteer@example.com'
                   />
                 </div>
+              </div>
 
-                <div>
-                  <label className='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>
-                    Profile Photo URL
-                  </label>
-                  <Input
-                    value={profilePictureUrl}
-                    onChange={(e) => setProfilePictureUrl(e.target.value)}
-                    placeholder='https://...'
-                  />
-                </div>
+              <div>
+                <label className='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>
+                  Profile Photo URL
+                </label>
+                <Input
+                  value={profilePictureUrl}
+                  onChange={(e) => setProfilePictureUrl(e.target.value)}
+                  placeholder='https://...'
+                />
               </div>
 
               <div className='flex justify-end gap-2 pt-2 border-t'>
