@@ -8,8 +8,8 @@ interface UseImageActionsProps {
   node: Node
   src: string
   onViewClick: (value: boolean) => void
-  onResizeClick: () => void
   onCropClick: () => void
+  onReplaceClick: () => void
 }
 
 export type ImageActionHandlers = {
@@ -25,8 +25,8 @@ export const useImageActions = ({
   node,
   src,
   onViewClick,
-  onResizeClick,
   onCropClick,
+  onReplaceClick,
 }: UseImageActionsProps) => {
   const isLink = React.useMemo(() => isUrl(src), [src])
 
@@ -46,13 +46,13 @@ export const useImageActions = ({
     editor.commands.copyLink({ src: node.attrs.src })
   }, [editor.commands, node.attrs.src])
 
-  const onResize = React.useCallback(() => {
-    onResizeClick()
-  }, [onResizeClick])
-
   const onCrop = React.useCallback(() => {
     onCropClick()
   }, [onCropClick])
+
+  const onReplace = React.useCallback(() => {
+    onReplaceClick()
+  }, [onReplaceClick])
 
   const onRemoveImg = React.useCallback(() => {
     editor.commands.command(({ tr, dispatch }) => {
@@ -75,8 +75,8 @@ export const useImageActions = ({
     onDownload,
     onCopy,
     onCopyLink,
-    onResize,
     onCrop,
+    onReplace,
     onRemoveImg,
   }
 }

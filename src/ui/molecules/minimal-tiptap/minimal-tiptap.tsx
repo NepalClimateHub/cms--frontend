@@ -93,6 +93,7 @@ export const MinimalTiptapEditor = React.forwardRef<
     <MeasuredContainer
       as='div'
       name='editor'
+      data-testid='blog-editor'
       ref={ref}
       className={cn(
         'flex h-auto min-h-72 w-full flex-col rounded-md border border-input shadow-sm focus-within:border-primary',

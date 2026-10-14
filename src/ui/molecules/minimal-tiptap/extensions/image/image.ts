@@ -11,6 +11,20 @@ import {
   randomId,
 } from '../../utils'
 import { ImageViewBlock } from './components/image-view-block'
+import {
+  type ImageAttrs,
+  type ImageLayout,
+  isLegacyCaptionParagraph,
+  normalizeImageAttrs,
+  normalizeImagePatch,
+  parseFigureElement,
+  parseImageElement,
+  serializeImage,
+} from './image-attrs'
+import { applyImageLayout, getSelectedImage } from './image-layout'
+import { ImageTwoUp } from './image-two-up'
+import { releaseUpload, startImageUpload } from './upload/upload-registry'
+import type { ImageUploader } from './upload/upload-task'
 
 type ImageAction = 'download' | 'copyImage' | 'copyLink'
 
@@ -23,17 +37,10 @@ interface ImageActionProps extends DownloadImageCommandProps {
   action: ImageAction
 }
 
-export type UploadReturnType =
-  | string
-  | {
-      id: string | number
-      src: string
-    }
-
 interface CustomImageOptions
   extends ImageOptions,
     Omit<FileValidationOptions, 'allowBase64'> {
-  uploadFn?: (file: File, editor: Editor) => Promise<UploadReturnType>
+  uploadImage?: ImageUploader
   onImageRemoved?: (props: Attrs) => void
   onActionSuccess?: (props: ImageActionProps) => void
   onActionError?: (error: Error, props: ImageActionProps) => void
@@ -53,28 +60,33 @@ interface CustomImageOptions
   onToggle?: (editor: Editor, files: File[], pos: number) => void
 }
 
+type ImageInsert = {
+  src: string | File
+  alt?: string
+  caption?: string
+  credit?: string
+  layout?: ImageAttrs['layout']
+}
+
+type ImageNodeJson = { type: string; attrs: Record<string, unknown> }
+
+type ImagePatch = Partial<
+  Record<
+    keyof ImageAttrs | 'id' | 'fileName' | 'uploadId',
+    string | number | null
+  >
+>
+
 declare module '@tiptap/react' {
   interface Commands<ReturnType> {
     setImages: {
-      setImages: (
-        attrs: {
-          src: string | File
-          alt?: string
-          title?: string
-          caption?: string
-        }[]
-      ) => ReturnType
+      setImages: (attrs: ImageInsert[], pos?: number) => ReturnType
     }
     setImage: {
-      setImage: (attrs: {
-        src?: string
-        alt?: string
-        title?: string
-        caption?: string | null
-        width?: number
-        height?: number
-        [key: string]: unknown
-      }) => ReturnType
+      setImage: (attrs: ImagePatch) => ReturnType
+    }
+    setImageLayout: {
+      setImageLayout: (layout: ImageLayout) => ReturnType
     }
     downloadImage: {
       downloadImage: (attrs: DownloadImageCommandProps) => ReturnType
@@ -196,7 +208,7 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
       ...this.parent?.(),
       allowedMimeTypes: [],
       maxFileSize: 0,
-      uploadFn: undefined,
+      uploadImage: undefined,
       onToggle: undefined,
       downloadImage: undefined,
       copyImage: undefined,
@@ -204,75 +216,57 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
     }
   },
 
+  addExtensions() {
+    return [ImageTwoUp]
+  },
+
+  addInputRules() {
+    return []
+  },
+
   parseHTML() {
     return [
       {
+        tag: 'figure',
+        getAttrs: (el) =>
+          typeof el === 'string' ? false : (parseFigureElement(el) ?? false),
+      },
+      {
         tag: 'img[src]',
+        getAttrs: (el) =>
+          typeof el === 'string' ? false : parseImageElement(el),
+      },
+      {
+        tag: 'p.image-caption',
+        ignore: true,
+        getAttrs: (el) =>
+          typeof el !== 'string' && isLegacyCaptionParagraph(el) ? null : false,
       },
     ]
   },
 
+  renderHTML({ node }) {
+    return serializeImage(node.attrs)
+  },
+
   addAttributes() {
+    const attr = <T>(defaultValue: T) => ({
+      default: defaultValue,
+      rendered: false,
+      parseHTML: () => null,
+    })
+
     return {
-      src: {
-        default: null,
-      },
-      alt: {
-        default: null,
-      },
-      title: {
-        default: null,
-      },
-      caption: {
-        default: null,
-        parseHTML: (element) => {
-          const attrCaption =
-            element.getAttribute('caption') ||
-            element.getAttribute('data-caption')
-          if (attrCaption) return attrCaption
-
-          const figcaption = element
-            .closest('figure')
-            ?.querySelector('figcaption')
-          if (figcaption?.textContent) return figcaption.textContent
-
-          const nextSibling = element.nextElementSibling
-          if (
-            nextSibling &&
-            (nextSibling.tagName === 'FIGCAPTION' ||
-              nextSibling.classList.contains('image-caption'))
-          ) {
-            return nextSibling.textContent
-          }
-
-          const parentCaption = element.parentElement?.querySelector(
-            '.image-caption, figcaption'
-          )
-          if (parentCaption?.textContent) return parentCaption.textContent
-
-          return null
-        },
-        renderHTML: (attributes) => {
-          if (!attributes.caption) {
-            return {}
-          }
-          return {
-            caption: attributes.caption,
-          }
-        },
-      },
-      id: {
-        default: null,
-      },
-      width: {
-        default: null,
-      },
-      height: {
-        default: null,
-      },
-      fileName: {
-        default: null,
-      },
+      src: attr<string | null>(null),
+      alt: attr<string | null>(null),
+      caption: attr<string | null>(null),
+      credit: attr<string | null>(null),
+      layout: attr<ImageAttrs['layout']>('inline'),
+      width: attr<number | null>(null),
+      height: attr<number | null>(null),
+      id: attr<string | null>(null),
+      fileName: attr<string | null>(null),
+      uploadId: attr<string | null>(null),
     }
   },
 
@@ -281,58 +275,61 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
       setImage:
         (attrs) =>
         ({ commands }) => {
-          return commands.updateAttributes('image', attrs)
+          const patch = normalizeImagePatch(attrs)
+          return commands.updateAttributes('image', patch)
+        },
+
+      setImageLayout:
+        (layout) =>
+        ({ state, tr }) => {
+          const selected = getSelectedImage(state)
+          return selected ? applyImageLayout(tr, selected.pos, layout) : false
         },
 
       setImages:
-        (attrs) =>
-        ({ commands }) => {
+        (attrs, pos) =>
+        ({ commands, editor }) => {
           const [validImages, errors] = filterFiles(attrs, {
             allowedMimeTypes: this.options.allowedMimeTypes,
             maxFileSize: this.options.maxFileSize,
-            allowBase64: this.options.allowBase64,
+            allowBase64: false,
           })
 
           if (errors.length > 0 && this.options.onValidationError) {
             this.options.onValidationError(errors)
           }
 
-          if (validImages.length > 0) {
-            return commands.insertContent(
-              validImages.map((image) => {
-                if (image.src instanceof File) {
-                  const blobUrl = URL.createObjectURL(image.src)
-                  const id = randomId()
+          const uploader = this.options.uploadImage
+          const nodes = validImages.flatMap((image): ImageNodeJson[] => {
+            const meta = normalizeImageAttrs(image)
+            if (!(image.src instanceof File)) {
+              return [
+                {
+                  type: this.type.name,
+                  attrs: { ...meta, src: image.src, id: randomId() },
+                },
+              ]
+            }
+            if (!uploader) return []
+            const { uploadId } = startImageUpload(editor, image.src, uploader)
+            return [
+              {
+                type: this.type.name,
+                attrs: {
+                  ...meta,
+                  src: null,
+                  id: randomId(),
+                  uploadId,
+                  fileName: image.src.name,
+                },
+              },
+            ]
+          })
 
-                  return {
-                    type: this.type.name,
-                    attrs: {
-                      id,
-                      src: blobUrl,
-                      alt: image.alt,
-                      title: image.title,
-                      caption: image.caption,
-                      fileName: image.src.name,
-                    },
-                  }
-                } else {
-                  return {
-                    type: this.type.name,
-                    attrs: {
-                      id: randomId(),
-                      src: image.src,
-                      alt: image.alt,
-                      title: image.title,
-                      caption: image.caption,
-                      fileName: null,
-                    },
-                  }
-                }
-              })
-            )
-          }
-
-          return false
+          if (nodes.length === 0) return false
+          return pos === undefined
+            ? commands.insertContent(nodes)
+            : commands.insertContentAt(pos, nodes)
         },
 
       downloadImage: (attrs) => () => {
@@ -366,7 +363,7 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
             const [validImages, errors] = filterFiles(Array.from(files), {
               allowedMimeTypes: this.options.allowedMimeTypes,
               maxFileSize: this.options.maxFileSize,
-              allowBase64: this.options.allowBase64,
+              allowBase64: false,
             })
 
             if (errors.length > 0 && this.options.onValidationError) {
@@ -402,8 +399,8 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
           if (node.type.name === 'image') {
             const attrs = node.attrs
 
-            if (attrs.src.startsWith('blob:')) {
-              URL.revokeObjectURL(attrs.src)
+            if (attrs.uploadId) {
+              releaseUpload(attrs.uploadId)
             }
 
             this.options.onImageRemoved?.(attrs)

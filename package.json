@@ -15,7 +15,9 @@
     "check": "biome check .",
     "check:fix": "biome check --write .",
     "lint": "biome lint .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.10.2",
@@ -111,6 +113,7 @@
     "tailwindcss": "^3.4.17",
     "typescript": "~7.0.2",
     "vite": "^6.3.5",
+    "vitest": "^3.2.7",
     "wrangler": "^4.130.0"
   },
   "packageManager": "pnpm@10.11.1"
