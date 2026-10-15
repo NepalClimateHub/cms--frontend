@@ -1912,7 +1912,10 @@ export type ChatRequestDto = {
     /**
      * Conversation history
      */
-    conversation_history?: Array<string>;
+    conversation_history?: Array<{
+        role: 'user' | 'assistant';
+        content: string;
+    }>;
     /**
      * Existing conversation/session ID
      */
