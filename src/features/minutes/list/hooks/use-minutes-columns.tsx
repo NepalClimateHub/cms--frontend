@@ -1,4 +1,4 @@
-import { ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import MinutesRowAction from '../components/minutes-row-actions'

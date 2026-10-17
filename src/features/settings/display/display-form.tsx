@@ -1,6 +1,7 @@
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { toast } from '@/hooks/use-toast'
 import { Button } from '@/ui/shadcn/button'
 import { Checkbox } from '@/ui/shadcn/checkbox'
 import {
@@ -12,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/ui/shadcn/form'
-import { toast } from '@/hooks/use-toast'
 
 const items = [
   {

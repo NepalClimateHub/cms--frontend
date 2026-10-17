@@ -1,3 +1,4 @@
+import { LogOut } from 'lucide-react'
 import { Fragment, useState } from 'react'
 import { useLogout } from '@/query/auth/use-auth'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
@@ -7,14 +8,13 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
   SidebarSeparator,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
   useSidebar,
 } from '@/ui/shadcn/sidebar'
-import { LogOut } from 'lucide-react'
 import { ProfileCard } from '../profile-card'
 import { useSideBarData } from './data/use-sidebar-data'
 

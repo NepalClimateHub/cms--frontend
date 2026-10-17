@@ -1,19 +1,23 @@
 {
-  "name": "shadcn-admin",
+  "name": "nch-cms-frontend",
   "private": true,
   "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "test": "vitest run",
     "codegen:local": "openapi-ts",
     "preview": "vite preview",
-    "format:check": "prettier --check .",
-    "format": "prettier --write .",
     "knip": "knip",
-    "prepare": "husky"
+    "prepare": "husky",
+    "cf:deploy": "pnpm run build && wrangler deploy",
+    "cf:preview": "pnpm run build && wrangler dev",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.10.2",
@@ -89,14 +93,12 @@
     "zustand": "^5.0.5"
   },
   "devDependencies": {
-    "@eslint/js": "^9.28.0",
+    "@biomejs/biome": "2.5.15",
     "@faker-js/faker": "^9.8.0",
     "@hey-api/openapi-ts": "^0.66.7",
-    "@tanstack/eslint-plugin-query": "^5.78.0",
     "@tanstack/react-query-devtools": "^5.80.3",
     "@tanstack/router-devtools": "^1.120.15",
     "@tanstack/router-plugin": "^1.120.15",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^22.15.29",
     "@types/prop-types": "^15.7.14",
@@ -104,21 +106,16 @@
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react-swc": "^3.10.1",
     "autoprefixer": "^10.4.21",
-    "eslint": "^9.28.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
     "husky": "^9.1.7",
     "knip": "^5.60.0",
     "playwright": "^1.61.1",
     "postcss": "^8.5.4",
-    "prettier": "^3.5.3",
-    "prettier-plugin-tailwindcss": "^0.6.12",
     "tailwindcss": "^3.4.17",
-    "typescript": "~5.7.3",
-    "typescript-eslint": "^8.33.1",
-    "vitest": "^3.2.4",
-    "vite": "^6.3.5"
+    "typescript": "~7.0.2",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.7",
+    "wrangler": "^4.130.0"
   },
   "packageManager": "pnpm@10.11.1"
 }

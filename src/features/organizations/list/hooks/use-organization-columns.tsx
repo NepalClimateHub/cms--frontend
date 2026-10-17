@@ -1,4 +1,4 @@
-import { ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import type { OrganizationResponseDto } from '@/api/types.gen'
 import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import OrganizationRowAction from '../components/organization-row-actions'
@@ -47,9 +47,7 @@ export const useOrganizationColumns = () => {
       ),
       cell: ({ row }) => (
         <div>
-          {typeof row.original.email === 'string'
-            ? row.original.email
-            : '—'}
+          {typeof row.original.email === 'string' ? row.original.email : '—'}
         </div>
       ),
       enableSorting: false,

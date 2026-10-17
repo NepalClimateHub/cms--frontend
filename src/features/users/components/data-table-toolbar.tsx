@@ -1,4 +1,4 @@
-import { Table } from '@tanstack/react-table'
+import type { Table } from '@tanstack/react-table'
 import { Input } from '@/ui/shadcn/input'
 import { userTypeOptions } from '../data/data'
 import { DataTableFacetedFilter } from './data-table-faceted-filter'
@@ -38,7 +38,6 @@ export function DataTableToolbar<TData>({
             />
           )}
         </div>
-
       </div>
       <div className='flex items-center gap-2'>
         {table.getColumn('serverRole') && (

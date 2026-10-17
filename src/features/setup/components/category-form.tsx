@@ -1,7 +1,8 @@
-
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
+import { CategoryType } from '@/query/categories/use-categories'
+import { Button } from '@/ui/shadcn/button'
 import {
   Form,
   FormControl,
@@ -9,34 +10,36 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/ui/shadcn/form';
-import { Input } from '@/ui/shadcn/input';
-import { Textarea } from '@/ui/shadcn/textarea';
+} from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/ui/shadcn/select';
-import { Button } from '@/ui/shadcn/button';
-import { CategoryType } from '@/query/categories/use-categories';
+} from '@/ui/shadcn/select'
+import { Textarea } from '@/ui/shadcn/textarea'
 
 const categorySchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   description: z.string().optional(),
   type: z.nativeEnum(CategoryType),
-});
+})
 
-export type CategoryFormValues = z.infer<typeof categorySchema>;
+export type CategoryFormValues = z.infer<typeof categorySchema>
 
 interface CategoryFormProps {
-  initialValues?: Partial<CategoryFormValues>;
-  onSubmit: (values: CategoryFormValues) => void;
-  isLoading?: boolean;
+  initialValues?: Partial<CategoryFormValues>
+  onSubmit: (values: CategoryFormValues) => void
+  isLoading?: boolean
 }
 
-export function CategoryForm({ initialValues, onSubmit, isLoading }: CategoryFormProps) {
+export function CategoryForm({
+  initialValues,
+  onSubmit,
+  isLoading,
+}: CategoryFormProps) {
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
@@ -44,19 +47,19 @@ export function CategoryForm({ initialValues, onSubmit, isLoading }: CategoryFor
       description: initialValues?.description || '',
       type: initialValues?.type || CategoryType.BLOG,
     },
-  });
+  })
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
         <FormField
           control={form.control}
-          name="name"
+          name='name'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Category name" {...field} />
+                <Input placeholder='Category name' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -65,12 +68,15 @@ export function CategoryForm({ initialValues, onSubmit, isLoading }: CategoryFor
 
         <FormField
           control={form.control}
-          name="description"
+          name='description'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="Brief description (optional)" {...field} />
+                <Textarea
+                  placeholder='Brief description (optional)'
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -79,14 +85,14 @@ export function CategoryForm({ initialValues, onSubmit, isLoading }: CategoryFor
 
         <FormField
           control={form.control}
-          name="type"
+          name='type'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Type</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a type" />
+                    <SelectValue placeholder='Select a type' />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -102,12 +108,12 @@ export function CategoryForm({ initialValues, onSubmit, isLoading }: CategoryFor
           )}
         />
 
-        <div className="flex justify-end pt-4">
-          <Button type="submit" loading={isLoading}>
+        <div className='flex justify-end pt-4'>
+          <Button type='submit' loading={isLoading}>
             Submit
           </Button>
         </div>
       </form>
     </Form>
-  );
+  )
 }

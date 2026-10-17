@@ -1,30 +1,24 @@
-import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { Row } from '@tanstack/react-table'
+import type { Row } from '@tanstack/react-table'
+import { CheckCircle, LucideEye, Pencil, Trash, XCircle } from 'lucide-react'
+import { useState } from 'react'
 import {
-  useDeleteBlog,
+  type BlogResponseDto,
   useApproveBlog,
+  useDeleteBlog,
   useRejectBlog,
 } from '@/query/blogs/use-blogs'
-import { BlogResponseDto } from '@/query/blogs/use-blogs'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/ui/shadcn/dialog'
-import { DialogFooter } from '@/ui/shadcn/dialog'
 import { Textarea } from '@/ui/shadcn/textarea'
-import {
-  LucideEye,
-  Pencil,
-  Trash,
-  CheckCircle,
-  XCircle,
-} from 'lucide-react'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { isAdminLevel } from '@/utils/role-check.util'
 import BlogPreviewModal from '../../shared/BlogPreviewModal'

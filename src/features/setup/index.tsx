@@ -1,9 +1,8 @@
-
-import { Main } from '@/ui/layouts/main';
-import PageHeader from '@/ui/page-header';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/shadcn/tabs';
-import TagsList from '../tags/list';
-import CategoriesList from './components/categories-list';
+import { Main } from '@/ui/layouts/main'
+import PageHeader from '@/ui/page-header'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/shadcn/tabs'
+import TagsList from '../tags/list'
+import CategoriesList from './components/categories-list'
 
 export default function SetupPage() {
   return (
@@ -18,13 +17,13 @@ export default function SetupPage() {
             <TabsTrigger value='tags'>Tags</TabsTrigger>
             <TabsTrigger value='categories'>Categories</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value='tags' className='mt-6'>
             <div className='-mx-4'>
               <TagsList embedded />
             </div>
           </TabsContent>
-          
+
           <TabsContent value='categories' className='mt-6'>
             <div className='-mx-4'>
               <CategoriesList />
@@ -33,5 +32,5 @@ export default function SetupPage() {
         </Tabs>
       </div>
     </Main>
-  );
+  )
 }

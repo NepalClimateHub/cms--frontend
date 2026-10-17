@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react'
+import { Loader2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from '@/hooks/use-toast'
 import { useGetProfile } from '@/query/auth/use-auth'
 import { useUpdateProfile } from '@/query/users/use-users'
+import { useAuthStore } from '@/stores/authStore'
 import ImageUpload from '@/ui/image-upload'
 import { Button } from '@/ui/shadcn/button'
 import {
@@ -9,9 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/ui/shadcn/dialog'
-import { Loader2 } from 'lucide-react'
-import { useAuthStore } from '@/stores/authStore'
-import { toast } from '@/hooks/use-toast'
 import { mapUserOutputToAuthUser } from '@/utils/map-user-output'
 
 interface EditProfilePhotoDialogProps {

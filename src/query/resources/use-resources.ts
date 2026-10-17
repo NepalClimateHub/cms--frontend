@@ -1,8 +1,7 @@
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { client } from '@/api/client.gen'
-import { Meta } from '@/schemas/shared'
+import type { Meta } from '@/schemas/shared'
 
 export enum ResourceType {
   DOCUMENTARY = 'DOCUMENTARY',
@@ -73,7 +72,10 @@ export const useGetResources = (params: Record<string, unknown>) => {
   return useQuery({
     queryKey: ['resources', params],
     queryFn: async () => {
-      const response = await client.get({ url: '/api/v1/resources', query: params })
+      const response = await client.get({
+        url: '/api/v1/resources',
+        query: params,
+      })
       return response.data as {
         data: ResourceResponseDto[]
         meta: Meta
@@ -98,7 +100,10 @@ export const useCreateResource = () => {
 
   return useMutation({
     mutationFn: async (data: CreateResourceFormValues) => {
-      const response = await client.post({ url: '/api/v1/resources', body: data })
+      const response = await client.post({
+        url: '/api/v1/resources',
+        body: data,
+      })
       return response.data
     },
     onSuccess: () => {
@@ -117,8 +122,17 @@ export const useUpdateResource = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<CreateResourceFormValues> }) => {
-      const response = await client.patch({ url: `/api/v1/resources/${id}`, body: data })
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string
+      data: Partial<CreateResourceFormValues>
+    }) => {
+      const response = await client.patch({
+        url: `/api/v1/resources/${id}`,
+        body: data,
+      })
       return response.data
     },
     onSuccess: (_, { id }) => {

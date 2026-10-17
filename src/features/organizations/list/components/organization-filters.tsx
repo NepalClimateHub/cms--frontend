@@ -1,10 +1,10 @@
-import { FC, useEffect, useState } from 'react'
 import { Cross2Icon } from '@radix-ui/react-icons'
+import { type FC, useEffect, useState } from 'react'
+import type { useFilters } from '@/hooks/use-filters'
+import { useIsFirstRender } from '@/hooks/use-first-render'
 import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
 import { cleanObj } from '@/utils/obj-utils'
-import { useFilters } from '@/hooks/use-filters'
-import { useIsFirstRender } from '@/hooks/use-first-render'
 
 type OrganizationFiltersProps = {
   setPage: (page: number | string) => void
@@ -27,7 +27,7 @@ const OrganizationFilters: FC<OrganizationFiltersProps> = ({
     if (!isFirstRender) {
       setPage(1)
     }
-  }, [filters])
+  }, [setPage, isFirstRender])
 
   useEffect(() => {
     setSearch((filters?.tag as string) ?? '')

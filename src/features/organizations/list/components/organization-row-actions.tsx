@@ -1,12 +1,12 @@
-import { FC } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
-import { Row } from '@tanstack/react-table'
 import { IconCheck, IconEdit, IconTrash } from '@tabler/icons-react'
+import { useQueryClient } from '@tanstack/react-query'
+import type { Row } from '@tanstack/react-table'
+import type { FC } from 'react'
 import type { OrganizationResponseDto } from '@/api/types.gen'
+import { useToast } from '@/hooks/use-toast'
 import apiClient from '@/query/apiClient'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { isVerificationAdmin } from '@/utils/role-check.util'
-import { useToast } from '@/hooks/use-toast'
 
 type OrganizationRowActionProps = {
   row: Row<OrganizationResponseDto>

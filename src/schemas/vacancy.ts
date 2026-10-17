@@ -92,6 +92,14 @@ export const vacancyFormSchema = z.object({
   isActive: z.boolean().default(true),
   isDraft: z.boolean().default(false),
   questions: z.array(vacancyQuestionSchema).default([]),
+  googleFormLink: z
+    .string()
+    .trim()
+    .max(2048, 'Link is too long')
+    .url('Enter a valid URL (e.g. https://forms.gle/...)')
+    .or(z.literal(''))
+    .optional()
+    .nullable(),
 })
 
 export type VacancyFormValues = z.infer<typeof vacancyFormSchema>
@@ -145,7 +153,9 @@ const refineEmailMatch = (
   data: { email: string; confirmEmail: string },
   ctx: z.RefinementCtx
 ) => {
-  if (data.email.trim().toLowerCase() !== data.confirmEmail.trim().toLowerCase()) {
+  if (
+    data.email.trim().toLowerCase() !== data.confirmEmail.trim().toLowerCase()
+  ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ['confirmEmail'],
@@ -190,7 +200,10 @@ export const buildVacancyApplySchema = (questions: VacancyQuestion[] = []) =>
         })
       }
 
-      if (question.type === 'URL' && !z.string().url().safeParse(value).success) {
+      if (
+        question.type === 'URL' &&
+        !z.string().url().safeParse(value).success
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path,

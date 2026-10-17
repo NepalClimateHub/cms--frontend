@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import useDialogState from '@/hooks/use-dialog-state'
-import { Task } from '../data/schema'
+import type { Task } from '../data/schema'
 
 type TasksDialogType = 'create' | 'update' | 'delete' | 'import'
 
@@ -27,7 +27,6 @@ export default function TasksProvider({ children }: Props) {
   )
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useTasks = () => {
   const tasksContext = React.useContext(TasksContext)
 

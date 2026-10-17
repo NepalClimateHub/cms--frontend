@@ -1,8 +1,8 @@
-import { ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
+import type { OpportunityResponseDto } from '@/api/types.gen'
 import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import { Badge } from '@/ui/shadcn/badge'
-import { OpportunityResponseDto } from '@/api/types.gen'
 import OpportunitiesRowAction from '../components/opportunity-row-actions'
 
 export const useOpportunitiesColumns = () => {
@@ -54,7 +54,7 @@ export const useOpportunitiesColumns = () => {
           <div
             className='flex space-x-2'
             dangerouslySetInnerHTML={{
-              __html: description.toString().slice(0, 50) + '...',
+              __html: `${description.toString().slice(0, 50)}...`,
             }}
           />
         )

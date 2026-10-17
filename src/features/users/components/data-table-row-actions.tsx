@@ -1,11 +1,11 @@
-import { Row } from '@tanstack/react-table'
+import type { Row } from '@tanstack/react-table'
+import { ClipboardList, Eye, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/ui/shadcn/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip'
-import { ClipboardList, Eye, Pencil, Trash2 } from 'lucide-react'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { isVerificationAdmin } from '@/utils/role-check.util'
 import { useUsers } from '../context/users-context'
-import { User } from '../data/schema'
+import type { User } from '../data/schema'
 
 interface DataTableRowActionsProps {
   row: Row<User>
@@ -18,9 +18,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const canDelete = isVerificationAdmin(role) // SUPER_ADMIN or ADMIN
 
   const canViewOrgApplication =
-    u.serverRole === 'ORGANIZATION' &&
-    u.organization &&
-    !u.isVerifiedByAdmin
+    u.serverRole === 'ORGANIZATION' && u.organization && !u.isVerifiedByAdmin
 
   const openRow = () => setCurrentRow(row.original)
 

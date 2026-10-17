@@ -1,7 +1,7 @@
-import { FC } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
-import { ClimateChampionFormValues } from '@/schemas/climate-champion'
+import type { FC } from 'react'
+import type { UseFormReturn } from 'react-hook-form'
+import type { ClimateChampionFormValues } from '@/schemas/climate-champion'
 import ImageUpload from '@/ui/image-upload'
 import { MultiSelect } from '@/ui/multi-select'
 import { Button } from '@/ui/shadcn/button'
@@ -9,11 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
 import { Switch } from '@/ui/shadcn/switch'
@@ -323,7 +323,11 @@ const ChampionForm: FC<Props> = ({
             Cancel
           </Button>
           <Button type='submit' disabled={isLoading}>
-            {isLoading ? 'Saving...' : isEdit ? 'Update Champion' : 'Add Champion'}
+            {isLoading
+              ? 'Saving...'
+              : isEdit
+                ? 'Update Champion'
+                : 'Add Champion'}
           </Button>
         </div>
       </form>

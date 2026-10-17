@@ -1,23 +1,23 @@
-import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
 import {
   QueryCache,
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { NuqsAdapter } from 'nuqs/adapters/react'
-import { resetAuth } from '@/stores/authStore'
+import { StrictMode } from 'react'
+import ReactDOM from 'react-dom/client'
 import { toast } from '@/hooks/use-toast'
+import { resetAuth } from '@/stores/authStore'
 import { apiConfig } from './config/api.config'
 import { FontProvider } from './context/font-context'
 import { ThemeProvider } from './context/theme-context'
 import './index.css'
+import { isEnvConfigured } from './config/env.config'
+import MissingApiUrl from './features/errors/missing-api-url'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 import { handleServerError } from './utils/handle-server-error'
-import MissingApiUrl from './features/errors/missing-api-url'
-import { isEnvConfigured } from './config/env.config'
 
 const queryClient = new QueryClient({
   defaultOptions: {

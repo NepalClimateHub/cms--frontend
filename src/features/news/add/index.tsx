@@ -1,9 +1,9 @@
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
+import { useForm } from 'react-hook-form'
 import { useNewsAPI } from '@/query/news/use-news'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
-import { News, AddNewsSchema } from '@/schemas/news/news'
+import { AddNewsSchema, type News } from '@/schemas/news/news'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
 import NewsForm from '../shared/NewsForm'
@@ -14,10 +14,11 @@ const NewsAdd = () => {
 
   const { data, isLoading } = useGetTagsByType('NEWS')
 
-  const tagsOptions = data?.data?.map((tag) => ({
-    value: tag.id,
-    label: tag.tag,
-  })) ?? []
+  const tagsOptions =
+    data?.data?.map((tag) => ({
+      value: tag.id,
+      label: tag.tag,
+    })) ?? []
 
   const form = useForm<News>({
     resolver: zodResolver(AddNewsSchema),

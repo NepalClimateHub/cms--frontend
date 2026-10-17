@@ -1,9 +1,8 @@
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { client } from '@/api/client.gen'
-import { ProjectFormValues } from '@/schemas/project'
-import { Meta } from '@/schemas/shared'
+import type { ProjectFormValues } from '@/schemas/project'
+import type { Meta } from '@/schemas/shared'
 
 export interface ProjectResponseDto {
   id: string
@@ -30,8 +29,11 @@ export const useGetProjects = (params: Record<string, unknown>) => {
   return useQuery({
     queryKey: ['projects', params],
     queryFn: async () => {
-      const response = await client.get({ url: '/api/v1/projects', query: params })
-      
+      const response = await client.get({
+        url: '/api/v1/projects',
+        query: params,
+      })
+
       return response.data as {
         data: ProjectResponseDto[]
         meta: Meta
@@ -56,7 +58,10 @@ export const useCreateProject = () => {
 
   return useMutation({
     mutationFn: async (data: ProjectFormValues) => {
-      const response = await client.post({ url: '/api/v1/projects', body: data })
+      const response = await client.post({
+        url: '/api/v1/projects',
+        body: data,
+      })
       return response.data
     },
     onSuccess: () => {
@@ -75,8 +80,17 @@ export const useUpdateProject = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: ProjectFormValues }) => {
-      const response = await client.patch({ url: `/api/v1/projects/${id}`, body: data })
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string
+      data: ProjectFormValues
+    }) => {
+      const response = await client.patch({
+        url: `/api/v1/projects/${id}`,
+        body: data,
+      })
       return response.data
     },
     onSuccess: (_, { id }) => {

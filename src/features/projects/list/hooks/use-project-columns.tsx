@@ -1,15 +1,12 @@
-
-import { ColumnDef } from '@tanstack/react-table'
-import { ProjectResponseDto } from '@/query/projects/use-projects'
-
-import ProjectRowActions from '../components/project-row-actions'
+import type { ColumnDef } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import type { ProjectResponseDto } from '@/query/projects/use-projects'
 import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import { Badge } from '@/ui/shadcn/badge'
-import { format } from 'date-fns'
+import ProjectRowActions from '../components/project-row-actions'
 
 export const useProjectColumns = (): ColumnDef<ProjectResponseDto>[] => {
   return [
-
     {
       accessorKey: 'title',
       header: ({ column }) => (
@@ -35,8 +32,18 @@ export const useProjectColumns = (): ColumnDef<ProjectResponseDto>[] => {
         return (
           <div className='flex w-[100px] items-center'>
             <Badge
-              variant={status === 'ONGOING' ? 'default' : status === 'COMPLETED' ? 'secondary' : 'outline'}
-              className={status === 'COMPLETED' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}
+              variant={
+                status === 'ONGOING'
+                  ? 'default'
+                  : status === 'COMPLETED'
+                    ? 'secondary'
+                    : 'outline'
+              }
+              className={
+                status === 'COMPLETED'
+                  ? 'bg-green-500 hover:bg-green-600 text-white'
+                  : ''
+              }
             >
               {status}
             </Badge>

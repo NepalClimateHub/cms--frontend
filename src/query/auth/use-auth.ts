@@ -1,13 +1,13 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import type { UserOutput } from '@/api/types.gen'
 import { apiConfig } from '@/config/api.config'
+import { toast } from '@/hooks/use-toast'
 import apiClient from '@/query/apiClient'
-import { LoginPayload, LoginResponse } from '@/schemas/auth/login'
-import { Meta } from '@/schemas/shared'
-import { UserOutput } from '@/api/types.gen'
+import type { LoginPayload, LoginResponse } from '@/schemas/auth/login'
+import type { Meta } from '@/schemas/shared'
 import { useAuthStore } from '@/stores/authStore'
 import { handleServerError } from '@/utils/handle-server-error'
-import { toast } from '@/hooks/use-toast'
 import {
   authControllerChangePasswordMutation,
   authControllerLoginMutation,

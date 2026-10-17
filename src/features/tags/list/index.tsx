@@ -1,20 +1,20 @@
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
-  ColumnDef,
+  type ColumnDef,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Main } from '@/ui/layouts/main'
+import { useState } from 'react'
 import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
-import { TagOutputDto } from '@/api/types.gen'
+import type { TagOutputDto } from '@/api/types.gen'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
-import { DataTable } from '@/ui/molecules/data-table/data-table'
+import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/ui/loader'
-import PageHeader from '@/ui/page-header'
+import { DataTable } from '@/ui/molecules/data-table/data-table'
 import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination'
 import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
+import PageHeader from '@/ui/page-header'
 import { AddTagDialog } from '../add/add-tag-dialog'
 import TagsFilters from './components/tag-filters'
 import { TagsListActionButtons } from './components/tags-list-action-buttons'
@@ -104,9 +104,7 @@ export default function Tags({ embedded = false }: { embedded?: boolean }) {
       <PageHeader
         title='Tags'
         description='Manage tags for your resources!'
-        actions={
-          <TagsListActionButtons setAddDialogOpen={setAddDialogOpen} />
-        }
+        actions={<TagsListActionButtons setAddDialogOpen={setAddDialogOpen} />}
       />
       {content}
     </Main>

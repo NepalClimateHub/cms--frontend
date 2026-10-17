@@ -9,7 +9,7 @@ import {
 import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
 import { Separator } from '@/ui/shadcn/separator'
 import { callTypes, userTypeOptions } from '../data/data'
-import { User } from '../data/schema'
+import type { User } from '../data/schema'
 
 type Props = {
   user: User | null

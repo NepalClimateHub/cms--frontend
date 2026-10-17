@@ -1,13 +1,13 @@
 import {
+  BarChart3,
+  Briefcase,
+  Building2,
   Calendar,
   FileText,
-  Building2,
   LayoutDashboard,
-  Users,
-  Briefcase,
-  BarChart3,
   Newspaper,
   Settings,
+  Users,
 } from 'lucide-react'
 
 export const adminNavItems = [

@@ -1,12 +1,15 @@
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 import { useCreateTestimonial } from '@/query/testimonials/use-testimonials'
-import { TestimonialFormValues, testimonialSchema } from '@/schemas/testimonial'
+import {
+  type TestimonialFormValues,
+  testimonialSchema,
+} from '@/schemas/testimonial'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
 import { Button } from '@/ui/shadcn/button'
-import { ArrowLeft } from 'lucide-react'
 import TestimonialForm from '../shared/TestimonialForm'
 
 export default function AddTestimonial() {

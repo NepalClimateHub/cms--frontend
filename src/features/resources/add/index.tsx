@@ -1,20 +1,23 @@
-
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useCreateResource, ResourceType, Tag } from '@/query/resources/use-resources'
-import { ResourceFormValues, resourceSchema } from '@/schemas/resource'
+import { useNavigate } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import {
+  ResourceType,
+  type Tag,
+  useCreateResource,
+} from '@/query/resources/use-resources'
+import { useGetTags } from '@/query/tags/use-tags'
+import { type ResourceFormValues, resourceSchema } from '@/schemas/resource'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
-import ResourceForm from '../components/resource-form'
-import { useGetTags } from '@/query/tags/use-tags'
-import { useNavigate } from '@tanstack/react-router'
 import { Button } from '@/ui/shadcn/button'
-import { ArrowLeft } from 'lucide-react'
+import ResourceForm from '../components/resource-form'
 
 export default function AddResource() {
   const createResourceMutation = useCreateResource()
   const navigate = useNavigate()
-  
+
   // Fetch tags for selection
   const { data: tagsData } = useGetTags({ query: { limit: 100 } })
   const tagsOptions = ((tagsData?.data as unknown as Tag[]) || [])
@@ -35,7 +38,10 @@ export default function AddResource() {
     },
   })
 
-  const handleImageUpload = (assetId: string | null, assetURL: string | null) => {
+  const handleImageUpload = (
+    assetId: string | null,
+    assetURL: string | null
+  ) => {
     form.setValue('bannerImageId', assetId || undefined)
     form.setValue('bannerImageUrl', assetURL || undefined)
   }
@@ -51,7 +57,10 @@ export default function AddResource() {
         title='Create Resource'
         description='Add a new resource to your library'
         actions={
-          <Button variant='outline' onClick={() => navigate({ to: '/resources' })}>
+          <Button
+            variant='outline'
+            onClick={() => navigate({ to: '/resources' })}
+          >
             <ArrowLeft className='mr-2 h-4 w-4' /> Back
           </Button>
         }

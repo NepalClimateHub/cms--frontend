@@ -1,15 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   opportunityControllerDeleteOpportunityMutation,
-  opportunityControllerGetOpportunitiesOptions,
   opportunityControllerGetOneOpportunityOptions,
+  opportunityControllerGetOpportunitiesOptions,
   opportunityControllerUpdateOpportunityMutation,
 } from '@/api/@tanstack/react-query.gen'
+import type { OpportunityControllerGetOpportunitiesData } from '@/api/types.gen'
+import { opportunitiesFilterOptions } from '@/features/oppourtunities/list/opportunities-filter-options'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
 import { toast } from '@/hooks/use-toast'
-import { opportunitiesFilterOptions } from '@/features/oppourtunities/list/opportunities-filter-options'
-import type { OpportunityControllerGetOpportunitiesData } from '@/api/types.gen'
 import { opportunityControllerAddOpportutnityMutation } from '../../api/@tanstack/react-query.gen'
 
 export const useGetOpportunityById = (id: string) => {

@@ -9,17 +9,28 @@ interface MeasuredContainerProps<T extends React.ElementType> {
 
 export const MeasuredContainer = React.forwardRef(
   <T extends React.ElementType>(
-    { as: Component, name, children, style = {}, ...props }: MeasuredContainerProps<T> & React.ComponentProps<T>,
+    {
+      as: Component,
+      name,
+      children,
+      style = {},
+      ...props
+    }: MeasuredContainerProps<T> & React.ComponentProps<T>,
     ref: React.Ref<HTMLElement>
   ) => {
     const innerRef = React.useRef<HTMLElement>(null)
     const rect = useContainerSize(innerRef.current)
 
-    React.useImperativeHandle(ref, () => innerRef.current as HTMLElement)
+    // FormControl composes this ref with react-hook-form's ref. Recreating the
+    // imperative handle on every render makes React detach and reattach that
+    // composed ref repeatedly, which can cause a nested-update loop in React 19.
+    // The DOM ref is attached before this layout effect runs, so the handle only
+    // needs to be established once for the lifetime of this container.
+    React.useImperativeHandle(ref, () => innerRef.current as HTMLElement, [])
 
     const customStyle = {
       [`--${name}-width`]: `${rect.width}px`,
-      [`--${name}-height`]: `${rect.height}px`
+      [`--${name}-height`]: `${rect.height}px`,
     }
 
     return (

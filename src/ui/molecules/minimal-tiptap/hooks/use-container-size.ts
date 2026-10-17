@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 const DEFAULT_RECT: DOMRect = {
   top: 0,
@@ -9,18 +9,20 @@ const DEFAULT_RECT: DOMRect = {
   y: 0,
   width: 0,
   height: 0,
-  toJSON: () => '{}'
+  toJSON: () => '{}',
 }
 
 export function useContainerSize(element: HTMLElement | null): DOMRect {
-  const [size, setSize] = useState<DOMRect>(() => element?.getBoundingClientRect() ?? DEFAULT_RECT)
+  const [size, setSize] = useState<DOMRect>(
+    () => element?.getBoundingClientRect() ?? DEFAULT_RECT
+  )
 
   const handleResize = useCallback(() => {
     if (!element) return
 
     const newRect = element.getBoundingClientRect()
 
-    setSize(prevRect => {
+    setSize((prevRect) => {
       if (
         Math.round(prevRect.width) === Math.round(newRect.width) &&
         Math.round(prevRect.height) === Math.round(newRect.height) &&

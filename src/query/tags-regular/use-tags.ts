@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { TagsInitializer, TagsType } from '@/schemas/tags/tags'
-import { cleanObj } from '@/utils/obj-utils'
 import { toast } from '@/hooks/use-toast'
+import type { TagsInitializer, TagsType } from '@/schemas/tags/tags'
+import { cleanObj } from '@/utils/obj-utils'
 import { tags } from '../shared/routes'
 import { addTag, getTags, getTagsByType } from './tags-service'
 

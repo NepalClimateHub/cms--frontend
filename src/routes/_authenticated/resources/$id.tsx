@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import EditResource from '@/features/resources/edit'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { canAccessOrganizationContentRoutes } from '@/utils/role-check.util'
-import EditResource from '@/features/resources/edit'
 
 export const Route = createFileRoute('/_authenticated/resources/$id')({
   beforeLoad: () => {

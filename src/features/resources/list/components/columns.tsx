@@ -1,9 +1,10 @@
-import { useState } from 'react'
-import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
-import { ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import { Edit, Eye, Trash2 } from 'lucide-react'
+import { useState } from 'react'
 import {
-  ResourceResponseDto,
+  type ResourceResponseDto,
   useDeleteResource,
 } from '@/query/resources/use-resources'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
@@ -18,7 +19,6 @@ import {
   DialogTrigger,
 } from '@/ui/shadcn/dialog'
 import { Separator } from '@/ui/shadcn/separator'
-import { Eye, Edit, Trash2 } from 'lucide-react'
 
 function ResourceActionsCell({ resource }: { resource: ResourceResponseDto }) {
   const navigate = useNavigate()

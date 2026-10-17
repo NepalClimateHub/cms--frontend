@@ -2,9 +2,9 @@ import { z } from 'zod'
 import { socialSchema } from '../shared'
 
 export const OPPORTUNITY_STATUS = [
-  { value: 'open', label: 'Open' },
-  { value: 'closed', label: 'Closed' },
-  { value: 'upcoming', label: 'Upcoming' },
+  { value: 'OPEN', label: 'Open' },
+  { value: 'UPCOMING', label: 'Upcoming' },
+  { value: 'CLOSED', label: 'Closed' },
 ]
 
 export const OPPORTUNITY_FORMAT = [

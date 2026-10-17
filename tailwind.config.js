@@ -1,5 +1,4 @@
 import tailwindCssAnimate from 'tailwindcss-animate'
-import { fontFamily } from 'tailwindcss/defaultTheme'
 import { fonts } from './src/config/fonts'
 
 /** @type {import('tailwindcss').Config} */

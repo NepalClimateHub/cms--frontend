@@ -1,33 +1,33 @@
-import { FC } from 'react'
-import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
-import { Row } from '@tanstack/react-table'
+import type { Row } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import {
+  Calendar,
+  Clock,
+  DollarSign,
+  Link,
+  LucideEye,
+  LucideGlobe,
+  Mail,
+  MapPin,
+  Pencil,
+  Tag,
+  Trash,
+  Users,
+} from 'lucide-react'
+import type { FC } from 'react'
 import { useDeleteEvent, useUpdateEventStatus } from '@/query/events/use-events'
-import { EventFormValues } from '@/schemas/event'
+import type { EventFormValues } from '@/schemas/event'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
-  DialogTrigger,
-  DialogTitle,
-  DialogHeader,
   DialogContent,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@/ui/shadcn/dialog'
-import {
-  LucideEye,
-  Pencil,
-  Trash,
-  Calendar,
-  MapPin,
-  Users,
-  Mail,
-  Link,
-  Tag,
-  DollarSign,
-  Clock,
-  LucideGlobe,
-} from 'lucide-react'
 
 type EventCols = EventFormValues & {
   id: string

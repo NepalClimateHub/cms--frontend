@@ -1,9 +1,13 @@
-import { useEffect, useState, useRef, useMemo } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { GripVertical, MessageSquareQuote, PlusIcon, Star } from 'lucide-react'
+import { parseAsString } from 'nuqs'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useFilters } from '@/hooks/use-filters'
+import { usePagination } from '@/hooks/use-pagination'
 import {
+  type TestimonialResponseDto,
   useGetTestimonials,
   useReorderTestimonials,
-  TestimonialResponseDto,
 } from '@/query/testimonials/use-testimonials'
 import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/ui/loader'
@@ -13,10 +17,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
-import { PlusIcon, GripVertical, Star, MessageSquareQuote } from 'lucide-react'
-import { parseAsString } from 'nuqs'
-import { useFilters } from '@/hooks/use-filters'
-import { usePagination } from '@/hooks/use-pagination'
 import TestimonialRowActions from './components/testimonial-row-actions'
 
 const TestimonialList = () => {
@@ -50,7 +50,9 @@ const TestimonialList = () => {
   }, [testimonialsList?.data])
   const totalCount = testimonialsList?.meta?.count ?? 0
 
-  const [localTestimonials, setLocalTestimonials] = useState<TestimonialResponseDto[]>([])
+  const [localTestimonials, setLocalTestimonials] = useState<
+    TestimonialResponseDto[]
+  >([])
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const reorderTestimonialsMutation = useReorderTestimonials()
 
@@ -145,10 +147,11 @@ const TestimonialList = () => {
                 onDragStart={(e) => handleDragStart(e, index)}
                 onDragOver={(e) => handleDragOver(e, index)}
                 onDragEnd={handleDragEnd}
-                className={`group flex cursor-grab items-center gap-4 rounded-xl border border-border/50 bg-card/45 p-4 shadow-sm backdrop-blur transition-all duration-300 hover:border-primary/45 hover:shadow-md active:cursor-grabbing ${draggedIndex === index
+                className={`group flex cursor-grab items-center gap-4 rounded-xl border border-border/50 bg-card/45 p-4 shadow-sm backdrop-blur transition-all duration-300 hover:border-primary/45 hover:shadow-md active:cursor-grabbing ${
+                  draggedIndex === index
                     ? 'scale-[0.99] border-dashed border-primary bg-accent/20 opacity-30'
                     : ''
-                  }`}
+                }`}
               >
                 {/* Drag Handle */}
                 <div className='flex-shrink-0 text-muted-foreground/40 transition-colors duration-200 group-hover:text-muted-foreground'>
@@ -184,10 +187,11 @@ const TestimonialList = () => {
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star
                             key={star}
-                            className={`h-3.5 w-3.5 ${star <= testimonial.stars
+                            className={`h-3.5 w-3.5 ${
+                              star <= testimonial.stars
                                 ? 'fill-amber-400 text-amber-400'
                                 : 'fill-muted/20 text-muted-foreground/30'
-                              }`}
+                            }`}
                           />
                         ))}
                       </div>

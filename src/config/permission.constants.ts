@@ -1,6 +1,6 @@
-import { Key, UsersRound } from "lucide-react";
+import { Key, UsersRound } from 'lucide-react'
 
 export const permissionModuleIcons = {
-    'USERS': UsersRound,
-    'ROLES': Key
+  USERS: UsersRound,
+  ROLES: Key,
 }

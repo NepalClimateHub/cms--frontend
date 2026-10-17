@@ -1,471 +1,98 @@
-import { FC, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
-import {
-  useGetCategories,
-  CategoryType,
-  Category,
-} from '@/query/categories/use-categories'
-import { BlogFormValues } from '@/schemas/blog'
-import { DatePicker } from '@/ui/datepicker'
-import ImageUpload from '@/ui/image-upload'
-import { MinimalTiptapEditor } from '@/ui/molecules/minimal-tiptap'
-import { MultiSelect } from '@/ui/multi-select'
-import { Button } from '@/ui/shadcn/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from '@/ui/shadcn/form'
-import { Input } from '@/ui/shadcn/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/ui/shadcn/select'
-import { Switch } from '@/ui/shadcn/switch'
-import { Textarea } from '@/ui/shadcn/textarea'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/ui/shadcn/tooltip'
-import { Info, Eye } from 'lucide-react'
-import { useAuthStore } from '@/stores/authStore'
-import { getRoleFromToken, type AppRole } from '@/utils/jwt.util'
+import { type FC, useState } from 'react'
+import type { UseFormReturn } from 'react-hook-form'
+import type { BlogFormValues } from '@/schemas/blog'
+import { Form } from '@/ui/shadcn/form'
+import { BlogAutosaveBanners } from './autosave/BlogAutosaveBanners'
+import type { BlogAutosaveConfig } from './autosave/use-blog-autosave'
+import { BlogBasicSection } from './BlogBasicSection'
+import { BlogContentSection } from './BlogContentSection'
+import { BlogDetailsSection } from './BlogDetailsSection'
+import { BlogFormFooter } from './BlogFormFooter'
+import { BlogMediaSection } from './BlogMediaSection'
 import { BlogPreviewModal } from './BlogPreviewModal'
+import { BlogStatusBanner } from './BlogStatusBanner'
+import { BlogTagsSection } from './BlogTagsSection'
+import type { BlogState } from './blog-status'
+import { useBlogFormState } from './use-blog-form-state'
+import { useBlogRole } from './use-blog-role'
 
 type Props = {
   form: UseFormReturn<BlogFormValues>
-  handleImageUpload: (assetId: string | null, assetURL: string | null) => void
   handleFormSubmit: (values: BlogFormValues) => Promise<void>
   isEdit: boolean
-  isLoading: boolean
-  tagsOptions: {
-    value: string
-    label: string
-  }[]
+  isSaving: boolean
+  isTagsLoading?: boolean
+  tagsOptions: { value: string; label: string }[]
+  blogState?: BlogState
+  submitError?: string | null
+  autosaveConfig: BlogAutosaveConfig
 }
 
-const BlogForm: FC<Props> = ({
-  form,
-  handleImageUpload,
-  handleFormSubmit,
-  isEdit,
-  isLoading,
-  tagsOptions,
-}) => {
+const selectedTagNames = (
+  ids: string[] | undefined,
+  options: Props['tagsOptions']
+) =>
+  (ids ?? []).flatMap((id) => {
+    const label = options.find((option) => option.value === id)?.label
+    return label ? [label] : []
+  })
+
+const BlogForm: FC<Props> = (props) => {
+  const { form, isEdit, isSaving, isTagsLoading = false, tagsOptions } = props
+  const { blogState } = props
   const navigate = useNavigate()
+  const { isStaff } = useBlogRole()
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
-  const previewValues = form.watch()
-  const { user } = useAuthStore()
-  const accountRole = (user?.role ?? getRoleFromToken()) as
-    | AppRole
-    | null
-    | undefined
-  const isStaffUser =
-    accountRole === 'SUPER_ADMIN' ||
-    accountRole === 'ADMIN' ||
-    accountRole === 'CONTENT_ADMIN'
-  // Featured / top read: staff only; hide for ORGANIZATION, INDIVIDUAL, and unauthenticated
-  const canEditFeaturedOrTopRead = isStaffUser
-
-  const { data: categoriesData, isLoading: categoriesLoading } =
-    useGetCategories({
-      type: CategoryType.BLOG,
-    })
-
-  const blogCategories = categoriesData?.data || []
-
-  const handleCategoryChange = (val: string) => {
-    form.setValue('categoryId', val)
-    const selected = blogCategories.find((cat: Category) => cat.id === val)
-    if (selected) {
-      form.setValue('category', selected.name)
-    }
-  }
+  const {
+    autosave,
+    outcome,
+    status,
+    gate,
+    editorProps,
+    onSubmit,
+    isUploadingBanner,
+    setIsUploadingBanner,
+  } = useBlogFormState(props)
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleFormSubmit)}
-        className='space-y-8'
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-          </CardHeader>
-          <CardContent className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-            <FormField
-              control={form.control}
-              name='title'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Title <span className='text-red-500'>*</span>
-                  </FormLabel>
-                  <FormDescription>
-                    Enter a descriptive title for the blog
-                  </FormDescription>
-                  <FormControl>
-                    <Input
-                      placeholder='Enter blog title'
-                      className='w-full'
-                      {...field}
-                      value={field.value || ''}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {isStaffUser && (
-              <FormField
-                control={form.control}
-                name='author'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Author <span className='text-red-500'>*</span>
-                    </FormLabel>
-                    <FormDescription>
-                      Who is the author of this blog?
-                    </FormDescription>
-                    <FormControl>
-                      <Input
-                        placeholder='Enter author name'
-                        className='w-full'
-                        {...field}
-                        value={field.value || ''}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Blog Details</CardTitle>
-          </CardHeader>
-          <CardContent className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-            <FormField
-              control={form.control}
-              name='categoryId'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Category <span className='text-red-500'>*</span>
-                  </FormLabel>
-                  <FormDescription>
-                    What category does this blog belong to?
-                  </FormDescription>
-                  <FormControl>
-                    <TooltipProvider>
-                      <Select
-                        onValueChange={handleCategoryChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger className='w-full'>
-                          <SelectValue
-                            placeholder={
-                              categoriesLoading
-                                ? 'Loading categories...'
-                                : 'Select category'
-                            }
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {blogCategories.map((category: Category) => (
-                            <SelectItem key={category.id} value={category.id}>
-                              <div className='flex w-full items-center justify-between'>
-                                <span>{category.name}</span>
-                                {category.description && (
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Info className='ml-2 h-4 w-4 text-muted-foreground transition-colors hover:text-primary' />
-                                    </TooltipTrigger>
-                                    <TooltipContent
-                                      side='right'
-                                      className='max-w-[200px]'
-                                    >
-                                      <p>{category.description}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                )}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </TooltipProvider>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='publishedDate'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Published Date <span className='text-red-500'>*</span>
-                  </FormLabel>
-                  <FormDescription>
-                    When was this blog published?
-                  </FormDescription>
-                  <FormControl>
-                    <DatePicker
-                      {...field}
-                      value={field.value ? new Date(field.value) : undefined}
-                      onChange={(date) => field.onChange(date)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Content</CardTitle>
-          </CardHeader>
-          <CardContent className='space-y-6'>
-            <FormField
-              control={form.control}
-              name='excerpt'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Excerpt</FormLabel>
-                  <FormDescription>
-                    A brief summary of the blog content
-                  </FormDescription>
-                  <FormControl>
-                    <Textarea
-                      placeholder='Enter blog excerpt'
-                      className='w-full'
-                      rows={3}
-                      {...field}
-                      value={field.value || ''}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='content'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Content <span className='text-red-500'>*</span>
-                  </FormLabel>
-                  <FormDescription>
-                    Write the main content of your blog
-                  </FormDescription>
-                  <FormControl>
-                    <MinimalTiptapEditor
-                      value={field.value || ''}
-                      onChange={field.onChange}
-                      placeholder='Start writing your blog content...'
-                      className='w-full'
-                      editorContentClassName='p-5'
-                      output='html'
-                      autofocus={true}
-                      editable={true}
-                      editorClassName='focus:outline-none'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Tags</CardTitle>
-          </CardHeader>
-          <CardContent className='space-y-6'>
-            <FormField
-              control={form.control}
-              name='tagIds'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Blog Tags</FormLabel>
-                  <FormDescription>
-                    Add relevant tags to categorize the blog
-                  </FormDescription>
-                  <FormControl>
-                    <MultiSelect
-                      defaultValue={field.value}
-                      options={tagsOptions ?? []}
-                      onValueChange={field.onChange}
-                      placeholder='Select tags'
-                      className='w-full'
-                      disabled={isLoading}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Media & Settings</CardTitle>
-          </CardHeader>
-          <CardContent className='space-y-6'>
-            <FormField
-              control={form.control}
-              name='bannerImageId'
-              render={({ field: _field }) => (
-                <FormItem>
-                  <FormLabel>Banner Image</FormLabel>
-                  <FormDescription>
-                    Upload a banner image for your blog
-                  </FormDescription>
-                  <FormControl>
-                    <ImageUpload
-                      label='Upload banner image'
-                      handleImage={handleImageUpload}
-                      initialImageId={form.getValues('bannerImageId')}
-                      initialImageUrl={form.getValues('bannerImageUrl')}
-                      inputId='banner-image-upload'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div
-              className={`grid grid-cols-1 gap-6 ${
-                canEditFeaturedOrTopRead ? 'md:grid-cols-2' : ''
-              }`}
-            >
-              <FormField
-                control={form.control}
-                name='isDraft'
-                render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                    <div className='space-y-0.5'>
-                      <FormLabel className='text-base'>Draft Status</FormLabel>
-                      <FormDescription>
-                        {isStaffUser
-                          ? 'Save as draft or publish immediately'
-                          : 'Save as draft, or submit for admin review before it goes live'}
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              {canEditFeaturedOrTopRead && (
-                <FormField
-                  control={form.control}
-                  name='isFeatured'
-                  render={({ field }) => (
-                    <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                      <div className='space-y-0.5'>
-                        <FormLabel className='text-base'>
-                          Featured Blog
-                        </FormLabel>
-                        <FormDescription>
-                          Mark this blog as featured
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {canEditFeaturedOrTopRead && (
-                <FormField
-                  control={form.control}
-                  name='isTopRead'
-                  render={({ field }) => (
-                    <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                      <div className='space-y-0.5'>
-                        <FormLabel className='text-base'>Top Read</FormLabel>
-                        <FormDescription>
-                          Mark this blog as a top read
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className='sticky bottom-0 z-40 -mx-4 md:-mx-8 border-t bg-background/95 py-4 px-6 md:px-8 flex justify-end gap-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-md'>
-          <Button
-            type='button'
-            variant='outline'
-            onClick={() => navigate({ to: '/blog/list' })}
-          >
-            Cancel
-          </Button>
-          <Button
-            type='button'
-            variant='outline'
-            onClick={() => setIsPreviewOpen(true)}
-            className='gap-2'
-          >
-            <Eye className='h-4 w-4' />
-            Preview
-          </Button>
-          <Button type='submit' disabled={isLoading}>
-            {isLoading ? 'Saving...' : isEdit ? 'Update Blog' : 'Create Blog'}
-          </Button>
-        </div>
-
+      <form onSubmit={onSubmit} className='space-y-8' aria-busy={isSaving}>
+        {isEdit && blogState && <BlogStatusBanner blogState={blogState} />}
+        <BlogAutosaveBanners
+          recovery={autosave.recovery}
+          conflict={autosave.conflict}
+        />
+        <BlogBasicSection form={form} showAuthor={isStaff} />
+        <BlogDetailsSection form={form} />
+        <BlogContentSection form={form} editorProps={editorProps} />
+        <BlogTagsSection
+          form={form}
+          options={tagsOptions}
+          disabled={isSaving || isTagsLoading}
+        />
+        <BlogMediaSection
+          key={autosave.formKey}
+          form={form}
+          canEditFeatured={isStaff}
+          draftHint={outcome.hint}
+          onBannerBusyChange={setIsUploadingBanner}
+        />
+        <BlogFormFooter
+          status={status}
+          gate={gate}
+          submitLabel={outcome.label}
+          isSaving={isSaving}
+          isSubmitDisabled={isSaving || isTagsLoading || isUploadingBanner}
+          onCancel={() => navigate({ to: '/blog/list' })}
+          onPreview={() => setIsPreviewOpen(true)}
+          onRetryAutosave={autosave.retry}
+        />
         <BlogPreviewModal
           open={isPreviewOpen}
           onClose={() => setIsPreviewOpen(false)}
-          values={previewValues}
+          values={form.watch()}
+          extras={{ tags: selectedTagNames(form.watch('tagIds'), tagsOptions) }}
         />
       </form>
     </Form>

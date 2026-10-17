@@ -1,13 +1,13 @@
-import * as React from 'react'
 import {
-  TextAlignLeftIcon,
   TextAlignCenterIcon,
-  TextAlignRightIcon,
   TextAlignJustifyIcon,
+  TextAlignLeftIcon,
+  TextAlignRightIcon,
 } from '@radix-ui/react-icons'
-import type { toggleVariants } from '@/ui/shadcn/toggle'
 import type { Editor } from '@tiptap/react'
 import type { VariantProps } from 'class-variance-authority'
+import type * as React from 'react'
+import type { toggleVariants } from '@/ui/shadcn/toggle'
 import type { FormatAction } from '../../types'
 import { ToolbarSection } from '../toolbar-section'
 

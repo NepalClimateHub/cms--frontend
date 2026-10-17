@@ -32,8 +32,14 @@ const organizationListSchema = z
     logoImageId: z.string().optional().nullable(),
     verificationDocumentUrl: z.string().optional().nullable(),
     verificationDocumentId: z.string().optional().nullable(),
+    verificationDocuments: z
+      .array(z.object({ id: z.string(), url: z.string() }))
+      .optional()
+      .nullable(),
     verificationRequestRemarks: z.string().optional().nullable(),
     verificationRequestedAt: z.string().optional().nullable(),
+    verificationAdminMessage: z.string().optional().nullable(),
+    verificationMessageSentAt: z.string().optional().nullable(),
   })
   .nullable()
   .optional()

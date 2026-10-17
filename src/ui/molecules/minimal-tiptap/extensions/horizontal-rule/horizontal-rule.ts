@@ -9,10 +9,10 @@ export const HorizontalRule = TiptapHorizontalRule.extend({
     return {
       'Mod-Alt--': () =>
         this.editor.commands.insertContent({
-          type: this.name
-        })
+          type: this.name,
+        }),
     }
-  }
+  },
 })
 
 export default HorizontalRule

@@ -1,21 +1,21 @@
-import { FC } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { useOpportunityAPI } from '@/query/opportunities/use-opportunities'
-import { useGetTagsByType } from '@/query/tags-regular/use-tags'
-import {
-  OpportunityFormValues,
-  opportunitySchema,
-} from '@/schemas/opportunities/opportunity'
-import { Main } from '@/ui/layouts/main'
-import PageHeader from '@/ui/page-header'
-import { toast } from '@/hooks/use-toast'
+import type { FC } from 'react'
+import { useForm } from 'react-hook-form'
 import type {
   CreateOpportunityDto,
   OpportunityApiResponse,
   UpdateOpportunityDto,
 } from '@/api/types.gen'
+import { toast } from '@/hooks/use-toast'
+import { useOpportunityAPI } from '@/query/opportunities/use-opportunities'
+import { useGetTagsByType } from '@/query/tags-regular/use-tags'
+import {
+  type OpportunityFormValues,
+  opportunitySchema,
+} from '@/schemas/opportunities/opportunity'
+import { Main } from '@/ui/layouts/main'
+import PageHeader from '@/ui/page-header'
 import OpportunityForm from '../shared/OpportunityForm'
 
 const AddOpportunity: FC = () => {
@@ -69,11 +69,12 @@ const AddOpportunity: FC = () => {
   const handleFormSubmit = async (values: OpportunityFormValues) => {
     try {
       // Check if socials have any non-empty values
-      const hasSocials = values.socials && (
-        (values.socials.facebook && values.socials.facebook.trim() !== '') ||
-        (values.socials.instagram && values.socials.instagram.trim() !== '') ||
-        (values.socials.linkedin && values.socials.linkedin.trim() !== '')
-      )
+      const hasSocials =
+        values.socials &&
+        ((values.socials.facebook && values.socials.facebook.trim() !== '') ||
+          (values.socials.instagram &&
+            values.socials.instagram.trim() !== '') ||
+          (values.socials.linkedin && values.socials.linkedin.trim() !== ''))
 
       // Store socials separately for the update call
       const socialsToUpdate = hasSocials ? values.socials : null
@@ -137,7 +138,8 @@ const AddOpportunity: FC = () => {
                   onError: () => {
                     toast({
                       title: 'Opportunity added successfully',
-                      description: 'Note: Social links may need to be updated manually',
+                      description:
+                        'Note: Social links may need to be updated manually',
                     })
                     navigate({ to: '/opportunities/list' })
                   },

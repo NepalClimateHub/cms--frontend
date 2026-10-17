@@ -1,4 +1,3 @@
-
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import ProjectList from '@/features/projects/list'
 import { getRoleFromToken } from '@/utils/jwt.util'

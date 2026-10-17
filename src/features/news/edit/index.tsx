@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useParams } from '@tanstack/react-router'
+import { useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { useGetNewsById, useNewsAPI } from '@/query/news/use-news'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
 import { AddNewsSchema, type News } from '@/schemas/news/news'
@@ -47,7 +47,7 @@ const NewsEdit = () => {
       hasReset.current = true
       setIsFormReady(true)
     }
-  }, [newsData])
+  }, [newsData, form.reset])
 
   const navigate = useNavigate()
 

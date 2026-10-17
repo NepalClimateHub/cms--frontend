@@ -1,10 +1,13 @@
-import { useEffect } from 'react'
-import * as z from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2 } from 'lucide-react'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
+import { toast } from '@/hooks/use-toast'
 import apiClient from '@/query/apiClient'
 import { useGetProfile } from '@/query/auth/use-auth'
 import type { UserSocials } from '@/schemas/auth/profile'
+import { useAuthStore } from '@/stores/authStore'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
@@ -22,13 +25,10 @@ import {
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
 import { Textarea } from '@/ui/shadcn/textarea'
-import { Loader2 } from 'lucide-react'
-import { useAuthStore } from '@/stores/authStore'
 import {
   mapUserOutputToAuthUser,
   nullableString,
 } from '@/utils/map-user-output'
-import { toast } from '@/hooks/use-toast'
 
 const editProfileSchema = z.object({
   name: z
