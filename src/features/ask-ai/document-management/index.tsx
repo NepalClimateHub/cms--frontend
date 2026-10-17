@@ -270,6 +270,22 @@ export default function AiDocumentManagement() {
     }
   }
 
+  const runClimateAction = async (
+    mode: 'BACKFILL' | 'INCREMENTAL',
+    success: string
+  ) => {
+    try {
+      const result = await syncClimate.mutateAsync(mode)
+      toast({
+        title: result.acknowledgementPending
+          ? 'Awaiting climate worker acknowledgement'
+          : success,
+      })
+    } catch (error) {
+      reportError(error)
+    }
+  }
+
   const runConfirmedAction = () => {
     const action = confirmationAction
     setConfirmationAction(null)
@@ -277,15 +293,9 @@ export default function AiDocumentManagement() {
     if (action === 'FULL_REBUILD') {
       void runAction(() => rebuild.mutateAsync(), 'Full rebuild queued')
     } else if (action === 'BACKFILL') {
-      void runAction(
-        () => syncClimate.mutateAsync('BACKFILL'),
-        'Climate backfill queued'
-      )
+      void runClimateAction('BACKFILL', 'Climate backfill queued')
     } else if (action === 'INCREMENTAL') {
-      void runAction(
-        () => syncClimate.mutateAsync('INCREMENTAL'),
-        'Climate sync queued'
-      )
+      void runClimateAction('INCREMENTAL', 'Climate sync queued')
     }
   }
 
@@ -510,7 +520,13 @@ export default function AiDocumentManagement() {
                 : 'Not synchronized'}
             </p>
             {climateStatus.data?.latestRun?.error && (
-              <p className='mt-2 max-w-2xl text-xs text-red-600'>
+              <p
+                className={`mt-2 max-w-2xl text-xs ${
+                  climateStatus.data.latestRun.status === 'FAILED'
+                    ? 'text-red-600'
+                    : 'text-amber-700'
+                }`}
+              >
                 {climateStatus.data.latestRun.error}
               </p>
             )}

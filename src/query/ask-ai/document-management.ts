@@ -264,11 +264,14 @@ export function useSyncClimateData() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (mode: 'BACKFILL' | 'INCREMENTAL') =>
-      request('/climate-data/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode }),
-      }),
+      request<{ accepted: boolean; acknowledgementPending?: boolean }>(
+        '/climate-data/sync',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode }),
+        }
+      ),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['climate-data-status'] }),
   })
 }
