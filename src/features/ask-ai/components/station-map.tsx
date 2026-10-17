@@ -23,7 +23,12 @@ export function StationMap({ visual }: { visual: StationMapSpec }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const fallbackReportedRef = useRef(false)
-  const [useFallback, setUseFallback] = useState(!env.VITE_MAP_STYLE_URL)
+  const mapStyleUrl = env.VITE_MAPTILER_API_KEY
+    ? `https://api.maptiler.com/maps/streets-v4/style.json?key=${encodeURIComponent(
+        env.VITE_MAPTILER_API_KEY
+      )}`
+    : undefined
+  const [useFallback, setUseFallback] = useState(!mapStyleUrl)
   const points = useMemo(
     () => ({
       type: 'FeatureCollection' as const,
@@ -41,7 +46,7 @@ export function StationMap({ visual }: { visual: StationMapSpec }) {
 
   useEffect(() => {
     if (!containerRef.current) return
-    const style = useFallback ? fallbackStyle : env.VITE_MAP_STYLE_URL!
+    const style = useFallback ? fallbackStyle : mapStyleUrl!
     const map = new maplibregl.Map({
       container: containerRef.current,
       style,

@@ -1,6 +1,7 @@
 import { IconArticle, IconHome, IconSettings } from '@tabler/icons-react'
 import {
   Activity,
+  BrainCircuit,
   Briefcase,
   Calendar,
   Database,
