@@ -28,9 +28,13 @@ export const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ editor }) => {
         <ImageLayoutToggle
           value={selected?.layout ?? 'inline'}
           canSet={(layout: ImageLayout) => editor.can().setImageLayout(layout)}
-          onChange={(layout) =>
-            editor.chain().focus().setImageLayout(layout).run()
-          }
+          onChange={(layout) => {
+            const chain = editor.chain().focus().setImageLayout(layout)
+            if (layout !== 'two-up') {
+              chain.updateAttributes('image', { width: null, height: null })
+            }
+            chain.run()
+          }}
         />
         <ImageDetailsPopover
           initial={{
