@@ -7,6 +7,7 @@ import { ImageActions } from './image-actions'
 import { ImageCropper } from './image-cropper'
 import { ImageFigcaption } from './image-figcaption'
 import { ImagePicture } from './image-picture'
+import { ImageResizeHandles } from './image-resize-handles'
 import { ImageStatusOverlay } from './image-status-overlay'
 
 export const ImageViewBlock: React.FC<NodeViewProps> = (props) => {
@@ -19,19 +20,23 @@ export const ImageViewBlock: React.FC<NodeViewProps> = (props) => {
       data-testid='editor-image'
       data-drag-handle
       data-layout={attrs.layout === 'inline' ? undefined : attrs.layout}
+      data-align={attrs.alignment === 'center' ? undefined : attrs.alignment}
       data-alt-missing={block.altMissing || undefined}
       className='image-block group/node-image'
     >
       <div
-        className={cn('relative rounded', {
+        ref={block.resize.frameRef}
+        style={{ width: block.resize.frameWidth ?? undefined }}
+        className={cn('relative max-w-full rounded', {
+          'mr-auto': attrs.alignment === 'left',
+          'mx-auto': attrs.alignment === 'center',
+          'ml-auto': attrs.alignment === 'right',
           'outline outline-2 outline-offset-1 outline-primary': props.selected,
         })}
       >
         <ImagePicture
           attrs={{ ...attrs, src: block.displaySrc }}
-          isZoomed={block.isZoomed}
           hidden={block.loadFailed}
-          onZoomChange={block.setIsZoomed}
           onNaturalSize={block.handleNaturalSize}
           onError={() => block.setLoadFailed(true)}
         />
@@ -45,6 +50,12 @@ export const ImageViewBlock: React.FC<NodeViewProps> = (props) => {
           onRemove={props.deleteNode}
         />
         {!block.loadFailed && !block.busy && <ImageActions {...actions} />}
+        {block.showResizeHandles && (
+          <ImageResizeHandles
+            handlers={block.resize.handlers}
+            width={block.resize.isResizing ? block.resize.frameWidth : null}
+          />
+        )}
       </div>
       <ImageFigcaption
         caption={attrs.caption}
