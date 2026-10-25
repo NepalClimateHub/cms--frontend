@@ -1,4 +1,4 @@
-import { zodResolver } from '@hookform/resolvers/zod'
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Building2,
   CalendarDays,
@@ -15,30 +15,31 @@ import {
   Share2,
   ShieldAlert,
   Tags,
-} from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import type { UserOutput } from '@/api/types.gen'
-import { toast } from '@/hooks/use-toast'
-import { usePatchMyOrganization } from '@/query/users/use-my-organization'
-import type { SocialType } from '@/schemas/shared'
-import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
-import ImageUpload from '@/ui/image-upload'
-import ChangePasswordDialog from '@/ui/organisms/dashboard/ChangePasswordDialog'
-import EditProfilePhotoDialog from '@/ui/organisms/dashboard/EditProfilePhotoDialog'
-import OrganizationVerificationViewDialog from '@/ui/organisms/dashboard/organization-verification-view-dialog'
-import OrganizationVerifyDialog from '@/ui/organisms/dashboard/organization-verify-dialog'
-import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
-import { Badge } from '@/ui/shadcn/badge'
-import { Button } from '@/ui/shadcn/button'
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import type { UserOutput } from "@/api/types.gen";
+import { toast } from "@/hooks/use-toast";
+import { usePatchMyOrganization } from "@/query/users/use-my-organization";
+import type { SocialType } from "@/schemas/shared";
+import { ImagePreviewDialog } from "@/ui/image-preview-dialog";
+import ImageUpload from "@/ui/image-upload";
+import ChangePasswordDialog from "@/ui/organisms/dashboard/ChangePasswordDialog";
+import EditProfilePhotoDialog from "@/ui/organisms/dashboard/EditProfilePhotoDialog";
+import OrganizationVerificationViewDialog from "@/ui/organisms/dashboard/organization-verification-view-dialog";
+import OrganizationVerifyDialog from "@/ui/organisms/dashboard/organization-verify-dialog";
+import { VerificationConversation } from "@/ui/molecules/verification-conversation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/ui/shadcn/avatar";
+import { Badge } from "@/ui/shadcn/badge";
+import { Button } from "@/ui/shadcn/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/ui/shadcn/card'
+} from "@/ui/shadcn/card";
 import {
   Dialog,
   DialogContent,
@@ -46,7 +47,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/ui/shadcn/dialog'
+} from "@/ui/shadcn/dialog";
 import {
   Form,
   FormControl,
@@ -54,117 +55,117 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/ui/shadcn/form'
-import { Input } from '@/ui/shadcn/input'
-import { cn, getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
-import { Textarea } from '@/ui/shadcn/textarea'
+} from "@/ui/shadcn/form";
+import { Input } from "@/ui/shadcn/input";
+import { cn, getInitialsForAvatar } from "@/ui/shadcn/lib/utils";
+import { Textarea } from "@/ui/shadcn/textarea";
 import {
   mapOrganizationProfileDto,
   nullableString,
-} from '@/utils/map-user-output'
+} from "@/utils/map-user-output";
 
 const orgDetailsFormSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(300),
-  description: z.string().min(1, 'Description is required').max(20_000),
-  street: z.string().max(500).optional().or(z.literal('')),
-  city: z.string().max(200).optional().or(z.literal('')),
-  state: z.string().max(200).optional().or(z.literal('')),
-  country: z.string().max(100).optional().or(z.literal('')),
-  postcode: z.string().max(30).optional().or(z.literal('')),
-  facebook: z.string().optional().or(z.literal('')),
-  instagram: z.string().optional().or(z.literal('')),
-  linkedin: z.string().optional().or(z.literal('')),
-})
+  name: z.string().min(1, "Name is required").max(300),
+  description: z.string().min(1, "Description is required").max(20_000),
+  street: z.string().max(500).optional().or(z.literal("")),
+  city: z.string().max(200).optional().or(z.literal("")),
+  state: z.string().max(200).optional().or(z.literal("")),
+  country: z.string().max(100).optional().or(z.literal("")),
+  postcode: z.string().max(30).optional().or(z.literal("")),
+  facebook: z.string().optional().or(z.literal("")),
+  instagram: z.string().optional().or(z.literal("")),
+  linkedin: z.string().optional().or(z.literal("")),
+});
 
-type OrgDetailsForm = z.infer<typeof orgDetailsFormSchema>
+type OrgDetailsForm = z.infer<typeof orgDetailsFormSchema>;
 
 type NormalizedOrgSocials = {
-  facebook: string
-  instagram: string
-  linkedin: string
-}
+  facebook: string;
+  instagram: string;
+  linkedin: string;
+};
 
 function formatSocialsFromUser(
-  raw: UserOutput['socials']
+  raw: UserOutput["socials"],
 ): NormalizedOrgSocials {
-  if (!raw || typeof raw !== 'object') {
-    return { facebook: '', instagram: '', linkedin: '' }
+  if (!raw || typeof raw !== "object") {
+    return { facebook: "", instagram: "", linkedin: "" };
   }
-  const o = raw as Record<string, unknown>
+  const o = raw as Record<string, unknown>;
   return {
-    facebook: typeof o.facebook === 'string' ? o.facebook : '',
-    instagram: typeof o.instagram === 'string' ? o.instagram : '',
-    linkedin: typeof o.linkedin === 'string' ? o.linkedin : '',
-  }
+    facebook: typeof o.facebook === "string" ? o.facebook : "",
+    instagram: typeof o.instagram === "string" ? o.instagram : "",
+    linkedin: typeof o.linkedin === "string" ? o.linkedin : "",
+  };
 }
 
-function formatLocation(org: UserOutput['organization']) {
-  const adr = org?.address
-  if (!adr) return '—'
+function formatLocation(org: UserOutput["organization"]) {
+  const adr = org?.address;
+  if (!adr) return "—";
   const parts = [
     adr.street,
-    [adr.city, adr.state].filter(Boolean).join(', '),
+    [adr.city, adr.state].filter(Boolean).join(", "),
     adr.postcode,
     adr.country,
   ]
-    .map((p) => (typeof p === 'string' ? p.trim() : ''))
-    .filter(Boolean)
-  return parts.length ? parts.join(' · ') : '—'
+    .map((p) => (typeof p === "string" ? p.trim() : ""))
+    .filter(Boolean);
+  return parts.length ? parts.join(" · ") : "—";
 }
 
 type OrganizationProfilePageProps = {
-  user: UserOutput
-  onUserUpdated: () => void
-  highlightEdit?: boolean
-}
+  user: UserOutput;
+  onUserUpdated: () => void;
+  highlightEdit?: boolean;
+};
 
 export default function OrganizationProfilePage({
   user,
   onUserUpdated,
   highlightEdit,
 }: OrganizationProfilePageProps) {
-  const org = user.organization
-  const nameInitials = getInitialsForAvatar(user.fullName || 'User')
+  const org = user.organization;
+  const nameInitials = getInitialsForAvatar(user.fullName || "User");
 
   const [isChangePasswordDialogOpen, setIsChangePasswordDialogOpen] =
-    useState(false)
-  const [isEditProfilePhotoOpen, setIsEditProfilePhotoOpen] = useState(false)
-  const [isVerifyDialogOpen, setIsVerifyDialogOpen] = useState(false)
-  const [isViewApplicationOpen, setIsViewApplicationOpen] = useState(false)
-  const [isEditCoverOpen, setIsEditCoverOpen] = useState(false)
-  const [isEditOrgDetailsOpen, setIsEditOrgDetailsOpen] = useState(false)
+    useState(false);
+  const [isEditProfilePhotoOpen, setIsEditProfilePhotoOpen] = useState(false);
+  const [isVerifyDialogOpen, setIsVerifyDialogOpen] = useState(false);
+  const [isViewApplicationOpen, setIsViewApplicationOpen] = useState(false);
+  const [isEditCoverOpen, setIsEditCoverOpen] = useState(false);
+  const [isEditOrgDetailsOpen, setIsEditOrgDetailsOpen] = useState(false);
 
   const orgForm = useForm<OrgDetailsForm>({
     resolver: zodResolver(orgDetailsFormSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      street: '',
-      city: '',
-      state: '',
-      country: '',
-      postcode: '',
-      facebook: '',
-      instagram: '',
-      linkedin: '',
+      name: "",
+      description: "",
+      street: "",
+      city: "",
+      state: "",
+      country: "",
+      postcode: "",
+      facebook: "",
+      instagram: "",
+      linkedin: "",
     },
-  })
+  });
 
-  const patchOrg = usePatchMyOrganization()
+  const patchOrg = usePatchMyOrganization();
   const [bannerUrl, setBannerUrl] = useState<string | null>(
-    nullableString(user.bannerImageUrl)
-  )
+    nullableString(user.bannerImageUrl),
+  );
   const [bannerId, setBannerId] = useState<string | null>(
-    nullableString(user.bannerImageId)
-  )
+    nullableString(user.bannerImageId),
+  );
 
   useEffect(() => {
-    setBannerUrl(nullableString(user.bannerImageUrl))
-    setBannerId(nullableString(user.bannerImageId))
-  }, [user.bannerImageUrl, user.bannerImageId])
+    setBannerUrl(nullableString(user.bannerImageUrl));
+    setBannerId(nullableString(user.bannerImageId));
+  }, [user.bannerImageUrl, user.bannerImageId]);
 
   const handleSaveCover = () => {
-    if (!org) return
+    if (!org) return;
     patchOrg.mutate(
       {
         bannerImageUrl: bannerUrl ?? undefined,
@@ -172,38 +173,38 @@ export default function OrganizationProfilePage({
       },
       {
         onSuccess: () => {
-          toast({ title: 'Cover updated' })
-          onUserUpdated()
-          setIsEditCoverOpen(false)
+          toast({ title: "Cover updated" });
+          onUserUpdated();
+          setIsEditCoverOpen(false);
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   useEffect(() => {
-    if (!isEditOrgDetailsOpen || !org) return
-    const s = formatSocialsFromUser(user.socials)
+    if (!isEditOrgDetailsOpen || !org) return;
+    const s = formatSocialsFromUser(user.socials);
     orgForm.reset({
       name: org.name,
-      description: org.description ?? '',
-      street: typeof org.address?.street === 'string' ? org.address.street : '',
-      city: typeof org.address?.city === 'string' ? org.address.city : '',
-      state: typeof org.address?.state === 'string' ? org.address.state : '',
+      description: org.description ?? "",
+      street: typeof org.address?.street === "string" ? org.address.street : "",
+      city: typeof org.address?.city === "string" ? org.address.city : "",
+      state: typeof org.address?.state === "string" ? org.address.state : "",
       country:
-        typeof org.address?.country === 'string' ? org.address.country : '',
+        typeof org.address?.country === "string" ? org.address.country : "",
       postcode:
-        typeof org.address?.postcode === 'string' ? org.address.postcode : '',
+        typeof org.address?.postcode === "string" ? org.address.postcode : "",
       ...s,
-    })
-  }, [isEditOrgDetailsOpen, org, user.socials, orgForm])
+    });
+  }, [isEditOrgDetailsOpen, org, user.socials, orgForm]);
 
   const onSubmitOrgDetails = (values: OrgDetailsForm) => {
-    if (!org) return
+    if (!org) return;
     const socials: SocialType = {
       facebook: values.facebook?.trim() || undefined,
       instagram: values.instagram?.trim() || undefined,
       linkedin: values.linkedin?.trim() || undefined,
-    }
+    };
     patchOrg.mutate(
       {
         name: values.name.trim(),
@@ -219,13 +220,13 @@ export default function OrganizationProfilePage({
       },
       {
         onSuccess: () => {
-          toast({ title: 'Organization updated' })
-          onUserUpdated()
-          setIsEditOrgDetailsOpen(false)
+          toast({ title: "Organization updated" });
+          onUserUpdated();
+          setIsEditOrgDetailsOpen(false);
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   if (!org) {
     return (
@@ -255,16 +256,18 @@ export default function OrganizationProfilePage({
           </CardHeader>
         </Card>
       </div>
-    )
+    );
   }
 
   const pendingVerification =
     !user.isVerifiedByAdmin &&
-    Boolean(org.verificationRequestedAt || org.verificationDocumentUrl)
-  const verificationAdminMessage = nullableString(org.verificationAdminMessage)
-  const verificationNeedsChanges = Boolean(verificationAdminMessage)
+    Boolean(org.verificationRequestedAt || org.verificationDocumentUrl);
+  const latestVerificationMessage = [...org.verificationMessages].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  )[0];
+  const verificationNeedsChanges = latestVerificationMessage?.senderType === "ADMIN";
 
-  const orgSocials = formatSocialsFromUser(user.socials)
+  const orgSocials = formatSocialsFromUser(user.socials);
 
   return (
     <div className='container mx-auto space-y-6 p-6'>
@@ -291,10 +294,10 @@ export default function OrganizationProfilePage({
             size='sm'
             onClick={() => setIsEditOrgDetailsOpen(true)}
             className={cn(
-              'transition-all duration-300',
+              "transition-all duration-300",
               highlightEdit &&
                 !isEditOrgDetailsOpen &&
-                'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-lg shadow-emerald-500/20 ring-2 ring-emerald-500 ring-offset-2 scale-105 animate-pulse'
+                "bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-lg shadow-emerald-500/20 ring-2 ring-emerald-500 ring-offset-2 scale-105 animate-pulse",
             )}
           >
             <Edit className='mr-2 h-4 w-4' />
@@ -379,25 +382,23 @@ export default function OrganizationProfilePage({
           </div>
         </div>
         {verificationNeedsChanges ? (
-          <div className='mx-4 mt-4 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 sm:mx-6'>
-            <p className='font-semibold'>Message from the verification team</p>
-            <p className='mt-1 whitespace-pre-wrap'>
-              {verificationAdminMessage}
-            </p>
-          </div>
+          <VerificationConversation
+            messages={org.verificationMessages}
+            className='m-4 rounded-md border border-amber-200 bg-amber-50 p-4 sm:mx-6'
+          />
         ) : null}
         {/* Cover — LinkedIn-style header */}
         <div className='relative h-[min(28vw,200px)] min-h-[140px] w-full sm:min-h-[160px]'>
           <ImagePreviewDialog
-            src={bannerUrl || ''}
+            src={bannerUrl || ""}
             alt='Profile cover'
             trigger={
               <div
                 className={cn(
-                  'absolute inset-0 cursor-pointer',
+                  "absolute inset-0 cursor-pointer",
                   bannerUrl
-                    ? 'bg-cover bg-center bg-no-repeat'
-                    : 'bg-gradient-to-br from-slate-200 via-sky-100/80 to-slate-300/90'
+                    ? "bg-cover bg-center bg-no-repeat"
+                    : "bg-gradient-to-br from-slate-200 via-sky-100/80 to-slate-300/90",
                 )}
                 style={
                   bannerUrl
@@ -429,7 +430,7 @@ export default function OrganizationProfilePage({
             <div className='flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-5'>
               <div className='group relative h-[104px] w-[104px] shrink-0 sm:h-[120px] sm:w-[120px]'>
                 <ImagePreviewDialog
-                  src={nullableString(user.profilePhotoUrl) ?? ''}
+                  src={nullableString(user.profilePhotoUrl) ?? ""}
                   alt={user.fullName}
                   trigger={
                     <Avatar className='h-full w-full cursor-pointer border-4 border-background bg-background text-2xl shadow-md ring-1 ring-border transition-opacity hover:opacity-90'>
@@ -449,9 +450,9 @@ export default function OrganizationProfilePage({
                   size='icon'
                   variant='secondary'
                   className={cn(
-                    'absolute bottom-1 right-1 h-9 w-9 rounded-full border-2 border-background shadow-md',
-                    'bg-background/95 hover:bg-muted',
-                    'opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:opacity-100'
+                    "absolute bottom-1 right-1 h-9 w-9 rounded-full border-2 border-background shadow-md",
+                    "bg-background/95 hover:bg-muted",
+                    "opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:opacity-100",
                   )}
                   onClick={() => setIsEditProfilePhotoOpen(true)}
                   aria-label='Edit profile photo'
@@ -478,7 +479,7 @@ export default function OrganizationProfilePage({
                 Description
               </h4>
               <p className='whitespace-pre-wrap text-foreground'>
-                {org.description || '—'}
+                {org.description || "—"}
               </p>
             </div>
             <div className='flex items-start gap-2'>
@@ -488,7 +489,7 @@ export default function OrganizationProfilePage({
                   Type
                 </h4>
                 <p className='text-foreground'>
-                  {(org.organizationType as any)?.trim() || '—'}
+                  {(org.organizationType as any)?.trim() || "—"}
                 </p>
               </div>
             </div>
@@ -510,9 +511,9 @@ export default function OrganizationProfilePage({
                 <ul className='mt-1 space-y-1 text-sm'>
                   {(
                     [
-                      ['Facebook', orgSocials.facebook],
-                      ['Instagram', orgSocials.instagram],
-                      ['LinkedIn', orgSocials.linkedin],
+                      ["Facebook", orgSocials.facebook],
+                      ["Instagram", orgSocials.instagram],
+                      ["LinkedIn", orgSocials.linkedin],
                     ] as const
                   ).map(([label, url]) => (
                     <li key={label}>
@@ -606,7 +607,7 @@ export default function OrganizationProfilePage({
                     <FormItem className='sm:col-span-2'>
                       <FormLabel>Street / line 1</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value ?? ''} />
+                        <Input {...field} value={field.value ?? ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -619,7 +620,7 @@ export default function OrganizationProfilePage({
                     <FormItem>
                       <FormLabel>City</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value ?? ''} />
+                        <Input {...field} value={field.value ?? ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -632,7 +633,7 @@ export default function OrganizationProfilePage({
                     <FormItem>
                       <FormLabel>State / province</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value ?? ''} />
+                        <Input {...field} value={field.value ?? ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -645,7 +646,7 @@ export default function OrganizationProfilePage({
                     <FormItem>
                       <FormLabel>Postal code</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value ?? ''} />
+                        <Input {...field} value={field.value ?? ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -658,7 +659,7 @@ export default function OrganizationProfilePage({
                     <FormItem>
                       <FormLabel>Country</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value ?? ''} />
+                        <Input {...field} value={field.value ?? ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -678,7 +679,7 @@ export default function OrganizationProfilePage({
                           type='url'
                           placeholder='https://…'
                           {...field}
-                          value={field.value ?? ''}
+                          value={field.value ?? ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -696,7 +697,7 @@ export default function OrganizationProfilePage({
                           type='url'
                           placeholder='https://…'
                           {...field}
-                          value={field.value ?? ''}
+                          value={field.value ?? ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -714,7 +715,7 @@ export default function OrganizationProfilePage({
                           type='url'
                           placeholder='https://…'
                           {...field}
-                          value={field.value ?? ''}
+                          value={field.value ?? ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -737,7 +738,7 @@ export default function OrganizationProfilePage({
                       Saving…
                     </>
                   ) : (
-                    'Save'
+                    "Save"
                   )}
                 </Button>
               </DialogFooter>
@@ -757,12 +758,12 @@ export default function OrganizationProfilePage({
           </DialogHeader>
           <div className='max-h-[60vh] overflow-y-auto pr-1'>
             <ImageUpload
-              key={`${isEditCoverOpen}-${bannerUrl ?? 'none'}`}
+              key={`${isEditCoverOpen}-${bannerUrl ?? "none"}`}
               label='Upload cover'
               className='my-2 w-full max-w-full'
               handleImage={(id, url) => {
-                setBannerId(id)
-                setBannerUrl(url)
+                setBannerId(id);
+                setBannerUrl(url);
               }}
               initialImageId={bannerId}
               initialImageUrl={bannerUrl}
@@ -788,7 +789,7 @@ export default function OrganizationProfilePage({
                   Saving…
                 </>
               ) : (
-                'Save cover'
+                "Save cover"
               )}
             </Button>
           </DialogFooter>
@@ -804,17 +805,19 @@ export default function OrganizationProfilePage({
         onOpenChange={setIsEditProfilePhotoOpen}
         onPhotoUpdated={() => onUserUpdated()}
       />
-      <OrganizationVerifyDialog
-        open={isVerifyDialogOpen}
-        onOpenChange={setIsVerifyDialogOpen}
-        organization={mapOrganizationProfileDto(org)!}
-        onSubmitted={() => onUserUpdated()}
-      />
+      {!user.isVerifiedByAdmin ? (
+        <OrganizationVerifyDialog
+          open={isVerifyDialogOpen}
+          onOpenChange={setIsVerifyDialogOpen}
+          organization={mapOrganizationProfileDto(org)!}
+          onSubmitted={() => onUserUpdated()}
+        />
+      ) : null}
       <OrganizationVerificationViewDialog
         open={isViewApplicationOpen}
         onOpenChange={setIsViewApplicationOpen}
         organization={mapOrganizationProfileDto(org)!}
       />
     </div>
-  )
+  );
 }

@@ -7,11 +7,13 @@ import {
 } from '@/query/users/use-my-organization'
 import type { OrganizationProfile } from '@/schemas/auth/organization-profile'
 import ImageUpload from '@/ui/image-upload'
+import { VerificationConversation } from '@/ui/molecules/verification-conversation'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/ui/shadcn/dialog'
@@ -58,7 +60,7 @@ export default function OrganizationVerifyDialog({
               ]
             : []
       )
-      setRemarks(organization.verificationRequestRemarks ?? '')
+      setRemarks('')
     }
   }, [open, organization])
 
@@ -91,8 +93,8 @@ export default function OrganizationVerifyDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-lg'>
-        <DialogHeader>
+      <DialogContent className='flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-lg'>
+        <DialogHeader className='shrink-0 px-6 pt-6'>
           <DialogTitle>Request organization verification</DialogTitle>
           <DialogDescription>
             Upload one to three clear registration or supporting documents. Add
@@ -100,7 +102,12 @@ export default function OrganizationVerifyDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className='space-y-4'>
+        <div className='min-h-0 flex-1 space-y-4 overflow-y-auto px-6 pb-6'>
+          {organization.verificationMessages.length ? (
+            <VerificationConversation
+              messages={organization.verificationMessages}
+            />
+          ) : null}
           {[0, 1, 2].map((index) => {
             const document = documents[index]
             return (
@@ -127,7 +134,7 @@ export default function OrganizationVerifyDialog({
 
           <div className='space-y-2'>
             <Label htmlFor='org-verify-remarks'>
-              Message to administrators
+              Reply to the verification team
             </Label>
             <Textarea
               id='org-verify-remarks'
@@ -138,16 +145,10 @@ export default function OrganizationVerifyDialog({
               className='resize-y'
             />
           </div>
+        </div>
 
-          <div className='flex justify-end gap-2 pt-2'>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => onOpenChange(false)}
-              disabled={patchOrg.isPending}
-            >
-              Cancel
-            </Button>
+        <div className='shrink-0 px-6 pb-6'>
+          <DialogFooter className='border-t pt-4'>
             <Button
               type='button'
               onClick={handleSubmit}
@@ -162,7 +163,7 @@ export default function OrganizationVerifyDialog({
                 'Submit request'
               )}
             </Button>
-          </div>
+          </DialogFooter>
         </div>
       </DialogContent>
     </Dialog>

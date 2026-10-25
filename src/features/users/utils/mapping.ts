@@ -114,6 +114,24 @@ export const mapUserOutputToUser = (user: UserOutput): User => {
           typeof org.verificationMessageSentAt === 'string'
             ? org.verificationMessageSentAt
             : null,
+        verificationMessages: Array.isArray(org.verificationMessages)
+          ? org.verificationMessages.filter(
+              (message): message is {
+                id: string
+                senderType: 'ORGANIZATION' | 'ADMIN'
+                senderUserId?: string | null
+                message: string
+                createdAt: string
+              } =>
+                !!message &&
+                typeof message === 'object' &&
+                typeof (message as { id?: unknown }).id === 'string' &&
+                ((message as { senderType?: unknown }).senderType === 'ORGANIZATION' ||
+                  (message as { senderType?: unknown }).senderType === 'ADMIN') &&
+                typeof (message as { message?: unknown }).message === 'string' &&
+                typeof (message as { createdAt?: unknown }).createdAt === 'string'
+            )
+          : [],
       }
     : null
 
