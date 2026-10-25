@@ -103,10 +103,17 @@ export const useGetCertificates = (params: Record<string, unknown>) => {
         url: '/api/v1/admin/certificates',
         query: params,
       })
-      return response.data as {
-        data: AdminCertificateResponse[]
-        meta: Meta
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message || 'Failed to fetch certificates'
+        )
       }
+      return (
+        (response.data as {
+          data: AdminCertificateResponse[]
+          meta: Meta
+        }) ?? { data: [], meta: { count: 0 } }
+      )
     },
   })
 }
@@ -118,6 +125,11 @@ export const useGetCertificate = (id: string, enabled: boolean = true) => {
       const response = await client.get({
         url: `/api/v1/admin/certificates/${id}`,
       })
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message || 'Failed to fetch certificate'
+        )
+      }
       return response.data as { data: AdminCertificateResponse }
     },
     enabled: Boolean(id) && enabled,
@@ -133,6 +145,11 @@ export const useCreateCertificate = () => {
         url: '/api/v1/admin/certificates',
         body: data,
       })
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message || 'Failed to create certificate'
+        )
+      }
       return response.data as { data: AdminCertificateResponse }
     },
     onSuccess: () => {
@@ -153,6 +170,12 @@ export const useRegenerateCertificateCode = () => {
       const response = await client.post({
         url: `/api/v1/admin/certificates/${id}/regenerate-code`,
       })
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message ||
+            'Failed to regenerate verification code'
+        )
+      }
       return response.data as {
         data: {
           certificateId: string
@@ -181,6 +204,11 @@ export const useRevokeCertificate = () => {
         url: `/api/v1/admin/certificates/${id}/revoke`,
         body: { reason },
       })
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message || 'Failed to revoke certificate'
+        )
+      }
       return response.data as { data: AdminCertificateResponse }
     },
     onSuccess: (_, { id }) => {
@@ -201,7 +229,15 @@ export const useGetCertificateLogs = (id: string, enabled: boolean = true) => {
       const response = await client.get({
         url: `/api/v1/admin/certificates/${id}/logs`,
       })
-      return response.data as { data: CertificateLog[] }
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message ||
+            'Failed to fetch certificate logs'
+        )
+      }
+      return (
+        (response.data as { data: CertificateLog[] }) ?? { data: [] }
+      )
     },
     enabled: Boolean(id) && enabled,
   })

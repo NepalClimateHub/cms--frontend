@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { getRoleFromToken } from '@/utils/jwt.util'
+import { useAuthStore } from '@/stores/authStore'
 import {
   useGetCertificates,
   AdminCertificateResponse,
@@ -49,7 +50,11 @@ import { RegenerateCodeDialog } from '../components/regenerate-code-dialog'
 import { VerificationLogsDialog } from '../components/verification-logs-dialog'
 
 export default function CertificateList() {
-  const canIssueCertificates = getRoleFromToken() === 'SUPER_ADMIN'
+  const authUser = useAuthStore((s) => s.user)
+  const canIssueCertificates =
+    authUser?.role === 'SUPER_ADMIN' ||
+    authUser?.isSuperAdmin === true ||
+    getRoleFromToken() === 'SUPER_ADMIN'
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [typeFilter, setTypeFilter] = useState('ALL')
