@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import type { UserOutput } from '@/api/types.gen'
 import { apiConfig } from '@/config/api.config'
@@ -58,6 +58,7 @@ export const useGetProfile = (enabled = true) => {
 export const useLogin = () => {
   const { setAccessToken, resetAuthStore } = useAuthStore()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const loginMutation = authControllerLoginMutation()
 
@@ -86,6 +87,11 @@ export const useLogin = () => {
       const { accessToken } = res.data
       // accessToken received
       if (accessToken) {
+        // A profile query is cached independently of the access token. Clear
+        // identity-bound state before storing the new token so account changes
+        // do not briefly show (or reuse) the previous account's profile.
+        queryClient.removeQueries()
+        resetAuthStore()
         setAccessToken(accessToken)
         // Update API client config with new token
         apiConfig()
@@ -155,9 +161,11 @@ export const useSignup = () => {
 export const useLogout = () => {
   const { resetAuthStore } = useAuthStore()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   return () => {
     // add required cleanups on logout
+    queryClient.removeQueries()
     resetAuthStore()
     // Update API client config to remove token
     apiConfig()
