@@ -4,7 +4,6 @@ import {
   DotsHorizontalIcon,
   DownloadIcon,
   Link2Icon,
-  SizeIcon,
   UploadIcon,
 } from '@radix-ui/react-icons'
 import * as React from 'react'
@@ -21,7 +20,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip'
 interface ImageActionsProps {
   shouldMerge?: boolean
   isLink?: boolean
-  onView?: () => void
   onDownload?: () => void
   onCopy?: () => void
   onCopyLink?: () => void
@@ -81,13 +79,7 @@ export const ActionButton = React.memo(
 
 ActionButton.displayName = 'ActionButton'
 
-type ActionKey =
-  | 'onView'
-  | 'onDownload'
-  | 'onCopy'
-  | 'onCopyLink'
-  | 'onCrop'
-  | 'onReplace'
+type ActionKey = 'onDownload' | 'onCopy' | 'onCopyLink' | 'onCrop' | 'onReplace'
 
 const ActionItems: Array<{
   key: ActionKey
@@ -95,11 +87,6 @@ const ActionItems: Array<{
   tooltip: string
   isLink?: boolean
 }> = [
-  {
-    key: 'onView',
-    icon: <SizeIcon className='size-4' />,
-    tooltip: 'View image',
-  },
   {
     key: 'onDownload',
     icon: <DownloadIcon className='size-4' />,

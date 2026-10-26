@@ -7,6 +7,7 @@ import { ImageActions } from './image-actions'
 import { ImageCropper } from './image-cropper'
 import { ImageFigcaption } from './image-figcaption'
 import { ImagePicture } from './image-picture'
+import { ImageResizeHandles } from './image-resize-handles'
 import { ImageStatusOverlay } from './image-status-overlay'
 
 export const ImageViewBlock: React.FC<NodeViewProps> = (props) => {
@@ -23,15 +24,15 @@ export const ImageViewBlock: React.FC<NodeViewProps> = (props) => {
       className='image-block group/node-image'
     >
       <div
-        className={cn('relative rounded', {
+        ref={block.resize.frameRef}
+        style={{ width: block.resize.frameWidth ?? undefined }}
+        className={cn('relative mx-auto max-w-full rounded', {
           'outline outline-2 outline-offset-1 outline-primary': props.selected,
         })}
       >
         <ImagePicture
           attrs={{ ...attrs, src: block.displaySrc }}
-          isZoomed={block.isZoomed}
           hidden={block.loadFailed}
-          onZoomChange={block.setIsZoomed}
           onNaturalSize={block.handleNaturalSize}
           onError={() => block.setLoadFailed(true)}
         />
@@ -45,6 +46,12 @@ export const ImageViewBlock: React.FC<NodeViewProps> = (props) => {
           onRemove={props.deleteNode}
         />
         {!block.loadFailed && !block.busy && <ImageActions {...actions} />}
+        {block.showResizeHandles && (
+          <ImageResizeHandles
+            handlers={block.resize.handlers}
+            width={block.resize.isResizing ? block.resize.frameWidth : null}
+          />
+        )}
       </div>
       <ImageFigcaption
         caption={attrs.caption}
