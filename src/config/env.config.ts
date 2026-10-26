@@ -33,6 +33,7 @@ export const env = {
   VITE_API_URL: normaliseBaseUrl(getEnvVar('VITE_API_URL')),
   VITE_RAG_API_URL:
     normaliseBaseUrl(getEnvVar('VITE_RAG_API_URL')) || 'http://localhost:8000',
+  VITE_MAPTILER_API_KEY: getEnvVar('VITE_MAPTILER_API_KEY'),
   VITE_PUBLIC_SITE_URL: normaliseBaseUrl(getEnvVar('VITE_PUBLIC_SITE_URL')),
   MODE: import.meta.env.MODE,
 }

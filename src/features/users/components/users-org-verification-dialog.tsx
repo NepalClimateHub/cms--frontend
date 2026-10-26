@@ -43,6 +43,7 @@ export function UsersOrgVerificationDialog({
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const [isVerifying, setIsVerifying] = useState(false)
+  const [isSending, setIsSending] = useState(false)
   const [feedback, setFeedback] = useState('')
   const role = getRoleFromToken()
   const canVerify = isVerificationAdmin(role)
@@ -91,7 +92,7 @@ export function UsersOrgVerificationDialog({
       })
       return
     }
-    setIsVerifying(true)
+    setIsSending(true)
     try {
       await apiClient.patch(`/api/v1/organizations/${orgId}/verify`, {
         isVerified: false,
@@ -104,11 +105,12 @@ export function UsersOrgVerificationDialog({
       await queryClient.invalidateQueries({
         predicate: (q) => q.queryKey[0] === 'userControllerGetUsers',
       })
+      setFeedback('')
       onOpenChange(false)
     } catch {
       toast({ title: 'Message could not be sent', variant: 'destructive' })
     } finally {
-      setIsVerifying(false)
+      setIsSending(false)
     }
   }
 
@@ -124,40 +126,54 @@ export function UsersOrgVerificationDialog({
       adminView
       footer={
         showVerify ? (
-          <DialogFooter className='gap-2 sm:justify-end'>
+          <div className='space-y-3'>
             <Textarea
               value={feedback}
               onChange={(event) => setFeedback(event.target.value)}
               placeholder='Explain what is incomplete or incorrect…'
               rows={3}
-              disabled={isVerifying}
+              disabled={isSending || isVerifying}
             />
-            <Button
-              type='button'
-              variant='secondary'
-              onClick={handleSendFeedback}
-              disabled={isVerifying || !feedback.trim()}
-            >
-              Send message
-            </Button>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => onOpenChange(false)}
-            >
-              Close
-            </Button>
-            <Button type='button' onClick={handleVerify} disabled={isVerifying}>
-              {isVerifying ? (
-                <>
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Verifying…
-                </>
-              ) : (
-                'Verify organization'
-              )}
-            </Button>
-          </DialogFooter>
+            <DialogFooter className='gap-2'>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={() => onOpenChange(false)}
+                disabled={isSending || isVerifying}
+              >
+                Close
+              </Button>
+              <Button
+                type='button'
+                variant='secondary'
+                onClick={handleSendFeedback}
+                disabled={isSending || isVerifying || !feedback.trim()}
+              >
+                {isSending ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Sending…
+                  </>
+                ) : (
+                  'Send message'
+                )}
+              </Button>
+              <Button
+                type='button'
+                onClick={handleVerify}
+                disabled={isSending || isVerifying}
+              >
+                {isVerifying ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Verifying…
+                  </>
+                ) : (
+                  'Verify organization'
+                )}
+              </Button>
+            </DialogFooter>
+          </div>
         ) : null
       }
     />

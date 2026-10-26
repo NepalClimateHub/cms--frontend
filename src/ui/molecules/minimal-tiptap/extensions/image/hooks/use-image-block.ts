@@ -35,6 +35,10 @@ export const useImageBlock = ({
     null
   )
 
+  const naturalSize = React.useRef<{ width: number; height: number } | null>(
+    null
+  )
+
   React.useEffect(() => {
     setLoadFailed(false)
   }, [displaySrc])
