@@ -1,30 +1,30 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import apiClient from "@/query/apiClient";
-import OrganizationVerificationViewDialog from "@/ui/organisms/dashboard/organization-verification-view-dialog";
-import { Button } from "@/ui/shadcn/button";
-import { DialogFooter } from "@/ui/shadcn/dialog";
-import { Label } from "@/ui/shadcn/label";
-import { Textarea } from "@/ui/shadcn/textarea";
-import { getRoleFromToken } from "@/utils/jwt.util";
-import { isVerificationAdmin } from "@/utils/role-check.util";
-import type { User } from "../data/schema";
+import { useQueryClient } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { useToast } from '@/hooks/use-toast'
+import apiClient from '@/query/apiClient'
+import OrganizationVerificationViewDialog from '@/ui/organisms/dashboard/organization-verification-view-dialog'
+import { Button } from '@/ui/shadcn/button'
+import { DialogFooter } from '@/ui/shadcn/dialog'
+import { Label } from '@/ui/shadcn/label'
+import { Textarea } from '@/ui/shadcn/textarea'
+import { getRoleFromToken } from '@/utils/jwt.util'
+import { isVerificationAdmin } from '@/utils/role-check.util'
+import type { User } from '../data/schema'
 
 type Props = {
-  user: User | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-};
+  user: User | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
 
 function toOrgProfile(user: User) {
-  const org = user.organization;
-  if (!org) return null;
+  const org = user.organization
+  if (!org) return null
   return {
     id: org.id,
     name: org.name,
-    logoImageUrl: org.logoImageUrl ?? "",
+    logoImageUrl: org.logoImageUrl ?? '',
     logoImageId: org.logoImageId ?? null,
     verificationDocumentUrl: org.verificationDocumentUrl ?? null,
     verificationDocumentId: org.verificationDocumentId ?? null,
@@ -34,7 +34,7 @@ function toOrgProfile(user: User) {
     verificationAdminMessage: org.verificationAdminMessage ?? null,
     verificationMessageSentAt: org.verificationMessageSentAt ?? null,
     verificationMessages: org.verificationMessages ?? [],
-  };
+  }
 }
 
 export function UsersOrgVerificationDialog({
@@ -42,83 +42,83 @@ export function UsersOrgVerificationDialog({
   open,
   onOpenChange,
 }: Props) {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const { toast } = useToast()
+  const queryClient = useQueryClient()
   const [pendingAction, setPendingAction] = useState<
-    "verify" | "feedback" | null
-  >(null);
-  const [feedback, setFeedback] = useState("");
-  const role = getRoleFromToken();
-  const canVerify = isVerificationAdmin(role);
-  const orgProfile = user ? toOrgProfile(user) : null;
-  const orgId = orgProfile?.id;
+    'verify' | 'feedback' | null
+  >(null)
+  const [feedback, setFeedback] = useState('')
+  const role = getRoleFromToken()
+  const canVerify = isVerificationAdmin(role)
+  const orgProfile = user ? toOrgProfile(user) : null
+  const orgId = orgProfile?.id
   const showVerify = Boolean(
-    canVerify && orgProfile && user && !user.isVerifiedByAdmin,
-  );
+    canVerify && orgProfile && user && !user.isVerifiedByAdmin
+  )
 
   const handleVerify = async () => {
-    if (!orgId) return;
-    setPendingAction("verify");
+    if (!orgId) return
+    setPendingAction('verify')
     try {
       await apiClient.patch(`/api/v1/organizations/${orgId}/verify`, {
         isVerified: true,
-      });
+      })
       toast({
-        title: "Organization verified",
-        description: "The organization is now marked as verified.",
-      });
+        title: 'Organization verified',
+        description: 'The organization is now marked as verified.',
+      })
       await queryClient.invalidateQueries({
-        predicate: (q) => q.queryKey[0] === "userControllerGetUsers",
-      });
+        predicate: (q) => q.queryKey[0] === 'userControllerGetUsers',
+      })
       await queryClient.invalidateQueries({
         predicate: (q) =>
-          q.queryKey[0] === "analyticsControllerGetAdminAnalytics",
-      });
-      onOpenChange(false);
+          q.queryKey[0] === 'analyticsControllerGetAdminAnalytics',
+      })
+      onOpenChange(false)
     } catch {
       toast({
-        title: "Verification failed",
-        description: "Could not verify this organization.",
-        variant: "destructive",
-      });
+        title: 'Verification failed',
+        description: 'Could not verify this organization.',
+        variant: 'destructive',
+      })
     } finally {
-      setPendingAction(null);
+      setPendingAction(null)
     }
-  };
+  }
 
   const handleSendFeedback = async () => {
     if (!orgId || !feedback.trim()) {
       toast({
-        title: "Message required",
-        description: "Explain what information or documents are needed.",
-        variant: "destructive",
-      });
-      return;
+        title: 'Message required',
+        description: 'Explain what information or documents are needed.',
+        variant: 'destructive',
+      })
+      return
     }
-    setPendingAction("feedback");
+    setPendingAction('feedback')
     try {
       await apiClient.patch(`/api/v1/organizations/${orgId}/verify`, {
         isVerified: false,
         message: feedback.trim(),
-      });
+      })
       toast({
-        title: "Message sent",
-        description: "The organization has been notified.",
-      });
+        title: 'Message sent',
+        description: 'The organization has been notified.',
+      })
       await queryClient.invalidateQueries({
-        predicate: (q) => q.queryKey[0] === "userControllerGetUsers",
-      });
-      setFeedback("");
-      onOpenChange(false);
+        predicate: (q) => q.queryKey[0] === 'userControllerGetUsers',
+      })
+      setFeedback('')
+      onOpenChange(false)
     } catch {
-      toast({ title: "Message could not be sent", variant: "destructive" });
+      toast({ title: 'Message could not be sent', variant: 'destructive' })
     } finally {
-      setPendingAction(null);
+      setPendingAction(null)
     }
-  };
+  }
 
   if (!orgProfile) {
-    return null;
+    return null
   }
 
   return (
@@ -148,15 +148,15 @@ export function UsersOrgVerificationDialog({
                 type='button'
                 variant='secondary'
                 onClick={handleSendFeedback}
-                disabled={isSending || isVerifying || !feedback.trim()}
+                disabled={pendingAction !== null || !feedback.trim()}
               >
-                {isSending ? (
+                {pendingAction === 'feedback' ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                     Sending…
                   </>
                 ) : (
-                  "Send message"
+                  'Send message'
                 )}
               </Button>
               <Button
@@ -164,13 +164,13 @@ export function UsersOrgVerificationDialog({
                 onClick={handleVerify}
                 disabled={pendingAction !== null}
               >
-                {pendingAction === "verify" ? (
+                {pendingAction === 'verify' ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                     Verifying…
                   </>
                 ) : (
-                  "Verify organization"
+                  'Verify organization'
                 )}
               </Button>
             </DialogFooter>
@@ -178,5 +178,5 @@ export function UsersOrgVerificationDialog({
         ) : null
       }
     />
-  );
+  )
 }
