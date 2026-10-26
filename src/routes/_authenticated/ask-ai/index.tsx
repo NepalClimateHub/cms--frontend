@@ -1,30 +1,43 @@
+import { useState, useRef, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  BookOpen,
-  Check,
-  ChevronDown,
-  ChevronRight,
-  Copy,
-  FileText,
-  Loader2,
-  Plus,
-  RotateCw,
-  Send,
-  ServerCrash,
-  ShieldCheck,
-} from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { env } from '@/config/env.config'
-import { ChatHistoryMenu } from '@/features/ask-ai/components/ChatHistoryMenu'
-import {
-  useChatHistory,
-  useChatSession,
-  useClimateChat,
-} from '@/query/ask-ai/climate-api'
 import { Main } from '@/ui/layouts/main'
 import { Button } from '@/ui/shadcn/button'
+import { Textarea } from '@/ui/shadcn/textarea'
+import {
+  Send,
+  Loader2,
+  ChevronDown,
+  Plus,
+  BookOpen,
+  ShieldCheck,
+  FileText,
+  Copy,
+  Check,
+  ServerCrash,
+  RotateCw,
+  ExternalLink,
+  History,
+  Database,
+} from 'lucide-react'
+import {
+  buildRecentConversationHistory,
+  ChatSource,
+  parseVisualMetadata,
+  useClimateChat,
+  useChatHistory,
+  useChatSession,
+  VisualDecision,
+  VisualSpec,
+} from '@/query/ask-ai/climate-api'
+import { env } from '@/config/env.config'
+import { getAccessToken, useAuthStore } from '@/stores/authStore'
+import { cn } from '@/ui/shadcn/lib/utils'
+import { ChatHistorySheet } from '@/features/ask-ai/components/ChatHistorySheet'
+import {
+  InlineVisual,
+  VisualDecisionStatus,
+} from '@/features/ask-ai/components/visual-responses'
+import { isSuperAdmin } from '@/utils/role-check.util'
 import {
   Dialog,
   DialogContent,
@@ -32,29 +45,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/ui/shadcn/dialog'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { Textarea } from '@/ui/shadcn/textarea'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 export const Route = createFileRoute('/_authenticated/ask-ai/')({
   component: AskAI,
 })
 
-interface Source {
-  source?: string
-  title?: string
-  url?: string
-  documentId?: string
-  page?: number
-  score?: number
-}
+type Source = ChatSource
 
 interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
   sources?: Source[]
+  visual?: VisualSpec
+  visualDecision?: VisualDecision
   timestamp: Date
 }
+
 
 function parseContentAndSources(content?: string, existing?: Source[]) {
   const text = content || ''
@@ -88,10 +97,9 @@ function parseContentAndSources(content?: string, existing?: Source[]) {
         return { source: text, page }
       })
       // Filter out garbage: reject entries that look malformed or long text sentences
-      .filter((s) => {
+      .filter(s => {
         if (!s.source) return false
-        if (s.source.includes('**') || s.source.includes('Sources:'))
-          return false
+        if (s.source.includes('**') || s.source.includes('Sources:')) return false
         if (s.source.length > 90 || s.source.includes(',')) return false
         return true
       })
@@ -101,30 +109,40 @@ function parseContentAndSources(content?: string, existing?: Source[]) {
     }
   }
 
+
   return { cleaned, sources }
 }
+
+
 
 function AskAI() {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
   const [conversationId, setConversationId] = useState<string>()
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const userRole = useAuthStore((state) => state.user?.role ?? null)
+  const showVisualDecision = isSuperAdmin(userRole)
 
   const chatMutation = useClimateChat()
 
-  const { data: sessionData, isLoading: isSessionLoading } =
-    useChatSession(conversationId)
+  const { data: sessionData, isLoading: isSessionLoading } = useChatSession(conversationId)
   const { isError: isHistoryError, refetch: refetchHistory } = useChatHistory()
 
   useEffect(() => {
     if (sessionData && conversationId) {
       setMessages(
-        sessionData.messages.map((msg) => ({
-          id: crypto.randomUUID(),
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content || '',
-          timestamp: new Date(msg.createdAt),
-        }))
+        sessionData.messages.map((msg) => {
+          const visualMetadata = parseVisualMetadata(msg.metadata)
+          return {
+            id: crypto.randomUUID(),
+            role: msg.role as 'user' | 'assistant',
+            content: msg.content || '',
+            sources: msg.sources,
+            ...visualMetadata,
+            timestamp: new Date(msg.createdAt),
+          }
+        })
       )
     }
   }, [sessionData, conversationId])
@@ -134,7 +152,7 @@ function AskAI() {
   }
   useEffect(() => {
     scrollToBottom()
-  }, [scrollToBottom])
+  }, [messages])
 
   const handleSend = async () => {
     if (!input.trim() || chatMutation.isPending) return
@@ -151,8 +169,11 @@ function AskAI() {
       const res = await chatMutation.mutateAsync({
         query: userMsg.content,
         conversation_id: conversationId,
+        conversation_history: buildRecentConversationHistory(messages),
+        top_k: 8,
       })
 
+      const visualMetadata = parseVisualMetadata(res.metadata)
       setMessages((p) => [
         ...p,
         {
@@ -160,19 +181,18 @@ function AskAI() {
           role: 'assistant',
           content: res.response,
           sources: res.sources,
+          ...visualMetadata,
           timestamp: new Date(),
         },
       ])
-      if (res.conversation_id && !conversationId)
-        setConversationId(res.conversation_id)
+      if (res.conversation_id && !conversationId) setConversationId(res.conversation_id)
     } catch (err) {
       setMessages((p) => [
         ...p,
         {
           id: crypto.randomUUID(),
           role: 'assistant',
-          content:
-            err instanceof Error ? err.message : 'Sorry, something went wrong.',
+          content: err instanceof Error ? err.message : 'Sorry, something went wrong.',
           timestamp: new Date(),
         },
       ])
@@ -192,13 +212,13 @@ function AskAI() {
     setInput('')
   }
 
+
   return (
     <Main className='flex flex-col bg-background' fixed>
+
       <div className='mb-4'>
         <h1 className='text-2xl font-bold tracking-tight'>Ask AI</h1>
-        <p className='text-muted-foreground'>
-          Get AI-powered answers from Nepal's climate documents
-        </p>
+        <p className='text-muted-foreground'>Get AI-powered answers from Nepal's climate documents</p>
       </div>
 
       {isHistoryError ? (
@@ -214,15 +234,10 @@ function AskAI() {
               AI Assistant Offline
             </h3>
             <p className='text-sm text-muted-foreground leading-relaxed'>
-              We are currently unable to connect to the climate AI assistant.
-              The rest of the dashboard is active and ready for you to use.
+              We are currently unable to connect to the climate AI assistant. The rest of the dashboard is active and ready for you to use.
             </p>
           </div>
-          <Button
-            onClick={() => refetchHistory()}
-            size='default'
-            className='px-6 shadow-md'
-          >
+          <Button onClick={() => refetchHistory()} size='default' className='px-6 shadow-md'>
             <RotateCw className='mr-2 h-4 w-4' />
             Retry Connection
           </Button>
@@ -230,31 +245,46 @@ function AskAI() {
       ) : (
         <>
           <div className='flex-shrink-0 flex items-center justify-end gap-3 mb-1'>
-            <ChatHistoryMenu
-              onSelectSession={setConversationId}
-              currentSessionId={conversationId}
-              onNewChat={handleNewChat}
-            />
+            <Button
+              variant='outline'
+              className='h-9 gap-2'
+              onClick={() => setIsHistoryOpen(true)}
+            >
+              <History className='h-4 w-4' />
+              <span>History</span>
+            </Button>
           </div>
 
+          <ChatHistorySheet
+            open={isHistoryOpen}
+            onOpenChange={setIsHistoryOpen}
+            onSelectSession={setConversationId}
+            currentSessionId={conversationId}
+            onNewChat={handleNewChat}
+          />
+
           <div className='flex flex-1 overflow-hidden'>
+
             <div className='flex flex-1 flex-col overflow-hidden min-w-0'>
+
               <div className='flex-1 overflow-y-auto px-2 py-4'>
                 <div className='mx-auto max-w-3xl space-y-6'>
                   {messages.length === 0 ? (
                     <EmptyState onSuggestion={setInput} />
                   ) : (
                     messages.map((msg) => (
-                      <ChatMessage key={msg.id} message={msg} />
+                      <ChatMessage
+                        key={msg.id}
+                        message={msg}
+                        showVisualDecision={showVisualDecision}
+                      />
                     ))
                   )}
 
                   {(chatMutation.isPending || isSessionLoading) && (
                     <div className='flex items-center gap-2 text-muted-foreground animate-pulse'>
                       <Loader2 className='h-4 w-4 animate-spin' />
-                      <span>
-                        {isSessionLoading ? 'Loading chat...' : 'Thinking...'}
-                      </span>
+                      <span>{isSessionLoading ? 'Loading chat...' : 'Thinking...'}</span>
                     </div>
                   )}
                   <div ref={messagesEndRef} />
@@ -296,12 +326,14 @@ function AskAI() {
                 </div>
               </div>
             </div>
+
           </div>
         </>
       )}
     </Main>
   )
 }
+
 
 function EmptyState({ onSuggestion }: { onSuggestion: (q: string) => void }) {
   const suggestions = [
@@ -315,9 +347,7 @@ function EmptyState({ onSuggestion }: { onSuggestion: (q: string) => void }) {
     <div className='flex flex-col items-center justify-center gap-6 py-12 text-center mt-10'>
       <div className='text-6xl'>🌍</div>
       <div className='space-y-2'>
-        <h3 className='text-2xl font-semibold tracking-tight'>
-          Welcome to Climate Assistant
-        </h3>
+        <h3 className='text-2xl font-semibold tracking-tight'>Welcome to Climate Assistant</h3>
         <p className='text-muted-foreground max-w-md mx-auto'>
           Easily find Climate/Environment related research, news, and policy.
         </p>
@@ -337,40 +367,40 @@ function EmptyState({ onSuggestion }: { onSuggestion: (q: string) => void }) {
   )
 }
 
-function getSourceDetails(source: Source) {
-  const rawTitle = source.title || source.source || 'Unknown source'
-  let filename = rawTitle.split('/').pop() || ''
-  if (filename && !filename.includes('.')) filename += '.pdf'
 
-  const ragApiUrl = env.VITE_RAG_API_URL
-  const cmsBackendUrl = (
-    env.VITE_API_URL || 'http://localhost:8080/api/v1'
-  ).replace(/\/api\/v1\/?$/, '')
+function sourceLabel(source: Source) {
+  const raw = source.title || source.source || source.url || 'Unknown source'
+  return raw.split('/').pop() || raw
+}
 
-  let documentUrl = ''
+function sourceDocumentUrl(source: Source) {
+  const apiUrl = (env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
   if (source.documentId) {
-    documentUrl = `${ragApiUrl}/documents/${encodeURIComponent(source.documentId)}`
-  } else if (source.url) {
-    if (source.url.startsWith('http')) {
-      documentUrl = source.url
-    } else {
-      documentUrl = `${cmsBackendUrl}${source.url}`
-    }
-  } else if (filename && filename.length < 90 && !filename.includes(',')) {
-    documentUrl = `${ragApiUrl}/documents/${encodeURIComponent(filename)}`
+    return `${apiUrl}/api/v1/ai-assistant/documents/${source.documentId}/file`
+  }
+  if (source.url && /^https?:\/\//i.test(source.url)) return source.url
+  if (source.url?.startsWith('/api/')) {
+    return `${apiUrl}${source.url}`
   }
 
-  const displayTitle = source.title
-    ? source.title
-    : filename.length < 80
-      ? filename
-      : 'Document Source'
+  const rawSource = source.url || source.source
+  if (!rawSource) return ''
+  const filename = rawSource.split('/').pop() || ''
+  const ragApiUrl = env.VITE_RAG_API_URL.replace(/\/$/, '')
+  return filename
+    ? `${ragApiUrl}/documents/${encodeURIComponent(filename)}`
+    : ''
+}
 
-  return { title: displayTitle, filename: displayTitle, documentUrl }
+function sourceRequiresAuth(source: Source) {
+  return Boolean(
+    source.documentId || source.url?.startsWith('/api/')
+  )
 }
 
 function SourceCard({ source, index }: { source: Source; index: number }) {
-  const { filename, documentUrl } = getSourceDetails(source)
+  const filename = sourceLabel(source)
+  const documentUrl = sourceDocumentUrl(source)
 
   return (
     <div className='flex items-center gap-3 rounded-lg border bg-card px-3 py-2 hover:shadow-sm transition-shadow'>
@@ -380,32 +410,55 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
 
       <p className='text-sm font-medium truncate flex-1 min-w-0'>{filename}</p>
 
-      {documentUrl && (
+      {documentUrl && source.sourceType === 'dataset' && (
+        <a
+          href={documentUrl}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='flex flex-shrink-0 items-center gap-1 text-xs font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300'
+        >
+          <Database className='h-3.5 w-3.5' />
+          View Data
+        </a>
+      )}
+
+      {documentUrl && source.sourceType !== 'dataset' && (
         <Dialog>
           <DialogTrigger asChild>
             <button className='flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors flex-shrink-0'>
               <BookOpen className='h-3.5 w-3.5' />
-              View Document
+              View Source
             </button>
           </DialogTrigger>
-          <DocumentViewerDialog
-            filename={filename}
-            documentUrl={documentUrl}
-            page={source.page}
-          />
+          <DocumentViewerDialog source={source} />
         </Dialog>
       )}
 
       {source.page != null && (
-        <span className='text-xs text-muted-foreground flex-shrink-0'>
-          Page {source.page}
-        </span>
+        <span className='text-xs text-muted-foreground flex-shrink-0'>Page {source.page}</span>
       )}
     </div>
   )
 }
 
-function ChatMessage({ message }: { message: Message }) {
+function VisualCitation({
+  sourceIndex,
+  sources,
+}: {
+  sourceIndex: number
+  sources: Source[]
+}) {
+  const source = sources[sourceIndex - 1]
+  return source ? <SourceBubble source={source} index={sourceIndex} /> : null
+}
+
+function ChatMessage({
+  message,
+  showVisualDecision,
+}: {
+  message: Message
+  showVisualDecision: boolean
+}) {
   const isUser = message.role === 'user'
   const messageContent = message?.content || ''
   const { cleaned, sources } = isUser
@@ -422,19 +475,14 @@ function ChatMessage({ message }: { message: Message }) {
   }
 
   return (
-    <div
-      className={cn(
-        'flex flex-col gap-1',
-        isUser ? 'items-end' : 'items-start'
-      )}
-    >
+    <div className={cn('flex flex-col gap-1', isUser ? 'items-end' : 'items-start')}>
+
       {isUser ? (
         <div className='max-w-[80%] rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 px-5 py-3'>
-          <p className='whitespace-pre-wrap text-sm text-blue-800 dark:text-blue-200'>
-            {message.content}
-          </p>
+          <p className='whitespace-pre-wrap text-sm text-blue-800 dark:text-blue-200'>{message.content}</p>
         </div>
       ) : (
+
         <div className='w-full max-w-[95%]'>
           <div className='flex items-center justify-between px-4 py-2.5 rounded-t-xl border border-b-0 bg-muted/40'>
             <div className='flex items-center gap-2'>
@@ -454,23 +502,14 @@ function ChatMessage({ message }: { message: Message }) {
                 className='p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors'
                 title='Copy answer'
               >
-                {copied ? (
-                  <Check className='h-4 w-4 text-green-500' />
-                ) : (
-                  <Copy className='h-4 w-4' />
-                )}
+                {copied ? <Check className='h-4 w-4 text-green-500' /> : <Copy className='h-4 w-4' />}
               </button>
               <button
                 onClick={() => setCollapsed(!collapsed)}
                 className='p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors'
                 title={collapsed ? 'Expand' : 'Collapse'}
               >
-                <ChevronDown
-                  className={cn(
-                    'h-4 w-4 transition-transform',
-                    collapsed && '-rotate-90'
-                  )}
-                />
+                <ChevronDown className={cn('h-4 w-4 transition-transform', collapsed && '-rotate-90')} />
               </button>
             </div>
           </div>
@@ -490,20 +529,12 @@ function ChatMessage({ message }: { message: Message }) {
                       />
                     ),
                     ul: ({ node, ...props }) => (
-                      <ul
-                        {...props}
-                        className='list-disc pl-4 mb-2 space-y-1'
-                      />
+                      <ul {...props} className='list-disc pl-4 mb-2 space-y-1' />
                     ),
                     ol: ({ node, ...props }) => (
-                      <ol
-                        {...props}
-                        className='list-decimal pl-4 mb-2 space-y-1'
-                      />
+                      <ol {...props} className='list-decimal pl-4 mb-2 space-y-1' />
                     ),
-                    li: ({ node, ...props }) => (
-                      <li {...props} className='mb-0.5' />
-                    ),
+                    li: ({ node, ...props }) => <li {...props} className='mb-0.5' />,
                     h1: ({ node, ...props }) => (
                       <h1 {...props} className='text-lg font-bold mb-2' />
                     ),
@@ -522,6 +553,19 @@ function ChatMessage({ message }: { message: Message }) {
                 </ReactMarkdown>
               </div>
 
+              {message.visual && (
+                <InlineVisual
+                  visual={message.visual}
+                  renderCitation={(sourceIndex) => (
+                    <VisualCitation sourceIndex={sourceIndex} sources={sources} />
+                  )}
+                />
+              )}
+
+              {showVisualDecision && message.visualDecision && (
+                <VisualDecisionStatus decision={message.visualDecision} />
+              )}
+
               <div className='flex items-center gap-3 mt-3 text-xs text-muted-foreground'>
                 {sources.length > 0 && (
                   <span className='flex items-center gap-1 text-green-600 dark:text-green-400'>
@@ -536,9 +580,7 @@ function ChatMessage({ message }: { message: Message }) {
                 <div className='mt-4 pt-3 border-t'>
                   <div className='flex items-center gap-2 mb-2'>
                     <BookOpen className='h-3.5 w-3.5 text-muted-foreground' />
-                    <span className='text-xs font-medium text-muted-foreground'>
-                      Sources ({sources.length})
-                    </span>
+                    <span className='text-xs font-medium text-muted-foreground'>Sources ({sources.length})</span>
                   </div>
                   <div className='flex flex-col gap-2'>
                     {sources.map((src, idx) => (
@@ -556,13 +598,32 @@ function ChatMessage({ message }: { message: Message }) {
 }
 
 function SourceBubble({ source, index }: { source: Source; index: number }) {
-  const { filename, documentUrl } = getSourceDetails(source)
+  const filename = sourceLabel(source)
+  const documentUrl = sourceDocumentUrl(source)
 
   if (!documentUrl) {
     return (
-      <span className='inline-flex items-center justify-center h-5 w-5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[10px] font-bold cursor-default'>
+      <span
+        className='inline-flex items-center justify-center h-5 w-5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[10px] font-bold cursor-default'
+        data-source-index={index}
+      >
         {index}
       </span>
+    )
+  }
+
+  if (source.sourceType === 'dataset') {
+    return (
+      <a
+        href={documentUrl}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='inline-flex h-5 w-5 items-center justify-center rounded bg-blue-100 text-[10px] font-bold text-blue-700 transition-colors hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-800'
+        title={`Open ${filename}`}
+        data-source-index={index}
+      >
+        {index}
+      </a>
     )
   }
 
@@ -572,54 +633,99 @@ function SourceBubble({ source, index }: { source: Source; index: number }) {
         <button
           className='inline-flex items-center justify-center h-5 w-5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[10px] font-bold hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors'
           title={`View ${filename}`}
+          data-source-index={index}
         >
           {index}
         </button>
       </DialogTrigger>
-      <DocumentViewerDialog
-        filename={filename}
-        documentUrl={documentUrl}
-        page={source.page}
-      />
+      <DocumentViewerDialog source={source} />
     </Dialog>
   )
 }
 
-function DocumentViewerDialog({
-  filename,
-  documentUrl,
-  page,
-}: {
-  filename: string
-  documentUrl: string
-  page?: number
-}) {
+function DocumentViewerDialog({ source }: { source: Source }) {
+  const filename = sourceLabel(source)
+  const documentUrl = sourceDocumentUrl(source)
+  const [viewerUrl, setViewerUrl] = useState('')
+  const [loadError, setLoadError] = useState('')
+
+  useEffect(() => {
+    if (!documentUrl) return
+    if (!sourceRequiresAuth(source)) {
+      setViewerUrl(documentUrl)
+      return
+    }
+
+    const controller = new AbortController()
+    let objectUrl = ''
+    const loadDocument = async () => {
+      try {
+        const token = getAccessToken()
+        const response = await fetch(documentUrl, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          signal: controller.signal,
+        })
+        if (!response.ok) throw new Error('Unable to load source document')
+        objectUrl = URL.createObjectURL(await response.blob())
+        setViewerUrl(objectUrl)
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setLoadError(
+            error instanceof Error ? error.message : 'Unable to load source document'
+          )
+        }
+      }
+    }
+    loadDocument()
+
+    return () => {
+      controller.abort()
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
+  }, [documentUrl, source])
+
   return (
     <DialogContent className='max-w-5xl w-[90vw] h-[85vh] p-0 gap-0'>
-      <DialogHeader className='px-6 py-4 border-b flex flex-row items-center justify-between'>
-        <DialogTitle className='text-sm font-medium truncate flex-1'>
+      <DialogHeader className='flex flex-row items-center justify-between border-b py-4 pl-6 pr-12'>
+        <DialogTitle className='min-w-0 flex-1 truncate text-sm font-medium'>
           {filename}
-          {page != null && (
+          {source.page != null && (
             <span className='ml-2 text-muted-foreground font-normal'>
-              — Page {page}
+              - Page {source.page}
             </span>
           )}
         </DialogTitle>
-        <a
-          href={documentUrl}
-          target='_blank'
-          rel='noopener noreferrer'
-          className='text-xs text-blue-600 hover:underline flex items-center gap-1 ml-4'
-        >
-          Open in New Tab <ChevronRight className='h-3 w-3' />
-        </a>
+        {viewerUrl && (
+          <a
+            href={viewerUrl}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='ml-3 inline-flex flex-shrink-0 items-center gap-1 text-xs text-blue-600 hover:underline'
+            aria-label='Open source document in a new tab'
+            title='Open in new tab'
+          >
+            <span className='hidden sm:inline'>Open in New Tab</span>
+            <ExternalLink className='h-3.5 w-3.5' />
+          </a>
+        )}
       </DialogHeader>
-      <iframe
-        src={`${documentUrl}${page ? `#page=${page}` : ''}`}
-        className='w-full flex-1 border-0'
-        style={{ height: 'calc(85vh - 65px)' }}
-        title={`PDF: ${filename}`}
-      />
+      {loadError ? (
+        <div className='flex flex-1 items-center justify-center px-6 text-sm text-destructive'>
+          {loadError}
+        </div>
+      ) : viewerUrl ? (
+        <iframe
+          src={`${viewerUrl}${source.page ? `#page=${source.page}` : ''}`}
+          className='w-full flex-1 border-0'
+          style={{ height: 'calc(85vh - 65px)' }}
+          title={`PDF: ${filename}`}
+        />
+      ) : (
+        <div className='flex flex-1 items-center justify-center gap-2 text-sm text-muted-foreground'>
+          <Loader2 className='h-4 w-4 animate-spin' />
+          Loading document...
+        </div>
+      )}
     </DialogContent>
   )
 }

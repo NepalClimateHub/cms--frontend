@@ -5,10 +5,26 @@ import type { ResizeCorner, useImageResize } from '../hooks/use-image-resize'
 type Handlers = ReturnType<typeof useImageResize>['handlers']
 
 const CORNERS: Array<{ corner: ResizeCorner; label: string; place: string }> = [
-  { corner: 'nw', label: 'top left', place: '-left-1.5 -top-1.5 cursor-nwse-resize' },
-  { corner: 'ne', label: 'top right', place: '-right-1.5 -top-1.5 cursor-nesw-resize' },
-  { corner: 'sw', label: 'bottom left', place: '-bottom-1.5 -left-1.5 cursor-nesw-resize' },
-  { corner: 'se', label: 'bottom right', place: '-bottom-1.5 -right-1.5 cursor-nwse-resize' },
+  {
+    corner: 'nw',
+    label: 'top left',
+    place: '-left-1.5 -top-1.5 cursor-nwse-resize',
+  },
+  {
+    corner: 'ne',
+    label: 'top right',
+    place: '-right-1.5 -top-1.5 cursor-nesw-resize',
+  },
+  {
+    corner: 'sw',
+    label: 'bottom left',
+    place: '-bottom-1.5 -left-1.5 cursor-nesw-resize',
+  },
+  {
+    corner: 'se',
+    label: 'bottom right',
+    place: '-bottom-1.5 -right-1.5 cursor-nwse-resize',
+  },
 ]
 
 interface ImageResizeHandlesProps {
