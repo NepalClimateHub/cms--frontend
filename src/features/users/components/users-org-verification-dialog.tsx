@@ -6,6 +6,7 @@ import apiClient from '@/query/apiClient'
 import OrganizationVerificationViewDialog from '@/ui/organisms/dashboard/organization-verification-view-dialog'
 import { Button } from '@/ui/shadcn/button'
 import { DialogFooter } from '@/ui/shadcn/dialog'
+import { Label } from '@/ui/shadcn/label'
 import { Textarea } from '@/ui/shadcn/textarea'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { isVerificationAdmin } from '@/utils/role-check.util'
@@ -32,6 +33,7 @@ function toOrgProfile(user: User) {
     verificationRequestedAt: org.verificationRequestedAt ?? null,
     verificationAdminMessage: org.verificationAdminMessage ?? null,
     verificationMessageSentAt: org.verificationMessageSentAt ?? null,
+    verificationMessages: org.verificationMessages ?? [],
   }
 }
 
@@ -42,8 +44,9 @@ export function UsersOrgVerificationDialog({
 }: Props) {
   const { toast } = useToast()
   const queryClient = useQueryClient()
-  const [isVerifying, setIsVerifying] = useState(false)
-  const [isSending, setIsSending] = useState(false)
+  const [pendingAction, setPendingAction] = useState<
+    'verify' | 'feedback' | null
+  >(null)
   const [feedback, setFeedback] = useState('')
   const role = getRoleFromToken()
   const canVerify = isVerificationAdmin(role)
@@ -55,7 +58,7 @@ export function UsersOrgVerificationDialog({
 
   const handleVerify = async () => {
     if (!orgId) return
-    setIsVerifying(true)
+    setPendingAction('verify')
     try {
       await apiClient.patch(`/api/v1/organizations/${orgId}/verify`, {
         isVerified: true,
@@ -79,7 +82,7 @@ export function UsersOrgVerificationDialog({
         variant: 'destructive',
       })
     } finally {
-      setIsVerifying(false)
+      setPendingAction(null)
     }
   }
 
@@ -92,7 +95,7 @@ export function UsersOrgVerificationDialog({
       })
       return
     }
-    setIsSending(true)
+    setPendingAction('feedback')
     try {
       await apiClient.patch(`/api/v1/organizations/${orgId}/verify`, {
         isVerified: false,
@@ -110,7 +113,7 @@ export function UsersOrgVerificationDialog({
     } catch {
       toast({ title: 'Message could not be sent', variant: 'destructive' })
     } finally {
-      setIsSending(false)
+      setPendingAction(null)
     }
   }
 
@@ -126,30 +129,28 @@ export function UsersOrgVerificationDialog({
       adminView
       footer={
         showVerify ? (
-          <div className='space-y-3'>
-            <Textarea
-              value={feedback}
-              onChange={(event) => setFeedback(event.target.value)}
-              placeholder='Explain what is incomplete or incorrect…'
-              rows={3}
-              disabled={isSending || isVerifying}
-            />
-            <DialogFooter className='gap-2'>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => onOpenChange(false)}
-                disabled={isSending || isVerifying}
-              >
-                Close
-              </Button>
+          <div className='space-y-4 border-t pt-4'>
+            <div className='space-y-2'>
+              <Label htmlFor='organization-verification-feedback'>
+                Request changes
+              </Label>
+              <Textarea
+                id='organization-verification-feedback'
+                value={feedback}
+                onChange={(event) => setFeedback(event.target.value)}
+                placeholder='Explain what is incomplete or incorrect…'
+                rows={3}
+                disabled={pendingAction !== null}
+              />
+            </div>
+            <DialogFooter className='gap-2 sm:justify-end'>
               <Button
                 type='button'
                 variant='secondary'
                 onClick={handleSendFeedback}
-                disabled={isSending || isVerifying || !feedback.trim()}
+                disabled={pendingAction !== null || !feedback.trim()}
               >
-                {isSending ? (
+                {pendingAction === 'feedback' ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                     Sending…
@@ -161,9 +162,9 @@ export function UsersOrgVerificationDialog({
               <Button
                 type='button'
                 onClick={handleVerify}
-                disabled={isSending || isVerifying}
+                disabled={pendingAction !== null}
               >
-                {isVerifying ? (
+                {pendingAction === 'verify' ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                     Verifying…

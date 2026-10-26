@@ -1,5 +1,6 @@
 import type { OrganizationProfileOutputDto, UserOutput } from '@/api/types.gen'
 import type { OrganizationProfile } from '@/schemas/auth/organization-profile'
+import type { VerificationMessage } from '@/ui/molecules/verification-conversation'
 import type { User } from '@/schemas/auth/profile'
 
 /** Coerce OpenAPI `unknown`-shaped fields to string | null. */
@@ -7,6 +8,17 @@ export function nullableString(value: unknown): string | null {
   if (value == null) return null
   if (typeof value === 'string') return value
   return null
+}
+
+function verificationMessages(value: unknown): VerificationMessage[] {
+  if (!Array.isArray(value)) return []
+  return value.filter((message): message is VerificationMessage =>
+    !!message && typeof message === 'object' &&
+    typeof (message as VerificationMessage).id === 'string' &&
+    ((message as VerificationMessage).senderType === 'ORGANIZATION' || (message as VerificationMessage).senderType === 'ADMIN') &&
+    typeof (message as VerificationMessage).message === 'string' &&
+    typeof (message as VerificationMessage).createdAt === 'string'
+  )
 }
 
 export function mapOrganizationProfileDto(
@@ -34,6 +46,7 @@ export function mapOrganizationProfileDto(
     verificationRequestedAt: nullableString(org.verificationRequestedAt),
     verificationAdminMessage: nullableString(org.verificationAdminMessage),
     verificationMessageSentAt: nullableString(org.verificationMessageSentAt),
+    verificationMessages: verificationMessages(org.verificationMessages),
   }
 }
 
