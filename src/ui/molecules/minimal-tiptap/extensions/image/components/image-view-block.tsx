@@ -20,13 +20,17 @@ export const ImageViewBlock: React.FC<NodeViewProps> = (props) => {
       data-testid='editor-image'
       data-drag-handle
       data-layout={attrs.layout === 'inline' ? undefined : attrs.layout}
+      data-align={attrs.alignment === 'center' ? undefined : attrs.alignment}
       data-alt-missing={block.altMissing || undefined}
       className='image-block group/node-image'
     >
       <div
         ref={block.resize.frameRef}
         style={{ width: block.resize.frameWidth ?? undefined }}
-        className={cn('relative mx-auto max-w-full rounded', {
+        className={cn('relative max-w-full rounded', {
+          'mr-auto': attrs.alignment === 'left',
+          'mx-auto': attrs.alignment === 'center',
+          'ml-auto': attrs.alignment === 'right',
           'outline outline-2 outline-offset-1 outline-primary': props.selected,
         })}
       >

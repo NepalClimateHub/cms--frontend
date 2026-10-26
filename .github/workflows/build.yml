@@ -1,3 +1,4 @@
+
 name: Build NCH CMS Frontend
 
 on:
@@ -25,7 +26,7 @@ jobs:
           cache: pnpm
 
       - name: Create .env file
-        run: echo "${{ secrets.ENV_FILE }}" > .env
+        run: echo "VITE_API_URL=${{ vars.VITE_API_URL }}" > .env
 
       - name: Install dependencies
         run: pnpm install

@@ -10,14 +10,14 @@
     "preview": "vite preview",
     "knip": "knip",
     "prepare": "husky",
-    "cf:deploy": "pnpm run build && wrangler deploy",
-    "cf:preview": "pnpm run build && wrangler dev",
     "check": "biome check .",
     "check:fix": "biome check --write .",
     "lint": "biome lint .",
     "format": "biome format --write .",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "cf:deploy": "pnpm run build && wrangler deploy --name cms--frontend",
+    "cf:preview": "pnpm run build && wrangler dev --name cms--frontend"
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.10.2",
