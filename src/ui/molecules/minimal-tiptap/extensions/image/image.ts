@@ -262,6 +262,7 @@ export const Image = TiptapImage.extend<CustomImageOptions>({
       caption: attr<string | null>(null),
       credit: attr<string | null>(null),
       layout: attr<ImageAttrs['layout']>('inline'),
+      alignment: attr<ImageAttrs['alignment']>('center'),
       width: attr<number | null>(null),
       height: attr<number | null>(null),
       id: attr<string | null>(null),

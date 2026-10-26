@@ -1,6 +1,6 @@
 import type { Editor } from '@tiptap/react'
 import { BubbleMenu } from '@tiptap/react'
-import { X } from 'lucide-react'
+import { AlignCenter, AlignLeft, AlignRight, X, type LucideIcon } from 'lucide-react'
 import type * as React from 'react'
 import { Button } from '@/ui/shadcn/button'
 import type { ImageLayout } from '../../extensions/image/image-attrs'
@@ -11,6 +11,16 @@ import { ImageLayoutToggle } from './image-layout-toggle'
 interface ImageBubbleMenuProps {
   editor: Editor
 }
+
+const ALIGNMENTS: ReadonlyArray<{
+  value: 'left' | 'center' | 'right'
+  label: string
+  icon: LucideIcon
+}> = [
+  { value: 'left', label: 'Align image left', icon: AlignLeft },
+  { value: 'center', label: 'Center image', icon: AlignCenter },
+  { value: 'right', label: 'Align image right', icon: AlignRight },
+]
 
 export const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ editor }) => {
   const selected = getSelectedImage(editor.state)
@@ -28,10 +38,36 @@ export const ImageBubbleMenu: React.FC<ImageBubbleMenuProps> = ({ editor }) => {
         <ImageLayoutToggle
           value={selected?.layout ?? 'inline'}
           canSet={(layout: ImageLayout) => editor.can().setImageLayout(layout)}
-          onChange={(layout) =>
-            editor.chain().focus().setImageLayout(layout).run()
-          }
+          onChange={(layout) => {
+            const chain = editor.chain().focus().setImageLayout(layout)
+            if (layout !== 'two-up') {
+              chain.updateAttributes('image', { width: null, height: null })
+            }
+            chain.run()
+          }}
         />
+        <div className='flex items-center border-l pl-1'>
+          {ALIGNMENTS.map(({ value: alignment, label, icon: Icon }) => (
+            <Button
+              key={alignment}
+              type='button'
+              size='icon'
+              variant='ghost'
+              className='size-8'
+              aria-label={label}
+              aria-pressed={attrs?.alignment === alignment}
+              onClick={() =>
+                editor
+                  .chain()
+                  .focus()
+                  .setImage({ alignment })
+                  .run()
+              }
+            >
+              <Icon className='size-4' />
+            </Button>
+          ))}
+        </div>
         <ImageDetailsPopover
           initial={{
             alt: attrs?.alt ?? '',

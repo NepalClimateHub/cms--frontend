@@ -10,6 +10,17 @@ type BannerPayload = {
   bannerImageUrl?: string | null
 }
 
+const blogFields = (values: BlogFormValues) => ({
+  title: values.title,
+  content: values.content,
+  excerpt: values.excerpt,
+  author: values.author,
+  category: values.category,
+  categoryId: values.categoryId,
+  readingTime: values.readingTime,
+  tagIds: values.tagIds,
+})
+
 const clean = (value: string | null | undefined) =>
   typeof value === 'string' && value.trim() !== '' ? value : null
 
@@ -29,9 +40,9 @@ export const buildBannerPayload = (
 export const buildBlogCreateBody = (
   values: BlogFormValues
 ): Record<string, unknown> => {
-  const { bannerImageId, bannerImageUrl, ...rest } = values
+  const { bannerImageId, bannerImageUrl } = values
   return {
-    ...rest,
+    ...blogFields(values),
     publishedDate: new Date(values.publishedDate).toISOString(),
     isDraft: values.isDraft ?? false,
     isFeatured: values.isFeatured ?? false,
@@ -43,9 +54,12 @@ export const buildBlogCreateBody = (
 export const buildBlogUpdateBody = (
   values: BlogFormValues
 ): Record<string, unknown> => {
-  const { bannerImageId, bannerImageUrl, ...rest } = values
+  const { bannerImageId, bannerImageUrl } = values
   return {
-    ...rest,
+    ...blogFields(values),
+    isDraft: values.isDraft ?? false,
+    isFeatured: values.isFeatured ?? false,
+    isTopRead: values.isTopRead ?? false,
     publishedDate: new Date(values.publishedDate).toISOString(),
     ...buildBannerPayload({ bannerImageId, bannerImageUrl }, 'update'),
   }

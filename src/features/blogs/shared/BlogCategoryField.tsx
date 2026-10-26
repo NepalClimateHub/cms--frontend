@@ -1,10 +1,10 @@
-import { Info } from 'lucide-react'
-import type { FC } from 'react'
+import { Info } from "lucide-react";
+import type { FC } from "react";
 import {
   type Category,
   CategoryType,
   useGetCategories,
-} from '@/query/categories/use-categories'
+} from "@/query/categories/use-categories";
 import {
   FormControl,
   FormDescription,
@@ -12,33 +12,33 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/ui/shadcn/form'
+} from "@/ui/shadcn/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/ui/shadcn/select'
+} from "@/ui/shadcn/select";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/ui/shadcn/tooltip'
-import type { BlogSectionProps } from './BlogSectionProps'
-import { RequiredMark } from './RequiredMark'
+} from "@/ui/shadcn/tooltip";
+import type { BlogSectionProps } from "./BlogSectionProps";
+import { RequiredMark } from "./RequiredMark";
 
 export const BlogCategoryField: FC<BlogSectionProps> = ({ form }) => {
-  const { data, isLoading } = useGetCategories({ type: CategoryType.BLOG })
-  const categories = data?.data || []
+  const { data, isLoading } = useGetCategories({ type: CategoryType.BLOG });
+  const categories = data?.data ?? [];
 
   const handleCategoryChange = (id: string) => {
-    form.setValue('categoryId', id, { shouldDirty: true })
-    const selected = categories.find((cat: Category) => cat.id === id)
+    form.setValue("categoryId", id, { shouldDirty: true });
+    const selected = categories.find((cat: Category) => cat.id === id);
     if (selected)
-      form.setValue('category', selected.name, { shouldDirty: true })
-  }
+      form.setValue("category", selected.name, { shouldDirty: true });
+  };
 
   return (
     <FormField
@@ -58,7 +58,7 @@ export const BlogCategoryField: FC<BlogSectionProps> = ({ form }) => {
                 <SelectTrigger className='w-full'>
                   <SelectValue
                     placeholder={
-                      isLoading ? 'Loading categories...' : 'Select category'
+                      isLoading ? "Loading categories..." : "Select category"
                     }
                   />
                 </SelectTrigger>
@@ -94,5 +94,5 @@ export const BlogCategoryField: FC<BlogSectionProps> = ({ form }) => {
         </FormItem>
       )}
     />
-  )
-}
+  );
+};
