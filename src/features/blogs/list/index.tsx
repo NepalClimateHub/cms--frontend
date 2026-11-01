@@ -56,6 +56,7 @@ const ListBlog = () => {
   const { data: blogsList, isLoading: isLoadingBlogs } = useGetBlogs({
     ...pagination,
     ...filters,
+    excludeContent: 'true',
   })
 
   const blogsData = (blogsList?.data ?? []) as unknown as BlogResponseDto[]
