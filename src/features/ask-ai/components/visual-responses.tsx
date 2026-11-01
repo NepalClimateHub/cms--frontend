@@ -1,8 +1,3 @@
-import { lazy, Suspense, type ReactNode } from 'react'
-import type {
-  VisualDecision,
-  VisualSpec,
-} from '@/query/ask-ai/climate-api'
 import {
   Banknote,
   Building2,
@@ -21,6 +16,7 @@ import {
   Wrench,
   Zap,
 } from 'lucide-react'
+import { lazy, type ReactNode, Suspense } from 'react'
 import {
   CartesianGrid,
   Legend,
@@ -34,6 +30,7 @@ import {
   YAxis,
   ZAxis,
 } from 'recharts'
+import type { VisualDecision, VisualSpec } from '@/query/ask-ai/climate-api'
 
 const StationMap = lazy(() =>
   import('./station-map').then((module) => ({ default: module.StationMap }))
@@ -52,10 +49,7 @@ type EmissionsProjectionSpec = Extract<
   VisualSpec,
   { type: 'emissions_projection' }
 >
-type ClimateTimeSeriesSpec = Extract<
-  VisualSpec,
-  { type: 'climate_timeseries' }
->
+type ClimateTimeSeriesSpec = Extract<VisualSpec, { type: 'climate_timeseries' }>
 type ClimateScatterSpec = Extract<VisualSpec, { type: 'climate_scatter' }>
 
 const visualTitles: Record<VisualSpec['type'], string> = {
@@ -206,7 +200,7 @@ function DocumentComparison({
               {row.label}
             </h5>
             <dl className='space-y-2'>
-              {visual.columns.map((column, columnIndex) => (
+              {visual.columns.map((column, columnIndex) =>
                 (() => {
                   const cell = getCell(rowIndex, columnIndex)
                   return (
@@ -224,7 +218,7 @@ function DocumentComparison({
                     </div>
                   )
                 })()
-              ))}
+              )}
             </dl>
           </section>
         ))}
@@ -261,7 +255,7 @@ function DocumentComparison({
             <div className='min-w-0 p-3 font-medium' role='rowheader'>
               <span className='break-words'>{row.label}</span>
             </div>
-            {visual.columns.map((column, columnIndex) => (
+            {visual.columns.map((column, columnIndex) =>
               (() => {
                 const cell = getCell(rowIndex, columnIndex)
                 return (
@@ -275,7 +269,7 @@ function DocumentComparison({
                   </div>
                 )
               })()
-            ))}
+            )}
           </div>
         ))}
       </div>
@@ -293,10 +287,7 @@ function ProcessStepper({
   return (
     <ol className='grid grid-cols-1 gap-x-6 gap-y-4 pl-3 sm:grid-cols-2 xl:grid-cols-4'>
       {visual.items.map((item) => (
-        <li
-          key={item.step}
-          className='relative min-w-0 border-l pl-7'
-        >
+        <li key={item.step} className='relative min-w-0 border-l pl-7'>
           <span className='absolute -left-3 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-700 text-xs font-semibold text-white'>
             {item.step}
           </span>
@@ -437,12 +428,18 @@ function ClimateTimeSeries({
   renderCitation: RenderCitation
 }) {
   const periods = Array.from(
-    new Set(visual.series.flatMap((series) => series.points.map((point) => point.period)))
+    new Set(
+      visual.series.flatMap((series) =>
+        series.points.map((point) => point.period)
+      )
+    )
   ).sort()
   const data = periods.map((period) => {
     const row: Record<string, string | number | undefined> = { period }
     visual.series.forEach((series) => {
-      row[series.name] = series.points.find((point) => point.period === period)?.value
+      row[series.name] = series.points.find(
+        (point) => point.period === period
+      )?.value
     })
     return row
   })
@@ -450,12 +447,18 @@ function ClimateTimeSeries({
     <div className='space-y-3'>
       <div className='h-80 w-full min-w-0'>
         <ResponsiveContainer width='100%' height='100%'>
-          <LineChart data={data} margin={{ top: 8, right: 14, bottom: 4, left: 0 }}>
+          <LineChart
+            data={data}
+            margin={{ top: 8, right: 14, bottom: 4, left: 0 }}
+          >
             <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
             <XAxis dataKey='period' tick={{ fontSize: 11 }} minTickGap={28} />
             <YAxis width={48} tick={{ fontSize: 11 }} />
             <Tooltip
-              formatter={(value, name) => [`${value} ${visual.yAxis.unit}`, name]}
+              formatter={(value, name) => [
+                `${value} ${visual.yAxis.unit}`,
+                name,
+              ]}
               contentStyle={{
                 backgroundColor: 'hsl(var(--popover))',
                 border: '1px solid hsl(var(--border))',
@@ -470,7 +473,9 @@ function ClimateTimeSeries({
                 type='monotone'
                 dataKey={series.name}
                 connectNulls={false}
-                stroke={emissionsChartColors[index % emissionsChartColors.length]}
+                stroke={
+                  emissionsChartColors[index % emissionsChartColors.length]
+                }
                 strokeWidth={2}
                 dot={data.length <= 60 ? { r: 2.5 } : false}
                 isAnimationActive={false}
@@ -480,10 +485,14 @@ function ClimateTimeSeries({
         </ResponsiveContainer>
       </div>
       <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
-        <span>{visual.yAxis.label} ({visual.yAxis.unit})</span>
-        {[...new Set(visual.series.map((series) => series.sourceIndex))].map((sourceIndex) => (
-          <span key={sourceIndex}>{renderCitation(sourceIndex)}</span>
-        ))}
+        <span>
+          {visual.yAxis.label} ({visual.yAxis.unit})
+        </span>
+        {[...new Set(visual.series.map((series) => series.sourceIndex))].map(
+          (sourceIndex) => (
+            <span key={sourceIndex}>{renderCitation(sourceIndex)}</span>
+          )
+        )}
       </div>
     </div>
   )
@@ -508,7 +517,11 @@ function ClimateScatter({
               name={visual.xAxis.label}
               unit={` ${visual.xAxis.unit}`}
               tick={{ fontSize: 11 }}
-              label={{ value: visual.xAxis.label, position: 'insideBottom', offset: -12 }}
+              label={{
+                value: visual.xAxis.label,
+                position: 'insideBottom',
+                offset: -12,
+              }}
             />
             <YAxis
               type='number'
@@ -527,14 +540,20 @@ function ClimateScatter({
                 borderRadius: 6,
               }}
             />
-            <Scatter data={visual.points} fill='hsl(var(--chart-2))' isAnimationActive={false} />
+            <Scatter
+              data={visual.points}
+              fill='hsl(var(--chart-2))'
+              isAnimationActive={false}
+            />
           </ScatterChart>
         </ResponsiveContainer>
       </div>
       <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
         <span>
           {visual.points.length} stations
-          {visual.correlation == null ? '' : `; correlation ${visual.correlation}`}
+          {visual.correlation == null
+            ? ''
+            : `; correlation ${visual.correlation}`}
         </span>
         {renderCitation(visual.points[0].sourceIndex)}
       </div>
@@ -567,12 +586,21 @@ function VisualBody({
         <EmissionsProjection visual={visual} renderCitation={renderCitation} />
       )
     case 'climate_timeseries':
-      return <ClimateTimeSeries visual={visual} renderCitation={renderCitation} />
+      return (
+        <ClimateTimeSeries visual={visual} renderCitation={renderCitation} />
+      )
     case 'climate_scatter':
       return <ClimateScatter visual={visual} renderCitation={renderCitation} />
     case 'station_map':
       return (
-        <Suspense fallback={<div className='h-80 animate-pulse bg-muted' aria-label='Loading station map' />}>
+        <Suspense
+          fallback={
+            <div
+              className='h-80 animate-pulse bg-muted'
+              aria-label='Loading station map'
+            />
+          }
+        >
           <StationMap visual={visual} />
         </Suspense>
       )

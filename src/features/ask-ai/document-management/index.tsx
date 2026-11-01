@@ -1,21 +1,39 @@
-import { useDeferredValue, useMemo, useState } from 'react'
 import {
-  AiDocument,
-  DocumentStatus,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Database,
+  DatabaseBackup,
+  FileText,
+  Info,
+  ListTree,
+  Loader2,
+  MapPinned,
+  RefreshCw,
+  RotateCcw,
+  Trash2,
+  Upload,
+} from 'lucide-react'
+import { useDeferredValue, useMemo, useState } from 'react'
+import { toast } from '@/hooks/use-toast'
+import {
+  type AiDocument,
+  type DocumentStatus,
   openAiDocument,
-  useAiDocumentChunks,
   useAiAssistantSettings,
-  useAiDocuments,
+  useAiDocumentChunks,
   useAiDocumentSummary,
+  useAiDocuments,
+  useClimateDataStatus,
   useDeleteAiDocument,
   useRebuildAiIndex,
   useReindexAiDocument,
   useRetryAiDocument,
+  useSyncClimateData,
   useUpdateAiAssistantSettings,
   useUploadAiDocument,
-  useClimateDataStatus,
-  useSyncClimateData,
 } from '@/query/ask-ai/document-management'
+import { useAuthStore } from '@/stores/authStore'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
 import {
@@ -50,25 +68,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/ui/shadcn/table'
-import {
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  Database,
-  DatabaseBackup,
-  FileText,
-  Info,
-  ListTree,
-  Loader2,
-  RefreshCw,
-  RotateCcw,
-  Trash2,
-  Upload,
-  MapPinned,
-} from 'lucide-react'
-import { useAuthStore } from '@/stores/authStore'
 import { isSuperAdmin } from '@/utils/role-check.util'
-import { toast } from '@/hooks/use-toast'
 
 const activeStatuses: DocumentStatus[] = [
   'QUEUED',

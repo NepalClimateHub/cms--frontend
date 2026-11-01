@@ -98,9 +98,7 @@ const visualSpecV1Schema = z.discriminatedUnion('type', [
           z
             .object({
               label: labelSchema,
-              values: z
-                .array(z.string().trim().min(1).max(100))
-                .length(2),
+              values: z.array(z.string().trim().min(1).max(100)).length(2),
             })
             .strict()
         )
@@ -267,7 +265,9 @@ const visualSpecV2Schema = z.discriminatedUnion('type', [
                 .array(
                   z
                     .object({
-                      period: z.string().regex(/^\d{4}(?:-(?:0[1-9]|1[0-2]))?$/),
+                      period: z
+                        .string()
+                        .regex(/^\d{4}(?:-(?:0[1-9]|1[0-2]))?$/),
                       value: z.number().finite(),
                       coverage: z.number().int().min(1).optional(),
                     })
@@ -287,8 +287,12 @@ const visualSpecV2Schema = z.discriminatedUnion('type', [
       version: z.literal(2),
       type: z.literal('climate_scatter'),
       title: titleSchema,
-      xAxis: z.object({ label: labelSchema, unit: z.string().trim().min(1).max(24) }).strict(),
-      yAxis: z.object({ label: labelSchema, unit: z.string().trim().min(1).max(24) }).strict(),
+      xAxis: z
+        .object({ label: labelSchema, unit: z.string().trim().min(1).max(24) })
+        .strict(),
+      yAxis: z
+        .object({ label: labelSchema, unit: z.string().trim().min(1).max(24) })
+        .strict(),
       points: z
         .array(
           z
@@ -314,7 +318,9 @@ const visualSpecV2Schema = z.discriminatedUnion('type', [
       title: titleSchema,
       indicator: z.enum(['TAVG', 'TMIN', 'TMAX', 'PRCP']),
       unit: z.string().trim().min(1).max(24),
-      scale: z.object({ min: z.number().finite(), max: z.number().finite() }).strict(),
+      scale: z
+        .object({ min: z.number().finite(), max: z.number().finite() })
+        .strict(),
       points: z
         .array(
           z
@@ -396,7 +402,8 @@ const canonicalVisualSpecSchema = z
     if (
       visual.version === 2 &&
       visual.type === 'climate_timeseries' &&
-      visual.series.reduce((total, series) => total + series.points.length, 0) > 2000
+      visual.series.reduce((total, series) => total + series.points.length, 0) >
+        2000
     ) {
       context.addIssue({
         code: z.ZodIssueCode.custom,

@@ -19,10 +19,7 @@ export function buildRecentConversationHistory(
     }
 
     if (pendingUserMessage) {
-      completedTurns.push([
-        pendingUserMessage,
-        { role: 'assistant', content },
-      ])
+      completedTurns.push([pendingUserMessage, { role: 'assistant', content }])
       pendingUserMessage = undefined
     }
   })

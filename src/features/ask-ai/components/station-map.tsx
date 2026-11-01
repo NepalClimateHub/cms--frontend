@@ -1,9 +1,13 @@
+import maplibregl, {
+  LngLatBounds,
+  type Map as MapLibreMap,
+  type StyleSpecification,
+} from 'maplibre-gl'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import maplibregl, { LngLatBounds, type Map as MapLibreMap, type StyleSpecification } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import { env } from '@/config/env.config'
 import type { VisualSpec } from '@/query/ask-ai/climate-api'
 import { reportClimateClientMetric } from '@/query/ask-ai/climate-api'
-import { env } from '@/config/env.config'
 
 type StationMapSpec = Extract<VisualSpec, { type: 'station_map' }>
 
@@ -55,7 +59,10 @@ export function StationMap({ visual }: { visual: StationMapSpec }) {
       attributionControl: { compact: true },
     })
     mapRef.current = map
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
+    map.addControl(
+      new maplibregl.NavigationControl({ showCompass: false }),
+      'top-right'
+    )
 
     const handleError = () => {
       if (!useFallback && !map.loaded()) {
@@ -108,7 +115,10 @@ export function StationMap({ visual }: { visual: StationMapSpec }) {
         type: 'symbol',
         source: 'climate-stations',
         filter: ['has', 'point_count'],
-        layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-size': 12 },
+        layout: {
+          'text-field': ['get', 'point_count_abbreviated'],
+          'text-size': 12,
+        },
         paint: { 'text-color': '#ffffff' },
       })
       map.addLayer({
@@ -124,7 +134,9 @@ export function StationMap({ visual }: { visual: StationMapSpec }) {
             ['get', 'value'],
             visual.scale.min,
             '#2563eb',
-            visual.scale.max === visual.scale.min ? visual.scale.max + 0.001 : visual.scale.max,
+            visual.scale.max === visual.scale.min
+              ? visual.scale.max + 0.001
+              : visual.scale.max,
             '#dc2626',
           ],
           'circle-stroke-color': '#ffffff',
@@ -141,16 +153,24 @@ export function StationMap({ visual }: { visual: StationMapSpec }) {
       })
 
       const bounds = new LngLatBounds()
-      visual.points.forEach((point) => bounds.extend([point.longitude, point.latitude]))
-      if (!bounds.isEmpty()) map.fitBounds(bounds, { padding: 44, maxZoom: 7, duration: 0 })
+      visual.points.forEach((point) =>
+        bounds.extend([point.longitude, point.latitude])
+      )
+      if (!bounds.isEmpty())
+        map.fitBounds(bounds, { padding: 44, maxZoom: 7, duration: 0 })
 
       map.on('click', 'station-clusters', async (event) => {
-        const feature = map.queryRenderedFeatures(event.point, { layers: ['station-clusters'] })[0]
+        const feature = map.queryRenderedFeatures(event.point, {
+          layers: ['station-clusters'],
+        })[0]
         const clusterId = Number(feature?.properties?.cluster_id)
-        const source = map.getSource('climate-stations') as maplibregl.GeoJSONSource
+        const source = map.getSource(
+          'climate-stations'
+        ) as maplibregl.GeoJSONSource
         if (!Number.isFinite(clusterId)) return
         const zoom = await source.getClusterExpansionZoom(clusterId)
-        const coordinates = (feature.geometry as { coordinates: number[] }).coordinates as [number, number]
+        const coordinates = (feature.geometry as { coordinates: number[] })
+          .coordinates as [number, number]
         map.easeTo({ center: coordinates, zoom })
       })
       map.on('click', 'station-points', (event) => {
@@ -164,7 +184,12 @@ export function StationMap({ visual }: { visual: StationMapSpec }) {
         detail.textContent = `${properties.country}: ${properties.value} ${visual.unit} (${properties.coverage} periods)`
         content.append(heading, detail)
         new maplibregl.Popup({ offset: 10 })
-          .setLngLat((feature.geometry as { coordinates: number[] }).coordinates as [number, number])
+          .setLngLat(
+            (feature.geometry as { coordinates: number[] }).coordinates as [
+              number,
+              number,
+            ]
+          )
           .setDOMContent(content)
           .addTo(map)
       })
@@ -182,12 +207,21 @@ export function StationMap({ visual }: { visual: StationMapSpec }) {
       map.remove()
       mapRef.current = null
     }
-  }, [points, useFallback, visual.scale.max, visual.scale.min, visual.unit, visual.points])
+  }, [
+    points,
+    useFallback,
+    visual.scale.max,
+    visual.scale.min,
+    visual.unit,
+    visual.points,
+  ])
 
   return (
     <div className='space-y-3'>
       {useFallback && (
-        <p className='text-xs text-muted-foreground'>Using the local South Asia boundary map.</p>
+        <p className='text-xs text-muted-foreground'>
+          Using the local South Asia boundary map.
+        </p>
       )}
       <div
         ref={containerRef}
@@ -195,7 +229,11 @@ export function StationMap({ visual }: { visual: StationMapSpec }) {
         role='img'
         aria-label={`${visual.indicator} values at ${visual.points.length} climate stations`}
       />
-      <div className='max-h-52 overflow-auto border' role='region' aria-label='Station values table'>
+      <div
+        className='max-h-52 overflow-auto border'
+        role='region'
+        aria-label='Station values table'
+      >
         <table className='w-full text-left text-xs'>
           <thead className='sticky top-0 bg-background'>
             <tr className='border-b'>
@@ -210,7 +248,9 @@ export function StationMap({ visual }: { visual: StationMapSpec }) {
               <tr key={point.stationId} className='border-b last:border-0'>
                 <td className='px-3 py-2'>{point.name}</td>
                 <td className='px-3 py-2'>{point.country}</td>
-                <td className='px-3 py-2 text-right'>{point.value} {visual.unit}</td>
+                <td className='px-3 py-2 text-right'>
+                  {point.value} {visual.unit}
+                </td>
                 <td className='px-3 py-2 text-right'>{point.coverage}</td>
               </tr>
             ))}
