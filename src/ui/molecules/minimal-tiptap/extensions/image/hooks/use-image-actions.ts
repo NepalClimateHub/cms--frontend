@@ -7,13 +7,11 @@ interface UseImageActionsProps {
   editor: Editor
   node: Node
   src: string
-  onViewClick: (value: boolean) => void
   onCropClick: () => void
   onReplaceClick: () => void
 }
 
 export type ImageActionHandlers = {
-  onView?: () => void
   onDownload?: () => void
   onCopy?: () => void
   onCopyLink?: () => void
@@ -24,15 +22,10 @@ export const useImageActions = ({
   editor,
   node,
   src,
-  onViewClick,
   onCropClick,
   onReplaceClick,
 }: UseImageActionsProps) => {
   const isLink = React.useMemo(() => isUrl(src), [src])
-
-  const onView = React.useCallback(() => {
-    onViewClick(true)
-  }, [onViewClick])
 
   const onDownload = React.useCallback(() => {
     editor.commands.downloadImage({ src: node.attrs.src, alt: node.attrs.alt })
@@ -71,7 +64,6 @@ export const useImageActions = ({
 
   return {
     isLink,
-    onView,
     onDownload,
     onCopy,
     onCopyLink,

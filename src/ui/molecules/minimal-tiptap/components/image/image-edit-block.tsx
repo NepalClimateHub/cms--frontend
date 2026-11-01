@@ -24,11 +24,13 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
     credit: '',
   })
   const altValid = isAltValid(meta.alt)
+  const captionValid = meta.caption.trim() !== ''
+  const imageMetaValid = altValid && captionValid
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     e.stopPropagation()
-    if (link && altValid) {
+    if (link && imageMetaValid) {
       editor.commands.setImages([{ src: link, ...meta }])
       close()
     }
@@ -47,6 +49,7 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
         idPrefix='insert-image'
         value={meta}
         onChange={setMeta}
+        requireCaption
       />
 
       <div className='space-y-3'>
@@ -54,7 +57,7 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
         <Button
           type='button'
           variant='outline'
-          disabled={!altValid}
+          disabled={!imageMetaValid}
           onClick={handleUpload}
         >
           <Upload className='mr-2 size-4' />
@@ -77,7 +80,7 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({
             className='grow'
             onChange={(e) => setLink(e.target.value)}
           />
-          <Button type='submit' className='ml-2' disabled={!altValid}>
+          <Button type='submit' className='ml-2' disabled={!imageMetaValid}>
             Submit
           </Button>
         </div>

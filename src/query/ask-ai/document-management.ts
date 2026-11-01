@@ -130,22 +130,16 @@ interface ApiErrorPayload {
 function asMessage(value: unknown): string | undefined {
   if (typeof value === 'string' && value.trim()) return value
   if (Array.isArray(value)) {
-    const messages = value.filter(
-      (item): item is string => typeof item === 'string' && Boolean(item.trim())
-    )
+    const messages = value.filter((item): item is string => typeof item === 'string' && Boolean(item.trim()))
     if (messages.length) return messages.join(', ')
   }
   return undefined
 }
 
-function errorPayloadMessage(
-  payload: ApiErrorPayload | null | undefined
-): string | undefined {
-  const details =
-    typeof payload?.error?.details === 'object' &&
-    !Array.isArray(payload.error.details)
-      ? payload.error.details
-      : undefined
+function errorPayloadMessage(payload: ApiErrorPayload | null | undefined): string | undefined {
+  const details = typeof payload?.error?.details === 'object' && !Array.isArray(payload.error.details)
+    ? payload.error.details
+    : undefined
 
   return (
     asMessage(payload?.error?.message) ||
@@ -158,9 +152,7 @@ function errorPayloadMessage(
 
 function normalizeDocumentError(error: unknown, fallback: string): Error {
   if (axios.isAxiosError<ApiErrorPayload>(error)) {
-    return new Error(
-      errorPayloadMessage(error.response?.data) || error.message || fallback
-    )
+    return new Error(errorPayloadMessage(error.response?.data) || error.message || fallback)
   }
   if (error instanceof Error) return error
   return new Error(fallback)
@@ -176,12 +168,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     },
   })
   if (!response.ok) {
-    const body = (await response
-      .json()
-      .catch(() => null)) as ApiErrorPayload | null
-    throw new Error(
-      errorPayloadMessage(body) || `Request failed (${response.status})`
-    )
+    const body = await response.json().catch(() => null) as ApiErrorPayload | null
+    throw new Error(errorPayloadMessage(body) || `Request failed (${response.status})`)
   }
   const body = await response.json()
   return body.data ?? body
@@ -199,9 +187,7 @@ export function useAiDocuments(search: string, status: string) {
     refetchInterval: (query) => {
       const documents = query.state.data?.documents || []
       return documents.some((document) =>
-        ['QUEUED', 'INDEXING', 'DELETE_QUEUED', 'DELETING'].includes(
-          document.status
-        )
+        ['QUEUED', 'INDEXING', 'DELETE_QUEUED', 'DELETING'].includes(document.status)
       )
         ? 5000
         : false
@@ -250,18 +236,10 @@ export function useAiAssistantSettings(enabled: boolean) {
 export function useUpdateAiAssistantSettings() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (
-      changes: Partial<
-        Pick<
-          AiAssistantSettings,
-          | 'visualResponsesEnabled'
-          | 'climateDataEnabled'
-          | 'climateMapsEnabled'
-          | 'graphRagEnabled'
-          | 'climateRolloutStage'
-        >
-      >
-    ) =>
+    mutationFn: (changes: Partial<Pick<AiAssistantSettings,
+      'visualResponsesEnabled' | 'climateDataEnabled' | 'climateMapsEnabled' | 'graphRagEnabled'
+      | 'climateRolloutStage'
+    >>) =>
       request<AiAssistantSettings>('/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -278,9 +256,7 @@ export function useClimateDataStatus() {
     queryKey: ['climate-data-status'],
     queryFn: () => request<ClimateDataStatus>('/climate-data/status'),
     refetchInterval: (query) =>
-      ['QUEUED', 'RUNNING'].includes(query.state.data?.latestRun?.status || '')
-        ? 5000
-        : 30000,
+      ['QUEUED', 'RUNNING'].includes(query.state.data?.latestRun?.status || '') ? 5000 : 30000,
   })
 }
 
@@ -288,13 +264,15 @@ export function useSyncClimateData() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (mode: 'BACKFILL' | 'INCREMENTAL') =>
-      request('/climate-data/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode }),
-      }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ['climate-data-status'] }),
+      request<{ accepted: boolean; acknowledgementPending?: boolean }>(
+        '/climate-data/sync',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode }),
+        }
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['climate-data-status'] }),
   })
 }
 
@@ -320,17 +298,12 @@ export function useUploadAiDocument() {
     form.append('file', file)
     if (title?.trim()) form.append('title', title.trim())
     try {
-      const response = await axios.post(
-        `${API_URL}${ADMIN_PATH}/documents`,
-        form,
-        {
-          headers: { Authorization: `Bearer ${getAccessToken()}` },
-          onUploadProgress: ({ loaded, total }) => {
-            if (total)
-              onProgress?.(Math.min(100, Math.round((loaded / total) * 100)))
-          },
-        }
-      )
+      const response = await axios.post(`${API_URL}${ADMIN_PATH}/documents`, form, {
+        headers: { Authorization: `Bearer ${getAccessToken()}` },
+        onUploadProgress: ({ loaded, total }) => {
+          if (total) onProgress?.(Math.min(100, Math.round((loaded / total) * 100)))
+        },
+      })
       return response.data?.data ?? response.data
     } catch (error) {
       throw normalizeDocumentError(error, 'Upload failed')
@@ -353,19 +326,12 @@ export function useRetryAiDocument() {
 export function useDeleteAiDocument() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (documentId: string) =>
-      request(`/documents/${documentId}`, { method: 'DELETE' }),
+    mutationFn: (documentId: string) => request(`/documents/${documentId}`, { method: 'DELETE' }),
     onMutate: async (documentId) => {
       await queryClient.cancelQueries({ queryKey: ['ai-documents'] })
       queryClient.setQueriesData<DocumentListResponse>(
         { queryKey: ['ai-documents'] },
-        (old) =>
-          old
-            ? {
-                ...old,
-                documents: old.documents.filter((d) => d.id !== documentId),
-              }
-            : old
+        (old) => old ? { ...old, documents: old.documents.filter((d) => d.id !== documentId) } : old,
       )
     },
     onError: () => undefined,
@@ -377,19 +343,14 @@ export function useDeleteAiDocument() {
 }
 
 export function useRebuildAiIndex() {
-  return useDocumentMutation<void>(() =>
-    request('/index/rebuild', { method: 'POST' })
-  )
+  return useDocumentMutation<void>(() => request('/index/rebuild', { method: 'POST' }))
 }
 
 export async function openAiDocument(documentId: string) {
   const token = getAccessToken()
-  const response = await fetch(
-    `${API_URL}${ADMIN_PATH}/documents/${documentId}/file`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  )
+  const response = await fetch(`${API_URL}${ADMIN_PATH}/documents/${documentId}/file`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
   if (!response.ok) throw new Error('Unable to open PDF')
   const url = URL.createObjectURL(await response.blob())
   window.open(url, '_blank', 'noopener,noreferrer')

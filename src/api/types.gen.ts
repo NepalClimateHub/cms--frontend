@@ -55,6 +55,15 @@ export type OrganizationProfileOutputDto = {
 	verificationMessageSentAt?: {
 		[key: string]: unknown;
 	};
+	verificationMessages: Array<VerificationMessageOutputDto>;
+};
+
+export type VerificationMessageOutputDto = {
+	id: string;
+	senderType: "ORGANIZATION" | "ADMIN";
+	senderUserId?: string | null;
+	message: string;
+	createdAt: string;
 };
 
 export type UserOutput = {

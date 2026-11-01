@@ -1,42 +1,43 @@
+import { useState, useRef, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+import { Main } from '@/ui/layouts/main'
+import { Button } from '@/ui/shadcn/button'
+import { Textarea } from '@/ui/shadcn/textarea'
 import {
-  BookOpen,
-  Check,
-  ChevronDown,
-  Copy,
-  Database,
-  ExternalLink,
-  FileText,
-  History,
-  Loader2,
-  Plus,
-  RotateCw,
   Send,
-  ServerCrash,
+  Loader2,
+  ChevronDown,
+  Plus,
+  BookOpen,
   ShieldCheck,
+  FileText,
+  Copy,
+  Check,
+  ServerCrash,
+  RotateCw,
+  ExternalLink,
+  History,
+  Database,
 } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import {
+  buildRecentConversationHistory,
+  ChatSource,
+  parseVisualMetadata,
+  useClimateChat,
+  useChatHistory,
+  useChatSession,
+  VisualDecision,
+  VisualSpec,
+} from '@/query/ask-ai/climate-api'
 import { env } from '@/config/env.config'
+import { getAccessToken, useAuthStore } from '@/stores/authStore'
+import { cn } from '@/ui/shadcn/lib/utils'
 import { ChatHistorySheet } from '@/features/ask-ai/components/ChatHistorySheet'
 import {
   InlineVisual,
   VisualDecisionStatus,
 } from '@/features/ask-ai/components/visual-responses'
-import {
-  buildRecentConversationHistory,
-  type ChatSource,
-  parseVisualMetadata,
-  useChatHistory,
-  useChatSession,
-  useClimateChat,
-  type VisualDecision,
-  type VisualSpec,
-} from '@/query/ask-ai/climate-api'
-import { getAccessToken, useAuthStore } from '@/stores/authStore'
-import { Main } from '@/ui/layouts/main'
-import { Button } from '@/ui/shadcn/button'
+import { isSuperAdmin } from '@/utils/role-check.util'
 import {
   Dialog,
   DialogContent,
@@ -44,9 +45,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/ui/shadcn/dialog'
-import { cn } from '@/ui/shadcn/lib/utils'
-import { Textarea } from '@/ui/shadcn/textarea'
-import { isSuperAdmin } from '@/utils/role-check.util'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 export const Route = createFileRoute('/_authenticated/ask-ai/')({
   component: AskAI,
@@ -63,6 +63,7 @@ interface Message {
   visualDecision?: VisualDecision
   timestamp: Date
 }
+
 
 function parseContentAndSources(content?: string, existing?: Source[]) {
   const text = content || ''
@@ -96,10 +97,9 @@ function parseContentAndSources(content?: string, existing?: Source[]) {
         return { source: text, page }
       })
       // Filter out garbage: reject entries that look malformed or long text sentences
-      .filter((s) => {
+      .filter(s => {
         if (!s.source) return false
-        if (s.source.includes('**') || s.source.includes('Sources:'))
-          return false
+        if (s.source.includes('**') || s.source.includes('Sources:')) return false
         if (s.source.length > 90 || s.source.includes(',')) return false
         return true
       })
@@ -109,8 +109,11 @@ function parseContentAndSources(content?: string, existing?: Source[]) {
     }
   }
 
+
   return { cleaned, sources }
 }
+
+
 
 function AskAI() {
   const [input, setInput] = useState('')
@@ -123,8 +126,7 @@ function AskAI() {
 
   const chatMutation = useClimateChat()
 
-  const { data: sessionData, isLoading: isSessionLoading } =
-    useChatSession(conversationId)
+  const { data: sessionData, isLoading: isSessionLoading } = useChatSession(conversationId)
   const { isError: isHistoryError, refetch: refetchHistory } = useChatHistory()
 
   useEffect(() => {
@@ -183,16 +185,14 @@ function AskAI() {
           timestamp: new Date(),
         },
       ])
-      if (res.conversation_id && !conversationId)
-        setConversationId(res.conversation_id)
+      if (res.conversation_id && !conversationId) setConversationId(res.conversation_id)
     } catch (err) {
       setMessages((p) => [
         ...p,
         {
           id: crypto.randomUUID(),
           role: 'assistant',
-          content:
-            err instanceof Error ? err.message : 'Sorry, something went wrong.',
+          content: err instanceof Error ? err.message : 'Sorry, something went wrong.',
           timestamp: new Date(),
         },
       ])
@@ -212,13 +212,13 @@ function AskAI() {
     setInput('')
   }
 
+
   return (
     <Main className='flex flex-col bg-background' fixed>
+
       <div className='mb-4'>
         <h1 className='text-2xl font-bold tracking-tight'>Ask AI</h1>
-        <p className='text-muted-foreground'>
-          Get AI-powered answers from Nepal's climate documents
-        </p>
+        <p className='text-muted-foreground'>Get AI-powered answers from Nepal's climate documents</p>
       </div>
 
       {isHistoryError ? (
@@ -234,15 +234,10 @@ function AskAI() {
               AI Assistant Offline
             </h3>
             <p className='text-sm text-muted-foreground leading-relaxed'>
-              We are currently unable to connect to the climate AI assistant.
-              The rest of the dashboard is active and ready for you to use.
+              We are currently unable to connect to the climate AI assistant. The rest of the dashboard is active and ready for you to use.
             </p>
           </div>
-          <Button
-            onClick={() => refetchHistory()}
-            size='default'
-            className='px-6 shadow-md'
-          >
+          <Button onClick={() => refetchHistory()} size='default' className='px-6 shadow-md'>
             <RotateCw className='mr-2 h-4 w-4' />
             Retry Connection
           </Button>
@@ -269,7 +264,9 @@ function AskAI() {
           />
 
           <div className='flex flex-1 overflow-hidden'>
+
             <div className='flex flex-1 flex-col overflow-hidden min-w-0'>
+
               <div className='flex-1 overflow-y-auto px-2 py-4'>
                 <div className='mx-auto max-w-3xl space-y-6'>
                   {messages.length === 0 ? (
@@ -287,9 +284,7 @@ function AskAI() {
                   {(chatMutation.isPending || isSessionLoading) && (
                     <div className='flex items-center gap-2 text-muted-foreground animate-pulse'>
                       <Loader2 className='h-4 w-4 animate-spin' />
-                      <span>
-                        {isSessionLoading ? 'Loading chat...' : 'Thinking...'}
-                      </span>
+                      <span>{isSessionLoading ? 'Loading chat...' : 'Thinking...'}</span>
                     </div>
                   )}
                   <div ref={messagesEndRef} />
@@ -331,12 +326,14 @@ function AskAI() {
                 </div>
               </div>
             </div>
+
           </div>
         </>
       )}
     </Main>
   )
 }
+
 
 function EmptyState({ onSuggestion }: { onSuggestion: (q: string) => void }) {
   const suggestions = [
@@ -350,9 +347,7 @@ function EmptyState({ onSuggestion }: { onSuggestion: (q: string) => void }) {
     <div className='flex flex-col items-center justify-center gap-6 py-12 text-center mt-10'>
       <div className='text-6xl'>🌍</div>
       <div className='space-y-2'>
-        <h3 className='text-2xl font-semibold tracking-tight'>
-          Welcome to Climate Assistant
-        </h3>
+        <h3 className='text-2xl font-semibold tracking-tight'>Welcome to Climate Assistant</h3>
         <p className='text-muted-foreground max-w-md mx-auto'>
           Easily find Climate/Environment related research, news, and policy.
         </p>
@@ -372,16 +367,14 @@ function EmptyState({ onSuggestion }: { onSuggestion: (q: string) => void }) {
   )
 }
 
+
 function sourceLabel(source: Source) {
   const raw = source.title || source.source || source.url || 'Unknown source'
   return raw.split('/').pop() || raw
 }
 
 function sourceDocumentUrl(source: Source) {
-  const apiUrl = (env.VITE_API_URL || 'http://localhost:8080').replace(
-    /\/$/,
-    ''
-  )
+  const apiUrl = (env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
   if (source.documentId) {
     return `${apiUrl}/api/v1/ai-assistant/documents/${source.documentId}/file`
   }
@@ -400,7 +393,9 @@ function sourceDocumentUrl(source: Source) {
 }
 
 function sourceRequiresAuth(source: Source) {
-  return Boolean(source.documentId || source.url?.startsWith('/api/'))
+  return Boolean(
+    source.documentId || source.url?.startsWith('/api/')
+  )
 }
 
 function SourceCard({ source, index }: { source: Source; index: number }) {
@@ -440,9 +435,7 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
       )}
 
       {source.page != null && (
-        <span className='text-xs text-muted-foreground flex-shrink-0'>
-          Page {source.page}
-        </span>
+        <span className='text-xs text-muted-foreground flex-shrink-0'>Page {source.page}</span>
       )}
     </div>
   )
@@ -482,19 +475,14 @@ function ChatMessage({
   }
 
   return (
-    <div
-      className={cn(
-        'flex flex-col gap-1',
-        isUser ? 'items-end' : 'items-start'
-      )}
-    >
+    <div className={cn('flex flex-col gap-1', isUser ? 'items-end' : 'items-start')}>
+
       {isUser ? (
         <div className='max-w-[80%] rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 px-5 py-3'>
-          <p className='whitespace-pre-wrap text-sm text-blue-800 dark:text-blue-200'>
-            {message.content}
-          </p>
+          <p className='whitespace-pre-wrap text-sm text-blue-800 dark:text-blue-200'>{message.content}</p>
         </div>
       ) : (
+
         <div className='w-full max-w-[95%]'>
           <div className='flex items-center justify-between px-4 py-2.5 rounded-t-xl border border-b-0 bg-muted/40'>
             <div className='flex items-center gap-2'>
@@ -514,23 +502,14 @@ function ChatMessage({
                 className='p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors'
                 title='Copy answer'
               >
-                {copied ? (
-                  <Check className='h-4 w-4 text-green-500' />
-                ) : (
-                  <Copy className='h-4 w-4' />
-                )}
+                {copied ? <Check className='h-4 w-4 text-green-500' /> : <Copy className='h-4 w-4' />}
               </button>
               <button
                 onClick={() => setCollapsed(!collapsed)}
                 className='p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors'
                 title={collapsed ? 'Expand' : 'Collapse'}
               >
-                <ChevronDown
-                  className={cn(
-                    'h-4 w-4 transition-transform',
-                    collapsed && '-rotate-90'
-                  )}
-                />
+                <ChevronDown className={cn('h-4 w-4 transition-transform', collapsed && '-rotate-90')} />
               </button>
             </div>
           </div>
@@ -550,20 +529,12 @@ function ChatMessage({
                       />
                     ),
                     ul: ({ node, ...props }) => (
-                      <ul
-                        {...props}
-                        className='list-disc pl-4 mb-2 space-y-1'
-                      />
+                      <ul {...props} className='list-disc pl-4 mb-2 space-y-1' />
                     ),
                     ol: ({ node, ...props }) => (
-                      <ol
-                        {...props}
-                        className='list-decimal pl-4 mb-2 space-y-1'
-                      />
+                      <ol {...props} className='list-decimal pl-4 mb-2 space-y-1' />
                     ),
-                    li: ({ node, ...props }) => (
-                      <li {...props} className='mb-0.5' />
-                    ),
+                    li: ({ node, ...props }) => <li {...props} className='mb-0.5' />,
                     h1: ({ node, ...props }) => (
                       <h1 {...props} className='text-lg font-bold mb-2' />
                     ),
@@ -586,10 +557,7 @@ function ChatMessage({
                 <InlineVisual
                   visual={message.visual}
                   renderCitation={(sourceIndex) => (
-                    <VisualCitation
-                      sourceIndex={sourceIndex}
-                      sources={sources}
-                    />
+                    <VisualCitation sourceIndex={sourceIndex} sources={sources} />
                   )}
                 />
               )}
@@ -612,9 +580,7 @@ function ChatMessage({
                 <div className='mt-4 pt-3 border-t'>
                   <div className='flex items-center gap-2 mb-2'>
                     <BookOpen className='h-3.5 w-3.5 text-muted-foreground' />
-                    <span className='text-xs font-medium text-muted-foreground'>
-                      Sources ({sources.length})
-                    </span>
+                    <span className='text-xs font-medium text-muted-foreground'>Sources ({sources.length})</span>
                   </div>
                   <div className='flex flex-col gap-2'>
                     {sources.map((src, idx) => (
@@ -705,9 +671,7 @@ function DocumentViewerDialog({ source }: { source: Source }) {
       } catch (error) {
         if (!controller.signal.aborted) {
           setLoadError(
-            error instanceof Error
-              ? error.message
-              : 'Unable to load source document'
+            error instanceof Error ? error.message : 'Unable to load source document'
           )
         }
       }

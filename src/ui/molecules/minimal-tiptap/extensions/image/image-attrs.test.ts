@@ -78,6 +78,7 @@ const base: ImageAttrs = {
   caption: null,
   credit: null,
   layout: 'inline',
+  alignment: 'center',
   width: null,
   height: null,
 }
@@ -280,6 +281,7 @@ describe('legacy caption compat', () => {
       caption: 'Caption',
       credit: 'Credit',
       layout: 'wide',
+      alignment: 'center',
       width: null,
       height: null,
     })

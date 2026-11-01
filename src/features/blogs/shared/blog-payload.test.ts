@@ -80,6 +80,36 @@ describe('blog bodies', () => {
     expect(body.bannerImageUrl).toBe('https://cdn/new.png')
   })
 
+  it('only sends fields accepted by the update endpoint', () => {
+    const values = {
+      ...baseValues,
+      id: 'blog-1',
+      status: 'PUBLISHED',
+      approvedByAdmin: true,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-02T00:00:00.000Z',
+      tags: [{ id: 'tag-1' }],
+      authorUser: { id: 'author-1' },
+      categoryData: { id: 'cat-1' },
+    } as BlogFormValues
+
+    const body = buildBlogUpdateBody(values)
+
+    expect(body).not.toHaveProperty('id')
+    expect(body).not.toHaveProperty('status')
+    expect(body).not.toHaveProperty('approvedByAdmin')
+    expect(body).not.toHaveProperty('createdAt')
+    expect(body).not.toHaveProperty('updatedAt')
+    expect(body).not.toHaveProperty('tags')
+    expect(body).not.toHaveProperty('authorUser')
+    expect(body).not.toHaveProperty('categoryData')
+    expect(body).toMatchObject({
+      title: 'Title',
+      categoryId: 'cat-1',
+      isDraft: true,
+    })
+  })
+
   it('create body has no banner keys when none was uploaded', () => {
     const body = buildBlogCreateBody({
       ...baseValues,

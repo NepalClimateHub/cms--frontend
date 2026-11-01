@@ -40,6 +40,13 @@ const organizationListSchema = z
     verificationRequestedAt: z.string().optional().nullable(),
     verificationAdminMessage: z.string().optional().nullable(),
     verificationMessageSentAt: z.string().optional().nullable(),
+    verificationMessages: z.array(z.object({
+      id: z.string(),
+      senderType: z.union([z.literal('ORGANIZATION'), z.literal('ADMIN')]),
+      senderUserId: z.string().optional().nullable(),
+      message: z.string(),
+      createdAt: z.string(),
+    })).optional().default([]),
   })
   .nullable()
   .optional()

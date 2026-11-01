@@ -1,6 +1,7 @@
 import { ExternalLink, FileText } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import type { OrganizationProfile } from '@/schemas/auth/organization-profile'
+import { VerificationConversation } from '@/ui/molecules/verification-conversation'
 import {
   Dialog,
   DialogContent,
@@ -60,12 +61,11 @@ export default function OrganizationVerificationViewDialog({
           },
         ]
       : []
-  const remarks = organization.verificationRequestRemarks?.trim()
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-h-[90vh] max-w-lg overflow-y-auto'>
-        <DialogHeader>
+      <DialogContent className='flex max-h-[90vh] max-w-lg flex-col overflow-hidden p-0'>
+        <DialogHeader className='shrink-0 px-6 pt-6'>
           <DialogTitle className='flex items-center gap-2'>
             <FileText className='h-5 w-5' />
             Verification application
@@ -77,7 +77,7 @@ export default function OrganizationVerificationViewDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className='space-y-4 text-sm'>
+        <div className='min-h-0 flex-1 space-y-4 overflow-y-auto px-6 pb-6 text-sm'>
           {submittedAt ? (
             <div>
               <p className='font-medium text-foreground'>Submitted</p>
@@ -108,31 +108,11 @@ export default function OrganizationVerificationViewDialog({
           ) : (
             <p className='text-muted-foreground'>No document URL on file.</p>
           )}
-          {organization.verificationAdminMessage ? (
-            <div className='space-y-2'>
-              <p className='font-medium text-foreground'>
-                Message from administrator
-              </p>
-              <div className='whitespace-pre-wrap rounded-md border border-amber-200 bg-amber-50 p-3 text-amber-950'>
-                {organization.verificationAdminMessage}
-              </div>
-            </div>
-          ) : null}
-
-          {remarks ? (
-            <div className='space-y-2'>
-              <p className='font-medium text-foreground'>
-                Message to administrators
-              </p>
-              <div className='whitespace-pre-wrap rounded-md border bg-muted/30 p-3 text-muted-foreground'>
-                {remarks}
-              </div>
-            </div>
-          ) : (
-            <p className='text-muted-foreground'>No message was provided.</p>
-          )}
+          <VerificationConversation
+            messages={organization.verificationMessages}
+          />
         </div>
-        {footer}
+        {footer ? <div className='shrink-0 px-6 pb-6'>{footer}</div> : null}
       </DialogContent>
     </Dialog>
   )

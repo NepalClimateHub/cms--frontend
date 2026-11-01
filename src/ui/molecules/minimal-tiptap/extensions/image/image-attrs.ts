@@ -3,6 +3,7 @@ export const IMAGE_LAYOUTS = [...FIGURE_LAYOUTS, 'two-up'] as const
 
 export type FigureLayout = (typeof FIGURE_LAYOUTS)[number]
 export type ImageLayout = (typeof IMAGE_LAYOUTS)[number]
+export type ImageAlignment = 'left' | 'center' | 'right'
 
 export const IMAGE_TEXT_LIMITS = {
   alt: 300,
@@ -16,6 +17,7 @@ export interface ImageAttrs {
   caption: string | null
   credit: string | null
   layout: FigureLayout
+  alignment: ImageAlignment
   width: number | null
   height: number | null
 }
@@ -49,6 +51,9 @@ const normalizeDimension = (value: unknown): number | null => {
 export const isFigureLayout = (value: unknown): value is FigureLayout =>
   FIGURE_LAYOUTS.some((layout) => layout === value)
 
+export const isImageAlignment = (value: unknown): value is ImageAlignment =>
+  value === 'left' || value === 'center' || value === 'right'
+
 export const isPersistableSrc = (src: unknown): src is string =>
   typeof src === 'string' && src !== '' && !/^(blob|data):/i.test(src.trim())
 
@@ -63,6 +68,7 @@ export const normalizeImageAttrs = (
   caption: normalizeText(input.caption, IMAGE_TEXT_LIMITS.caption),
   credit: normalizeText(input.credit, IMAGE_TEXT_LIMITS.credit),
   layout: isFigureLayout(input.layout) ? input.layout : 'inline',
+  alignment: isImageAlignment(input.alignment) ? input.alignment : 'center',
   width: normalizeDimension(input.width),
   height: normalizeDimension(input.height),
 })
@@ -73,6 +79,7 @@ const IMAGE_ATTR_KEYS: ReadonlyArray<keyof ImageAttrs> = [
   'caption',
   'credit',
   'layout',
+  'alignment',
   'width',
   'height',
 ]
@@ -98,8 +105,12 @@ export const serializeImage = (input: Partial<ImageAttrs>): DOMSpec => {
   if (attrs.width !== null) img.width = String(attrs.width)
   if (attrs.height !== null) img.height = String(attrs.height)
 
-  const figure: Record<string, string> =
-    attrs.layout === 'inline' ? {} : { 'data-layout': attrs.layout }
+  const figure: Record<string, string> = {
+    ...(attrs.layout === 'inline' ? {} : { 'data-layout': attrs.layout }),
+    ...(attrs.alignment === 'center'
+      ? {}
+      : { 'data-align': attrs.alignment }),
+  }
 
   const children: DOMSpec[] = [['img', img]]
   if (attrs.caption !== null || attrs.credit !== null) {
@@ -205,6 +216,7 @@ export const parseImageElement = (img: ElementLike): ImageAttrs => {
     caption: parseLegacyCaption(img),
     credit: cite?.textContent ?? null,
     layout: figureLayout,
+    alignment: figure?.getAttribute('data-align'),
     width: dimensionOf(img, 'width'),
     height: dimensionOf(img, 'height'),
   })

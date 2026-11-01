@@ -10,4 +10,11 @@ export type OrganizationProfile = {
   verificationRequestedAt: string | null
   verificationAdminMessage?: string | null
   verificationMessageSentAt?: string | null
+  verificationMessages: Array<{
+    id: string
+    senderType: 'ORGANIZATION' | 'ADMIN'
+    senderUserId?: string | null
+    message: string
+    createdAt: string
+  }>
 }
