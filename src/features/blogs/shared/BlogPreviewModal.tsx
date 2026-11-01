@@ -1,6 +1,7 @@
 import { AlertTriangle } from 'lucide-react'
 import { useState } from 'react'
 import { env } from '@/config/env.config'
+import { getAccessToken } from '@/stores/authStore'
 import { Alert, AlertDescription, AlertTitle } from '@/ui/shadcn/alert'
 import { Dialog, DialogContent } from '@/ui/shadcn/dialog'
 import { BlogPreviewFrame, type PreviewView } from './BlogPreviewFrame'
@@ -32,6 +33,7 @@ const Notice = ({ title, description }: NoticeProps) => (
 export function BlogPreviewModal({ open, onClose, values, extras }: Props) {
   const [view, setView] = useState<PreviewView>('desktop')
   const siteUrl = env.VITE_PUBLIC_SITE_URL
+  const accessToken = getAccessToken()
   const { payload, tooLarge } = open
     ? buildPreviewPayload(values, extras ?? deriveExtras(values))
     : { payload: '', tooLarge: false }
@@ -46,6 +48,11 @@ export function BlogPreviewModal({ open, onClose, values, extras }: Props) {
               title='Preview unavailable'
               description='The public site URL is not configured. Set VITE_PUBLIC_SITE_URL at build time to enable previews.'
             />
+          ) : !accessToken ? (
+            <Notice
+              title='Preview unavailable'
+              description='Sign in again to preview this post.'
+            />
           ) : tooLarge ? (
             <Notice
               title='Content too large to preview'
@@ -54,6 +61,7 @@ export function BlogPreviewModal({ open, onClose, values, extras }: Props) {
           ) : (
             <BlogPreviewFrame
               action={`${siteUrl}/blog-preview`}
+              accessToken={accessToken}
               payload={payload}
               view={view}
               title='Blog preview'

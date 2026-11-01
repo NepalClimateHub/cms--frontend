@@ -6,12 +6,19 @@ export type PreviewView = 'desktop' | 'mobile'
 
 type Props = {
   action: string
+  accessToken: string
   payload: string
   view: PreviewView
   title: string
 }
 
-export function BlogPreviewFrame({ action, payload, view, title }: Props) {
+export function BlogPreviewFrame({
+  action,
+  accessToken,
+  payload,
+  view,
+  title,
+}: Props) {
   const name = `blog-preview-${useId()}`
   const formRef = useRef<HTMLFormElement>(null)
   const frameRef = useRef<HTMLIFrameElement>(null)
@@ -26,15 +33,16 @@ export function BlogPreviewFrame({ action, payload, view, title }: Props) {
   }, [])
 
   useEffect(() => {
-    if (!action || !payload) return
+    if (!action || !accessToken || !payload) return
     setLoading(true)
     submitted.current = true
     formRef.current?.submit()
-  }, [action, payload])
+  }, [action, accessToken, payload])
 
   return (
     <div className='relative mx-auto h-full min-h-[480px] w-fit max-w-full'>
       <form ref={formRef} method='post' action={action} target={name} hidden>
+        <input type='hidden' name='accessToken' value={accessToken} readOnly />
         <input type='hidden' name='payload' value={payload} readOnly />
       </form>
       <iframe
