@@ -1,6 +1,7 @@
 import { IconArticle, IconHome, IconSettings } from '@tabler/icons-react'
 import {
   Activity,
+  BrainCircuit,
   Briefcase,
   Calendar,
   Database,
@@ -53,6 +54,12 @@ export const sidebarMenus: NavGroup[] = [
           Roles.INDIVIDUAL,
           Roles.ORGANIZATION,
         ],
+      },
+      {
+        title: 'AI Documents',
+        url: '/ai-documents',
+        icon: BrainCircuit,
+        roles: [Roles.SUPER_ADMIN, Roles.ADMIN],
       },
       {
         title: 'Events',
