@@ -1,4 +1,4 @@
-import { LinkProps } from '@tanstack/react-router'
+import type { LinkProps } from '@tanstack/react-router'
 import type { AppRole } from '@/utils/jwt.util'
 
 interface BaseNavItem {
@@ -29,4 +29,4 @@ interface SidebarData {
   navGroups: NavGroup[]
 }
 
-export type { SidebarData, NavGroup, NavItem, NavCollapsible, NavLink }
+export type { NavCollapsible, NavGroup, NavItem, NavLink, SidebarData }

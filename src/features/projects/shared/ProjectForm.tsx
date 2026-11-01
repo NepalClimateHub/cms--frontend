@@ -1,7 +1,7 @@
-import { FC } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
-import { ProjectFormValues, PROJECT_STATUS } from '@/schemas/project'
+import type { FC } from 'react'
+import type { UseFormReturn } from 'react-hook-form'
+import { PROJECT_STATUS, type ProjectFormValues } from '@/schemas/project'
 import ImageUpload from '@/ui/image-upload'
 import { MinimalTiptapEditor } from '@/ui/molecules/minimal-tiptap'
 import { MultiSelect } from '@/ui/multi-select'
@@ -10,11 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
 import {

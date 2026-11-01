@@ -1,6 +1,6 @@
-import { Extension } from '@tiptap/react'
 import { Plugin, PluginKey } from '@tiptap/pm/state'
 import { Decoration, DecorationSet } from '@tiptap/pm/view'
+import { Extension } from '@tiptap/react'
 
 export const Selection = Extension.create({
   name: 'selection',
@@ -27,14 +27,14 @@ export const Selection = Extension.create({
 
             return DecorationSet.create(state.doc, [
               Decoration.inline(state.selection.from, state.selection.to, {
-                class: 'selection'
-              })
+                class: 'selection',
+              }),
             ])
-          }
-        }
-      })
+          },
+        },
+      }),
     ]
-  }
+  },
 })
 
 export default Selection

@@ -1,17 +1,19 @@
-import { useEffect, useState, useRef } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useParams } from '@tanstack/react-router'
+import { useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import type { EventResponseDto } from '@/api/types.gen'
 import { useGetEventById, useUpdateEvent } from '@/query/events/use-events'
 import { useGetTagsByType } from '@/query/tags-regular/use-tags'
-import { eventFormSchema, EventFormValues } from '@/schemas/event'
+import { type EventFormValues, eventFormSchema } from '@/schemas/event'
 import { Main } from '@/ui/layouts/main'
-import { EventResponseDto } from '@/api/types.gen'
 import { BoxLoader } from '@/ui/loader'
 import PageHeader from '@/ui/page-header'
+import {
+  formatLocalDateTimeToISO,
+  parseISOTolocalDate,
+} from '@/utils/date-utils'
 import EventForm from '../shared/EventForm'
-
-import { parseISOTolocalDate, formatLocalDateTimeToISO } from '@/utils/date-utils'
 
 const EditEvent = () => {
   const { eventId } = useParams({
@@ -71,7 +73,7 @@ const EditEvent = () => {
       hasReset.current = true
       setIsFormReady(true)
     }
-  }, [eventData])
+  }, [eventData, form.reset])
 
   const handleImageUpload = (
     assetId: string | null,
@@ -87,8 +89,12 @@ const EditEvent = () => {
       status: values.status || 'OPEN',
       publicationStatus: values.publicationStatus || 'DRAFT',
       isDraft: values.publicationStatus === 'DRAFT',
-      startDate: values.startDate ? formatLocalDateTimeToISO(values.startDate) : undefined,
-      registrationDeadline: values.registrationDeadline ? formatLocalDateTimeToISO(values.registrationDeadline) : null,
+      startDate: values.startDate
+        ? formatLocalDateTimeToISO(values.startDate)
+        : undefined,
+      registrationDeadline: values.registrationDeadline
+        ? formatLocalDateTimeToISO(values.registrationDeadline)
+        : null,
     }
     await eventMutation.mutateAsync({
       eventId,

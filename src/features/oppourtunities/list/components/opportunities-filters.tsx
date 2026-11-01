@@ -1,10 +1,9 @@
-import { FC, useEffect, useState } from 'react'
 import { Cross2Icon } from '@radix-ui/react-icons'
+import { type FC, useEffect, useState } from 'react'
+import type { useFilters } from '@/hooks/use-filters'
+import { useIsFirstRender } from '@/hooks/use-first-render'
 import { Button } from '@/ui/shadcn/button'
 import { Input } from '@/ui/shadcn/input'
-import { cleanObj } from '@/utils/obj-utils'
-import { useFilters } from '@/hooks/use-filters'
-import { useIsFirstRender } from '@/hooks/use-first-render'
 import {
   Select,
   SelectContent,
@@ -12,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/ui/shadcn/select'
+import { cleanObj } from '@/utils/obj-utils'
 
 type OpportunitiesFiltersProps = {
   setPage: (page: number | string) => void
@@ -25,8 +25,13 @@ const OpportunitiesFilters: FC<OpportunitiesFiltersProps> = ({
   const isFirstRender = useIsFirstRender()
   const [search, setSearch] = useState<string>('')
 
-  const { filters, setFilterDebounce, setFilterValue, removeFilter, resetFilters } =
-    filterOptions
+  const {
+    filters,
+    setFilterDebounce,
+    setFilterValue,
+    removeFilter,
+    resetFilters,
+  } = filterOptions
 
   const isFilterApplied = !!Object.keys(cleanObj(filters)).length
 
@@ -34,7 +39,7 @@ const OpportunitiesFilters: FC<OpportunitiesFiltersProps> = ({
     if (!isFirstRender) {
       setPage(1)
     }
-  }, [filters])
+  }, [setPage, isFirstRender])
 
   useEffect(() => {
     setSearch((filters?.title as string) ?? '')

@@ -1,10 +1,12 @@
-import { FC } from 'react'
-import { UseFormReturn } from 'react-hook-form'
-import { Input } from '@/ui/shadcn/input'
-import { Textarea } from '@/ui/shadcn/textarea'
+import { FileCheck, Upload } from 'lucide-react'
+import type { FC } from 'react'
+import type { UseFormReturn } from 'react-hook-form'
+import { toast } from '@/hooks/use-toast'
+import type { VacancyApplyFormValues, VacancyQuestion } from '@/schemas/vacancy'
+import IKContext from '@/ui/molecules/image-kit/IKContext'
+import IKUpload from '@/ui/molecules/image-kit/IKUpload'
 import { Button } from '@/ui/shadcn/button'
 import { Checkbox } from '@/ui/shadcn/checkbox'
-import { RadioGroup, RadioGroupItem } from '@/ui/shadcn/radio-group'
 import {
   FormControl,
   FormDescription,
@@ -13,14 +15,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/ui/shadcn/form'
-import {
-  VacancyApplyFormValues,
-  VacancyQuestion,
-} from '@/schemas/vacancy'
-import IKContext from '@/ui/molecules/image-kit/IKContext'
-import IKUpload from '@/ui/molecules/image-kit/IKUpload'
-import { toast } from '@/hooks/use-toast'
-import { FileCheck, Upload } from 'lucide-react'
+import { Input } from '@/ui/shadcn/input'
+import { RadioGroup, RadioGroupItem } from '@/ui/shadcn/radio-group'
+import { Textarea } from '@/ui/shadcn/textarea'
 
 interface DynamicQuestionFieldProps {
   form: UseFormReturn<VacancyApplyFormValues>
@@ -261,8 +258,6 @@ export const DynamicQuestionField: FC<DynamicQuestionFieldProps> = ({
                 </div>
               )
             }
-
-            case 'TEXT':
             default:
               return (
                 <Input

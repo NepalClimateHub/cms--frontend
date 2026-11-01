@@ -1,10 +1,12 @@
-import { useEffect } from 'react'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { toast } from '@/hooks/use-toast'
 import { useUpdateProfile } from '@/query/users/use-users'
 import type { UserSocials } from '@/schemas/auth/profile'
+import { useAuthStore } from '@/stores/authStore'
 import { BoxLoader } from '@/ui/loader'
 import { Button } from '@/ui/shadcn/button'
 import {
@@ -18,8 +20,6 @@ import {
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
 import { Textarea } from '@/ui/shadcn/textarea'
-import { useAuthStore } from '@/stores/authStore'
-import { toast } from '@/hooks/use-toast'
 
 const profileFormSchema = z.object({
   fullName: z

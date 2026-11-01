@@ -1,9 +1,9 @@
-import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { analyticsControllerGetAdminAnalyticsOptions } from '@/api/@tanstack/react-query.gen'
 import type { AppRole } from '@/utils/jwt.util'
 import { getRoleFromToken } from '@/utils/jwt.util'
-import { SidebarData, NavGroup, NavItem } from '../types'
+import type { NavGroup, NavItem, SidebarData } from '../types'
 import { generalSidebarData, sidebarMenus } from './sidebar-data'
 
 function filterNavItems(items: NavItem[], role: AppRole): NavItem[] {
@@ -59,8 +59,7 @@ export const useSideBarData = (): SidebarData => {
   })
 
   const pendingVerificationBadge = useMemo(() => {
-    const n = adminDashboardResponse?.data
-      ?.pendingOrganizationVerificationCount
+    const n = adminDashboardResponse?.data?.pendingOrganizationVerificationCount
     if (n == null || n <= 0) return undefined
     return n > 99 ? '99+' : String(n)
   }, [adminDashboardResponse?.data])
@@ -70,11 +69,7 @@ export const useSideBarData = (): SidebarData => {
 
     if (!isAdminLevel) {
       if (role === 'ORGANIZATION') {
-        return applyMenus(
-          sidebarMenus,
-          effectiveRole,
-          pendingVerificationBadge
-        )
+        return applyMenus(sidebarMenus, effectiveRole, pendingVerificationBadge)
       }
       return applyMenus(generalSidebarData, effectiveRole)
     }

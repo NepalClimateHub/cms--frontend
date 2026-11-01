@@ -1,6 +1,6 @@
-import { UserOutput } from '@/api/types.gen'
+import type { UserOutput } from '@/api/types.gen'
 import { nullableString } from '@/utils/map-user-output'
-import { User } from '../data/schema'
+import type { User } from '../data/schema'
 
 // Map API UserOutput to table User schema
 export const mapUserOutputToUser = (user: UserOutput): User => {
@@ -8,7 +8,8 @@ export const mapUserOutputToUser = (user: UserOutput): User => {
   const firstName = nameParts[0] || ''
   const lastName = nameParts.slice(1).join(' ') || ''
   const username =
-    user.email.split('@')[0] || (user.fullName || '').toLowerCase().replace(/\s+/g, '')
+    user.email.split('@')[0] ||
+    (user.fullName || '').toLowerCase().replace(/\s+/g, '')
 
   // Map phoneNumber object to string
   let phoneNumber = ''

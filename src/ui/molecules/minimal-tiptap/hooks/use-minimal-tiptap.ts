@@ -1,27 +1,27 @@
-import * as React from 'react'
-import { cn } from '@/ui/shadcn/lib/utils'
 import { Placeholder } from '@tiptap/extension-placeholder'
 import { TextAlign } from '@tiptap/extension-text-align'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { Typography } from '@tiptap/extension-typography'
 import { Underline } from '@tiptap/extension-underline'
-import type { Editor } from '@tiptap/react'
-import type { Content, UseEditorOptions } from '@tiptap/react'
+import type { Content, Editor, UseEditorOptions } from '@tiptap/react'
 import { useEditor } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
+import * as React from 'react'
 import { toast } from 'sonner'
+import { cn } from '@/ui/shadcn/lib/utils'
 import {
-  Link,
-  Image,
-  HorizontalRule,
   CodeBlockLowlight,
-  Selection,
   Color,
-  UnsetAllMarks,
-  ResetMarksOnEnter,
   FileHandler,
+  HorizontalRule,
+  Image,
+  Link,
+  ResetMarksOnEnter,
+  Selection,
+  UnsetAllMarks,
 } from '../extensions'
-import { fileToBase64, getOutput, randomId } from '../utils'
+import { imageKitUploader } from '../extensions/image/upload/imagekit-uploader'
+import { getOutput } from '../utils'
 import { useThrottle } from './use-throttle'
 
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
@@ -56,44 +56,14 @@ const createExtensions = (placeholder: string) => [
   Image.configure({
     allowedMimeTypes: ['image/*'],
     maxFileSize: 5 * 1024 * 1024,
-    allowBase64: true,
-    uploadFn: async (file) => {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error('Upload failed')
-      }
-
-      const data = await response.json()
-      return data.url
-    },
+    uploadImage: imageKitUploader,
     onToggle(editor, files, pos) {
-      editor.commands.insertContentAt(
-        pos,
-        files.map((image) => {
-          const blobUrl = URL.createObjectURL(image)
-          const id = randomId()
-
-          return {
-            type: 'image',
-            attrs: {
-              id,
-              src: blobUrl,
-              alt: image.name,
-              title: image.name,
-              fileName: image.name,
-            },
-          }
-        })
+      editor.commands.setImages(
+        files.map((file) => ({ src: file })),
+        pos
       )
     },
-    onImageRemoved() { },
+    onImageRemoved() {},
     onValidationError(errors) {
       errors.forEach((error) => {
         toast.error('Image validation error', {
@@ -126,26 +96,17 @@ const createExtensions = (placeholder: string) => [
     },
   }),
   FileHandler.configure({
-    allowBase64: true,
+    allowBase64: false,
     allowedMimeTypes: ['image/*'],
     maxFileSize: 5 * 1024 * 1024,
     onDrop: (editor, files, pos) => {
-      files.forEach(async (file) => {
-        const src = await fileToBase64(file)
-        editor.commands.insertContentAt(pos, {
-          type: 'image',
-          attrs: { src },
-        })
-      })
+      editor.commands.setImages(
+        files.map((file) => ({ src: file })),
+        pos
+      )
     },
     onPaste: (editor, files) => {
-      files.forEach(async (file) => {
-        const src = await fileToBase64(file)
-        editor.commands.insertContent({
-          type: 'image',
-          attrs: { src },
-        })
-      })
+      editor.commands.setImages(files.map((file) => ({ src: file })))
     },
     onValidationError: (errors) => {
       errors.forEach((error) => {

@@ -1,3 +1,11 @@
+import { cva, type VariantProps } from 'class-variance-authority'
+import {
+  CheckIcon,
+  ChevronDown,
+  WandSparkles,
+  XCircle,
+  XIcon,
+} from 'lucide-react'
 import * as React from 'react'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
@@ -13,14 +21,6 @@ import {
 import { cn } from '@/ui/shadcn/lib/utils'
 import { Popover, PopoverContent, PopoverTrigger } from '@/ui/shadcn/popover'
 import { Separator } from '@/ui/shadcn/separator'
-import { cva, type VariantProps } from 'class-variance-authority'
-import {
-  CheckIcon,
-  XCircle,
-  ChevronDown,
-  XIcon,
-  WandSparkles,
-} from 'lucide-react'
 
 /**
  * Variants for the multi-select component to handle different styles.

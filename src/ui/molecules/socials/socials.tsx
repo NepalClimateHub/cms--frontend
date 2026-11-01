@@ -1,15 +1,15 @@
-import { z } from 'zod'
-import { UseFormReturn } from 'react-hook-form'
-import { OpportunityFormValues } from '@/schemas/opportunities/opportunity'
-import { socialSchema } from '@/schemas/shared'
+import type { UseFormReturn } from 'react-hook-form'
+import type { z } from 'zod'
+import type { OpportunityFormValues } from '@/schemas/opportunities/opportunity'
+import type { socialSchema } from '@/schemas/shared'
 import { Card, CardContent, CardHeader, CardTitle } from '../../shadcn/card'
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '../../shadcn/form'
 import { Input } from '../../shadcn/input'
 

@@ -126,7 +126,7 @@ const PinInput = ({ className, children, ref, ...props }: PinInputProps) => {
       completeRef.current = false
       if (onIncomplete) onIncomplete(pinValue)
     }
-  }, [length, onComplete, onIncomplete, pinValue, pins, value])
+  }, [length, onComplete, onIncomplete, pinValue])
 
   /* focus on first input field if autoFocus is set */
   React.useEffect(() => {
@@ -441,7 +441,6 @@ const getValidChildren = (children: React.ReactNode) =>
       return React.isValidElement(child)
     }
     throw new Error(`${PinInput.displayName} contains invalid children.`)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as React.ReactElement<any>[]
 
 const getInputFieldCount = (children: React.ReactNode) =>

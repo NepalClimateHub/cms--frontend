@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useParams } from '@tanstack/react-router'
+import { useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { useGetOneMinutes, useMinutesAPI } from '@/query/minutes/use-minutes'
 import { AddMinutesSchema, type Minutes } from '@/schemas/minutes/minutes'
 import { Main } from '@/ui/layouts/main'
@@ -36,7 +36,7 @@ const MinutesEdit = () => {
       hasReset.current = true
       setIsFormReady(true)
     }
-  }, [minutesData])
+  }, [minutesData, form.reset])
 
   const handleFormSubmit = async (values: Minutes) => {
     await minutesMutation.mutateAsync({

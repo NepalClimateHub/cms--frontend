@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from 'react'
+import { ExternalLink, FileText } from 'lucide-react'
+import { type ReactNode, useState } from 'react'
 import type { OrganizationProfile } from '@/schemas/auth/organization-profile'
 import {
   Dialog,
@@ -7,7 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/ui/shadcn/dialog'
-import { ExternalLink, FileText } from 'lucide-react'
 
 type OrganizationVerificationViewDialogProps = {
   open: boolean
@@ -53,7 +53,12 @@ export default function OrganizationVerificationViewDialog({
   const documents = organization.verificationDocuments?.length
     ? organization.verificationDocuments
     : organization.verificationDocumentUrl
-      ? [{ id: organization.verificationDocumentId ?? '', url: organization.verificationDocumentUrl }]
+      ? [
+          {
+            id: organization.verificationDocumentId ?? '',
+            url: organization.verificationDocumentUrl,
+          },
+        ]
       : []
   const remarks = organization.verificationRequestRemarks?.trim()
 
@@ -82,12 +87,20 @@ export default function OrganizationVerificationViewDialog({
 
           {documents.length ? (
             <div className='space-y-2'>
-              <p className='font-medium text-foreground'>Supporting documents</p>
+              <p className='font-medium text-foreground'>
+                Supporting documents
+              </p>
               {documents.map((document, index) => (
                 <div key={`${document.id}-${index}`} className='space-y-1'>
                   {open ? <DocumentPreview url={document.url} /> : null}
-                  <a href={document.url} target='_blank' rel='noopener noreferrer' className='inline-flex items-center gap-1.5 text-primary underline-offset-4 hover:underline'>
-                    Open document {index + 1}<ExternalLink className='h-3.5 w-3.5' />
+                  <a
+                    href={document.url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='inline-flex items-center gap-1.5 text-primary underline-offset-4 hover:underline'
+                  >
+                    Open document {index + 1}
+                    <ExternalLink className='h-3.5 w-3.5' />
                   </a>
                 </div>
               ))}
@@ -97,8 +110,12 @@ export default function OrganizationVerificationViewDialog({
           )}
           {organization.verificationAdminMessage ? (
             <div className='space-y-2'>
-              <p className='font-medium text-foreground'>Message from administrator</p>
-              <div className='whitespace-pre-wrap rounded-md border border-amber-200 bg-amber-50 p-3 text-amber-950'>{organization.verificationAdminMessage}</div>
+              <p className='font-medium text-foreground'>
+                Message from administrator
+              </p>
+              <div className='whitespace-pre-wrap rounded-md border border-amber-200 bg-amber-50 p-3 text-amber-950'>
+                {organization.verificationAdminMessage}
+              </div>
             </div>
           ) : null}
 

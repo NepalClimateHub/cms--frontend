@@ -1,4 +1,6 @@
+import { CalendarDays, Edit, Mail, Settings, Shield, User } from 'lucide-react'
 import { useState } from 'react'
+import { useAuthStore } from '@/stores/authStore'
 import ChangePasswordDialog from '@/ui/organisms/dashboard/ChangePasswordDialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import { Badge } from '@/ui/shadcn/badge'
@@ -12,8 +14,6 @@ import {
 } from '@/ui/shadcn/card'
 import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
 import { Separator } from '@/ui/shadcn/separator'
-import { CalendarDays, Mail, Shield, User, Edit, Settings } from 'lucide-react'
-import { useAuthStore } from '@/stores/authStore'
 
 export default function ProfilePage() {
   const { user } = useAuthStore()
@@ -141,7 +141,9 @@ export default function ProfilePage() {
                 <div className='flex items-center justify-between'>
                   <span className='text-sm font-medium'>Account Type</span>
                   <Badge variant='outline'>
-                    {user.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Standard User'}
+                    {user.role === 'SUPER_ADMIN'
+                      ? 'Super Admin'
+                      : 'Standard User'}
                   </Badge>
                 </div>
                 <div className='flex items-center justify-between'>

@@ -18,10 +18,7 @@ export const users = Array.from({ length: 20 }, () => {
       'invited',
       'suspended',
     ]),
-    role: faker.helpers.arrayElement([
-      'superadmin',
-      'admin',
-    ]),
+    role: faker.helpers.arrayElement(['superadmin', 'admin']),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
   }

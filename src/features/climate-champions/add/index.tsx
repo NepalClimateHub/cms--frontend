@@ -1,13 +1,16 @@
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 import { useCreateClimateChampion } from '@/query/climate-champions/use-climate-champions'
 import { useGetTags } from '@/query/tags/use-tags'
-import { ClimateChampionFormValues, climateChampionSchema } from '@/schemas/climate-champion'
+import {
+  type ClimateChampionFormValues,
+  climateChampionSchema,
+} from '@/schemas/climate-champion'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
 import { Button } from '@/ui/shadcn/button'
-import { ArrowLeft } from 'lucide-react'
 import ChampionForm from '../shared/ChampionForm'
 
 export default function AddClimateChampion() {
@@ -15,10 +18,11 @@ export default function AddClimateChampion() {
   const { data: tagsData } = useGetTags({ query: { limit: 100 } })
   const navigate = useNavigate()
 
-  const tagsOptions = tagsData?.data?.map((tag) => ({
-    value: tag.tag as string,
-    label: tag.tag as string,
-  })) ?? []
+  const tagsOptions =
+    tagsData?.data?.map((tag) => ({
+      value: tag.tag as string,
+      label: tag.tag as string,
+    })) ?? []
 
   const form = useForm<ClimateChampionFormValues>({
     resolver: zodResolver(climateChampionSchema),

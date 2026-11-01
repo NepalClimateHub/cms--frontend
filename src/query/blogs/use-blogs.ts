@@ -1,19 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { cleanObj } from '@/utils/obj-utils'
 import { useToast } from '@/hooks/use-toast'
+import { cleanObj } from '@/utils/obj-utils'
+import { blogControllerUpdateBlogMutation } from './../../api/@tanstack/react-query.gen'
 import {
   blogControllerCreateBlogMutation,
-  blogControllerGetPublishedBlogsOptions,
-  blogControllerFindBlogByIdOptions,
-} from '../../api/@tanstack/react-query.gen'
-import {
   blogControllerDeleteBlogMutation,
   blogControllerFindAllBlogsOptions,
+  blogControllerFindBlogByIdOptions,
+  blogControllerGetPublishedBlogsOptions,
 } from '../../api/@tanstack/react-query.gen'
 import { client as apiClient } from '../../api/client.gen'
-import { Category } from '../categories/use-categories'
-import { blogControllerUpdateBlogMutation } from './../../api/@tanstack/react-query.gen'
+import type { Category } from '../categories/use-categories'
 
 // Mock blog types - these should be replaced with actual API types when available
 export interface BlogResponseDto {

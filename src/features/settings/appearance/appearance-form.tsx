@@ -1,8 +1,11 @@
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { ChevronDownIcon } from '@radix-ui/react-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ChevronDownIcon } from '@radix-ui/react-icons'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { fonts } from '@/config/fonts'
+import { useFont } from '@/context/font-context'
+import { useTheme } from '@/context/theme-context'
+import { toast } from '@/hooks/use-toast'
 import { Button, buttonVariants } from '@/ui/shadcn/button'
 import {
   Form,
@@ -15,9 +18,6 @@ import {
 } from '@/ui/shadcn/form'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { RadioGroup, RadioGroupItem } from '@/ui/shadcn/radio-group'
-import { useFont } from '@/context/font-context'
-import { useTheme } from '@/context/theme-context'
-import { toast } from '@/hooks/use-toast'
 
 const appearanceFormSchema = z.object({
   theme: z.enum(['light', 'dark'], {
@@ -47,8 +47,8 @@ export function AppearanceForm() {
   })
 
   function onSubmit(data: AppearanceFormValues) {
-    if (data.font != font) setFont(data.font)
-    if (data.theme != theme) setTheme(data.theme)
+    if (data.font !== font) setFont(data.font)
+    if (data.theme !== theme) setTheme(data.theme)
 
     toast({
       title: 'You submitted the following values:',

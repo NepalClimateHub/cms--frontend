@@ -1,3 +1,6 @@
+import { useNavigate } from '@tanstack/react-router'
+import { ChevronRight } from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
 import {
@@ -5,9 +8,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/ui/shadcn/sidebar'
-import { useAuthStore } from '@/stores/authStore'
-import { useNavigate } from '@tanstack/react-router'
-import { ChevronRight } from 'lucide-react'
 
 export function ProfileCard() {
   const { user } = useAuthStore()
@@ -40,7 +40,7 @@ export function ProfileCard() {
               <span className='truncate font-semibold'>
                 {user?.role === 'SUPER_ADMIN'
                   ? 'Super Admin'
-                  : user?.organization?.name ?? user?.fullName}
+                  : (user?.organization?.name ?? user?.fullName)}
               </span>
               <span className='truncate text-xs text-muted-foreground group-hover/profile-card:hidden'>
                 {user?.email}

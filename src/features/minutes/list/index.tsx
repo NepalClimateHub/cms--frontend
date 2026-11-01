@@ -1,16 +1,16 @@
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { useGetMinutes } from '@/query/minutes/use-minutes'
-import { Main } from '@/ui/layouts/main'
-import { Button } from '@/ui/shadcn/button'
 import { PlusIcon } from 'lucide-react'
 import { useFilters } from '@/hooks/use-filters'
 import { usePagination } from '@/hooks/use-pagination'
+import { useGetMinutes } from '@/query/minutes/use-minutes'
+import { Main } from '@/ui/layouts/main'
+import { BoxLoader } from '@/ui/loader'
 import { DataTable } from '@/ui/molecules/data-table/data-table'
 import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination'
 import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
-import { BoxLoader } from '@/ui/loader'
 import PageHeader from '@/ui/page-header'
+import { Button } from '@/ui/shadcn/button'
 import MinutesListFilters from './components/minutes-filters'
 import { useMinutesColumns } from './hooks/use-minutes-columns'
 import { MinutesListFilterOptions } from './minutes-filter-options'
@@ -68,7 +68,10 @@ export default function MinutesList() {
         <DataTableToolbar
           table={table}
           filterComponent={
-            <MinutesListFilters filterOptions={filterOptions} setPage={setPage} />
+            <MinutesListFilters
+              filterOptions={filterOptions}
+              setPage={setPage}
+            />
           }
         />
       </div>

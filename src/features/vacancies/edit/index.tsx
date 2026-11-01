@@ -1,8 +1,11 @@
-import { FC } from 'react'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
+import type { FC } from 'react'
+import {
+  useGetVacancy,
+  useUpdateVacancy,
+} from '@/query/vacancies/use-vacancies'
+import type { VacancyFormValues } from '@/schemas/vacancy'
 import { VacancyForm } from '../shared/VacancyForm'
-import { useGetVacancy, useUpdateVacancy } from '@/query/vacancies/use-vacancies'
-import { VacancyFormValues } from '@/schemas/vacancy'
 
 const EditVacancy: FC = () => {
   const { id } = useParams({ from: '/_authenticated/vacancies/$id' })
@@ -18,7 +21,9 @@ const EditVacancy: FC = () => {
   const handleSubmit = (values: VacancyFormValues) => {
     const cleanedValues = {
       ...values,
-      responsibilities: (values.responsibilities || []).filter((r) => r.trim() !== ''),
+      responsibilities: (values.responsibilities || []).filter(
+        (r) => r.trim() !== ''
+      ),
       requirements: (values.requirements || []).filter((r) => r.trim() !== ''),
       // Send null (not '') so the backend's URL validation passes and clearing the field removes the link
       googleFormLink: values.googleFormLink?.trim() || null,
@@ -38,7 +43,11 @@ const EditVacancy: FC = () => {
   }
 
   if (isLoading) {
-    return <div className='p-6 text-center text-muted-foreground'>Loading vacancy...</div>
+    return (
+      <div className='p-6 text-center text-muted-foreground'>
+        Loading vacancy...
+      </div>
+    )
   }
 
   if (!vacancy) {

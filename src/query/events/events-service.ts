@@ -1,5 +1,5 @@
-import { EventFormValues } from '@/schemas/event'
-import { Meta } from '@/schemas/shared'
+import type { EventFormValues } from '@/schemas/event'
+import type { Meta } from '@/schemas/shared'
 import { buildQueryParams } from '@/utils/query-params'
 import apiClient from '../apiClient'
 import { events } from '../shared/routes'
@@ -59,7 +59,7 @@ export const updateEvent = async (
   meta: Meta
 }> => {
   const response = await apiClient.patch(`${events.update.path}/${eventId}`, {
-    ...payload
+    ...payload,
   })
   return response?.data
 }

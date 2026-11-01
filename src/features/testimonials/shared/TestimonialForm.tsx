@@ -1,23 +1,23 @@
-import { FC } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
-import { TestimonialFormValues } from '@/schemas/testimonial'
+import { Star } from 'lucide-react'
+import type { FC } from 'react'
+import type { UseFormReturn } from 'react-hook-form'
+import type { TestimonialFormValues } from '@/schemas/testimonial'
 import ImageUpload from '@/ui/image-upload'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
 import { Switch } from '@/ui/shadcn/switch'
 import { Textarea } from '@/ui/shadcn/textarea'
-import { Star } from 'lucide-react'
 
 type Props = {
   form: UseFormReturn<TestimonialFormValues>
@@ -92,10 +92,11 @@ const TestimonialForm: FC<Props> = ({
                               className='rounded-md p-1 hover:bg-accent focus:outline-none transition-transform active:scale-90'
                             >
                               <Star
-                                className={`h-7 w-7 transition-colors ${starRating <= (field.value || 5)
-                                  ? 'fill-amber-400 text-amber-400'
-                                  : 'fill-muted/30 text-muted-foreground/40'
-                                  }`}
+                                className={`h-7 w-7 transition-colors ${
+                                  starRating <= (field.value || 5)
+                                    ? 'fill-amber-400 text-amber-400'
+                                    : 'fill-muted/30 text-muted-foreground/40'
+                                }`}
                               />
                             </button>
                           ))}
@@ -115,7 +116,8 @@ const TestimonialForm: FC<Props> = ({
                   render={({ field }) => (
                     <FormItem className='sm:col-span-2'>
                       <FormLabel>
-                        Testimonial Content / Quote <span className='text-red-500'>*</span>
+                        Testimonial Content / Quote{' '}
+                        <span className='text-red-500'>*</span>
                       </FormLabel>
                       <FormControl>
                         <Textarea
@@ -205,7 +207,11 @@ const TestimonialForm: FC<Props> = ({
             Cancel
           </Button>
           <Button type='submit' disabled={isLoading}>
-            {isLoading ? 'Saving...' : isEdit ? 'Update Testimonial' : 'Add Testimonial'}
+            {isLoading
+              ? 'Saving...'
+              : isEdit
+                ? 'Update Testimonial'
+                : 'Add Testimonial'}
           </Button>
         </div>
       </form>

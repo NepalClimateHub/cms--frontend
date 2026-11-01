@@ -1,26 +1,27 @@
-import { FC, useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Briefcase, Calendar, Clock, ExternalLink, MapPin } from 'lucide-react'
+import { type FC, useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { getIkAuthParams } from '@/query/imagekit/ik-service'
 import { useGetIkAuthParams } from '@/query/imagekit/use-ik'
 import {
   useApplyVacancy,
   useGetVacancy,
-  VacancyResponseDto,
+  type VacancyResponseDto,
 } from '@/query/vacancies/use-vacancies'
 import {
   buildDefaultAnswers,
   buildVacancyApplySchema,
-  VacancyApplyFormValues,
+  type VacancyApplyFormValues,
 } from '@/schemas/vacancy'
 import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/ui/shadcn/dialog'
 import {
   Form,
@@ -32,7 +33,6 @@ import {
   FormMessage,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
-import { Briefcase, Calendar, Clock, MapPin, ExternalLink } from 'lucide-react'
 import { DynamicQuestionField } from './DynamicQuestionField'
 
 interface VacancyApplyModalProps {
@@ -84,8 +84,7 @@ export const VacancyApplyModal: FC<VacancyApplyModalProps> = ({
   // set) is opened, so answer indices always line up with `questions`.
   useEffect(() => {
     if (open) form.reset(emptyValues)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, vacancy?.id, emptyValues])
+  }, [open, emptyValues, form.reset])
 
   // ImageKit credentials — used only by FILE-type questions.
   const { data: ikData } = useGetIkAuthParams()

@@ -3,9 +3,9 @@ import {
   Calendar,
   FileText,
   LayoutDashboard,
-  User,
   Newspaper,
   Settings,
+  User,
 } from 'lucide-react'
 
 export const dashboardNavItems = [

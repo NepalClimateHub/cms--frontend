@@ -1,9 +1,10 @@
-import { HTMLAttributes } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { Loader2 } from 'lucide-react'
+import type { HTMLAttributes } from 'react'
+import { useForm } from 'react-hook-form'
 import { useLogin } from '@/query/auth/use-auth'
-import { LoginPayload, loginSchema } from '@/schemas/auth/login'
+import { type LoginPayload, loginSchema } from '@/schemas/auth/login'
 import { PasswordInput } from '@/ui/password-input'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent } from '@/ui/shadcn/card'
@@ -17,7 +18,6 @@ import {
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { Loader2 } from 'lucide-react'
 
 // Minimal, modern login form
 function UserAuthForm({ className }: HTMLAttributes<HTMLDivElement>) {
@@ -155,8 +155,8 @@ export default function SignIn() {
         <div className='relative z-20 mt-auto'>
           <blockquote className='space-y-2'>
             <p className='text-lg'>
-              &ldquo;Welcome back to Nepal Climate Hub. Log in to continue
-              your journey and connect with the climate community.&rdquo;
+              &ldquo;Welcome back to Nepal Climate Hub. Log in to continue your
+              journey and connect with the climate community.&rdquo;
             </p>
             <footer className='text-sm italic'>
               Uniting for Climate Action

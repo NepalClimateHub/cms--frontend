@@ -1,14 +1,14 @@
-import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { useToast } from '@/hooks/use-toast'
 import apiClient from '@/query/apiClient'
 import OrganizationVerificationViewDialog from '@/ui/organisms/dashboard/organization-verification-view-dialog'
 import { Button } from '@/ui/shadcn/button'
 import { DialogFooter } from '@/ui/shadcn/dialog'
-import { useToast } from '@/hooks/use-toast'
+import { Textarea } from '@/ui/shadcn/textarea'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { isVerificationAdmin } from '@/utils/role-check.util'
-import { Loader2 } from 'lucide-react'
-import { Textarea } from '@/ui/shadcn/textarea'
 import type { User } from '../data/schema'
 
 type Props = {
@@ -84,14 +84,26 @@ export function UsersOrgVerificationDialog({
 
   const handleSendFeedback = async () => {
     if (!orgId || !feedback.trim()) {
-      toast({ title: 'Message required', description: 'Explain what information or documents are needed.', variant: 'destructive' })
+      toast({
+        title: 'Message required',
+        description: 'Explain what information or documents are needed.',
+        variant: 'destructive',
+      })
       return
     }
     setIsVerifying(true)
     try {
-      await apiClient.patch(`/api/v1/organizations/${orgId}/verify`, { isVerified: false, message: feedback.trim() })
-      toast({ title: 'Message sent', description: 'The organization has been notified.' })
-      await queryClient.invalidateQueries({ predicate: (q) => q.queryKey[0] === 'userControllerGetUsers' })
+      await apiClient.patch(`/api/v1/organizations/${orgId}/verify`, {
+        isVerified: false,
+        message: feedback.trim(),
+      })
+      toast({
+        title: 'Message sent',
+        description: 'The organization has been notified.',
+      })
+      await queryClient.invalidateQueries({
+        predicate: (q) => q.queryKey[0] === 'userControllerGetUsers',
+      })
       onOpenChange(false)
     } catch {
       toast({ title: 'Message could not be sent', variant: 'destructive' })
@@ -113,7 +125,13 @@ export function UsersOrgVerificationDialog({
       footer={
         showVerify ? (
           <DialogFooter className='gap-2 sm:justify-end'>
-            <Textarea value={feedback} onChange={(event) => setFeedback(event.target.value)} placeholder='Explain what is incomplete or incorrect…' rows={3} disabled={isVerifying} />
+            <Textarea
+              value={feedback}
+              onChange={(event) => setFeedback(event.target.value)}
+              placeholder='Explain what is incomplete or incorrect…'
+              rows={3}
+              disabled={isVerifying}
+            />
             <Button
               type='button'
               variant='secondary'
@@ -129,11 +147,7 @@ export function UsersOrgVerificationDialog({
             >
               Close
             </Button>
-            <Button
-              type='button'
-              onClick={handleVerify}
-              disabled={isVerifying}
-            >
+            <Button type='button' onClick={handleVerify} disabled={isVerifying}>
               {isVerifying ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />

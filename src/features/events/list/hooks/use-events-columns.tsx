@@ -1,9 +1,9 @@
-import { ColumnDef } from '@tanstack/react-table'
-import { EventFormValues } from '@/schemas/event'
-import { Badge } from '@/ui/shadcn/badge'
-import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
-import EventRowAction from '../components/event-row-actions'
+import type { ColumnDef } from '@tanstack/react-table'
+import type { EventFormValues } from '@/schemas/event'
 import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
+import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
+import { Badge } from '@/ui/shadcn/badge'
+import EventRowAction from '../components/event-row-actions'
 
 type EventCols = EventFormValues & {
   id: string
@@ -78,7 +78,10 @@ export const useEventsColumns = () => {
               )
             default:
               return s ? (
-                <Badge variant='outline' className='px-1.5 py-0 text-[10px] font-medium'>
+                <Badge
+                  variant='outline'
+                  className='px-1.5 py-0 text-[10px] font-medium'
+                >
                   {s}
                 </Badge>
               ) : null
@@ -149,9 +152,7 @@ export const useEventsColumns = () => {
                 Draft
               </Badge>
             ) : (
-              <Badge className='bg-green-600 text-white'>
-                Published
-              </Badge>
+              <Badge className='bg-green-600 text-white'>Published</Badge>
             )}
           </div>
         )

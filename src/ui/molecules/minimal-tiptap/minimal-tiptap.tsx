@@ -1,8 +1,8 @@
+import type { Content, Editor } from '@tiptap/react'
+import { EditorContent } from '@tiptap/react'
 import * as React from 'react'
 import { cn } from '@/ui/shadcn/lib/utils'
 import { Separator } from '@/ui/shadcn/separator'
-import type { Content, Editor } from '@tiptap/react'
-import { EditorContent } from '@tiptap/react'
 import { ImageBubbleMenu } from './components/bubble-menu/image-bubble-menu'
 import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu'
 import { MeasuredContainer } from './components/measured-container'
@@ -93,6 +93,7 @@ export const MinimalTiptapEditor = React.forwardRef<
     <MeasuredContainer
       as='div'
       name='editor'
+      data-testid='blog-editor'
       ref={ref}
       className={cn(
         'flex h-auto min-h-72 w-full flex-col rounded-md border border-input shadow-sm focus-within:border-primary',

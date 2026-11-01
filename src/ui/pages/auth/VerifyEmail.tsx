@@ -1,16 +1,16 @@
-import { useState } from 'react'
 import { Link, useSearch } from '@tanstack/react-router'
-import { Alert, AlertTitle, AlertDescription } from '@/ui/shadcn/alert'
+import { CheckCircle, Loader2, Mail } from 'lucide-react'
+import { useState } from 'react'
+import { useResendVerification } from '@/query/auth/use-auth'
+import { Alert, AlertDescription, AlertTitle } from '@/ui/shadcn/alert'
 import { Button } from '@/ui/shadcn/button'
 import {
   Card,
-  CardHeader,
-  CardTitle,
   CardContent,
   CardDescription,
+  CardHeader,
+  CardTitle,
 } from '@/ui/shadcn/card'
-import { Loader2, Mail, CheckCircle } from 'lucide-react'
-import { useResendVerification } from '@/query/auth/use-auth'
 
 export default function VerifyEmail() {
   const search = useSearch({ from: '/(auth)/verify-email' })
@@ -24,7 +24,9 @@ export default function VerifyEmail() {
     }
 
     try {
-      await resendVerificationMutation.mutateAsync({ body: { email: search.email } })
+      await resendVerificationMutation.mutateAsync({
+        body: { email: search.email },
+      })
       setResendSuccess(true)
       setTimeout(() => setResendSuccess(false), 5000) // Show success for 5 seconds
     } catch {
@@ -50,9 +52,12 @@ export default function VerifyEmail() {
           {resendSuccess && (
             <Alert className='mb-4 border-green-200 bg-green-50'>
               <CheckCircle className='h-4 w-4 text-green-600' />
-              <AlertTitle className='text-green-800'>Verification Email Sent!</AlertTitle>
+              <AlertTitle className='text-green-800'>
+                Verification Email Sent!
+              </AlertTitle>
               <AlertDescription className='text-green-700'>
-                A new verification email has been sent to {search.email}. Please check your inbox and spam folder.
+                A new verification email has been sent to {search.email}. Please
+                check your inbox and spam folder.
               </AlertDescription>
             </Alert>
           )}

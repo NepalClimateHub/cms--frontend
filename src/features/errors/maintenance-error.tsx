@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
-import { Button } from '@/ui/shadcn/button'
-import { ServerOff, RefreshCw } from 'lucide-react'
+import { RefreshCw, ServerOff } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { env } from '@/config/env.config'
+import { Button } from '@/ui/shadcn/button'
 
 export default function MaintenanceError() {
   const { history } = useRouter()
@@ -17,7 +17,7 @@ export default function MaintenanceError() {
           // If we can reach the server, go back to where we were
           history.go(1)
         }
-      } catch (error) {
+      } catch (_error) {
         // Still down, no action needed
       } finally {
         setTimeout(() => setIsChecking(false), 1000)

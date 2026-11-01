@@ -1,4 +1,3 @@
-import { Outlet } from '@tanstack/react-router'
 import {
   IconBrowserCheck,
   IconNotification,
@@ -6,10 +5,11 @@ import {
   IconTool,
   IconUser,
 } from '@tabler/icons-react'
+import { Outlet } from '@tanstack/react-router'
 import { Header } from '@/ui/layouts/header'
 import { Main } from '@/ui/layouts/main'
-import { Separator } from '@/ui/shadcn/separator'
 import { Search } from '@/ui/search'
+import { Separator } from '@/ui/shadcn/separator'
 import { ThemeSwitch } from '@/ui/theme-switch'
 import SidebarNav from './components/sidebar-nav'
 

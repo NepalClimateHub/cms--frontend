@@ -1,4 +1,6 @@
-export const parseISOTolocalDate = (isoString?: string | null): Date | undefined => {
+export const parseISOTolocalDate = (
+  isoString?: string | null
+): Date | undefined => {
   if (!isoString) return undefined
   const [datePart, timePart = ''] = isoString.split('T')
   if (!datePart) return undefined
@@ -8,9 +10,11 @@ export const parseISOTolocalDate = (isoString?: string | null): Date | undefined
   const monthIndex = Number(monthStr) - 1
   const day = Number(dayStr)
 
-  if (!year || isNaN(monthIndex) || !day) return undefined
+  if (!year || Number.isNaN(monthIndex) || !day) return undefined
 
-  const [hourStr = '0', minStr = '0', secStr = '0'] = timePart.replace('Z', '').split(':')
+  const [hourStr = '0', minStr = '0', secStr = '0'] = timePart
+    .replace('Z', '')
+    .split(':')
   const hours = Number(hourStr) || 0
   const minutes = Number(minStr) || 0
   const seconds = Number(secStr.split('.')[0]) || 0
@@ -18,10 +22,12 @@ export const parseISOTolocalDate = (isoString?: string | null): Date | undefined
   return new Date(year, monthIndex, day, hours, minutes, seconds)
 }
 
-export const formatLocalDateTimeToISO = (date?: Date | string | null): string | undefined => {
+export const formatLocalDateTimeToISO = (
+  date?: Date | string | null
+): string | undefined => {
   if (!date) return undefined
   const d = typeof date === 'string' ? parseISOTolocalDate(date) : date
-  if (!d || isNaN(d.getTime())) return undefined
+  if (!d || Number.isNaN(d.getTime())) return undefined
 
   const yyyy = d.getFullYear()
   const mm = String(d.getMonth() + 1).padStart(2, '0')
@@ -35,7 +41,7 @@ export const formatLocalDateTimeToISO = (date?: Date | string | null): string | 
 
 export const parseDate = (val?: Date | string | null): Date | undefined => {
   if (!val) return undefined
-  if (val instanceof Date) return isNaN(val.getTime()) ? undefined : val
+  if (val instanceof Date) return Number.isNaN(val.getTime()) ? undefined : val
   const d = new Date(val)
-  return isNaN(d.getTime()) ? undefined : d
+  return Number.isNaN(d.getTime()) ? undefined : d
 }

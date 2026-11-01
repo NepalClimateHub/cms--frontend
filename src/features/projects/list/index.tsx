@@ -1,21 +1,22 @@
-
 import { useNavigate } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import {  useEffect, useState } from 'react'
-import { useGetProjects, ProjectResponseDto } from '@/query/projects/use-projects'
+import { PlusIcon } from 'lucide-react'
+import { parseAsString } from 'nuqs'
+import { useEffect, useState } from 'react'
+import { useFilters } from '@/hooks/use-filters'
+import { usePagination } from '@/hooks/use-pagination'
+import {
+  type ProjectResponseDto,
+  useGetProjects,
+} from '@/query/projects/use-projects'
+import { Main } from '@/ui/layouts/main'
+import { BoxLoader } from '@/ui/loader'
 import { DataTable } from '@/ui/molecules/data-table/data-table'
 import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination'
 import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
-import { Main } from '@/ui/layouts/main'
-import { BoxLoader } from '@/ui/loader'
 import PageHeader from '@/ui/page-header'
 import { Button } from '@/ui/shadcn/button'
-import { PlusIcon } from 'lucide-react'
-import { usePagination } from '@/hooks/use-pagination'
-import { useProjectColumns } from './hooks/use-project-columns'
-import { useFilters } from '@/hooks/use-filters'
 import { Input } from '@/ui/shadcn/input'
-import { parseAsString } from 'nuqs'
 import {
   Select,
   SelectContent,
@@ -23,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/ui/shadcn/select'
+import { useProjectColumns } from './hooks/use-project-columns'
 
 const ProjectList = () => {
   const navigate = useNavigate()

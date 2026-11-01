@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import apiClient from '@/query/apiClient'
 import { useToast } from '@/hooks/use-toast'
+import apiClient from '@/query/apiClient'
 
 export const notificationsQueryKey = ['notifications'] as const
 

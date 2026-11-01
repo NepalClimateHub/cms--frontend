@@ -1,7 +1,26 @@
-import { useEffect, useState } from 'react'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Building2,
+  CalendarDays,
+  Camera,
+  CheckCircle2,
+  ClipboardList,
+  Clock,
+  Edit,
+  Key,
+  Loader2,
+  Mail,
+  MapPin,
+  Pencil,
+  Share2,
+  ShieldAlert,
+  Tags,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import type { UserOutput } from '@/api/types.gen'
+import { toast } from '@/hooks/use-toast'
 import { usePatchMyOrganization } from '@/query/users/use-my-organization'
 import type { SocialType } from '@/schemas/shared'
 import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
@@ -37,32 +56,12 @@ import {
   FormMessage,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
-import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
-import { cn } from '@/ui/shadcn/lib/utils'
+import { cn, getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
 import { Textarea } from '@/ui/shadcn/textarea'
-import {
-  Building2,
-  CalendarDays,
-  Camera,
-  CheckCircle2,
-  Clock,
-  Edit,
-  Key,
-  Mail,
-  Pencil,
-  ShieldAlert,
-  Loader2,
-  ClipboardList,
-  MapPin,
-  Share2,
-  Tags,
-} from 'lucide-react'
-import type { UserOutput } from '@/api/types.gen'
 import {
   mapOrganizationProfileDto,
   nullableString,
 } from '@/utils/map-user-output'
-import { toast } from '@/hooks/use-toast'
 
 const orgDetailsFormSchema = z.object({
   name: z.string().min(1, 'Name is required').max(300),
@@ -190,8 +189,10 @@ export default function OrganizationProfilePage({
       street: typeof org.address?.street === 'string' ? org.address.street : '',
       city: typeof org.address?.city === 'string' ? org.address.city : '',
       state: typeof org.address?.state === 'string' ? org.address.state : '',
-      country: typeof org.address?.country === 'string' ? org.address.country : '',
-      postcode: typeof org.address?.postcode === 'string' ? org.address.postcode : '',
+      country:
+        typeof org.address?.country === 'string' ? org.address.country : '',
+      postcode:
+        typeof org.address?.postcode === 'string' ? org.address.postcode : '',
       ...s,
     })
   }, [isEditOrgDetailsOpen, org, user.socials, orgForm])
@@ -354,15 +355,15 @@ export default function OrganizationProfilePage({
                       Update application
                     </Button>
                   ) : (
-                  <Button
-                    type='button'
-                    size='sm'
-                    variant='secondary'
-                    onClick={() => setIsViewApplicationOpen(true)}
-                  >
-                    <ClipboardList className='mr-2 h-3.5 w-3.5' />
-                    View application
-                  </Button>
+                    <Button
+                      type='button'
+                      size='sm'
+                      variant='secondary'
+                      onClick={() => setIsViewApplicationOpen(true)}
+                    >
+                      <ClipboardList className='mr-2 h-3.5 w-3.5' />
+                      View application
+                    </Button>
                   )
                 ) : (
                   <Button
@@ -487,7 +488,7 @@ export default function OrganizationProfilePage({
                   Type
                 </h4>
                 <p className='text-foreground'>
-                  {((org.organizationType as any)?.trim() || '—')}
+                  {(org.organizationType as any)?.trim() || '—'}
                 </p>
               </div>
             </div>

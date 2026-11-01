@@ -25,8 +25,7 @@ export function mapOrganizationProfileDto(
   return {
     id: org.id,
     name: org.name,
-    logoImageUrl:
-      typeof org.logoImageUrl === 'string' ? org.logoImageUrl : '',
+    logoImageUrl: typeof org.logoImageUrl === 'string' ? org.logoImageUrl : '',
     logoImageId: nullableString(org.logoImageId),
     verificationDocumentUrl: nullableString(org.verificationDocumentUrl),
     verificationDocumentId: nullableString(org.verificationDocumentId),

@@ -1,5 +1,23 @@
-import { FC } from 'react'
-import { UseFormReturn, useFieldArray } from 'react-hook-form'
+import {
+  ArrowDown,
+  ArrowUp,
+  HelpCircle,
+  Lock,
+  Plus,
+  Trash2,
+} from 'lucide-react'
+import type { FC } from 'react'
+import { type UseFormReturn, useFieldArray } from 'react-hook-form'
+import {
+  createEmptyQuestion,
+  isChoiceQuestion,
+  QUESTION_TYPE_LABELS,
+  QUESTION_TYPES,
+  type VacancyFormValues,
+  type VacancyQuestionType,
+} from '@/schemas/vacancy'
+import { Badge } from '@/ui/shadcn/badge'
+import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
@@ -8,10 +26,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/ui/shadcn/dialog'
-import { Button } from '@/ui/shadcn/button'
-import { Input } from '@/ui/shadcn/input'
-import { Switch } from '@/ui/shadcn/switch'
-import { Badge } from '@/ui/shadcn/badge'
 import {
   FormControl,
   FormField,
@@ -19,6 +33,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/ui/shadcn/form'
+import { Input } from '@/ui/shadcn/input'
 import {
   Select,
   SelectContent,
@@ -26,15 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/ui/shadcn/select'
-import {
-  QUESTION_TYPES,
-  QUESTION_TYPE_LABELS,
-  VacancyFormValues,
-  VacancyQuestionType,
-  createEmptyQuestion,
-  isChoiceQuestion,
-} from '@/schemas/vacancy'
-import { ArrowDown, ArrowUp, HelpCircle, Lock, Plus, Trash2 } from 'lucide-react'
+import { Switch } from '@/ui/shadcn/switch'
 
 interface BuilderProps {
   form: UseFormReturn<VacancyFormValues>
@@ -279,7 +286,10 @@ const QuestionCard: FC<QuestionCardProps> = ({
             <FormItem className='mb-0 flex items-center justify-between rounded-md border px-3 py-2 sm:mt-6'>
               <FormLabel className='text-xs font-medium'>Required</FormLabel>
               <FormControl>
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
               </FormControl>
             </FormItem>
           )}
@@ -348,8 +358,7 @@ export const ApplicationFormModal: FC<ApplicationFormModalProps> = ({
                 className={commonField.full ? 'sm:col-span-2' : undefined}
               >
                 <label className='text-sm font-medium text-foreground'>
-                  {commonField.label}{' '}
-                  <span className='text-red-500'>*</span>
+                  {commonField.label} <span className='text-red-500'>*</span>
                 </label>
                 <Input
                   type={commonField.type}

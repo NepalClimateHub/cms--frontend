@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { TagsType } from '@/schemas/tags/tags'
 import { tagControllerGetTagsOptions } from '@/api/@tanstack/react-query.gen'
 import { toast } from '@/hooks/use-toast'
-import { tagControllerDeleteTagMutation } from '../../api/@tanstack/react-query.gen'
+import type { TagsType } from '@/schemas/tags/tags'
 import {
   tagControllerAddTagMutation,
+  tagControllerDeleteTagMutation,
   tagControllerGetTagsTypeOptions,
 } from '../../api/@tanstack/react-query.gen'
 

@@ -1,23 +1,19 @@
+import { useNavigate } from '@tanstack/react-router'
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { PlusIcon } from 'lucide-react'
+import { parseAsArrayOf, parseAsString } from 'nuqs'
+import { useEffect, useState } from 'react'
+import { useFilters } from '@/hooks/use-filters'
+import { usePagination } from '@/hooks/use-pagination'
+import { ResourceType, useGetResources } from '@/query/resources/use-resources'
 import { Main } from '@/ui/layouts/main'
+import { DataTable } from '@/ui/molecules/data-table/data-table'
+import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
+import { MultiSelect } from '@/ui/multi-select'
 import PageHeader from '@/ui/page-header'
 import { Button } from '@/ui/shadcn/button'
-import { PlusIcon } from 'lucide-react'
-import { useNavigate } from '@tanstack/react-router'
-import { usePagination } from '@/hooks/use-pagination'
-import { useGetResources, ResourceType } from '@/query/resources/use-resources'
-import { DataTable } from '@/ui/molecules/data-table/data-table'
-import { useResourceColumns } from './components/columns'
-import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
-import {
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
-import { useFilters } from '@/hooks/use-filters'
-import { parseAsArrayOf, parseAsString } from 'nuqs'
-import { MultiSelect } from '@/ui/multi-select'
-import { useEffect, useState } from 'react'
 import { Input } from '@/ui/shadcn/input'
-
+import { useResourceColumns } from './components/columns'
 
 export default function ResourceList() {
   const navigate = useNavigate()
@@ -38,7 +34,7 @@ export default function ResourceList() {
 
   useEffect(() => {
     setPage(1)
-  }, [filters])
+  }, [setPage])
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)

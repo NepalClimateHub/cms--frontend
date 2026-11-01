@@ -1,25 +1,19 @@
-import { FC } from 'react'
-import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
-import { Row } from '@tanstack/react-table'
+import type { Row } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import { Calendar, Clock, LucideEye, Pencil, Trash } from 'lucide-react'
+import type { FC } from 'react'
 import { useMinutesAPI } from '@/query/minutes/use-minutes'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
-  DialogHeader,
   DialogContent,
+  DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@/ui/shadcn/dialog'
-import {
-  LucideEye,
-  Pencil,
-  Trash,
-  Calendar,
-  Clock,
-} from 'lucide-react'
 import { ScrollArea } from '@/ui/shadcn/scroll-area'
 
 type MinutesRowActionProps = {
@@ -102,7 +96,9 @@ const MinutesRowAction: FC<MinutesRowActionProps> = ({ row }) => {
                 </h3>
                 <div
                   className='rounded-lg bg-gray-50 p-4 text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none'
-                  dangerouslySetInnerHTML={{ __html: row.original.meetingSummary }}
+                  dangerouslySetInnerHTML={{
+                    __html: row.original.meetingSummary,
+                  }}
                 />
               </div>
             </div>
@@ -129,8 +125,8 @@ const MinutesRowAction: FC<MinutesRowActionProps> = ({ row }) => {
           <DialogHeader>
             <DialogTitle>Delete Meeting Minutes</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete these meeting minutes? This action cannot be
-              undone.
+              Are you sure you want to delete these meeting minutes? This action
+              cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

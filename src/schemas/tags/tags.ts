@@ -29,7 +29,16 @@ export const tagFormSchema = z.object({
       message: 'Tag name must not be longer than 30 characters.',
     }),
   tagType: z.enum(
-    [TAG_USER, TAG_EVENT, TAG_NEWS, TAG_OPPORTUNITY, TAG_ORG, TAG_BLOG, TAG_PROJECT, 'isResourceTag'],
+    [
+      TAG_USER,
+      TAG_EVENT,
+      TAG_NEWS,
+      TAG_OPPORTUNITY,
+      TAG_ORG,
+      TAG_BLOG,
+      TAG_PROJECT,
+      'isResourceTag',
+    ],
     {
       required_error: 'Tag type is required.',
       invalid_type_error: 'Tag type must be one of the predefined types.',

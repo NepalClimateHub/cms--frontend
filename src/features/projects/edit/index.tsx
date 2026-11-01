@@ -1,19 +1,21 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate, useParams } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { useParams } from '@tanstack/react-router'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useGetProject, useUpdateProject } from '@/query/projects/use-projects'
-import { ProjectFormValues, projectSchema } from '@/schemas/project'
+import { toast } from '@/hooks/use-toast'
+import {
+  type Tag,
+  useGetProject,
+  useUpdateProject,
+} from '@/query/projects/use-projects'
+import { useGetTags } from '@/query/tags/use-tags'
+import { type ProjectFormValues, projectSchema } from '@/schemas/project'
 import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/ui/loader'
 import PageHeader from '@/ui/page-header'
-import ProjectForm from '../shared/ProjectForm'
-import { useGetTags } from '@/query/tags/use-tags'
-import { Tag } from '@/query/projects/use-projects'
-import { toast } from '@/hooks/use-toast'
-import { useNavigate } from '@tanstack/react-router'
 import { Button } from '@/ui/shadcn/button'
-import { ArrowLeft } from 'lucide-react'
+import ProjectForm from '../shared/ProjectForm'
 
 export default function EditProject() {
   const { id } = useParams({ from: '/_authenticated/projects/$id' })
@@ -22,7 +24,7 @@ export default function EditProject() {
 
   const { data: tagsData } = useGetTags({ query: { limit: 100 } })
   const tagsOptions = ((tagsData?.data as unknown as Tag[]) || [])
-     .filter((tag: Tag) => tag.isProjectTag)
+    .filter((tag: Tag) => tag.isProjectTag)
     .map((tag: Tag) => ({
       value: tag.id,
       label: tag.tag,
@@ -41,7 +43,7 @@ export default function EditProject() {
   })
 
   useEffect(() => {
-    if (project && project.data) {
+    if (project?.data) {
       form.reset({
         title: project.data.title,
         duration: project.data.duration,
@@ -56,7 +58,10 @@ export default function EditProject() {
     }
   }, [project, form])
 
-  const handleImageUpload = (assetId: string | null, assetURL: string | null) => {
+  const handleImageUpload = (
+    assetId: string | null,
+    assetURL: string | null
+  ) => {
     form.setValue('bannerImageId', assetId || undefined)
     form.setValue('bannerImageUrl', assetURL || undefined)
   }
@@ -98,7 +103,10 @@ export default function EditProject() {
         title='Edit Project'
         description='Update project details'
         actions={
-          <Button variant='outline' onClick={() => navigate({ to: '/projects' })}>
+          <Button
+            variant='outline'
+            onClick={() => navigate({ to: '/projects' })}
+          >
             <ArrowLeft className='mr-2 h-4 w-4' /> Back
           </Button>
         }

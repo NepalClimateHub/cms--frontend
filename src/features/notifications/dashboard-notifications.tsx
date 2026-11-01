@@ -1,7 +1,8 @@
 'use client'
 
-import { format } from 'date-fns'
 import { Link } from '@tanstack/react-router'
+import { format } from 'date-fns'
+import { Bell, CheckCheck, Trash2 } from 'lucide-react'
 import {
   useDeleteNotification,
   useMarkAllNotificationsRead,
@@ -19,7 +20,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/ui/shadcn/sheet'
-import { Bell, CheckCheck, Trash2 } from 'lucide-react'
 import { getRoleFromToken } from '@/utils/jwt.util'
 
 export function HeaderNotifications() {

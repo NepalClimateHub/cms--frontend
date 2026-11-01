@@ -1,6 +1,6 @@
+import { AlertTriangle, Check, Copy, RotateCw, Terminal } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/ui/shadcn/button'
-import { AlertTriangle, Terminal, Copy, Check, RotateCw } from 'lucide-react'
 
 export default function MissingApiUrl() {
   const [copied, setCopied] = useState(false)
@@ -36,7 +36,11 @@ export default function MissingApiUrl() {
           Configuration Error
         </h1>
         <p className='text-lg text-muted-foreground max-w-md mx-auto mb-8'>
-          The environment variable <code className='px-1.5 py-0.5 rounded bg-muted font-mono text-sm text-foreground font-semibold'>VITE_API_URL</code> is missing or undefined.
+          The environment variable{' '}
+          <code className='px-1.5 py-0.5 rounded bg-muted font-mono text-sm text-foreground font-semibold'>
+            VITE_API_URL
+          </code>{' '}
+          is missing or undefined.
         </p>
 
         {/* Technical context box */}
@@ -46,7 +50,15 @@ export default function MissingApiUrl() {
             How to resolve this issue:
           </h2>
           <p className='text-sm text-muted-foreground mb-4 leading-relaxed'>
-            Create or update the <code className='font-mono text-xs px-1 py-0.5 rounded bg-muted'>.env</code> file in the root of your <code className='font-mono text-xs px-1 py-0.5 rounded bg-muted'>cms--frontend</code> folder and configure the API URL:
+            Create or update the{' '}
+            <code className='font-mono text-xs px-1 py-0.5 rounded bg-muted'>
+              .env
+            </code>{' '}
+            file in the root of your{' '}
+            <code className='font-mono text-xs px-1 py-0.5 rounded bg-muted'>
+              cms--frontend
+            </code>{' '}
+            folder and configure the API URL:
           </p>
 
           <div className='relative mt-2 font-mono text-sm rounded-lg bg-zinc-950 p-4 text-zinc-200 border border-zinc-800 shadow-inner group'>
@@ -57,7 +69,11 @@ export default function MissingApiUrl() {
                 className='h-8 w-8 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800'
                 onClick={handleCopy}
               >
-                {copied ? <Check className='h-4 w-4 text-emerald-400' /> : <Copy className='h-4 w-4' />}
+                {copied ? (
+                  <Check className='h-4 w-4 text-emerald-400' />
+                ) : (
+                  <Copy className='h-4 w-4' />
+                )}
               </Button>
             </div>
             <pre className='overflow-x-auto pr-10'>{envExample}</pre>
@@ -66,11 +82,18 @@ export default function MissingApiUrl() {
           <div className='mt-5 flex flex-col gap-2 text-xs text-muted-foreground/80 border-t pt-4'>
             <div className='flex items-center gap-2'>
               <span className='h-1.5 w-1.5 rounded-full bg-amber-500' />
-              <span>For local development, typically use: <code className='font-mono text-zinc-600 dark:text-zinc-400'>http://localhost:8080</code></span>
+              <span>
+                For local development, typically use:{' '}
+                <code className='font-mono text-zinc-600 dark:text-zinc-400'>
+                  http://localhost:8080
+                </code>
+              </span>
             </div>
             <div className='flex items-center gap-2'>
               <span className='h-1.5 w-1.5 rounded-full bg-amber-500' />
-              <span>For production, set it to your deployed API server endpoint.</span>
+              <span>
+                For production, set it to your deployed API server endpoint.
+              </span>
             </div>
           </div>
         </div>

@@ -1,12 +1,12 @@
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 import { useCreateMember } from '@/query/members/use-members'
-import { MemberFormValues, memberSchema } from '@/schemas/member'
+import { type MemberFormValues, memberSchema } from '@/schemas/member'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
 import { Button } from '@/ui/shadcn/button'
-import { ArrowLeft } from 'lucide-react'
 import MemberForm from '../shared/MemberForm'
 
 export default function AddMember() {

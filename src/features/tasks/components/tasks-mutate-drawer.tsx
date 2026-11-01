@@ -1,6 +1,8 @@
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { toast } from '@/hooks/use-toast'
+import { SelectDropdown } from '@/ui/select-dropdown'
 import { Button } from '@/ui/shadcn/button'
 import {
   Form,
@@ -21,9 +23,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/ui/shadcn/sheet'
-import { toast } from '@/hooks/use-toast'
-import { SelectDropdown } from '@/ui/select-dropdown'
-import { Task } from '../data/schema'
+import type { Task } from '../data/schema'
 
 interface Props {
   open: boolean
