@@ -77,19 +77,44 @@ export const useVerifyCertificate = () => {
           url: '/api/v1/public/certificates/verify',
           body: { code },
         })
-        return response.data as PublicVerificationResponse
+
+        const data = response.data as any
+
+        // If the client library surfaced an error object instead of throwing
+        if (response.error) {
+          const httpStatus = (response.error as any)?.status ?? (response.error as any)?.statusCode
+          if (httpStatus === 404 || httpStatus === 400) {
+            return { valid: false, status: 'NOT_FOUND', message: 'Certificate not found.' }
+          }
+          throw new Error((response.error as any)?.message || 'Verification failed. Please try again.')
+        }
+
+        // Guard: if the response body doesn't look like a PublicVerificationResponse
+        // (e.g. the server returned a generic error envelope), treat it as not-found.
+        if (data === null || data === undefined || typeof data.valid !== 'boolean') {
+          return { valid: false, status: 'NOT_FOUND', message: 'Certificate not found.' }
+        }
+
+        return data as PublicVerificationResponse
       } catch (err: any) {
-        // Handle structured API error or status
-        if (err?.response?.data) {
-          return err.response.data as PublicVerificationResponse
+        // HTTP 404 / 400 → "not found" response (not a thrown error)
+        const httpStatus =
+          err?.response?.status ??
+          err?.status ??
+          err?.response?.data?.statusCode ??
+          err?.statusCode
+
+        if (httpStatus === 404 || httpStatus === 400) {
+          return { valid: false, status: 'NOT_FOUND', message: 'Certificate not found.' }
         }
-        if (err?.error?.message) {
-          throw new Error(err.error.message)
-        }
-        if (err?.message) {
-          throw new Error(err.message)
-        }
-        throw new Error('We could not verify the certificate right now. Please try again later.')
+
+        // Network / server error → throw so onError fires
+        const message =
+          err?.response?.data?.message ||
+          err?.error?.message ||
+          err?.message ||
+          'We could not verify the certificate right now. Please try again later.'
+        throw new Error(message)
       }
     },
   })
