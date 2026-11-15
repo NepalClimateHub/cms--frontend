@@ -364,13 +364,14 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                     <FormLabel className='col-span-2 text-right'>
                       Password
                     </FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        placeholder='e.g., S3cur3P@ssw0rd'
-                        className='col-span-4'
-                        {...field}
-                      />
-                    </FormControl>
+                    <div className='col-span-4'>
+                      <FormControl>
+                        <PasswordInput
+                          placeholder='e.g., S3cur3P@ssw0rd'
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
                 )}
@@ -383,14 +384,15 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                     <FormLabel className='col-span-2 text-right'>
                       Confirm Password
                     </FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        disabled={!isPasswordTouched}
-                        placeholder='e.g., S3cur3P@ssw0rd'
-                        className='col-span-4'
-                        {...field}
-                      />
-                    </FormControl>
+                    <div className='col-span-4'>
+                      <FormControl>
+                        <PasswordInput
+                          disabled={!isPasswordTouched}
+                          placeholder='e.g., S3cur3P@ssw0rd'
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
                 )}
