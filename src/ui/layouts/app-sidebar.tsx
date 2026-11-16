@@ -1,8 +1,10 @@
 import { LogOut } from 'lucide-react'
 import { Fragment, useState } from 'react'
-import { useLogout } from '@/query/auth/use-auth'
+import { logoutAllDevices, useLogout } from '@/query/auth/use-auth'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
 import { NavGroup } from '@/ui/layouts/nav-group'
+import { Checkbox } from '@/ui/shadcn/checkbox'
+import { Label } from '@/ui/shadcn/label'
 import {
   Sidebar,
   SidebarContent,
@@ -15,6 +17,7 @@ import {
   SidebarSeparator,
   useSidebar,
 } from '@/ui/shadcn/sidebar'
+import { handleServerError } from '@/utils/handle-server-error'
 import { ProfileCard } from '../profile-card'
 import { useSideBarData } from './data/use-sidebar-data'
 
@@ -22,9 +25,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const sidebarData = useSideBarData()
   const logout = useLogout()
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+  const [allDevices, setAllDevices] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const { state } = useSidebar()
 
-  const handleLogoutConfirm = () => {
+  const handleLogoutConfirm = async () => {
+    if (allDevices) {
+      setIsLoggingOut(true)
+      try {
+        await logoutAllDevices()
+      } catch (error) {
+        handleServerError(error)
+        setIsLoggingOut(false)
+        return
+      }
+    }
     logout()
     setShowLogoutDialog(false)
   }
@@ -92,7 +107,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         cancelBtnText='Cancel'
         destructive
         handleConfirm={handleLogoutConfirm}
-      />
+        isLoading={isLoggingOut}
+      >
+        <div className='flex items-center gap-2'>
+          <Checkbox
+            id='logout-all-devices'
+            checked={allDevices}
+            onCheckedChange={(checked) => setAllDevices(checked === true)}
+          />
+          <Label htmlFor='logout-all-devices'>Log out of all devices</Label>
+        </div>
+      </ConfirmDialog>
     </>
   )
 }
