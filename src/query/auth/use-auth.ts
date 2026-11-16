@@ -189,7 +189,11 @@ export const useResendVerification = () => {
   })
 }
 
+// Revokes every access/refresh token for the current user, this device included.
+export const logoutAllDevices = () => apiClient.post('/api/v1/auth/logout-all')
+
 export const useChangePassword = () => {
+  const logout = useLogout()
   return useMutation({
     mutationFn: authControllerChangePasswordMutation().mutationFn,
     onError: (error: unknown) => {
@@ -200,8 +204,12 @@ export const useChangePassword = () => {
       const message = resObj?.data?.message || 'Password changed successfully!'
       toast({
         title: message,
+        description:
+          'You have been logged out of all devices. Please log in again.',
         variant: 'default',
       })
+      // The backend revokes all sessions on password change, this one included.
+      logout()
     },
   })
 }
