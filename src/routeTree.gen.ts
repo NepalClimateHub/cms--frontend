@@ -75,6 +75,7 @@ const errors404LazyImport = createFileRoute('/(errors)/404')()
 const errors403LazyImport = createFileRoute('/(errors)/403')()
 const errors401LazyImport = createFileRoute('/(errors)/401')()
 const authSignUpLazyImport = createFileRoute('/(auth)/sign-up')()
+const authResetPasswordLazyImport = createFileRoute('/(auth)/reset-password')()
 const authForgotPasswordLazyImport = createFileRoute(
   '/(auth)/forgot-password',
 )()
@@ -168,6 +169,16 @@ const authSignUpLazyRoute = authSignUpLazyImport
     getParentRoute: () => rootRoute,
   } as any)
   .lazy(() => import('./routes/(auth)/sign-up.lazy').then((d) => d.Route))
+
+const authResetPasswordLazyRoute = authResetPasswordLazyImport
+  .update({
+    id: '/(auth)/reset-password',
+    path: '/reset-password',
+    getParentRoute: () => rootRoute,
+  } as any)
+  .lazy(() =>
+    import('./routes/(auth)/reset-password.lazy').then((d) => d.Route),
+  )
 
 const authForgotPasswordLazyRoute = authForgotPasswordLazyImport
   .update({
@@ -652,6 +663,13 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof authForgotPasswordLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/(auth)/reset-password': {
+      id: '/(auth)/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof authResetPasswordLazyImport
       parentRoute: typeof rootRoute
     }
     '/(auth)/sign-up': {
@@ -1243,6 +1261,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRouteLazyRouteWithChildren
   '/forgot-password': typeof authForgotPasswordLazyRoute
+  '/reset-password': typeof authResetPasswordLazyRoute
   '/sign-up': typeof authSignUpLazyRoute
   '/401': typeof errors401LazyRoute
   '/403': typeof errors403LazyRoute
@@ -1311,6 +1330,7 @@ export interface FileRoutesByTo {
   '/verify-email': typeof authVerifyEmailRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/forgot-password': typeof authForgotPasswordLazyRoute
+  '/reset-password': typeof authResetPasswordLazyRoute
   '/sign-up': typeof authSignUpLazyRoute
   '/401': typeof errors401LazyRoute
   '/403': typeof errors403LazyRoute
@@ -1382,6 +1402,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteLazyRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordLazyRoute
+  '/(auth)/reset-password': typeof authResetPasswordLazyRoute
   '/(auth)/sign-up': typeof authSignUpLazyRoute
   '/(errors)/401': typeof errors401LazyRoute
   '/(errors)/403': typeof errors403LazyRoute
@@ -1454,6 +1475,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/forgot-password'
+    | '/reset-password'
     | '/sign-up'
     | '/401'
     | '/403'
@@ -1521,6 +1543,7 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/profile'
     | '/forgot-password'
+    | '/reset-password'
     | '/sign-up'
     | '/401'
     | '/403'
@@ -1590,6 +1613,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/settings'
     | '/(auth)/forgot-password'
+    | '/(auth)/reset-password'
     | '/(auth)/sign-up'
     | '/(errors)/401'
     | '/(errors)/403'
@@ -1660,6 +1684,7 @@ export interface RootRouteChildren {
   authSignInRoute: typeof authSignInRoute
   authVerifyEmailRoute: typeof authVerifyEmailRoute
   authForgotPasswordLazyRoute: typeof authForgotPasswordLazyRoute
+  authResetPasswordLazyRoute: typeof authResetPasswordLazyRoute
   authSignUpLazyRoute: typeof authSignUpLazyRoute
   errors401LazyRoute: typeof errors401LazyRoute
   errors403LazyRoute: typeof errors403LazyRoute
@@ -1675,6 +1700,7 @@ const rootRouteChildren: RootRouteChildren = {
   authSignInRoute: authSignInRoute,
   authVerifyEmailRoute: authVerifyEmailRoute,
   authForgotPasswordLazyRoute: authForgotPasswordLazyRoute,
+  authResetPasswordLazyRoute: authResetPasswordLazyRoute,
   authSignUpLazyRoute: authSignUpLazyRoute,
   errors401LazyRoute: errors401LazyRoute,
   errors403LazyRoute: errors403LazyRoute,
@@ -1699,6 +1725,7 @@ export const routeTree = rootRoute
         "/(auth)/sign-in",
         "/(auth)/verify-email",
         "/(auth)/forgot-password",
+        "/(auth)/reset-password",
         "/(auth)/sign-up",
         "/(errors)/401",
         "/(errors)/403",
@@ -1794,6 +1821,9 @@ export const routeTree = rootRoute
     },
     "/(auth)/forgot-password": {
       "filePath": "(auth)/forgot-password.lazy.tsx"
+    },
+    "/(auth)/reset-password": {
+      "filePath": "(auth)/reset-password.lazy.tsx"
     },
     "/(auth)/sign-up": {
       "filePath": "(auth)/sign-up.lazy.tsx"
