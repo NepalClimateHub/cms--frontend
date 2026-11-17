@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { type HTMLAttributes, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import apiClient from '@/query/apiClient'
 import { Button } from '@/ui/shadcn/button'
 import {
   Form,
@@ -25,19 +26,25 @@ const formSchema = z.object({
 
 export function ForgotForm({ className, ...props }: ForgotFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '' },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    console.log(data)
-
-    setTimeout(() => {
+    setError(null)
+    try {
+      await apiClient.post('/api/v1/auth/forgot-password', data)
+      setSent(true)
+    } catch {
+      setError('We could not send the reset email. Please try again shortly.')
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
   }
 
   return (
@@ -58,9 +65,15 @@ export function ForgotForm({ className, ...props }: ForgotFormProps) {
                 </FormItem>
               )}
             />
-            <Button className='mt-2' disabled={isLoading}>
-              Continue
+            <Button className='mt-2' disabled={isLoading || sent}>
+              {isLoading ? 'Sending…' : sent ? 'Email sent' : 'Send reset link'}
             </Button>
+            {sent && (
+              <p className='text-sm text-green-700' role='status'>
+                If an account uses this email, a reset link is on its way.
+              </p>
+            )}
+            {error && <p className='text-sm text-destructive' role='alert'>{error}</p>}
           </div>
         </form>
       </Form>
