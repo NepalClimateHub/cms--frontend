@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { TestimonialFormValues } from '@/schemas/testimonial'
-import { Meta } from '@/schemas/shared'
 import { toast } from 'sonner'
 import { client } from '@/api/client.gen'
+import type { Meta } from '@/schemas/shared'
+import type { TestimonialFormValues } from '@/schemas/testimonial'
 
 export interface TestimonialResponseDto {
   id: string
@@ -49,7 +49,10 @@ export const useCreateTestimonial = () => {
 
   return useMutation({
     mutationFn: async (data: TestimonialFormValues) => {
-      const response = await client.post({ url: '/api/v1/testimonials', body: data })
+      const response = await client.post({
+        url: '/api/v1/testimonials',
+        body: data,
+      })
       return response.data
     },
     onSuccess: () => {
@@ -130,7 +133,9 @@ export const useReorderTestimonials = () => {
     },
     onError: (error: unknown) => {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to reorder testimonials'
+        error instanceof Error
+          ? error.message
+          : 'Failed to reorder testimonials'
       )
     },
   })

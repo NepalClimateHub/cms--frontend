@@ -1,5 +1,6 @@
-import { Meta } from '@/schemas/shared'
-import Tags, { TagsInitializer, TagsType } from '@/schemas/tags/tags'
+import type { Meta } from '@/schemas/shared'
+import type Tags from '@/schemas/tags/tags'
+import type { TagsInitializer, TagsType } from '@/schemas/tags/tags'
 import { buildQueryParams } from '@/utils/query-params'
 import apiClient from '../apiClient'
 import { tags } from '../shared/routes'

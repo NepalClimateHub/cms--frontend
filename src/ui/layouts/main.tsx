@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import { cn } from '@/ui/shadcn/lib/utils'
 
 interface MainProps extends React.HTMLAttributes<HTMLElement> {

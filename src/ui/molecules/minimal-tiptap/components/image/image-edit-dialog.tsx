@@ -1,16 +1,16 @@
-import { useState } from 'react'
 import { ImageIcon } from '@radix-ui/react-icons'
+import type { Editor } from '@tiptap/react'
+import type { VariantProps } from 'class-variance-authority'
+import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/ui/shadcn/dialog'
 import type { toggleVariants } from '@/ui/shadcn/toggle'
-import type { Editor } from '@tiptap/react'
-import type { VariantProps } from 'class-variance-authority'
 import { ToolbarButton } from '../toolbar-button'
 import { ImageEditBlock } from './image-edit-block'
 

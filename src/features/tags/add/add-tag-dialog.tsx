@@ -1,12 +1,12 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { useAddTags } from '@/query/tags/use-tags'
 import {
+  type TagFormValues,
+  type TagsInitializer,
   tagFormSchema,
-  TagFormValues,
-  TagsInitializer,
 } from '@/schemas/tags/tags'
 import { Button } from '@/ui/shadcn/button'
 import {

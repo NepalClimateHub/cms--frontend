@@ -1,12 +1,12 @@
-import * as React from 'react'
 import {
   ClipboardCopyIcon,
+  CropIcon,
   DotsHorizontalIcon,
   DownloadIcon,
   Link2Icon,
-  SizeIcon,
-  CropIcon,
+  UploadIcon,
 } from '@radix-ui/react-icons'
+import * as React from 'react'
 import { Button } from '@/ui/shadcn/button'
 import {
   DropdownMenu,
@@ -20,12 +20,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/shadcn/tooltip'
 interface ImageActionsProps {
   shouldMerge?: boolean
   isLink?: boolean
-  onView?: () => void
   onDownload?: () => void
   onCopy?: () => void
   onCopyLink?: () => void
-  onResize?: () => void
   onCrop?: () => void
+  onReplace?: () => void
 }
 
 interface ActionButtonProps
@@ -80,13 +79,7 @@ export const ActionButton = React.memo(
 
 ActionButton.displayName = 'ActionButton'
 
-type ActionKey =
-  | 'onView'
-  | 'onDownload'
-  | 'onCopy'
-  | 'onCopyLink'
-  | 'onResize'
-  | 'onCrop'
+type ActionKey = 'onDownload' | 'onCopy' | 'onCopyLink' | 'onCrop' | 'onReplace'
 
 const ActionItems: Array<{
   key: ActionKey
@@ -94,11 +87,6 @@ const ActionItems: Array<{
   tooltip: string
   isLink?: boolean
 }> = [
-  {
-    key: 'onView',
-    icon: <SizeIcon className='size-4' />,
-    tooltip: 'View image',
-  },
   {
     key: 'onDownload',
     icon: <DownloadIcon className='size-4' />,
@@ -116,14 +104,14 @@ const ActionItems: Array<{
     isLink: true,
   },
   {
-    key: 'onResize',
-    icon: <SizeIcon className='size-4' />,
-    tooltip: 'Resize image',
-  },
-  {
     key: 'onCrop',
     icon: <CropIcon className='size-4' />,
     tooltip: 'Crop image',
+  },
+  {
+    key: 'onReplace',
+    icon: <UploadIcon className='size-4' />,
+    tooltip: 'Replace image',
   },
 ]
 

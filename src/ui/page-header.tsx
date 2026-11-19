@@ -1,5 +1,5 @@
-import { FC, JSX } from 'react'
 import { ArrowLeft } from 'lucide-react'
+import type { FC, JSX } from 'react'
 import useGoBack from '@/hooks/use-goback'
 import { Button } from './shadcn/button'
 

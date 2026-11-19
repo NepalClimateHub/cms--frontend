@@ -1,10 +1,10 @@
-import { FC } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
+import type { FC } from 'react'
+import type { UseFormReturn } from 'react-hook-form'
 import {
-  MemberFormValues,
-  MEMBER_TEAMS,
   MEMBER_STATUSES,
+  MEMBER_TEAMS,
+  type MemberFormValues,
 } from '@/schemas/member'
 import { DatePicker } from '@/ui/datepicker'
 import ImageUpload from '@/ui/image-upload'
@@ -13,11 +13,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
 import {

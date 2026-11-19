@@ -1,0 +1,41 @@
+.minimal-tiptap-editor .ProseMirror figure.image-block {
+  @apply relative my-6 w-full max-w-[40rem];
+}
+
+.minimal-tiptap-editor .ProseMirror figure.image-block[data-layout="wide"],
+.minimal-tiptap-editor .ProseMirror figure.image-block[data-layout="full"] {
+  @apply max-w-none;
+}
+
+.minimal-tiptap-editor .ProseMirror figure.image-block[data-layout="full"] img,
+.minimal-tiptap-editor
+  .ProseMirror
+  figure.image-block[data-layout="full"]
+  > div {
+  @apply rounded-none;
+}
+
+.minimal-tiptap-editor .ProseMirror figure.image-block[data-alt-missing] img {
+  @apply outline outline-2 outline-offset-1 outline-destructive;
+}
+
+.minimal-tiptap-editor .ProseMirror div[data-layout="two-up"] {
+  @apply my-6 grid grid-cols-2 items-start gap-4;
+}
+
+.minimal-tiptap-editor
+  .ProseMirror
+  div[data-layout="two-up"]
+  > figure.image-block {
+  @apply my-0 max-w-none;
+}
+
+@media (max-width: 640px) {
+  .minimal-tiptap-editor .ProseMirror div[data-layout="two-up"] {
+    @apply grid-cols-1;
+  }
+
+  .minimal-tiptap-editor .ProseMirror figure.image-block {
+    @apply max-w-none;
+  }
+}

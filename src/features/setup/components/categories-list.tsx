@@ -1,46 +1,42 @@
-
-import { useState } from 'react';
-import {
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { usePagination } from '@/hooks/use-pagination';
-import { useFilters } from '@/hooks/use-filters';
-import { DataTable } from '@/ui/molecules/data-table/data-table';
-import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination';
-import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar';
-import { BoxLoader } from '@/ui/loader';
-import { Button } from '@/ui/shadcn/button';
-import { Plus } from 'lucide-react';
-import { useGetCategories } from '@/query/categories/use-categories';
-import { useCategoryColumns } from '../hooks/use-category-columns';
-import { AddCategoryDialog } from './add-category-dialog';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { Plus } from 'lucide-react'
+import { useState } from 'react'
+import { useFilters } from '@/hooks/use-filters'
+import { usePagination } from '@/hooks/use-pagination'
+import { useGetCategories } from '@/query/categories/use-categories'
+import { BoxLoader } from '@/ui/loader'
+import { DataTable } from '@/ui/molecules/data-table/data-table'
+import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination'
+import { DataTableToolbar } from '@/ui/molecules/data-table/data-table-toolbar'
+import { Button } from '@/ui/shadcn/button'
+import { useCategoryColumns } from '../hooks/use-category-columns'
+import { AddCategoryDialog } from './add-category-dialog'
 
 export default function CategoriesList() {
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const columns = useCategoryColumns();
-  const paginationOptions = usePagination();
-  const { pagination } = paginationOptions;
-  const filterOptions = useFilters({});
-  const { filters } = filterOptions;
+  const [addDialogOpen, setAddDialogOpen] = useState(false)
+  const columns = useCategoryColumns()
+  const paginationOptions = usePagination()
+  const { pagination } = paginationOptions
+  const filterOptions = useFilters({})
+  const { filters } = filterOptions
 
   const { data, isLoading } = useGetCategories({
     offset: pagination.offset,
     limit: pagination.limit,
     ...filters,
-  });
+  })
 
-  const categories = data?.data || [];
-  const total = data?.meta?.total || 0;
+  const categories = data?.data || []
+  const total = data?.meta?.total || 0
 
   const table = useReactTable({
     data: categories,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
-  });
+  })
 
-  if (isLoading) return <BoxLoader />;
+  if (isLoading) return <BoxLoader />
 
   return (
     <div className='px-4'>
@@ -72,5 +68,5 @@ export default function CategoriesList() {
         onClose={() => setAddDialogOpen(false)}
       />
     </div>
-  );
+  )
 }

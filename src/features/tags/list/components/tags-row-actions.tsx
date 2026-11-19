@@ -1,12 +1,13 @@
 // import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { FC, useState } from 'react'
-import { Row } from '@tanstack/react-table'
-import { useTagsAPI } from '@/query/tags/use-tags'
-import Tags from '@/schemas/tags/tags'
+
+import type { Row } from '@tanstack/react-table'
 import { Pencil, Trash } from 'lucide-react'
-import { handleServerError } from '@/utils/handle-server-error'
+import { type FC, useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import { useTagsAPI } from '@/query/tags/use-tags'
+import type Tags from '@/schemas/tags/tags'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
+import { handleServerError } from '@/utils/handle-server-error'
 
 // import { useToast } from '@/hooks/use-toast'
 // import { deleteTagById } from '@/query/use-tags';

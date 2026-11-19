@@ -1,6 +1,6 @@
-import { UserOutput } from '@/api/types.gen'
+import type { UserOutput } from '@/api/types.gen'
 import { nullableString } from '@/utils/map-user-output'
-import { User } from '../data/schema'
+import type { User } from '../data/schema'
 
 // Map API UserOutput to table User schema
 export const mapUserOutputToUser = (user: UserOutput): User => {
@@ -8,7 +8,8 @@ export const mapUserOutputToUser = (user: UserOutput): User => {
   const firstName = nameParts[0] || ''
   const lastName = nameParts.slice(1).join(' ') || ''
   const username =
-    user.email.split('@')[0] || (user.fullName || '').toLowerCase().replace(/\s+/g, '')
+    user.email.split('@')[0] ||
+    (user.fullName || '').toLowerCase().replace(/\s+/g, '')
 
   // Map phoneNumber object to string
   let phoneNumber = ''
@@ -84,6 +85,15 @@ export const mapUserOutputToUser = (user: UserOutput): User => {
             : org.verificationDocumentId
               ? String(org.verificationDocumentId)
               : null,
+        verificationDocuments: Array.isArray(org.verificationDocuments)
+          ? org.verificationDocuments.filter(
+              (document): document is { id: string; url: string } =>
+                !!document &&
+                typeof document === 'object' &&
+                typeof (document as { id?: unknown }).id === 'string' &&
+                typeof (document as { url?: unknown }).url === 'string'
+            )
+          : null,
         verificationRequestRemarks:
           typeof org.verificationRequestRemarks === 'string'
             ? org.verificationRequestRemarks
@@ -96,6 +106,32 @@ export const mapUserOutputToUser = (user: UserOutput): User => {
             : org.verificationRequestedAt
               ? String(org.verificationRequestedAt)
               : null,
+        verificationAdminMessage:
+          typeof org.verificationAdminMessage === 'string'
+            ? org.verificationAdminMessage
+            : null,
+        verificationMessageSentAt:
+          typeof org.verificationMessageSentAt === 'string'
+            ? org.verificationMessageSentAt
+            : null,
+        verificationMessages: Array.isArray(org.verificationMessages)
+          ? org.verificationMessages.filter(
+              (message): message is {
+                id: string
+                senderType: 'ORGANIZATION' | 'ADMIN'
+                senderUserId?: string | null
+                message: string
+                createdAt: string
+              } =>
+                !!message &&
+                typeof message === 'object' &&
+                typeof (message as { id?: unknown }).id === 'string' &&
+                ((message as { senderType?: unknown }).senderType === 'ORGANIZATION' ||
+                  (message as { senderType?: unknown }).senderType === 'ADMIN') &&
+                typeof (message as { message?: unknown }).message === 'string' &&
+                typeof (message as { createdAt?: unknown }).createdAt === 'string'
+            )
+          : [],
       }
     : null
 

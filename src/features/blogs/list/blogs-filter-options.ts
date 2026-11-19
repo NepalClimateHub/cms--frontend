@@ -1,4 +1,4 @@
-import { parseAsString, parseAsBoolean } from 'nuqs'
+import { parseAsBoolean, parseAsString } from 'nuqs'
 
 export const blogsFilterOptions = {
   title: parseAsString,

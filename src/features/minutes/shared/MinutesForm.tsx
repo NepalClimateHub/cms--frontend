@@ -1,9 +1,8 @@
-import { FC } from 'react'
-import { UseFormReturn } from 'react-hook-form'
-import { useNavigate, useBlocker } from '@tanstack/react-router'
+import { useBlocker, useNavigate } from '@tanstack/react-router'
+import type { FC } from 'react'
+import type { UseFormReturn } from 'react-hook-form'
 import { DatePicker } from '@/ui/datepicker'
-import { Button } from '@/ui/shadcn/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
+import { MinimalTiptapEditor } from '@/ui/molecules/minimal-tiptap'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,18 +13,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/ui/shadcn/alert-dialog'
+import { Button } from '@/ui/shadcn/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
-import { MinimalTiptapEditor } from '@/ui/molecules/minimal-tiptap'
-import { Minutes } from '../../../schemas/minutes/minutes'
+import type { Minutes } from '../../../schemas/minutes/minutes'
 
 type Props = {
   form: UseFormReturn<Minutes>
@@ -69,7 +69,8 @@ const MinutesForm: FC<Props> = ({
                       Title <span className='text-red-500'>*</span>
                     </FormLabel>
                     <FormDescription>
-                      Enter the meeting title (e.g. NCH Monthly Coordination Call)
+                      Enter the meeting title (e.g. NCH Monthly Coordination
+                      Call)
                     </FormDescription>
                     <FormControl>
                       <Input
@@ -209,7 +210,8 @@ const MinutesForm: FC<Props> = ({
           <AlertDialogHeader>
             <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to discard them and leave this page?
+              You have unsaved changes. Are you sure you want to discard them
+              and leave this page?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

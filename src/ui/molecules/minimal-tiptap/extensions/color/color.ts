@@ -12,9 +12,9 @@ export const Color = TiptapColor.extend({
               this.editor.commands.unsetColor()
             }
             return false
-          }
-        }
-      })
+          },
+        },
+      }),
     ]
-  }
+  },
 })

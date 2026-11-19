@@ -1,6 +1,6 @@
-import { getDebouncer } from '@/utils/debouce';
-import { type ParserBuilder, useQueryStates } from 'nuqs';
-import { useCallback, useMemo } from 'react';
+import { type ParserBuilder, useQueryStates } from 'nuqs'
+import { useCallback, useMemo } from 'react'
+import { getDebouncer } from '@/utils/debouce'
 
 export type FilterValues =
   | string
@@ -8,37 +8,37 @@ export type FilterValues =
   | boolean
   | string[]
   | number[]
-  | null;
+  | null
 export type InitFilters = {
   [key: string]:
     | ParserBuilder<string>
     | ParserBuilder<number>
     | ParserBuilder<boolean>
     | ParserBuilder<string[]>
-    | ParserBuilder<number[]>;
-};
+    | ParserBuilder<number[]>
+}
 
 export const useFilters = (defaultFilters: InitFilters = {}) => {
   const [filters, setFilters] = useQueryStates(defaultFilters, {
     history: 'replace',
-  });
+  })
 
   const setFilterValue = useCallback(
     (key: string, value: FilterValues) => {
       setFilters((prev) => ({
         ...prev,
         [key]: value,
-      }));
+      }))
     },
     [setFilters]
-  );
+  )
 
   const setBulkFilterValues = useCallback(
     (filterValues: Record<string, FilterValues>) => {
-      setFilters(filterValues);
+      setFilters(filterValues)
     },
     [setFilters]
-  );
+  )
 
   const {
     debounce: debounceFilterSetter,
@@ -75,10 +75,10 @@ export const useFilters = (defaultFilters: InitFilters = {}) => {
         ...prev,
         [oldKey]: null,
         [newKey]: value,
-      }));
+      }))
     },
     [setFilters]
-  );
+  )
 
   const resetFilters = useCallback(() => {
     setFilters(null)
@@ -92,5 +92,5 @@ export const useFilters = (defaultFilters: InitFilters = {}) => {
     resetFilters,
     replaceFilter,
     setBulkFilterValues,
-  };
-};
+  }
+}

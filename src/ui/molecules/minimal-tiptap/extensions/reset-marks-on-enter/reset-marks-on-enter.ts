@@ -19,7 +19,7 @@ export const ResetMarksOnEnter = Extension.create({
         }
 
         return false
-      }
+      },
     }
-  }
+  },
 })

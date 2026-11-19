@@ -1,13 +1,15 @@
-import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { useToast } from '@/hooks/use-toast'
 import apiClient from '@/query/apiClient'
 import OrganizationVerificationViewDialog from '@/ui/organisms/dashboard/organization-verification-view-dialog'
 import { Button } from '@/ui/shadcn/button'
 import { DialogFooter } from '@/ui/shadcn/dialog'
-import { useToast } from '@/hooks/use-toast'
+import { Label } from '@/ui/shadcn/label'
+import { Textarea } from '@/ui/shadcn/textarea'
 import { getRoleFromToken } from '@/utils/jwt.util'
 import { isVerificationAdmin } from '@/utils/role-check.util'
-import { Loader2 } from 'lucide-react'
 import type { User } from '../data/schema'
 
 type Props = {
@@ -26,8 +28,12 @@ function toOrgProfile(user: User) {
     logoImageId: org.logoImageId ?? null,
     verificationDocumentUrl: org.verificationDocumentUrl ?? null,
     verificationDocumentId: org.verificationDocumentId ?? null,
+    verificationDocuments: org.verificationDocuments ?? null,
     verificationRequestRemarks: org.verificationRequestRemarks ?? null,
     verificationRequestedAt: org.verificationRequestedAt ?? null,
+    verificationAdminMessage: org.verificationAdminMessage ?? null,
+    verificationMessageSentAt: org.verificationMessageSentAt ?? null,
+    verificationMessages: org.verificationMessages ?? [],
   }
 }
 
@@ -38,7 +44,10 @@ export function UsersOrgVerificationDialog({
 }: Props) {
   const { toast } = useToast()
   const queryClient = useQueryClient()
-  const [isVerifying, setIsVerifying] = useState(false)
+  const [pendingAction, setPendingAction] = useState<
+    'verify' | 'feedback' | null
+  >(null)
+  const [feedback, setFeedback] = useState('')
   const role = getRoleFromToken()
   const canVerify = isVerificationAdmin(role)
   const orgProfile = user ? toOrgProfile(user) : null
@@ -49,7 +58,7 @@ export function UsersOrgVerificationDialog({
 
   const handleVerify = async () => {
     if (!orgId) return
-    setIsVerifying(true)
+    setPendingAction('verify')
     try {
       await apiClient.patch(`/api/v1/organizations/${orgId}/verify`, {
         isVerified: true,
@@ -73,7 +82,38 @@ export function UsersOrgVerificationDialog({
         variant: 'destructive',
       })
     } finally {
-      setIsVerifying(false)
+      setPendingAction(null)
+    }
+  }
+
+  const handleSendFeedback = async () => {
+    if (!orgId || !feedback.trim()) {
+      toast({
+        title: 'Message required',
+        description: 'Explain what information or documents are needed.',
+        variant: 'destructive',
+      })
+      return
+    }
+    setPendingAction('feedback')
+    try {
+      await apiClient.patch(`/api/v1/organizations/${orgId}/verify`, {
+        isVerified: false,
+        message: feedback.trim(),
+      })
+      toast({
+        title: 'Message sent',
+        description: 'The organization has been notified.',
+      })
+      await queryClient.invalidateQueries({
+        predicate: (q) => q.queryKey[0] === 'userControllerGetUsers',
+      })
+      setFeedback('')
+      onOpenChange(false)
+    } catch {
+      toast({ title: 'Message could not be sent', variant: 'destructive' })
+    } finally {
+      setPendingAction(null)
     }
   }
 
@@ -89,29 +129,52 @@ export function UsersOrgVerificationDialog({
       adminView
       footer={
         showVerify ? (
-          <DialogFooter className='gap-2 sm:justify-end'>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => onOpenChange(false)}
-            >
-              Close
-            </Button>
-            <Button
-              type='button'
-              onClick={handleVerify}
-              disabled={isVerifying}
-            >
-              {isVerifying ? (
-                <>
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Verifying…
-                </>
-              ) : (
-                'Verify organization'
-              )}
-            </Button>
-          </DialogFooter>
+          <div className='space-y-4 border-t pt-4'>
+            <div className='space-y-2'>
+              <Label htmlFor='organization-verification-feedback'>
+                Request changes
+              </Label>
+              <Textarea
+                id='organization-verification-feedback'
+                value={feedback}
+                onChange={(event) => setFeedback(event.target.value)}
+                placeholder='Explain what is incomplete or incorrect…'
+                rows={3}
+                disabled={pendingAction !== null}
+              />
+            </div>
+            <DialogFooter className='gap-2 sm:justify-end'>
+              <Button
+                type='button'
+                variant='secondary'
+                onClick={handleSendFeedback}
+                disabled={pendingAction !== null || !feedback.trim()}
+              >
+                {pendingAction === 'feedback' ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Sending…
+                  </>
+                ) : (
+                  'Send message'
+                )}
+              </Button>
+              <Button
+                type='button'
+                onClick={handleVerify}
+                disabled={pendingAction !== null}
+              >
+                {pendingAction === 'verify' ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Verifying…
+                  </>
+                ) : (
+                  'Verify organization'
+                )}
+              </Button>
+            </DialogFooter>
+          </div>
         ) : null
       }
     />

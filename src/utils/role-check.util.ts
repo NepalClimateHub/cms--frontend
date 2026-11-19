@@ -1,13 +1,11 @@
-import { AppRole } from './jwt.util'
+import type { AppRole } from './jwt.util'
 
 /**
  * Check if a role has admin-level access (Super Admin, Admin, or Content Admin).
  * Used for route guards and UI visibility.
  */
 export const isAdminLevel = (role: AppRole | null): boolean => {
-  return (
-    role === 'SUPER_ADMIN' || role === 'ADMIN' || role === 'CONTENT_ADMIN'
-  )
+  return role === 'SUPER_ADMIN' || role === 'ADMIN' || role === 'CONTENT_ADMIN'
 }
 
 /**

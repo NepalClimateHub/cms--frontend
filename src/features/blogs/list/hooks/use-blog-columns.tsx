@@ -1,15 +1,11 @@
-import { ColumnDef } from '@tanstack/react-table'
-import { BlogResponseDto } from '@/query/blogs/use-blogs'
+import type { ColumnDef } from '@tanstack/react-table'
+import { Info } from 'lucide-react'
+import type { BlogResponseDto } from '@/query/blogs/use-blogs'
 import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import { Badge } from '@/ui/shadcn/badge'
 import { cn } from '@/ui/shadcn/lib/utils'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/ui/shadcn/popover'
-import { Info } from 'lucide-react'
+import { Popover, PopoverContent, PopoverTrigger } from '@/ui/shadcn/popover'
 import BlogRowAction from '../components/blog-row-actions'
 
 export const useBlogsColumns = ({
@@ -59,7 +55,7 @@ export const useBlogsColumns = ({
         const title = row.original.title
         const words = title.split(' ')
         const displayTitle =
-          words.length > 5 ? words.slice(0, 5).join(' ') + '...' : title
+          words.length > 5 ? `${words.slice(0, 5).join(' ')}...` : title
         const category = row.original.category
         return (
           <div className='flex flex-col items-start gap-1'>
@@ -67,7 +63,10 @@ export const useBlogsColumns = ({
               {displayTitle}
             </div>
             {category && (
-              <Badge variant='outline' className='text-[11px] font-normal text-muted-foreground bg-muted/20'>
+              <Badge
+                variant='outline'
+                className='text-[11px] font-normal text-muted-foreground bg-muted/20'
+              >
                 {category}
               </Badge>
             )}
@@ -108,11 +107,14 @@ export const useBlogsColumns = ({
       cell: ({ row }) => {
         const publishedDate = row.original.publishedDate
         if (!publishedDate) return <div>N/A</div>
-        const formattedDate = new Date(publishedDate).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-        })
+        const formattedDate = new Date(publishedDate).toLocaleDateString(
+          'en-US',
+          {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          }
+        )
         return <div>{formattedDate}</div>
       },
       enableSorting: false,

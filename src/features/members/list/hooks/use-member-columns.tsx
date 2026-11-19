@@ -1,5 +1,5 @@
-import { ColumnDef } from '@tanstack/react-table'
-import { MemberResponseDto } from '@/query/members/use-members'
+import type { ColumnDef } from '@tanstack/react-table'
+import type { MemberResponseDto } from '@/query/members/use-members'
 import { DataTableColumnHeader } from '@/ui/molecules/data-table/data-table-column-header'
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/shadcn/avatar'
 import { Badge } from '@/ui/shadcn/badge'

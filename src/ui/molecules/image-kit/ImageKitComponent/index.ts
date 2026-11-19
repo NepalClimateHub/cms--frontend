@@ -1,33 +1,36 @@
-import React, { useContext } from 'react';
-import ImageKit from 'imagekit-javascript';
-import { IKContextBaseProps } from '../IKContext/props';
-import { ImageKitContext } from '../IKContext';
+import ImageKit from 'imagekit-javascript'
+import type React from 'react'
+import { useContext } from 'react'
+import { ImageKitContext } from '../IKContext'
+import type { IKContextBaseProps } from '../IKContext/props'
 
- const useImageKitComponent= <T = void>(props: React.PropsWithChildren & IKContextBaseProps & T):{getIKClient:() => ImageKit} => {
-  const contextOptions = useContext(ImageKitContext);
+const useImageKitComponent = <T = void>(
+  props: React.PropsWithChildren & IKContextBaseProps & T
+): { getIKClient: () => ImageKit } => {
+  const contextOptions = useContext(ImageKitContext)
 
   const getIKClient = (): ImageKit => {
-    if (contextOptions && contextOptions.ikClient) {
-      return contextOptions.ikClient;
+    if (contextOptions?.ikClient) {
+      return contextOptions.ikClient
     }
 
-    let { urlEndpoint }: { urlEndpoint?: string | null } = props;
-    urlEndpoint = urlEndpoint || (contextOptions && contextOptions.urlEndpoint);
+    let { urlEndpoint }: { urlEndpoint?: string | null } = props
+    urlEndpoint = urlEndpoint || contextOptions?.urlEndpoint
 
-    if (!urlEndpoint || urlEndpoint.trim() === "") {
-      throw new Error("Missing urlEndpoint during initialization");
+    if (!urlEndpoint || urlEndpoint.trim() === '') {
+      throw new Error('Missing urlEndpoint during initialization')
     }
 
     const ikClient = new ImageKit({
       urlEndpoint: urlEndpoint,
       // @ts-expect-error: fix later
-      sdkVersion: "",
-    });
+      sdkVersion: '',
+    })
 
-    return ikClient;
-  };
+    return ikClient
+  }
 
-  return {getIKClient};
+  return { getIKClient }
 }
 
-export default useImageKitComponent;
+export default useImageKitComponent

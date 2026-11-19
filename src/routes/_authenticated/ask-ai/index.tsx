@@ -6,7 +6,6 @@ import { Textarea } from '@/ui/shadcn/textarea'
 import {
   Send,
   Loader2,
-  ChevronRight,
   ChevronDown,
   Plus,
   BookOpen,
@@ -16,10 +15,29 @@ import {
   Check,
   ServerCrash,
   RotateCw,
+  ExternalLink,
+  History,
+  Database,
 } from 'lucide-react'
-import { useClimateChat, useChatSession, useChatHistory } from '@/query/ask-ai/climate-api'
+import {
+  buildRecentConversationHistory,
+  ChatSource,
+  parseVisualMetadata,
+  useClimateChat,
+  useChatHistory,
+  useChatSession,
+  VisualDecision,
+  VisualSpec,
+} from '@/query/ask-ai/climate-api'
+import { env } from '@/config/env.config'
+import { getAccessToken, useAuthStore } from '@/stores/authStore'
 import { cn } from '@/ui/shadcn/lib/utils'
-import { ChatHistoryMenu } from '@/features/ask-ai/components/ChatHistoryMenu'
+import { ChatHistorySheet } from '@/features/ask-ai/components/ChatHistorySheet'
+import {
+  InlineVisual,
+  VisualDecisionStatus,
+} from '@/features/ask-ai/components/visual-responses'
+import { isSuperAdmin } from '@/utils/role-check.util'
 import {
   Dialog,
   DialogContent,
@@ -34,20 +52,15 @@ export const Route = createFileRoute('/_authenticated/ask-ai/')({
   component: AskAI,
 })
 
-interface Source {
-  source?: string
-  title?: string
-  url?: string
-  documentId?: string
-  page?: number
-  score?: number
-}
+type Source = ChatSource
 
 interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
   sources?: Source[]
+  visual?: VisualSpec
+  visualDecision?: VisualDecision
   timestamp: Date
 }
 
@@ -106,7 +119,10 @@ function AskAI() {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
   const [conversationId, setConversationId] = useState<string>()
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const userRole = useAuthStore((state) => state.user?.role ?? null)
+  const showVisualDecision = isSuperAdmin(userRole)
 
   const chatMutation = useClimateChat()
 
@@ -116,12 +132,17 @@ function AskAI() {
   useEffect(() => {
     if (sessionData && conversationId) {
       setMessages(
-        sessionData.messages.map((msg) => ({
-          id: crypto.randomUUID(),
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content || '',
-          timestamp: new Date(msg.createdAt),
-        }))
+        sessionData.messages.map((msg) => {
+          const visualMetadata = parseVisualMetadata(msg.metadata)
+          return {
+            id: crypto.randomUUID(),
+            role: msg.role as 'user' | 'assistant',
+            content: msg.content || '',
+            sources: msg.sources,
+            ...visualMetadata,
+            timestamp: new Date(msg.createdAt),
+          }
+        })
       )
     }
   }, [sessionData, conversationId])
@@ -148,8 +169,11 @@ function AskAI() {
       const res = await chatMutation.mutateAsync({
         query: userMsg.content,
         conversation_id: conversationId,
+        conversation_history: buildRecentConversationHistory(messages),
+        top_k: 8,
       })
 
+      const visualMetadata = parseVisualMetadata(res.metadata)
       setMessages((p) => [
         ...p,
         {
@@ -157,6 +181,7 @@ function AskAI() {
           role: 'assistant',
           content: res.response,
           sources: res.sources,
+          ...visualMetadata,
           timestamp: new Date(),
         },
       ])
@@ -220,12 +245,23 @@ function AskAI() {
       ) : (
         <>
           <div className='flex-shrink-0 flex items-center justify-end gap-3 mb-1'>
-            <ChatHistoryMenu
-              onSelectSession={setConversationId}
-              currentSessionId={conversationId}
-              onNewChat={handleNewChat}
-            />
+            <Button
+              variant='outline'
+              className='h-9 gap-2'
+              onClick={() => setIsHistoryOpen(true)}
+            >
+              <History className='h-4 w-4' />
+              <span>History</span>
+            </Button>
           </div>
+
+          <ChatHistorySheet
+            open={isHistoryOpen}
+            onOpenChange={setIsHistoryOpen}
+            onSelectSession={setConversationId}
+            currentSessionId={conversationId}
+            onNewChat={handleNewChat}
+          />
 
           <div className='flex flex-1 overflow-hidden'>
 
@@ -237,7 +273,11 @@ function AskAI() {
                     <EmptyState onSuggestion={setInput} />
                   ) : (
                     messages.map((msg) => (
-                      <ChatMessage key={msg.id} message={msg} />
+                      <ChatMessage
+                        key={msg.id}
+                        message={msg}
+                        showVisualDecision={showVisualDecision}
+                      />
                     ))
                   )}
 
@@ -328,37 +368,39 @@ function EmptyState({ onSuggestion }: { onSuggestion: (q: string) => void }) {
 }
 
 
-function getSourceDetails(source: Source) {
-  const rawTitle = source.title || source.source || 'Unknown source'
-  let filename = rawTitle.split('/').pop() || ''
-  if (filename && !filename.includes('.')) filename += '.pdf'
-
-  const ragApiUrl = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000'
-  const cmsBackendUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1').replace(/\/api\/v1\/?$/, '')
-
-  let documentUrl = ''
-  if (source.documentId) {
-    documentUrl = `${ragApiUrl}/documents/${encodeURIComponent(source.documentId)}`
-  } else if (source.url) {
-    if (source.url.startsWith('http')) {
-      documentUrl = source.url
-    } else {
-      documentUrl = `${cmsBackendUrl}${source.url}`
-    }
-  } else if (filename && filename.length < 90 && !filename.includes(',')) {
-    documentUrl = `${ragApiUrl}/documents/${encodeURIComponent(filename)}`
-  }
-
-  const displayTitle = source.title 
-    ? source.title 
-    : (filename.length < 80 ? filename : 'Document Source')
-
-  return { title: displayTitle, filename: displayTitle, documentUrl }
+function sourceLabel(source: Source) {
+  const raw = source.title || source.source || source.url || 'Unknown source'
+  return raw.split('/').pop() || raw
 }
 
+function sourceDocumentUrl(source: Source) {
+  const apiUrl = (env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
+  if (source.documentId) {
+    return `${apiUrl}/api/v1/ai-assistant/documents/${source.documentId}/file`
+  }
+  if (source.url && /^https?:\/\//i.test(source.url)) return source.url
+  if (source.url?.startsWith('/api/')) {
+    return `${apiUrl}${source.url}`
+  }
+
+  const rawSource = source.url || source.source
+  if (!rawSource) return ''
+  const filename = rawSource.split('/').pop() || ''
+  const ragApiUrl = env.VITE_RAG_API_URL.replace(/\/$/, '')
+  return filename
+    ? `${ragApiUrl}/documents/${encodeURIComponent(filename)}`
+    : ''
+}
+
+function sourceRequiresAuth(source: Source) {
+  return Boolean(
+    source.documentId || source.url?.startsWith('/api/')
+  )
+}
 
 function SourceCard({ source, index }: { source: Source; index: number }) {
-  const { filename, documentUrl } = getSourceDetails(source)
+  const filename = sourceLabel(source)
+  const documentUrl = sourceDocumentUrl(source)
 
   return (
     <div className='flex items-center gap-3 rounded-lg border bg-card px-3 py-2 hover:shadow-sm transition-shadow'>
@@ -368,15 +410,27 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
 
       <p className='text-sm font-medium truncate flex-1 min-w-0'>{filename}</p>
 
-      {documentUrl && (
+      {documentUrl && source.sourceType === 'dataset' && (
+        <a
+          href={documentUrl}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='flex flex-shrink-0 items-center gap-1 text-xs font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300'
+        >
+          <Database className='h-3.5 w-3.5' />
+          View Data
+        </a>
+      )}
+
+      {documentUrl && source.sourceType !== 'dataset' && (
         <Dialog>
           <DialogTrigger asChild>
             <button className='flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors flex-shrink-0'>
               <BookOpen className='h-3.5 w-3.5' />
-              View Document
+              View Source
             </button>
           </DialogTrigger>
-          <DocumentViewerDialog filename={filename} documentUrl={documentUrl} page={source.page} />
+          <DocumentViewerDialog source={source} />
         </Dialog>
       )}
 
@@ -387,8 +441,24 @@ function SourceCard({ source, index }: { source: Source; index: number }) {
   )
 }
 
+function VisualCitation({
+  sourceIndex,
+  sources,
+}: {
+  sourceIndex: number
+  sources: Source[]
+}) {
+  const source = sources[sourceIndex - 1]
+  return source ? <SourceBubble source={source} index={sourceIndex} /> : null
+}
 
-function ChatMessage({ message }: { message: Message }) {
+function ChatMessage({
+  message,
+  showVisualDecision,
+}: {
+  message: Message
+  showVisualDecision: boolean
+}) {
   const isUser = message.role === 'user'
   const messageContent = message?.content || ''
   const { cleaned, sources } = isUser
@@ -483,6 +553,19 @@ function ChatMessage({ message }: { message: Message }) {
                 </ReactMarkdown>
               </div>
 
+              {message.visual && (
+                <InlineVisual
+                  visual={message.visual}
+                  renderCitation={(sourceIndex) => (
+                    <VisualCitation sourceIndex={sourceIndex} sources={sources} />
+                  )}
+                />
+              )}
+
+              {showVisualDecision && message.visualDecision && (
+                <VisualDecisionStatus decision={message.visualDecision} />
+              )}
+
               <div className='flex items-center gap-3 mt-3 text-xs text-muted-foreground'>
                 {sources.length > 0 && (
                   <span className='flex items-center gap-1 text-green-600 dark:text-green-400'>
@@ -515,13 +598,32 @@ function ChatMessage({ message }: { message: Message }) {
 }
 
 function SourceBubble({ source, index }: { source: Source; index: number }) {
-  const { filename, documentUrl } = getSourceDetails(source)
+  const filename = sourceLabel(source)
+  const documentUrl = sourceDocumentUrl(source)
 
   if (!documentUrl) {
     return (
-      <span className='inline-flex items-center justify-center h-5 w-5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[10px] font-bold cursor-default'>
+      <span
+        className='inline-flex items-center justify-center h-5 w-5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[10px] font-bold cursor-default'
+        data-source-index={index}
+      >
         {index}
       </span>
+    )
+  }
+
+  if (source.sourceType === 'dataset') {
+    return (
+      <a
+        href={documentUrl}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='inline-flex h-5 w-5 items-center justify-center rounded bg-blue-100 text-[10px] font-bold text-blue-700 transition-colors hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-800'
+        title={`Open ${filename}`}
+        data-source-index={index}
+      >
+        {index}
+      </a>
     )
   }
 
@@ -531,42 +633,99 @@ function SourceBubble({ source, index }: { source: Source; index: number }) {
         <button
           className='inline-flex items-center justify-center h-5 w-5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[10px] font-bold hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors'
           title={`View ${filename}`}
+          data-source-index={index}
         >
           {index}
         </button>
       </DialogTrigger>
-      <DocumentViewerDialog filename={filename} documentUrl={documentUrl} page={source.page} />
+      <DocumentViewerDialog source={source} />
     </Dialog>
   )
 }
 
-function DocumentViewerDialog({ filename, documentUrl, page }: { filename: string, documentUrl: string, page?: number }) {
+function DocumentViewerDialog({ source }: { source: Source }) {
+  const filename = sourceLabel(source)
+  const documentUrl = sourceDocumentUrl(source)
+  const [viewerUrl, setViewerUrl] = useState('')
+  const [loadError, setLoadError] = useState('')
+
+  useEffect(() => {
+    if (!documentUrl) return
+    if (!sourceRequiresAuth(source)) {
+      setViewerUrl(documentUrl)
+      return
+    }
+
+    const controller = new AbortController()
+    let objectUrl = ''
+    const loadDocument = async () => {
+      try {
+        const token = getAccessToken()
+        const response = await fetch(documentUrl, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          signal: controller.signal,
+        })
+        if (!response.ok) throw new Error('Unable to load source document')
+        objectUrl = URL.createObjectURL(await response.blob())
+        setViewerUrl(objectUrl)
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setLoadError(
+            error instanceof Error ? error.message : 'Unable to load source document'
+          )
+        }
+      }
+    }
+    loadDocument()
+
+    return () => {
+      controller.abort()
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
+  }, [documentUrl, source])
+
   return (
     <DialogContent className='max-w-5xl w-[90vw] h-[85vh] p-0 gap-0'>
-      <DialogHeader className='px-6 py-4 border-b flex flex-row items-center justify-between'>
-        <DialogTitle className='text-sm font-medium truncate flex-1'>
+      <DialogHeader className='flex flex-row items-center justify-between border-b py-4 pl-6 pr-12'>
+        <DialogTitle className='min-w-0 flex-1 truncate text-sm font-medium'>
           {filename}
-          {page != null && (
+          {source.page != null && (
             <span className='ml-2 text-muted-foreground font-normal'>
-              — Page {page}
+              - Page {source.page}
             </span>
           )}
         </DialogTitle>
-        <a
-          href={documentUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-blue-600 hover:underline flex items-center gap-1 ml-4"
-        >
-          Open in New Tab <ChevronRight className="h-3 w-3" />
-        </a>
+        {viewerUrl && (
+          <a
+            href={viewerUrl}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='ml-3 inline-flex flex-shrink-0 items-center gap-1 text-xs text-blue-600 hover:underline'
+            aria-label='Open source document in a new tab'
+            title='Open in new tab'
+          >
+            <span className='hidden sm:inline'>Open in New Tab</span>
+            <ExternalLink className='h-3.5 w-3.5' />
+          </a>
+        )}
       </DialogHeader>
-      <iframe
-        src={`${documentUrl}${page ? `#page=${page}` : ''}`}
-        className='w-full flex-1 border-0'
-        style={{ height: 'calc(85vh - 65px)' }}
-        title={`PDF: ${filename}`}
-      />
+      {loadError ? (
+        <div className='flex flex-1 items-center justify-center px-6 text-sm text-destructive'>
+          {loadError}
+        </div>
+      ) : viewerUrl ? (
+        <iframe
+          src={`${viewerUrl}${source.page ? `#page=${source.page}` : ''}`}
+          className='w-full flex-1 border-0'
+          style={{ height: 'calc(85vh - 65px)' }}
+          title={`PDF: ${filename}`}
+        />
+      ) : (
+        <div className='flex flex-1 items-center justify-center gap-2 text-sm text-muted-foreground'>
+          <Loader2 className='h-4 w-4 animate-spin' />
+          Loading document...
+        </div>
+      )}
     </DialogContent>
   )
 }

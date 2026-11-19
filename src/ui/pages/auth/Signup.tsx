@@ -1,10 +1,11 @@
-import { useState } from 'react'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
+import { Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import type { z } from 'zod'
 import { useSignup } from '@/query/auth/use-auth'
-import { orgSchema, indSchema } from '@/schemas/auth/signup'
+import { indSchema, orgSchema } from '@/schemas/auth/signup'
 import { PasswordInput } from '@/ui/password-input'
 import { Button } from '@/ui/shadcn/button'
 import { Card, CardContent } from '@/ui/shadcn/card'
@@ -20,12 +21,11 @@ import { Input } from '@/ui/shadcn/input'
 import { cn } from '@/ui/shadcn/lib/utils'
 import {
   Select,
-  SelectTrigger,
   SelectContent,
   SelectItem,
+  SelectTrigger,
   SelectValue,
 } from '@/ui/shadcn/select'
-import { Loader2 } from 'lucide-react'
 
 const organizationTypes = [
   'Non-Profit / NGO',

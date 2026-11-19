@@ -1,5 +1,7 @@
-import { useState, useMemo } from 'react'
 import { format } from 'date-fns'
+import { Calendar, FilterX, RefreshCw } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { usePagination } from '@/hooks/use-pagination'
 import { useGetActivities } from '@/query/activities/use-activities'
 import { useGetUsers } from '@/query/users/use-users'
 import { Main } from '@/ui/layouts/main'
@@ -24,8 +26,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/ui/shadcn/table'
-import { RefreshCw, FilterX, Calendar } from 'lucide-react'
-import { usePagination } from '@/hooks/use-pagination'
 
 const ACTIONS = [
   'LOGIN',
@@ -296,18 +296,18 @@ export default function ActivitiesFeature() {
             selectedEntity !== 'all' ||
             startDate ||
             endDate) && (
-              <div className='mt-4 flex justify-end'>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  onClick={handleResetFilters}
-                  className='h-8 text-xs text-muted-foreground hover:text-foreground'
-                >
-                  <FilterX className='mr-2 h-4 w-4' />
-                  Reset Filters
-                </Button>
-              </div>
-            )}
+            <div className='mt-4 flex justify-end'>
+              <Button
+                variant='ghost'
+                size='sm'
+                onClick={handleResetFilters}
+                className='h-8 text-xs text-muted-foreground hover:text-foreground'
+              >
+                <FilterX className='mr-2 h-4 w-4' />
+                Reset Filters
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 

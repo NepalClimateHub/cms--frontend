@@ -1,9 +1,8 @@
-
-import { FC } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
-import { ResourceFormValues } from '@/schemas/resource'
-import { ResourceType, ResourceLevel } from '@/query/resources/use-resources'
+import type { FC } from 'react'
+import type { UseFormReturn } from 'react-hook-form'
+import { ResourceLevel, ResourceType } from '@/query/resources/use-resources'
+import type { ResourceFormValues } from '@/schemas/resource'
 import ImageUpload from '@/ui/image-upload'
 import { MultiSelect } from '@/ui/multi-select'
 import { Button } from '@/ui/shadcn/button'
@@ -11,11 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
 import {
@@ -60,17 +59,20 @@ const ResourceForm: FC<Props> = ({
     ResourceType.CASE_STUDIES,
     ResourceType.REPORTS,
     ResourceType.TOOLKITS_AND_GUIDES,
-    ResourceType.THESES_AND_DISSERTATIONS
+    ResourceType.THESES_AND_DISSERTATIONS,
   ].includes(type)
 
   const showCourseFields = type === ResourceType.COURSES
-  const showAuthor = [ResourceType.RESEARCH_ARTICLES, ResourceType.THESES_AND_DISSERTATIONS].includes(type)
+  const showAuthor = [
+    ResourceType.RESEARCH_ARTICLES,
+    ResourceType.THESES_AND_DISSERTATIONS,
+  ].includes(type)
   const showYear = [
-    ResourceType.RESEARCH_ARTICLES, 
-    ResourceType.THESES_AND_DISSERTATIONS, 
-    ResourceType.CASE_STUDIES, 
-    ResourceType.REPORTS, 
-    ResourceType.TOOLKITS_AND_GUIDES
+    ResourceType.RESEARCH_ARTICLES,
+    ResourceType.THESES_AND_DISSERTATIONS,
+    ResourceType.CASE_STUDIES,
+    ResourceType.REPORTS,
+    ResourceType.TOOLKITS_AND_GUIDES,
   ].includes(type)
 
   return (
@@ -84,7 +86,6 @@ const ResourceForm: FC<Props> = ({
             <CardTitle>Resource Details</CardTitle>
           </CardHeader>
           <CardContent className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-            
             <FormField
               control={form.control}
               name='title'
@@ -139,7 +140,7 @@ const ResourceForm: FC<Props> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Level</FormLabel>
-                   <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder='Select level ' />
@@ -180,81 +181,105 @@ const ResourceForm: FC<Props> = ({
             )}
 
             {showCourseFields && (
-                <>
-                 <FormField
-                    control={form.control}
-                    name='courseProvider'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Course Provider</FormLabel>
-                        <FormControl>
-                          <Input placeholder='e.g. Coursera' className='w-full' {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name='platform'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Platform</FormLabel>
-                        <FormControl>
-                          <Input placeholder='e.g. Online' className='w-full' {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name='duration'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Duration</FormLabel>
-                        <FormControl>
-                          <Input placeholder='e.g. 4 weeks' className='w-full' {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </>
-            )}
-            
-            {showAuthor && (
-                 <FormField
-                    control={form.control}
-                    name='author'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Author</FormLabel>
-                        <FormControl>
-                          <Input placeholder='Author Name' className='w-full' {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-            )}
-            
-            {showYear && (
-                 <FormField
-                    control={form.control}
-                    name='publicationYear'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Year</FormLabel>
-                        <FormControl>
-                          <Input placeholder='YYYY' className='w-full' {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <>
+                <FormField
+                  control={form.control}
+                  name='courseProvider'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Course Provider</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='e.g. Coursera'
+                          className='w-full'
+                          {...field}
+                          value={field.value || ''}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='platform'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Platform</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='e.g. Online'
+                          className='w-full'
+                          {...field}
+                          value={field.value || ''}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='duration'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Duration</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='e.g. 4 weeks'
+                          className='w-full'
+                          {...field}
+                          value={field.value || ''}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
             )}
 
+            {showAuthor && (
+              <FormField
+                control={form.control}
+                name='author'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Author</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Author Name'
+                        className='w-full'
+                        {...field}
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {showYear && (
+              <FormField
+                control={form.control}
+                name='publicationYear'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Year</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='YYYY'
+                        className='w-full'
+                        {...field}
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -314,7 +339,7 @@ const ResourceForm: FC<Props> = ({
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name='bannerImageId'
@@ -334,27 +359,27 @@ const ResourceForm: FC<Props> = ({
                 </FormItem>
               )}
             />
-            
-             <FormField
-                control={form.control}
-                name='isDraft'
-                render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                    <div className='space-y-0.5'>
-                      <FormLabel className='text-base'>Draft Status</FormLabel>
-                      <FormDescription>
-                        Save as draft or publish immediately
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+
+            <FormField
+              control={form.control}
+              name='isDraft'
+              render={({ field }) => (
+                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+                  <div className='space-y-0.5'>
+                    <FormLabel className='text-base'>Draft Status</FormLabel>
+                    <FormDescription>
+                      Save as draft or publish immediately
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           </CardContent>
         </Card>
 
@@ -367,7 +392,11 @@ const ResourceForm: FC<Props> = ({
             Cancel
           </Button>
           <Button type='submit' disabled={isLoading}>
-            {isLoading ? 'Saving...' : isEdit ? 'Update Resource' : 'Create Resource'}
+            {isLoading
+              ? 'Saving...'
+              : isEdit
+                ? 'Update Resource'
+                : 'Create Resource'}
           </Button>
         </div>
       </form>

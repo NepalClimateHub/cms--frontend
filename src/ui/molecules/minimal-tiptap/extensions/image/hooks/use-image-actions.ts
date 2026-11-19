@@ -1,19 +1,17 @@
-import * as React from 'react'
 import type { Node } from '@tiptap/pm/model'
 import type { Editor } from '@tiptap/react'
+import * as React from 'react'
 import { isUrl } from '../../../utils'
 
 interface UseImageActionsProps {
   editor: Editor
   node: Node
   src: string
-  onViewClick: (value: boolean) => void
-  onResizeClick: () => void
   onCropClick: () => void
+  onReplaceClick: () => void
 }
 
 export type ImageActionHandlers = {
-  onView?: () => void
   onDownload?: () => void
   onCopy?: () => void
   onCopyLink?: () => void
@@ -24,15 +22,10 @@ export const useImageActions = ({
   editor,
   node,
   src,
-  onViewClick,
-  onResizeClick,
   onCropClick,
+  onReplaceClick,
 }: UseImageActionsProps) => {
   const isLink = React.useMemo(() => isUrl(src), [src])
-
-  const onView = React.useCallback(() => {
-    onViewClick(true)
-  }, [onViewClick])
 
   const onDownload = React.useCallback(() => {
     editor.commands.downloadImage({ src: node.attrs.src, alt: node.attrs.alt })
@@ -46,13 +39,13 @@ export const useImageActions = ({
     editor.commands.copyLink({ src: node.attrs.src })
   }, [editor.commands, node.attrs.src])
 
-  const onResize = React.useCallback(() => {
-    onResizeClick()
-  }, [onResizeClick])
-
   const onCrop = React.useCallback(() => {
     onCropClick()
   }, [onCropClick])
+
+  const onReplace = React.useCallback(() => {
+    onReplaceClick()
+  }, [onReplaceClick])
 
   const onRemoveImg = React.useCallback(() => {
     editor.commands.command(({ tr, dispatch }) => {
@@ -71,12 +64,11 @@ export const useImageActions = ({
 
   return {
     isLink,
-    onView,
     onDownload,
     onCopy,
     onCopyLink,
-    onResize,
     onCrop,
+    onReplace,
     onRemoveImg,
   }
 }

@@ -1,23 +1,28 @@
-
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate, useParams } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useGetResource, useUpdateResource, ResourceType, Tag } from '@/query/resources/use-resources'
-import { ResourceFormValues, resourceSchema } from '@/schemas/resource'
+import {
+  ResourceType,
+  type Tag,
+  useGetResource,
+  useUpdateResource,
+} from '@/query/resources/use-resources'
+import { useGetTags } from '@/query/tags/use-tags'
+import { type ResourceFormValues, resourceSchema } from '@/schemas/resource'
 import { Main } from '@/ui/layouts/main'
 import PageHeader from '@/ui/page-header'
-import ResourceForm from '../components/resource-form'
-import { useGetTags } from '@/query/tags/use-tags'
-import { useNavigate, useParams } from '@tanstack/react-router'
 import { Button } from '@/ui/shadcn/button'
-import { ArrowLeft } from 'lucide-react'
+import ResourceForm from '../components/resource-form'
 
 export default function EditResource() {
   const { id } = useParams({ from: '/_authenticated/resources/$id' })
   const navigate = useNavigate()
   const updateResourceMutation = useUpdateResource()
-  
-  const { data: resourceData, isLoading: isResourceLoading } = useGetResource(id)
+
+  const { data: resourceData, isLoading: isResourceLoading } =
+    useGetResource(id)
   const resource = resourceData?.data
 
   const { data: tagsData } = useGetTags({ query: { limit: 100 } })
@@ -60,7 +65,10 @@ export default function EditResource() {
     }
   }, [resource, form])
 
-  const handleImageUpload = (assetId: string | null, assetURL: string | null) => {
+  const handleImageUpload = (
+    assetId: string | null,
+    assetURL: string | null
+  ) => {
     form.setValue('bannerImageId', assetId || undefined)
     form.setValue('bannerImageUrl', assetURL || undefined)
   }
@@ -72,9 +80,9 @@ export default function EditResource() {
 
   if (isResourceLoading) {
     return (
-        <Main>
-            <div>Loading...</div>
-        </Main>
+      <Main>
+        <div>Loading...</div>
+      </Main>
     )
   }
 
@@ -84,7 +92,10 @@ export default function EditResource() {
         title='Edit Resource'
         description='Update your resource details'
         actions={
-          <Button variant='outline' onClick={() => navigate({ to: '/resources' })}>
+          <Button
+            variant='outline'
+            onClick={() => navigate({ to: '/resources' })}
+          >
             <ArrowLeft className='mr-2 h-4 w-4' /> Back
           </Button>
         }

@@ -1,5 +1,7 @@
-import { useState, type ReactNode } from 'react'
+import { ExternalLink, FileText } from 'lucide-react'
+import { type ReactNode, useState } from 'react'
 import type { OrganizationProfile } from '@/schemas/auth/organization-profile'
+import { VerificationConversation } from '@/ui/molecules/verification-conversation'
 import {
   Dialog,
   DialogContent,
@@ -7,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/ui/shadcn/dialog'
-import { ExternalLink, FileText } from 'lucide-react'
 
 type OrganizationVerificationViewDialogProps = {
   open: boolean
@@ -50,13 +51,21 @@ export default function OrganizationVerificationViewDialog({
     ? new Date(organization.verificationRequestedAt).toLocaleString()
     : null
 
-  const docUrl = organization.verificationDocumentUrl
-  const remarks = organization.verificationRequestRemarks?.trim()
+  const documents = organization.verificationDocuments?.length
+    ? organization.verificationDocuments
+    : organization.verificationDocumentUrl
+      ? [
+          {
+            id: organization.verificationDocumentId ?? '',
+            url: organization.verificationDocumentUrl,
+          },
+        ]
+      : []
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-h-[90vh] max-w-lg overflow-y-auto'>
-        <DialogHeader>
+      <DialogContent className='flex max-h-[90vh] max-w-lg flex-col overflow-hidden p-0'>
+        <DialogHeader className='shrink-0 px-6 pt-6'>
           <DialogTitle className='flex items-center gap-2'>
             <FileText className='h-5 w-5' />
             Verification application
@@ -68,7 +77,7 @@ export default function OrganizationVerificationViewDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className='space-y-4 text-sm'>
+        <div className='min-h-0 flex-1 space-y-4 overflow-y-auto px-6 pb-6 text-sm'>
           {submittedAt ? (
             <div>
               <p className='font-medium text-foreground'>Submitted</p>
@@ -76,43 +85,34 @@ export default function OrganizationVerificationViewDialog({
             </div>
           ) : null}
 
-          {docUrl ? (
+          {documents.length ? (
             <div className='space-y-2'>
-              <p className='font-medium text-foreground'>Supporting document</p>
-              {open ? <DocumentPreview url={docUrl} /> : null}
-              <a
-                href={docUrl}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='inline-flex items-center gap-1.5 text-primary underline-offset-4 hover:underline'
-              >
-                Open document link
-                <ExternalLink className='h-3.5 w-3.5' />
-              </a>
-              {organization.verificationDocumentId ? (
-                <p className='text-xs text-muted-foreground'>
-                  File ID: {organization.verificationDocumentId}
-                </p>
-              ) : null}
+              <p className='font-medium text-foreground'>
+                Supporting documents
+              </p>
+              {documents.map((document, index) => (
+                <div key={`${document.id}-${index}`} className='space-y-1'>
+                  {open ? <DocumentPreview url={document.url} /> : null}
+                  <a
+                    href={document.url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='inline-flex items-center gap-1.5 text-primary underline-offset-4 hover:underline'
+                  >
+                    Open document {index + 1}
+                    <ExternalLink className='h-3.5 w-3.5' />
+                  </a>
+                </div>
+              ))}
             </div>
           ) : (
             <p className='text-muted-foreground'>No document URL on file.</p>
           )}
-
-          {remarks ? (
-            <div className='space-y-2'>
-              <p className='font-medium text-foreground'>
-                Message to administrators
-              </p>
-              <div className='whitespace-pre-wrap rounded-md border bg-muted/30 p-3 text-muted-foreground'>
-                {remarks}
-              </div>
-            </div>
-          ) : (
-            <p className='text-muted-foreground'>No message was provided.</p>
-          )}
+          <VerificationConversation
+            messages={organization.verificationMessages}
+          />
         </div>
-        {footer}
+        {footer ? <div className='shrink-0 px-6 pb-6'>{footer}</div> : null}
       </DialogContent>
     </Dialog>
   )

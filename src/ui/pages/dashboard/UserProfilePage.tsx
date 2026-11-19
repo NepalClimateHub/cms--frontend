@@ -1,8 +1,25 @@
-import { useEffect, useState } from 'react'
 import { useSearch } from '@tanstack/react-router'
+import {
+  Briefcase,
+  CalendarDays,
+  Camera,
+  Edit,
+  Facebook,
+  Instagram,
+  Key,
+  Linkedin,
+  Loader2,
+  Mail,
+  Pencil,
+  User,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import type { UserOutput } from '@/api/types.gen'
+import { toast } from '@/hooks/use-toast'
 import apiClient from '@/query/apiClient'
 import { useGetProfile } from '@/query/auth/use-auth'
 import type { User as AuthStoreUser } from '@/schemas/auth/profile'
+import { useAuthStore } from '@/stores/authStore'
 import { ImagePreviewDialog } from '@/ui/image-preview-dialog'
 import ImageUpload from '@/ui/image-upload'
 import ChangePasswordDialog from '@/ui/organisms/dashboard/ChangePasswordDialog'
@@ -20,26 +37,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/ui/shadcn/dialog'
-import { getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
-import { cn } from '@/ui/shadcn/lib/utils'
-import {
-  CalendarDays,
-  Mail,
-  User,
-  Edit,
-  Key,
-  Pencil,
-  Camera,
-  Loader2,
-  Briefcase,
-  Linkedin,
-  Facebook,
-  Instagram,
-} from 'lucide-react'
-import type { UserOutput } from '@/api/types.gen'
-import { useAuthStore } from '@/stores/authStore'
+import { cn, getInitialsForAvatar } from '@/ui/shadcn/lib/utils'
 import { nullableString } from '@/utils/map-user-output'
-import { toast } from '@/hooks/use-toast'
 
 function authStoreUserToUserOutput(u: AuthStoreUser): UserOutput {
   return {

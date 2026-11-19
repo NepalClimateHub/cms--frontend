@@ -1,16 +1,16 @@
 import { Link } from '@tanstack/react-router'
-import { useGetProfile } from '@/query/auth/use-auth'
-import { Main } from '@/ui/layouts/main'
-import { Button } from '@/ui/shadcn/button'
-import { Card, CardContent } from '@/ui/shadcn/card'
 import {
   BookOpen,
   Building2,
   MessageCircle,
-  UserCircle,
   ShieldCheck,
+  UserCircle,
 } from 'lucide-react'
+import { useGetProfile } from '@/query/auth/use-auth'
 import { useAuthStore } from '@/stores/authStore'
+import { Main } from '@/ui/layouts/main'
+import { Button } from '@/ui/shadcn/button'
+import { Card, CardContent } from '@/ui/shadcn/card'
 import { getProfileCompletion } from '@/utils/profile-completion'
 
 export default function OrganizationDashboardHome() {

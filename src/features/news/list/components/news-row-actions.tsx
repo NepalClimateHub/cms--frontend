@@ -1,28 +1,28 @@
-import { FC } from 'react'
-import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
-import { Row } from '@tanstack/react-table'
+import type { Row } from '@tanstack/react-table'
+import { format } from 'date-fns'
+import {
+  Calendar,
+  ExternalLink,
+  LucideEye,
+  Newspaper,
+  Pencil,
+  Trash,
+  User,
+} from 'lucide-react'
+import type { FC } from 'react'
+import type { NewsResponseDto } from '@/api/types.gen'
 import { useNewsAPI } from '@/query/news/use-news'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
-  DialogHeader,
   DialogContent,
+  DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@/ui/shadcn/dialog'
-import {
-  LucideEye,
-  Pencil,
-  Trash,
-  ExternalLink,
-  Calendar,
-  User,
-  Newspaper,
-} from 'lucide-react'
-import { NewsResponseDto } from '@/api/types.gen'
 
 type NewsRowActionProps = {
   row: Row<NewsResponseDto>
@@ -47,7 +47,7 @@ const NewsRowAction: FC<NewsRowActionProps> = ({ row }) => {
       },
       // @ts-expect-error: fix later
       body: {
-        isDraft: isDraft ? true : false,
+        isDraft: !!isDraft,
       },
     })
   }

@@ -1,11 +1,15 @@
-import { useEffect, useState, useRef, useMemo } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { GripVertical, PlusIcon, Users } from 'lucide-react'
+import { parseAsString } from 'nuqs'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useFilters } from '@/hooks/use-filters'
+import { usePagination } from '@/hooks/use-pagination'
 import {
+  type MemberResponseDto,
   useGetMembers,
   useReorderMembers,
-  MemberResponseDto,
 } from '@/query/members/use-members'
-import { MEMBER_TEAMS, MEMBER_STATUSES } from '@/schemas/member'
+import { MEMBER_STATUSES, MEMBER_TEAMS } from '@/schemas/member'
 import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/ui/loader'
 import { DataTablePagination } from '@/ui/molecules/data-table/data-table-pagination'
@@ -21,10 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/ui/shadcn/select'
-import { PlusIcon, GripVertical, Users } from 'lucide-react'
-import { parseAsString } from 'nuqs'
-import { useFilters } from '@/hooks/use-filters'
-import { usePagination } from '@/hooks/use-pagination'
 import MemberRowActions from './components/member-row-actions'
 
 const MemberList = () => {

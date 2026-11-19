@@ -15,7 +15,7 @@ export const BoxLoaderWrapper = ({
   isLoading: boolean
   children: React.ReactNode
 }) => {
-  return isLoading ? <BoxLoader height={'h-72'} /> : <>{children}</>
+  return isLoading ? <BoxLoader height={'h-72'} /> : children
 }
 
 export const TableLoader = () => {

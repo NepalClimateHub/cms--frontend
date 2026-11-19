@@ -1,6 +1,6 @@
-import { FC } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
+import type { FC } from 'react'
+import type { UseFormReturn } from 'react-hook-form'
 import { DatePicker } from '@/ui/datepicker'
 import { MultiSelect } from '@/ui/multi-select'
 import { Button } from '@/ui/shadcn/button'
@@ -8,11 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/ui/shadcn/card'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '@/ui/shadcn/form'
 import { Input } from '@/ui/shadcn/input'
 import {
@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from '@/ui/shadcn/select'
 import { Switch } from '@/ui/shadcn/switch'
-import { News, modeOptions } from '../../../schemas/news/news'
+import { modeOptions, type News } from '../../../schemas/news/news'
 
 type Props = {
   form: UseFormReturn<News>

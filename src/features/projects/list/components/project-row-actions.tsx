@@ -1,10 +1,14 @@
-
-import { FC, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Row } from '@tanstack/react-table'
+import type { Row } from '@tanstack/react-table'
+import { format } from 'date-fns'
 import { Eye, Pen, Trash } from 'lucide-react'
-import { useDeleteProject, ProjectResponseDto } from '@/query/projects/use-projects'
+import { type FC, useState } from 'react'
+import {
+  type ProjectResponseDto,
+  useDeleteProject,
+} from '@/query/projects/use-projects'
 import { ConfirmDialog } from '@/ui/confirm-dialog'
+import { Badge } from '@/ui/shadcn/badge'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
@@ -14,9 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/ui/shadcn/dialog'
-import { Badge } from '@/ui/shadcn/badge'
 import { Separator } from '@/ui/shadcn/separator'
-import { format } from 'date-fns'
 
 interface DataTableRowActionsProps {
   row: Row<ProjectResponseDto>
@@ -84,12 +86,27 @@ const ProjectRowActions: FC<DataTableRowActionsProps> = ({ row }) => {
                 <div className='flex flex-1 flex-row items-center justify-between gap-2'>
                   <div className='flex items-center gap-2'>
                     <Badge
-                      variant={row.original.status === 'ONGOING' ? 'default' : row.original.status === 'COMPLETED' ? 'secondary' : 'outline'}
-                      className={row.original.status === 'COMPLETED' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}
+                      variant={
+                        row.original.status === 'ONGOING'
+                          ? 'default'
+                          : row.original.status === 'COMPLETED'
+                            ? 'secondary'
+                            : 'outline'
+                      }
+                      className={
+                        row.original.status === 'COMPLETED'
+                          ? 'bg-green-500 hover:bg-green-600 text-white'
+                          : ''
+                      }
                     >
                       {row.original.status}
                     </Badge>
-                    <Badge variant={row.original.isDraft ? 'secondary' : 'default'} className={row.original.isDraft ? 'bg-yellow-100' : 'bg-green-100'}>
+                    <Badge
+                      variant={row.original.isDraft ? 'secondary' : 'default'}
+                      className={
+                        row.original.isDraft ? 'bg-yellow-100' : 'bg-green-100'
+                      }
+                    >
                       {row.original.isDraft ? 'Draft' : 'Published'}
                     </Badge>
                   </div>
@@ -126,30 +143,40 @@ const ProjectRowActions: FC<DataTableRowActionsProps> = ({ row }) => {
                     </h3>
                     <div
                       className='prose prose-sm mt-2 max-w-none text-base'
-                      dangerouslySetInnerHTML={{ __html: row.original.description }}
+                      dangerouslySetInnerHTML={{
+                        __html: row.original.description,
+                      }}
                     />
                   </div>
                 </>
               )}
 
               {/* Tags Section */}
-              {row.original.tags && Array.isArray(row.original.tags) && row.original.tags.length > 0 && (
-                <>
-                  <Separator />
-                  <div>
-                    <h3 className='mb-2 text-sm font-semibold text-muted-foreground'>
-                      Tags
-                    </h3>
-                    <div className='flex flex-wrap gap-2'>
-                      {row.original.tags.map((tag: { id: string; tag: string }) => (
-                        <Badge key={tag.id} variant='outline' className='text-sm'>
-                          {tag.tag}
-                        </Badge>
-                      ))}
+              {row.original.tags &&
+                Array.isArray(row.original.tags) &&
+                row.original.tags.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h3 className='mb-2 text-sm font-semibold text-muted-foreground'>
+                        Tags
+                      </h3>
+                      <div className='flex flex-wrap gap-2'>
+                        {row.original.tags.map(
+                          (tag: { id: string; tag: string }) => (
+                            <Badge
+                              key={tag.id}
+                              variant='outline'
+                              className='text-sm'
+                            >
+                              {tag.tag}
+                            </Badge>
+                          )
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
 
               {/* Timestamps */}
               <Separator />

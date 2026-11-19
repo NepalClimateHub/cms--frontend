@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ClimateChampionFormValues } from '@/schemas/climate-champion'
-import { Meta } from '@/schemas/shared'
 import { toast } from 'sonner'
 import { client } from '@/api/client.gen'
+import type { ClimateChampionFormValues } from '@/schemas/climate-champion'
+import type { Meta } from '@/schemas/shared'
 
 export interface ClimateChampionResponseDto {
   id: string
@@ -43,7 +43,9 @@ export const useGetClimateChampion = (id: string, enabled: boolean = true) => {
   return useQuery({
     queryKey: ['climate-champion', id],
     queryFn: async () => {
-      const response = await client.get({ url: `/api/v1/climate-champions/${id}` })
+      const response = await client.get({
+        url: `/api/v1/climate-champions/${id}`,
+      })
       return response.data as { data: ClimateChampionResponseDto }
     },
     enabled,
@@ -55,7 +57,10 @@ export const useCreateClimateChampion = () => {
 
   return useMutation({
     mutationFn: async (data: ClimateChampionFormValues) => {
-      const response = await client.post({ url: '/api/v1/climate-champions', body: data })
+      const response = await client.post({
+        url: '/api/v1/climate-champions',
+        body: data,
+      })
       return response.data
     },
     onSuccess: () => {
@@ -64,7 +69,9 @@ export const useCreateClimateChampion = () => {
     },
     onError: (error: unknown) => {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to create climate champion'
+        error instanceof Error
+          ? error.message
+          : 'Failed to create climate champion'
       )
     },
   })
@@ -94,7 +101,9 @@ export const useUpdateClimateChampion = () => {
     },
     onError: (error: unknown) => {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to update climate champion'
+        error instanceof Error
+          ? error.message
+          : 'Failed to update climate champion'
       )
     },
   })
@@ -113,7 +122,9 @@ export const useDeleteClimateChampion = () => {
     },
     onError: (error: unknown) => {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to delete climate champion'
+        error instanceof Error
+          ? error.message
+          : 'Failed to delete climate champion'
       )
     },
   })
@@ -136,7 +147,9 @@ export const useReorderClimateChampions = () => {
     },
     onError: (error: unknown) => {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to reorder climate champions'
+        error instanceof Error
+          ? error.message
+          : 'Failed to reorder climate champions'
       )
     },
   })

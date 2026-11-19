@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
+import { RefreshCw, ServerOff } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { env } from '@/config/env.config'
 import { Button } from '@/ui/shadcn/button'
-import { ServerOff, RefreshCw } from 'lucide-react'
 
 export default function MaintenanceError() {
   const { history } = useRouter()
@@ -11,12 +12,12 @@ export default function MaintenanceError() {
     const checkStatus = async () => {
       setIsChecking(true)
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/health`)
+        const response = await fetch(`${env.VITE_API_URL}/health`)
         if (response.ok) {
           // If we can reach the server, go back to where we were
           history.go(1)
         }
-      } catch (error) {
+      } catch (_error) {
         // Still down, no action needed
       } finally {
         setTimeout(() => setIsChecking(false), 1000)

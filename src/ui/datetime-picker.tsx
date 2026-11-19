@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
 import { format, setHours, setMinutes } from 'date-fns'
+import { CalendarIcon, Clock, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/ui/shadcn/button'
 import { Calendar } from '@/ui/shadcn/calendar'
 import { cn } from '@/ui/shadcn/lib/utils'
@@ -11,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/ui/shadcn/select'
-import { CalendarIcon, Clock, X } from 'lucide-react'
 import { parseDate } from '@/utils/date-utils'
 
 interface DateTimePickerProps {

@@ -1,22 +1,24 @@
+import { Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { toast } from '@/hooks/use-toast'
+import {
+  type UpdateMyOrganizationBody,
+  usePatchMyOrganization,
+} from '@/query/users/use-my-organization'
+import type { OrganizationProfile } from '@/schemas/auth/organization-profile'
 import ImageUpload from '@/ui/image-upload'
+import { VerificationConversation } from '@/ui/molecules/verification-conversation'
 import { Button } from '@/ui/shadcn/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/ui/shadcn/dialog'
 import { Label } from '@/ui/shadcn/label'
 import { Textarea } from '@/ui/shadcn/textarea'
-import { Loader2 } from 'lucide-react'
-import { toast } from '@/hooks/use-toast'
-import type { OrganizationProfile } from '@/schemas/auth/organization-profile'
-import {
-  usePatchMyOrganization,
-  type UpdateMyOrganizationBody,
-} from '@/query/users/use-my-organization'
 
 const REMARKS_PLACEHOLDER = `Dear Admin,
 
@@ -38,20 +40,32 @@ export default function OrganizationVerifyDialog({
   onSubmitted,
 }: OrganizationVerifyDialogProps) {
   const patchOrg = usePatchMyOrganization()
-  const [docUrl, setDocUrl] = useState<string | null>(null)
-  const [docId, setDocId] = useState<string | null>(null)
+  const [documents, setDocuments] = useState<
+    Array<{ id: string; url: string }>
+  >([])
   const [remarks, setRemarks] = useState('')
 
   useEffect(() => {
     if (open) {
-      setDocUrl(organization.verificationDocumentUrl)
-      setDocId(organization.verificationDocumentId)
-      setRemarks(organization.verificationRequestRemarks ?? '')
+      setDocuments(
+        organization.verificationDocuments?.length
+          ? organization.verificationDocuments
+          : organization.verificationDocumentUrl &&
+              organization.verificationDocumentId
+            ? [
+                {
+                  id: organization.verificationDocumentId,
+                  url: organization.verificationDocumentUrl,
+                },
+              ]
+            : []
+      )
+      setRemarks('')
     }
   }, [open, organization])
 
   const handleSubmit = () => {
-    if (!docId || !docUrl) {
+    if (!documents.length) {
       toast({
         title: 'Document required',
         description: 'Please upload a verification image or document.',
@@ -61,8 +75,7 @@ export default function OrganizationVerifyDialog({
     }
 
     const body: UpdateMyOrganizationBody = {
-      verificationDocumentUrl: docUrl,
-      verificationDocumentId: docId,
+      verificationDocuments: documents,
       verificationRequestRemarks: remarks.trim() || undefined,
     }
 
@@ -80,29 +93,49 @@ export default function OrganizationVerifyDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-lg'>
-        <DialogHeader>
+      <DialogContent className='flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-lg'>
+        <DialogHeader className='shrink-0 px-6 pt-6'>
           <DialogTitle>Request organization verification</DialogTitle>
           <DialogDescription>
-            Upload a clear image of your registration certificate or other
-            supporting document. Add a short note for the admin team.
+            Upload one to three clear registration or supporting documents. Add
+            a short note for the admin team.
           </DialogDescription>
         </DialogHeader>
 
-        <div className='space-y-4'>
-          <ImageUpload
-            label='Verification document (image)'
-            handleImage={(id, url) => {
-              setDocId(id)
-              setDocUrl(url)
-            }}
-            initialImageId={docId}
-            initialImageUrl={docUrl}
-            inputId='org-verification-doc-upload'
-          />
+        <div className='min-h-0 flex-1 space-y-4 overflow-y-auto px-6 pb-6'>
+          {organization.verificationMessages.length ? (
+            <VerificationConversation
+              messages={organization.verificationMessages}
+            />
+          ) : null}
+          {[0, 1, 2].map((index) => {
+            const document = documents[index]
+            return (
+              <ImageUpload
+                key={document?.id ?? `empty-${index}`}
+                label={`Supporting document ${index + 1}${index === 0 ? ' (required)' : ' (optional)'}`}
+                handleImage={(id, url) => {
+                  setDocuments((current) => {
+                    const next = [...current]
+                    if (id && url) {
+                      next[index] = { id, url }
+                    } else {
+                      next.splice(index, 1)
+                    }
+                    return next.filter(Boolean)
+                  })
+                }}
+                initialImageId={document?.id ?? null}
+                initialImageUrl={document?.url ?? null}
+                inputId={`org-verification-doc-upload-${index}`}
+              />
+            )
+          })}
 
           <div className='space-y-2'>
-            <Label htmlFor='org-verify-remarks'>Message to administrators</Label>
+            <Label htmlFor='org-verify-remarks'>
+              Reply to the verification team
+            </Label>
             <Textarea
               id='org-verify-remarks'
               rows={6}
@@ -112,20 +145,14 @@ export default function OrganizationVerifyDialog({
               className='resize-y'
             />
           </div>
+        </div>
 
-          <div className='flex justify-end gap-2 pt-2'>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => onOpenChange(false)}
-              disabled={patchOrg.isPending}
-            >
-              Cancel
-            </Button>
+        <div className='shrink-0 px-6 pb-6'>
+          <DialogFooter className='border-t pt-4'>
             <Button
               type='button'
               onClick={handleSubmit}
-              disabled={patchOrg.isPending || !docId}
+              disabled={patchOrg.isPending || !documents.length}
             >
               {patchOrg.isPending ? (
                 <>
@@ -136,7 +163,7 @@ export default function OrganizationVerifyDialog({
                 'Submit request'
               )}
             </Button>
-          </div>
+          </DialogFooter>
         </div>
       </DialogContent>
     </Dialog>

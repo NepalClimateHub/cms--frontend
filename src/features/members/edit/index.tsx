@@ -1,14 +1,14 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate, useParams } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useParams, useNavigate } from '@tanstack/react-router'
 import { useGetMember, useUpdateMember } from '@/query/members/use-members'
-import { MemberFormValues, memberSchema } from '@/schemas/member'
+import { type MemberFormValues, memberSchema } from '@/schemas/member'
 import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/ui/loader'
 import PageHeader from '@/ui/page-header'
 import { Button } from '@/ui/shadcn/button'
-import { ArrowLeft } from 'lucide-react'
 import MemberForm from '../shared/MemberForm'
 
 export default function EditMember() {
@@ -40,7 +40,7 @@ export default function EditMember() {
   })
 
   useEffect(() => {
-    if (member && member.data) {
+    if (member?.data) {
       form.reset({
         name: member.data.name,
         email: member.data.email,

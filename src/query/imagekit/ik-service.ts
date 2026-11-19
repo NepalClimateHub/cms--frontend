@@ -1,4 +1,4 @@
-import { Meta } from '@/schemas/shared'
+import type { Meta } from '@/schemas/shared'
 import apiClient from '../apiClient'
 import { imagekit } from '../shared/routes'
 

@@ -1,13 +1,13 @@
-import { parseAsInteger, useQueryStates } from 'nuqs';
-import { useCallback, useMemo } from 'react';
+import { parseAsInteger, useQueryStates } from 'nuqs'
+import { useCallback, useMemo } from 'react'
 
 type DefaultPagination = {
-  limit: number;
-  offset: number;
-};
+  limit: number
+  offset: number
+}
 
 export const usePagination = (params?: DefaultPagination) => {
-  const { limit = 10, offset = 0 } = params || {};
+  const { limit = 10, offset = 0 } = params || {}
   const [pagination, setPagination] = useQueryStates(
     {
       limit: parseAsInteger.withDefault(limit),
@@ -16,14 +16,14 @@ export const usePagination = (params?: DefaultPagination) => {
     {
       history: 'replace',
     }
-  );
+  )
 
   const setPrevPage = () => {
     setPagination((prev) => ({
       ...prev,
       offset: Math.max(prev.offset - prev.limit, 0),
-    }));
-  };
+    }))
+  }
 
   const setNextPage = useCallback(
     () =>
@@ -31,8 +31,8 @@ export const usePagination = (params?: DefaultPagination) => {
         ...prev,
         offset: prev.offset + prev.limit,
       })),
-    []
-  );
+    [setPagination]
+  )
 
   const setLimit = useCallback(
     (limit: number | string) =>
@@ -42,28 +42,31 @@ export const usePagination = (params?: DefaultPagination) => {
         // reset offset when changing limit
         offset: 0,
       })),
-    []
-  );
+    [setPagination]
+  )
 
-  const setPage = useCallback((page: number | string) => {
-    setPagination((prev) => {
-      return {
-        ...prev,
-        // calculate new offset
-        offset: (Number(page) - 1) * prev.limit,
-      };
-    });
-  }, []);
+  const setPage = useCallback(
+    (page: number | string) => {
+      setPagination((prev) => {
+        return {
+          ...prev,
+          // calculate new offset
+          offset: (Number(page) - 1) * prev.limit,
+        }
+      })
+    },
+    [setPagination]
+  )
 
   const resetPagination = useCallback(
     () => setPagination({ limit: limit, offset: offset }),
-    []
-  );
+    [offset, setPagination, limit]
+  )
 
   const currentPage = useMemo(() => {
-    const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
-    return currentPage;
-  }, [pagination]);
+    const currentPage = Math.floor(pagination.offset / pagination.limit) + 1
+    return currentPage
+  }, [pagination])
 
   return {
     pagination,
@@ -74,5 +77,5 @@ export const usePagination = (params?: DefaultPagination) => {
     setPage,
     setLimit,
     resetPagination,
-  };
-};
+  }
+}

@@ -1,9 +1,9 @@
-import * as React from 'react'
 import {
   CopyIcon,
   ExternalLinkIcon,
   LinkBreak2Icon,
 } from '@radix-ui/react-icons'
+import * as React from 'react'
 import { Separator } from '@/ui/shadcn/separator'
 import { ToolbarButton } from '../toolbar-button'
 
@@ -64,7 +64,11 @@ export const LinkPopoverBlock: React.FC<LinkPopoverBlockProps> = ({
           tooltip={copyTitle}
           onClick={handleCopy}
           tooltipOptions={{
-            onPointerDownOutside: (e: { target: EventTarget | null; currentTarget: EventTarget | null; preventDefault: () => void }) => {
+            onPointerDownOutside: (e: {
+              target: EventTarget | null
+              currentTarget: EventTarget | null
+              preventDefault: () => void
+            }) => {
               if (e.target === e.currentTarget) e.preventDefault()
             },
           }}

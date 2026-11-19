@@ -1,11 +1,11 @@
-
-import React, { createContext } from 'react';
-import { InferProps } from 'prop-types';
-import ImageKit from 'imagekit-javascript';
-import { IKContextProps, IKContextExtractedProps } from "./props";
+import ImageKit from 'imagekit-javascript'
+import type { InferProps } from 'prop-types'
+import type React from 'react'
+import { createContext } from 'react'
+import { IKContextExtractedProps, type IKContextProps } from './props'
 
 // Create the context
-export const ImageKitContext = createContext<IKContextExtractedProps>({});
+export const ImageKitContext = createContext<IKContextExtractedProps>({})
 
 /**
  * Provides a container for ImageKit components. Any option set in IKContext will be passed to the children.
@@ -17,42 +17,46 @@ export const ImageKitContext = createContext<IKContextExtractedProps>({});
  *</IKContext>
  */
 const IKContext = (props: React.PropsWithChildren<IKContextProps>) => {
+  const extractContextOptions = (
+    mergedOptions: InferProps<IKContextExtractedProps>
+  ) => {
+    const result: IKContextExtractedProps = {}
 
-  const extractContextOptions = (mergedOptions: InferProps<IKContextExtractedProps>) => {
-    const result: IKContextExtractedProps = {};
-
-    const propKeys = Object.keys(IKContextExtractedProps);
+    const propKeys = Object.keys(IKContextExtractedProps)
 
     for (let i = 0; i < propKeys.length; i++) {
-      const key = propKeys[i];
-      const value = mergedOptions[key as keyof IKContextExtractedProps];
+      const key = propKeys[i]
+      const value = mergedOptions[key as keyof IKContextExtractedProps]
       if (value) {
-        result[key as keyof IKContextExtractedProps] = value;
+        result[key as keyof IKContextExtractedProps] = value
       }
     }
 
-    return result;
-  };
+    return result
+  }
 
   const mergedOptions = {
-    ...props
-  };
+    ...props,
+  }
 
-  const contextOptionsExtracted = extractContextOptions(mergedOptions);
+  const contextOptionsExtracted = extractContextOptions(mergedOptions)
 
-  if (contextOptionsExtracted.urlEndpoint && contextOptionsExtracted.urlEndpoint.trim() !== "") {
+  if (
+    contextOptionsExtracted.urlEndpoint &&
+    contextOptionsExtracted.urlEndpoint.trim() !== ''
+  ) {
     contextOptionsExtracted.ikClient = new ImageKit({
       urlEndpoint: contextOptionsExtracted.urlEndpoint,
       // @ts-expect-error: fix later
-      sdkVersion: "",
-    });
+      sdkVersion: '',
+    })
   }
 
   return (
     <ImageKitContext.Provider value={contextOptionsExtracted}>
       {props.children}
     </ImageKitContext.Provider>
-  );
+  )
 }
 
-export default IKContext;
+export default IKContext

@@ -26,12 +26,22 @@ export const memberSchema = z.object({
   linkedinProfile: z.string().optional(),
   photoUrl: z.string().optional(),
   photoId: z.string().optional(),
-  bio: z.string().max(400, { message: 'Bio cannot exceed 400 characters' }).optional(),
+  bio: z
+    .string()
+    .max(400, { message: 'Bio cannot exceed 400 characters' })
+    .optional(),
   role: z.string().min(1, { message: 'Role is required' }),
   startDate: z.string().min(1, { message: 'Start date is required' }),
   endDate: z.string().nullable().optional(),
   isActive: z.boolean().default(true),
-  team: z.enum(['Leadership', 'Executive', 'Tech', 'Climate Communication', 'Content', 'Advisor']),
+  team: z.enum([
+    'Leadership',
+    'Executive',
+    'Tech',
+    'Climate Communication',
+    'Content',
+    'Advisor',
+  ]),
   status: z.enum(['Staff', 'Advisor', 'Volunteer', 'Board']),
   order: z.number().default(0),
 })

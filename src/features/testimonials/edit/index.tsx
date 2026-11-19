@@ -1,19 +1,26 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate, useParams } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useParams, useNavigate } from '@tanstack/react-router'
-import { useGetTestimonial, useUpdateTestimonial } from '@/query/testimonials/use-testimonials'
-import { TestimonialFormValues, testimonialSchema } from '@/schemas/testimonial'
+import {
+  useGetTestimonial,
+  useUpdateTestimonial,
+} from '@/query/testimonials/use-testimonials'
+import {
+  type TestimonialFormValues,
+  testimonialSchema,
+} from '@/schemas/testimonial'
 import { Main } from '@/ui/layouts/main'
 import { BoxLoader } from '@/ui/loader'
 import PageHeader from '@/ui/page-header'
 import { Button } from '@/ui/shadcn/button'
-import { ArrowLeft } from 'lucide-react'
 import TestimonialForm from '../shared/TestimonialForm'
 
 export default function EditTestimonial() {
   const { id } = useParams({ from: '/_authenticated/testimonials/$id' })
-  const { data: testimonial, isLoading: isTestimonialLoading } = useGetTestimonial(id)
+  const { data: testimonial, isLoading: isTestimonialLoading } =
+    useGetTestimonial(id)
   const updateTestimonialMutation = useUpdateTestimonial()
   const navigate = useNavigate()
 
@@ -31,7 +38,7 @@ export default function EditTestimonial() {
   })
 
   useEffect(() => {
-    if (testimonial && testimonial.data) {
+    if (testimonial?.data) {
       form.reset({
         name: testimonial.data.name,
         photoUrl: testimonial.data.photoUrl || '',
