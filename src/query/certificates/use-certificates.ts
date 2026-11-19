@@ -1,0 +1,269 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { client } from '@/api/client.gen'
+import { Meta } from '@/schemas/shared'
+import { toast } from 'sonner'
+
+export interface PublicCertificateDetails {
+  certificateNumber: string
+  name: string
+  role: string
+  teamName?: string | null
+  dateJoined: string
+  dateEnded: string | null
+  duration: string
+  certificateType: string
+  profilePicture: string | null
+  issuedAt?: string
+  organization: string
+}
+
+export interface PublicVerificationResponse {
+  valid: boolean
+  status: 'VERIFIED' | 'NOT_FOUND' | 'REVOKED'
+  message?: string
+  certificate?: PublicCertificateDetails
+}
+
+export interface AdminCertificateResponse {
+  id: string
+  certificateNumber: string
+  verificationCode?: string
+  certificateType: string
+  role: string
+  teamName?: string | null
+  dateJoined: string
+  dateEnded: string | null
+  duration: string
+  status: 'ACTIVE' | 'REVOKED' | 'EXPIRED'
+  issuedAt: string
+  revokedAt?: string | null
+  revocationReason?: string | null
+  volunteer: {
+    id: string
+    fullName: string
+    email?: string | null
+    profilePictureUrl?: string | null
+  }
+  verificationCount: number
+  createdAt: string
+}
+
+export interface CertificateLog {
+  id: string
+  result: string
+  requestedAt: string
+  ipHash?: string | null
+  userAgent?: string | null
+}
+
+export interface CreateCertificatePayload {
+  volunteerId?: string
+  fullName?: string
+  email?: string
+  profilePictureUrl?: string
+  certificateType: string
+  role: string
+  teamName?: string
+  dateJoined: string
+  dateEnded?: string
+  issuedAt?: string
+}
+
+export const useVerifyCertificate = () => {
+  return useMutation({
+    mutationFn: async (code: string): Promise<PublicVerificationResponse> => {
+      try {
+        const response = await client.post({
+          url: '/api/v1/public/certificates/verify',
+          body: { code },
+        })
+
+        const data = response.data as any
+
+        // If the client library surfaced an error object instead of throwing
+        if (response.error) {
+          const httpStatus = (response.error as any)?.status ?? (response.error as any)?.statusCode
+          if (httpStatus === 404 || httpStatus === 400) {
+            return { valid: false, status: 'NOT_FOUND', message: 'Certificate not found.' }
+          }
+          throw new Error((response.error as any)?.message || 'Verification failed. Please try again.')
+        }
+
+        // Guard: if the response body doesn't look like a PublicVerificationResponse
+        // (e.g. the server returned a generic error envelope), treat it as not-found.
+        if (data === null || data === undefined || typeof data.valid !== 'boolean') {
+          return { valid: false, status: 'NOT_FOUND', message: 'Certificate not found.' }
+        }
+
+        return data as PublicVerificationResponse
+      } catch (err: any) {
+        // HTTP 404 / 400 → "not found" response (not a thrown error)
+        const httpStatus =
+          err?.response?.status ??
+          err?.status ??
+          err?.response?.data?.statusCode ??
+          err?.statusCode
+
+        if (httpStatus === 404 || httpStatus === 400) {
+          return { valid: false, status: 'NOT_FOUND', message: 'Certificate not found.' }
+        }
+
+        // Network / server error → throw so onError fires
+        const message =
+          err?.response?.data?.message ||
+          err?.error?.message ||
+          err?.message ||
+          'We could not verify the certificate right now. Please try again later.'
+        throw new Error(message)
+      }
+    },
+  })
+}
+
+export const useGetCertificates = (params: Record<string, unknown>) => {
+  return useQuery({
+    queryKey: ['certificates', params],
+    queryFn: async () => {
+      const response = await client.get({
+        url: '/api/v1/admin/certificates',
+        query: params,
+      })
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message || 'Failed to fetch certificates'
+        )
+      }
+      return (
+        (response.data as {
+          data: AdminCertificateResponse[]
+          meta: Meta
+        }) ?? { data: [], meta: { count: 0 } }
+      )
+    },
+  })
+}
+
+export const useGetCertificate = (id: string, enabled: boolean = true) => {
+  return useQuery({
+    queryKey: ['certificate', id],
+    queryFn: async () => {
+      const response = await client.get({
+        url: `/api/v1/admin/certificates/${id}`,
+      })
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message || 'Failed to fetch certificate'
+        )
+      }
+      return response.data as { data: AdminCertificateResponse }
+    },
+    enabled: Boolean(id) && enabled,
+  })
+}
+
+export const useCreateCertificate = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: CreateCertificatePayload) => {
+      const response = await client.post({
+        url: '/api/v1/admin/certificates',
+        body: data,
+      })
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message || 'Failed to create certificate'
+        )
+      }
+      return response.data as { data: AdminCertificateResponse }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['certificates'] })
+      toast.success('Certificate created successfully')
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || 'Failed to create certificate')
+    },
+  })
+}
+
+export const useRegenerateCertificateCode = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const response = await client.post({
+        url: `/api/v1/admin/certificates/${id}/regenerate-code`,
+      })
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message ||
+            'Failed to regenerate verification code'
+        )
+      }
+      return response.data as {
+        data: {
+          certificateId: string
+          certificateNumber: string
+          verificationCode: string
+        }
+      }
+    },
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['certificates'] })
+      queryClient.invalidateQueries({ queryKey: ['certificate', id] })
+      toast.success('Verification code regenerated successfully')
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || 'Failed to regenerate verification code')
+    },
+  })
+}
+
+export const useRevokeCertificate = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
+      const response = await client.post({
+        url: `/api/v1/admin/certificates/${id}/revoke`,
+        body: { reason },
+      })
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message || 'Failed to revoke certificate'
+        )
+      }
+      return response.data as { data: AdminCertificateResponse }
+    },
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['certificates'] })
+      queryClient.invalidateQueries({ queryKey: ['certificate', id] })
+      toast.success('Certificate revoked successfully')
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || 'Failed to revoke certificate')
+    },
+  })
+}
+
+export const useGetCertificateLogs = (id: string, enabled: boolean = true) => {
+  return useQuery({
+    queryKey: ['certificate-logs', id],
+    queryFn: async () => {
+      const response = await client.get({
+        url: `/api/v1/admin/certificates/${id}/logs`,
+      })
+      if (response.error) {
+        throw new Error(
+          (response.error as any)?.message ||
+            'Failed to fetch certificate logs'
+        )
+      }
+      return (
+        (response.data as { data: CertificateLog[] }) ?? { data: [] }
+      )
+    },
+    enabled: Boolean(id) && enabled,
+  })
+}
